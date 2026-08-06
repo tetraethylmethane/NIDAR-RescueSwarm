@@ -1,0 +1,322 @@
+================================================================================
+STEP 3b  BATTERY SIZED BY RESERVE POLICY  (coupled: pack mass <-> MTOW <-> energy)
+================================================================================
+  Policy: pack must deliver  [nominal mission + one full re-sweep + 4 min loiter]
+          within an 80% depth of discharge, and hover endurance >= 2x mission time.
+
+  LiPo  : pack  928 g (153 Wh) -> MTOW 4.99 kg, fleet 14.98 kg, hover 12.4 min, mission 7.7 min, endurance ratio 1.6x
+           nominal 69 Wh + re-sweep 14 Wh + loiter 39 Wh = 123 Wh needed
+  Li-ion: pack  688 g (138 Wh) -> MTOW 4.61 kg, fleet 13.83 kg, hover 12.4 min, mission 7.7 min, endurance ratio 1.6x
+           nominal 62 Wh + re-sweep 13 Wh + loiter 35 Wh = 110 Wh needed
+
+================================================================================
+FINAL DESIGN POINT  -  'RS-1' search & delivery quad
+================================================================================
+  Configuration          : quadrotor, 20 in props, 6S2P 21700 Li-ion
+  Pack                   : 12 cells, 966 g, 194 Wh, 9.0 Ah, 21.6 V nom (18-25.2 V)
+  Pack specific energy   : 201 Wh/kg (pack level)
+  MTOW (4 kits loaded)   : 5.05 kg      Empty (no batt/kits): 3.29 kg
+  FLEET OF 3             : 15.16 kg   vs 25.0 kg limit -> margin 9.84 kg (39%)
+  Disk loading           : 6.23 kg/m2   power loading 8.4 g/W
+  Hover power            : 426 W shaft / 601 W electrical
+  Hover endurance (80% DoD): 15.5 min
+  Design mission         : 7.7 min, 70 Wh = 45% of usable energy
+  Land-with SoC          : 64 %
+
+  MASS STATEMENT (per aircraft)
+    Structure: frame, arms, landing gear, hardware     1187 g   23.5%
+    Motors (4)                                          508 g   10.1%
+    ESCs (4)                                            178 g    3.5%
+    Propellers (4)                                      248 g    4.9%
+    Battery pack                                        966 g   19.1%
+    Avionics + wiring harness                           925 g   18.3%
+    Payload magazine + release                          240 g    4.8%
+    Survivor kits (4 x 200 g)                           800 g   15.8%
+    MTOW                                               5052 g
+    Fleet of 3 (weigh-in figure)                      15157 g
+    Growth allowance to 24.0 kg fleet target           8843 g  = 58% build overweight tolerated
+
+  PROPULSION
+    Static thrust required (T/W 2.0)        99 N  (10.10 kgf), 2.53 kgf per motor
+    Hover thrust per motor                  1.26 kgf  = 50% of max (good: 45-55% band)
+    Hover current                           27.8 A  (3.09 C)
+    Peak current at T/W=2                   74 A  (8.23 C), 1601 W
+    Pack burst capability (2P x 45 A)      90 A -> OK, margin 21%
+    ESC rating                              19 A peak/motor -> specify 50-60 A ESC
+    Main power leads                        74 A -> 10 AWG; motor leads 14 AWG
+
+  MISSION SEGMENTS
+    segment                                       t       P        E
+    Arm, spin-up, launch queue                  45s    210W     2.6Wh
+    Climb to 60 m                               20s    792W     4.4Wh
+    Transit to sub-region                       10s    563W     1.6Wh
+    Area sweep                                  93s    563W    14.6Wh
+    Delivery (3.3 drops)                       185s    552W    28.3Wh
+    RTH transit ~250 m                          21s    563W     3.3Wh
+    Recovery hold, descend, land                90s    601W    15.0Wh
+    TOTAL                                      464s           69.8Wh   (7.7 min of a 30 min allowance)
+================================================================================
+STEP 6  QUAD vs HEX REDUNDANCY TRADE
+================================================================================
+  quad 4x20"   MTOW 5.05 kg  fleet 15.16 kg  P_hov  601 W  hover 15.4 min  DL 6.23 kg/m2  margin  9.84 kg
+  hex  6x16"   MTOW 5.25 kg  fleet 15.75 kg  P_hov  646 W  hover 14.4 min  DL 6.74 kg/m2  margin  9.25 kg
+  hex  6x15"   MTOW 5.25 kg  fleet 15.75 kg  P_hov  685 W  hover 13.5 min  DL 7.67 kg/m2  margin  9.25 kg
+  Hex adds 2 motors+ESCs+props+arms; buys single-motor-out controllability.
+  Both fit the 25 kg fleet cap with >30% margin -> redundancy is affordable here.
+
+================================================================================
+STEP 7  CAMERA / OPTICS SIZING
+================================================================================
+  Sensor 1/1.8" 4056x3040 (12.3 MP), f = 6.0 mm
+  HFOV 63.3 deg, VFOV 50.0 deg, pixel pitch 1.82 um
+
+    AGL   swath   along      GSD  person px  lines   track  t/drone
+    30m   37.0m   28.0m   0.91cm       186     10   4000m     187s
+    40m   49.3m   37.3m   1.22cm       140      8   3200m     149s
+    50m   61.7m   46.7m   1.52cm       112      6   2400m     112s
+    60m   74.0m   56.0m   1.82cm        93      5   2000m      93s
+    70m   86.3m   65.3m   2.13cm        80      5   2000m      93s
+    80m   98.7m   74.7m   2.43cm        70      4   1600m      75s
+
+  Detection floor: CNN detectors need >~20-30 px on target for reliable small-object recall
+  (HERIDAL/SARD targets are ~0.1% of frame area). All rows above clear that by >2x.
+
+  SELECTED: 60 m AGL -> GSD 1.82 cm/px, person = 93 px long, swath 74 m
+           chosen for detection margin, not for coverage speed (coverage is not the constraint)
+
+  MOTION BLUR / EXPOSURE
+    v= 8 m/s, 1/500 s -> smear 16.0 mm = 0.88 px  OK
+    v= 8 m/s, 1/1000 s -> smear  8.0 mm = 0.44 px  OK
+    v=12 m/s, 1/500 s -> smear 24.0 mm = 1.32 px  MARGINAL
+    v=12 m/s, 1/1000 s -> smear 12.0 mm = 0.66 px  OK
+    attitude rate 20 deg/s at 1/1000 s -> 4611.9 px angular smear (dominates in turns -> do not trust detections while banking)
+    50% forward overlap at 8 m/s needs only 0.29 Hz capture (advance 28 m/frame)
+    80% forward overlap at 8 m/s needs only 0.71 Hz capture (advance 11 m/frame)
+    -> run detection at 5 Hz: 35x redundant coverage per target, ~35 frames per target per pass -> multi-frame fusion is free
+
+  TILED INFERENCE (SAHI-style, 640px tiles, 20% overlap)
+    full-res tiling = 8x6 = 48 tiles/frame -> 240 tile-inferences/s at 5 Hz  [too much for Orin Nano ~30-40 FPS]
+    downsample 2x first (2028x1520, GSD 3.65 cm, person 47 px) -> 12 tiles = 60 inferences/s
+    Orin Nano TensorRT FP16 YOLO @640: ~24-40 FPS measured in literature -> run 2 Hz full tiling or 5 Hz on 3x3 tiles. Budget-check on hardware in P5.
+
+================================================================================
+STEP 8  PAYLOAD DROP BALLISTICS
+================================================================================
+  Kit 200 g, 20x10x5 cm; tumbling ref area 117 cm2, Cd 1.05
+  Terminal velocity 16.2 m/s  (ballistic coefficient m/(CdA) = 16.3 kg/m2)
+
+   h_rel   t_fall  v_impact  drift @0 wind    @3 m/s    @6 m/s
+      4m    0.90s      8.2m/s         0.00m     0.20m     0.60m
+      6m    1.11s      9.7m/s         0.00m     0.34m     0.95m
+      8m    1.28s     10.9m/s         0.00m     0.49m     1.32m
+     10m    1.43s     11.7m/s         0.00m     0.66m     1.72m
+     15m    1.75s     13.3m/s         0.00m     1.14m     2.80m
+
+  Sensitivity of impact point to release-state errors (release at 6 m, still air):
+    residual groundspeed 0.25 m/s ->  0.27 m along-track miss
+    residual groundspeed 0.50 m/s ->  0.53 m along-track miss
+    residual groundspeed 1.00 m/s ->  1.06 m along-track miss
+    residual groundspeed 2.00 m/s ->  2.10 m along-track miss
+    altitude error +1 m (at 0.5 m/s residual) ->  3.9 cm extra miss
+    altitude error +2 m (at 0.5 m/s residual) ->  7.4 cm extra miss
+  -> release velocity dominates, exactly as in the fixed-wing airdrop literature.
+     A multirotor can null groundspeed; a fixed-wing cannot. Hover-and-drop wins.
+
+================================================================================
+STEP 9  GEOTAG ERROR BUDGET (RSS, 1-sigma, target at 60 m AGL)
+================================================================================
+  term                           A         B         C         D
+  GNSS_horizontal            2.50m     2.50m     0.03m     0.01m
+  attitude                   1.57m     1.05m     0.31m     0.07m
+  boresight_cal              1.57m     0.31m     0.21m     0.21m
+  height_scale               3.08m     2.76m     0.62m     0.62m
+  pixel_centroid             0.09m     0.09m     0.09m     0.02m
+  time_sync                  0.40m     0.16m     0.16m     0.04m
+  RSS                        4.57m     3.88m     0.75m     0.66m   <== total
+    A  standard GNSS, uncalibrated boresight
+    B  standard GNSS, calibrated boresight
+    C  RTK + dual-antenna heading + cal
+    D  case C + 20-frame fusion (random terms /sqrt(N))
+
+  Dominant terms: GNSS (case A/B) then terrain-height assumption and attitude (case C/D).
+  Boresight calibration and a DEM/ground-plane fix matter MORE than more frames -
+  systematic bias does not average out. Calibrate, then fuse.
+
+================================================================================
+STEP 10  RF LINK BUDGET
+================================================================================
+  Worst-case slant range: field diagonal 472 m + GCS offset -> design to 600 m
+
+  link                          FSPL@600m      Prx    sens   margin
+  5.8 GHz mesh (data+video)        103.3dB   -80.3dBm    -82     1.7dB   20 Mbps 20 MHz ch
+  2.4 GHz mesh (fallback)           95.8dB   -72.8dBm    -85    12.2dB   12 Mbps
+  868 MHz safety link               86.8dB   -65.8dBm   -120    54.2dB   LoRa SF7 5.5 kbps
+
+  Fade margin target: >=15 dB for a mobile airborne link (multipath, body blockage, attitude).
+  5.8 GHz margin is adequate at 600 m LOS but degrades fast; keep the GCS antenna elevated
+  and accept that video, not command, is what degrades first.
+
+  DATA RATE BUDGET (per drone, to GCS)
+    MAVLink telemetry @10 Hz                    60 kbps
+    Swarm state / task consensus @5 Hz          25 kbps
+    Detection metadata + thumbnails            150 kbps
+    Video 720p30 H.265                        1800 kbps
+    Non-video subtotal per drone               235 kbps  x3 = 0.70 Mbps
+    + ONE switched video feed                 1800 kbps
+    TOTAL offered load                       2.50 Mbps
+    -> comfortably inside a 20 Mbps mesh at short range; do NOT stream 3 video feeds.
+
+================================================================================
+STEP 11  GEOMETRY, STRUCTURE, CG
+================================================================================
+  20" prop, 30 mm tip clearance -> wheelbase (diagonal) 761 mm, overall footprint ~1046 mm square
+  Launch/landing box 12 ft = 3.66 m -> 3 aircraft fit per row, 9 total statically
+  -> all three fit simultaneously, but sequence launches anyway: prop wash and
+     downwash interaction at <1 rotor diameter separation is a real upset risk.
+
+  Arm root bending moment at T/W=2: M = 24.8 N x 0.380 m = 9.4 N.m
+  With a 25x23 mm CF tube (I ~ 5438 mm^4), sigma = 22 MPa vs ~600 MPa CF UD -> SF 28
+  (bending is not the driver; joint/clamp design and vibration fatigue are)
+
+  CG SHIFT on releasing one 200 g kit from a magazine 5 cm off centreline:
+    CG moves 1.98 mm; residual moment 0.098 N.m
+    -> counter-thrust needed 26 g of differential thrust: trivial,
+       but the STEP change excites the attitude loop. Mount magazine on the CG axis and
+       feed a mass-change event to the controller / hold position 2 s after release.
+================================================================================
+CORRECTION 1  ANGULAR MOTION BLUR (previous run had a unit error)
+================================================================================
+  Angular pixel scale = 63.3 deg / 4056 px = 15.61 mdeg/px
+    body rate  5 deg/s, 1/500 s ->  0.64 px angular smear
+    body rate  5 deg/s, 1/1000 s ->  0.32 px angular smear
+    body rate  5 deg/s, 1/2000 s ->  0.16 px angular smear
+
+    body rate 10 deg/s, 1/500 s ->  1.28 px angular smear   <-- exceeds 1 px
+    body rate 10 deg/s, 1/1000 s ->  0.64 px angular smear
+    body rate 10 deg/s, 1/2000 s ->  0.32 px angular smear
+
+    body rate 20 deg/s, 1/500 s ->  2.56 px angular smear   <-- exceeds 1 px
+    body rate 20 deg/s, 1/1000 s ->  1.28 px angular smear   <-- exceeds 1 px
+    body rate 20 deg/s, 1/2000 s ->  0.64 px angular smear
+
+    body rate 45 deg/s, 1/500 s ->  5.76 px angular smear   <-- exceeds 1 px
+    body rate 45 deg/s, 1/1000 s ->  2.88 px angular smear   <-- exceeds 1 px
+    body rate 45 deg/s, 1/2000 s ->  1.44 px angular smear   <-- exceeds 1 px
+
+  Translational smear at 8 m/s, 1/1000 s = 0.44 px. Angular smear dominates only in
+  aggressive turns. Rule: gate detections on |body rate| < 15 deg/s, and use 1/1000 s or
+  faster. Both are easily met on straight transects; suppress inference in the turn arcs.
+
+================================================================================
+CORRECTION 2  RF LINK BUDGET WITH LEGAL POWER AND REAL ANTENNAS
+================================================================================
+  India, 5.825-5.875 GHz delicensed for drones: up to 1 W (30 dBm) Tx, 4 W (36 dBm) EIRP.
+  Design: air node 24 dBm + 3 dBi dipole (27 dBm EIRP, legal);
+          GCS node 24 dBm + 9 dBi sector on a 2 m mast (33 dBm EIRP, legal).
+
+    range     FSPL       Prx   MCS3 -85   MCS5 -80   MCS7 -74
+     200m    93.8dB    -61.8dBm      23.2dB      18.2dB      12.2dB
+     300m    97.3dB    -65.3dBm      19.7dB      14.7dB       8.7dB
+     400m    99.8dB    -67.8dBm      17.2dB      12.2dB       6.2dB
+     500m   101.8dB    -69.8dBm      15.2dB      10.2dB       4.2dB
+     600m   103.3dB    -71.3dBm      13.7dB       8.7dB       2.7dB
+     800m   105.8dB    -73.8dBm      11.2dB       6.2dB       0.2dB
+
+  Rates (20 MHz channel, approx): MCS3 ~26 Mbps, MCS5 ~52 Mbps, MCS7 ~65 Mbps.
+  Offered load is 2.5 Mbps -> even MCS0/MCS1 suffices. Trade rate for margin:
+  lock the mesh to a low MCS and a 10 MHz channel. A slow link that never drops beats
+  a fast link that renegotiates. Expect >=20 dB margin at 600 m at MCS3.
+
+  868 MHz safety link at 600 m: FSPL 86.8 dB, margin at LoRa SF7 (-120 dBm) = 53 dB -> effectively unbreakable inside the field.
+  Air-to-air (drone-drone, both at 60 m AGL, 400 m apart): FSPL 99.8 dB, clean LOS, no ground clutter -> best link in the system. Route through it when the
+  ground link degrades (that is the point of a mesh, not a star).
+
+================================================================================
+CORRECTION 3  HONEST GEOTAG BUDGET (adds terms the clean model omits)
+================================================================================
+  term                                   B           C    C-strict
+  GNSS_horizontal                    0.56m       0.01m       0.01m
+  attitude                           0.23m       0.07m       0.07m
+  pixel_centroid                     0.02m       0.02m       0.02m
+  time_sync                          0.04m       0.04m       0.04m
+  EKF_lag                            0.07m       0.07m       0.07m
+  boresight_residual                 0.31m       0.21m       0.16m
+  ground_height_assumption           2.76m       0.62m       0.19m
+  target_extent_centroid             0.50m       0.50m       0.50m
+  GNSS_camera_lever_arm              0.10m       0.10m       0.10m
+  unmodelled                         1.00m       1.00m       0.70m
+  RSS_1sigma                         3.06m       1.30m       0.91m   <==
+  CEP50                              2.54m       1.08m       0.75m
+  R95                                5.29m       2.25m       1.57m
+    B  standard GNSS, calibrated, 20-frame fusion
+    C  RTK fix + dual-antenna heading, cal, 20-frame fusion
+    C-strict  as C but surveyed ground plane (terr 0.3 m)
+
+  Design targets to quote: geotag CEP50 <= 2.0 m with RTK, <= 3.5 m without.
+  Published monocular UAV geolocation results sit at a few metres, dominated by GNSS and
+  attitude - consistent with case B. Do not promise sub-metre until you have measured it.
+
+================================================================================
+CORRECTION 4  WIND, DRAG AND FORWARD-FLIGHT LIMITS
+================================================================================
+  Frontal area (tilted airframe + arms + gear) 0.075 m2, Cd 1.1
+   airspeed    drag    tilt  thrust/W   extra P
+         0m/s   0.00N    0.0deg    1.000        0W
+         5m/s   1.19N    1.4deg    1.000        8W
+         8m/s   3.04N    3.5deg    1.002       31W
+        10m/s   4.74N    5.5deg    1.005       61W
+        12m/s   6.83N    7.8deg    1.009      105W
+        15m/s  10.67N   12.2deg    1.023      206W
+        20m/s  18.97N   21.0deg    1.071      487W
+  -> attitude authority is never the wind limit (tilt stays small). The real limits are
+     (a) groundspeed loss upwind, (b) position-hold quality during the drop, (c) energy.
+    sweep time per drone in 0 m/s wind (alternating transects): 83 s vs 83 s still-air (+0%)
+    sweep time per drone in 4 m/s wind (alternating transects): 111 s vs 83 s still-air (+33%)
+    sweep time per drone in 6 m/s wind (alternating transects): 191 s vs 83 s still-air (+129%)
+    sweep time per drone in 8 m/s wind (alternating transects): N/A (cannot make headway at search speed)
+  -> fly transects PERPENDICULAR to the wind where the sub-region shape allows;
+     Coombes et al. show cross-wind sweeps beat along-wind for survey time.
+
+================================================================================
+CORRECTION 5  THERMAL AND AVIONICS POWER
+================================================================================
+  load                                              W
+  Jetson Orin Nano @ sustained inference        18.0
+  Flight controller + 2x GNSS                    4.5
+  Camera + ISP                                   3.0
+  5.8 GHz mesh radio (Tx duty)                   9.0
+  868 MHz radio                                  0.7
+  RC receiver                                    0.5
+  Servos idle/actuation average                  2.0
+  BEC / regulator losses (12%)                   4.5
+  TOTAL AVIONICS                                42.2  (assumed 55 W in the energy model -> OK)
+
+  Jetson at 18 W in still air needs a heatsink + forced airflow; in a 3.5 m/s propwash
+  column it is fine, but the 5-minute setup happens ON THE GROUND with props stopped.
+  Boot + model load + idle for 3 min at ambient 35 C is the worst thermal case, not flight.
+  -> fit a small blower on the compute bay, active from power-on. Verify in P5.
+
+================================================================================
+CORRECTION 6  SETUP TIME BUDGET vs THE 5-MINUTE RULE
+================================================================================
+  step                                                          s  cum(serial)
+  Aircraft out of case, battery in, power on (x3, serialised)   60          60
+  FC boot + IMU/EKF init                                       25          85
+  Companion boot (Linux + ROS 2 + model load)                  75         160
+  Mesh association, 3 nodes + GCS                              20         180
+  GNSS cold->3D fix (assisted almanac cached)                  45         225
+  RTK float -> fix (local base already surveyed & running)     60         285
+  Payload magazines loaded and locked (x3)                     45         330
+  Mission file received, parsed, partitioned, rendered on GCS   30         360
+  Pre-arm checks pass, operator confirm, arm                   20         380
+
+  Fully serial: 380 s = 6.3 min -> EXCEEDS the 300 s window.
+  With parallelism (2 people; boot, GNSS/RTK and magazine loading overlapped): ~285 s = 4.8 min
+  Margin against the 300 s rule: 15 s (5%)
+
+  The single biggest lever is RTK convergence and companion boot. Mitigations:
+   1. Survey and start the RTK base BEFORE the window opens (it is ground equipment).
+   2. Pre-load the TensorRT engine into a warm cache; do not JIT-build at boot.
+   3. Cache the GNSS almanac (hot start) - saves 30-40 s over a true cold start.
+   4. Ask the organisers whether power-on may precede the window (question 6 in the plan).
+   5. Measure all of these on real hardware in Phase 5. These are estimates, not data.
