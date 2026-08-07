@@ -29,7 +29,7 @@ Everything after "start" is autonomous. The operator may load the mission file, 
 
 The system has been sized end-to-end. These are not targets — they are the outputs of a closed engineering model ([`docs/sizing/`](docs/sizing/)).
 
-> **Open configuration questions.** A trade study of quad vs hex vs coaxial, and a review of which constraints actually bind, is in [`docs/sizing/configuration-trade.md`](docs/sizing/configuration-trade.md). Headline: coaxial is ruled out (~30 % hover-power penalty for no footprint gain); hex 6×18″ is the redundancy option of record; and the two constraints that genuinely bind are **wind penetration** and **detection recall**, neither of which is a stated requirement yet. Those are recommendations — the design point below is unchanged.
+> **Configuration decision and constraint review** — [`docs/sizing/configuration-trade.md`](docs/sizing/configuration-trade.md). **Coaxial is rejected**: sized to the reserve policy it costs +61–84 % hover power and +26–34 % fleet mass, and has the worst attitude bandwidth of any option. **Stay quad** — 4 arms protects setup, the only constraint under 20 % margin. **Prop diameter provisionally 18 in** (lower gust sensitivity and 38 % less rotor inertia), arms designed to accept 16–20 in and confirmed on a bench in P5. Three constraints bind and none is a stated requirement yet: **VRS on descent** (the current 2.5 m/s sits on the onset boundary — a flight-profile fix, not a hardware one), **wind penetration**, and **detection recall**. The design point below is unchanged until those are adopted.
 
 | Parameter | Value |
 |---|---|

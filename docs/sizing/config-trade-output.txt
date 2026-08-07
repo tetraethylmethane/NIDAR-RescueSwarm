@@ -1,47 +1,109 @@
-﻿====================================================================================
-CONFIGURATION TRADE  -  quad vs hex vs octo vs coaxial X8
-====================================================================================
-  Pack held constant at 194 Wh (966 g) for every config,
-  so endurance differs only through hover power.
+﻿================================================================================================
+SECTION 1  CONFIGS SIZED TO THE RESERVE POLICY (battery spiral included)
+================================================================================================
+config                       pack   MTOW   fleet   cap   P_hov     DL   foot  /box      dP   dmass
+                               Wh     kg      kg  25kg       W  kg/m2     mm       vs quad vs quad
+------------------------------------------------------------------------------------------------
+Quad  4x20"  (current)        194   5.06   15.18    OK     603   6.24   1046     3   +0.0%   +0.0%
+Quad  4x18"                   221   5.18   15.54    OK     685   7.89    944     3  +13.7%   +2.4%
+Quad  4x16"                   264   5.45   16.34    OK     820  10.50    843     4  +36.0%   +7.6%
+Hex   6x18"                   173   4.95   14.84    OK     535   5.02   1432     2  -11.2%   -2.2%
+Hex   6x16"                   195   5.01   15.04    OK     606   6.44   1279     2   +0.6%   -0.9%
+Octo  8x14"  (flat)           191   4.96   14.89    OK     592   6.25   1363     2   -1.7%   -1.9%
+X8 coax 4x2x20" k=.85         313   6.40   19.19    OK     971   7.89   1046     3  +61.1%  +26.4%
+X8 coax 4x2x20" k=.80         358   6.76   20.27    OK    1111   8.33   1046     3  +84.4%  +33.5%
+X8 coax 4x2x18" k=.80         427   7.12   21.36    OK    1325  10.84    944     3 +119.8%  +40.7%
+X8 coax 4x2x22" k=.80         322   6.68   20.05    OK     999   6.81   1148     3  +65.8%  +32.1%
 
-config                         MTOW   fleet   P_hov      DL   hover    foot  /box      dP
-                                 kg      kg       W   kg/m2     min      mm       vs quad
-------------------------------------------------------------------------------------
-Quad  4x20"  (current)         5.05   15.16     601    6.23    15.5    1046     3   +0.0%
-Hex   6x16"                    5.00   14.99     603    6.42    15.5    1279     2   +0.3%
-Hex   6x18"                    5.11   15.34     560    5.19    16.7    1432     2   -7.0%
-Octo  8x14"  (flat)            4.98   14.94     595    6.27    15.7    1363     2   -1.0%
-X8 coax 4x2x20"  k=0.85        5.45   16.34     775    6.72    12.0    1046     3  +28.8%
-X8 coax 4x2x20"  k=0.80        5.45   16.34     819    6.72    11.4    1046     3  +36.3%
-X8 coax 4x2x22"  k=0.80        5.66   16.98     791    5.77    11.8    1148     3  +31.5%
+  Every config lands at exactly 15.5 min hover / 2.00x mission, because the
+  2x-endurance rule -- not the energy rule -- is what binds. Pack size is
+  therefore proportional to hover power, and a power penalty compounds:
+  more battery -> more mass -> more power. That is the coaxial story.
 
-  k = coaxial interference factor on figure of merit. Published multirotor
-  coaxial pairs sit around 0.80-0.87; 0.80/0.85 brackets the plausible range.
-  /box = airframes that fit per row in the 12 ft (3.66 m) launch box.
+  COAXIAL VERDICT: +61 to +84% hover power and +26 to +34% fleet mass,
+  eating the 39% mass margin down to ~19%. It buys NO footprint back --
+  stacking rotors does not shorten the arms, so the X8 footprint equals
+  the quad it replaces. Coaxial pays only when rotors must shrink to fit
+  a box; the quad already fits 3 per row. Rejected at every kappa.
 
-  READING: coaxial costs ~30% hover power and buys NO footprint back,
-  because stacking rotors does not shorten the arms. The X8 footprint is
-  identical to the quad it replaces. Coaxial pays only when you are forced
-  to shrink rotors to fit a box -- and the quad already fits 3 per row.
+================================================================================================
+SECTION 2  FLIGHT DYNAMICS  -  what steady-state momentum theory misses
+================================================================================================
+config                        v_i     VRS window  desc@2.5  gust dT/W  J_rotor
+                              m/s            m/s     x v_i    per m/s      rel
+------------------------------------------------------------------------------------------------
+Quad  4x20"  (current)       5.16      2.6 - 7.7      0.48      0.194     1.00
+Quad  4x18"                  5.80      2.9 - 8.7      0.43      0.172     0.62
+Quad  4x16"                  6.69     3.3 - 10.0      0.37      0.149     0.37
+Hex   6x18"                  4.63      2.3 - 6.9      0.54      0.216     0.93  <-- IN VRS
+Hex   6x16"                  5.24      2.6 - 7.9      0.48      0.191     0.55
+Octo  8x14"  (flat)          5.16      2.6 - 7.7      0.48      0.194     0.40
+X8 coax 4x2x20" k=.85        5.80      2.9 - 8.7      0.43      0.172     2.00
+X8 coax 4x2x20" k=.80        5.96      3.0 - 8.9      0.42      0.168     2.00
+X8 coax 4x2x18" k=.80        6.80     3.4 - 10.2      0.37      0.147     1.24
+X8 coax 4x2x22" k=.80        5.39      2.7 - 8.1      0.46      0.186     3.07
 
-  Hex 6x18" is the one config that beats the quad on physics: 6 disks of
-  18 in give 0.985 m2 against the quad's 0.811 m2, so power and disk loading
-  both improve. Its cost is footprint, assembly and preflight time -- which
-  land on setup, the only constraint with less than 20% margin.
+  v_i        hover induced velocity, sqrt(DL*g/2rho)
+  VRS        vertical descent band where vortex ring state develops.
+             Onset is conventionally taken at 0.25-0.5 v_i, worst near 0.7-1.0.
+  desc@2.5   the model's 2.5 m/s descent rate as a fraction of v_i
+  gust dT/W  vertical gust sensitivity = 1/v_i exactly (from T = 2 rho A v_i^2,
+             dT/dV at V=0 is 2 rho A v_i, normalised by W). A 1 m/s vertical
+             gust perturbs thrust by this fraction of weight, open loop.
+             LOW disk loading = MORE gust sensitive. Not a virtue here.
+  J_rotor    total rotor inertia proxy, sum(m_prop * R^2), vs current quad.
+             Higher = slower thrust response = lower attitude bandwidth.
+             PROXY ONLY. Response time scales steeply with diameter
+             (tau ~ D^3.5 at fixed aircraft power); needs bench measurement.
 
-====================================================================================
-THRUST-TO-WEIGHT SWEEP  -  what the fleet mass margin would buy
-====================================================================================
-   T/W    MTOW   fleet   margin   P_hov   hover  hov thr
+================================================================================================
+SECTION 3  BLADE STALL / ADVANCE RATIO
+================================================================================================
+  Tip speed from T = C_T rho A (omega R)^2 with C_T = 0.012 (assumed).
+  Retreating-blade effects appear above advance ratio mu ~ 0.30.
+
+config                       v_tip   mu @8  mu @12  mu @16  mu @20
+------------------------------------------------------------------------------------------------
+Quad  4x20"  (current)        66.6    0.12    0.18    0.24    0.30
+Quad  4x18"                   74.9    0.11    0.16    0.21    0.27
+Quad  4x16"                   86.4    0.09    0.14    0.19    0.23
+
+  READING: blade stall is NOT a limit at search (8 m/s) or transit (12 m/s)
+  speed -- mu stays near 0.2. But mu approaches 0.30 around 20 m/s, so if
+  search airspeed is raised for wind penetration, validate it rather than
+  assuming the drag-only model of CORRECTION 4 still holds.
+
+================================================================================================
+SECTION 4  VRS-SAFE DESCENT PROFILE  (current quad, v_i = 5.16 m/s)
+================================================================================================
+  descent rate   x v_i                   verdict   54 m takes  vs 2.5 m/s
+------------------------------------------------------------------------------------------------
+       1.00 m/s    0.19                      safe       54.0 s      +32.4 s
+       1.25 m/s    0.24                      safe       43.2 s      +21.6 s
+       1.50 m/s    0.29                  marginal       36.0 s      +14.4 s
+       2.00 m/s    0.39                  marginal       27.0 s       +5.4 s
+       2.50 m/s    0.48                  marginal       21.6 s       +0.0 s
+       3.00 m/s    0.58                  VRS RISK       18.0 s       -3.6 s
+
+  Nulled-groundspeed descent is near-vertical, which is exactly the
+  condition VRS needs. Two fixes, both nearly free against a 74% time margin:
+    (a) descend at <= 1.25 m/s (0.25 v_i) -- costs +21.6 s per drop, or
+        ~+72 s per aircraft over 3.3 drops, on a 7.7 of 30 min mission;
+    (b) keep horizontal speed >= v_i (5.2 m/s) through the descent and
+        decelerate to hover at the 6 m drop altitude -- costs nothing.
+  (b) is preferred: it also cuts exposure time in the gust-sensitive regime.
+
+================================================================================================
+SECTION 5  THRUST-TO-WEIGHT SWEEP  -  what the mass margin would buy
+================================================================================================
+   T/W    MTOW   fleet   margin   P_hov    pack  hov thr
 --------------------------------------------------------
-   2.0    5.05   15.16     9.84     601    15.5      50%
-   2.2    5.16   15.49     9.51     620    15.1      45%
-   2.5    5.34   16.02     8.98     649    14.4      40%
-   2.8    5.53   16.59     8.41     681    13.7      36%
-   3.0    5.66   16.99     8.01     703    13.3      33%
-   3.5    6.03   18.08     6.92     767    12.2      29%
+   2.0    5.06   15.18     9.82     603    194W      50%
+   2.2    5.26   15.77     9.23     635    204W      45%
+   2.5    5.59   16.76     8.24     690    222W      40%
+   2.8    5.97   17.91     7.09     757    244W      36%
+   3.0    6.27   18.80     6.20     810    261W      33%
 
   READING: do not spend margin here. CORRECTION 4 of the main model shows
   tilt reaches only 12.2 deg at 15 m/s airspeed (thrust factor 1.023), so
-  attitude authority is never the wind limit. Raising T/W to 2.5 costs
-  1.1 min of endurance and buys almost nothing.
+  attitude authority is never the wind limit. Keep T/W 2.0.
