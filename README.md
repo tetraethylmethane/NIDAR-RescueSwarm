@@ -140,7 +140,7 @@ Full breakdown in [rulebook compliance](docs/requirements/rulebook-compliance.md
 | Rotor count | **Stay quad — provisional, low confidence** | Hex 6×18″ is out on flight dynamics (inside the VRS window, most gust-sensitive). But hex 6×16″ and octo 8×14″ match the quad on disk loading, VRS and gust while having 2–2.5× better rotor bandwidth and motor-out survivability — on physics, octo is arguably the better aircraft. Staying quad rests on assembly cost we have asserted but **not measured**. Extend the P1 cold-boot bench to time a 4-arm against a 6-arm frame, then decide. |
 | Prop diameter | **18 in, provisional** | Less rotor inertia, lower gust sensitivity. Design arms for 16–20 in and settle it on a bench in P5. |
 | Thrust-to-weight | **Keep 2.0** | Tilt only reaches 12° at 15 m/s — attitude authority is never the wind limit. |
-| Motor-out redundancy | **Parachute, not rotors** | Covers more failure modes and adds nothing to unfold. |
+| Motor-out redundancy | **Reopened** | The parachute route assumed a ballistic unit, and organisers have ruled out any blast in the air. Only spring/drogue canopies remain — heavier, slower, less reliable low down. Rotor redundancy is now the stronger option, which makes the rotor-count question above more consequential. |
 
 Reasoning and numbers in [configuration trade](docs/sizing/configuration-trade.md).
 
@@ -152,26 +152,32 @@ Reasoning and numbers in [configuration trade](docs/sizing/configuration-trade.m
 |:--|:--|:--|
 | **Setup margin** | 15 seconds against a 5-minute rule — and modelled, not measured | Bench test in P1 |
 | **VRS on every delivery** | The 2.5 m/s descent sits at 0.48 v_i, on the vortex-ring onset boundary, and a nulled-groundspeed descent is exactly what triggers it | Fix in the flight profile, not the airframe |
-| **Wind cliff at 8 m/s** | Search groundspeed is 8 m/s, so at that windspeed the aircraft can't make headway at all | No requirement forbids it yet |
+| **Wind cliff at 8 m/s** | Search groundspeed is 8 m/s, so at that windspeed the aircraft can't make headway at all. Organisers confirm wind is **natural and uncapped** — nothing protects us | Now a requirement: 10 m/s headway (SYS-37) |
 | **Business strategy** | 200 points, barely started — sponsorship evidence can't be produced in the final week | Start now |
 
 ---
 
 ## 6. Open questions
 
-For the organisers, in priority order:
+### 6.1 Answered
+
+| Question | Answer | What it changed |
+|:--|:--|:--|
+| Maximum wind? | **None — natural, not induced** | The 8 m/s cliff is now a real risk with no rule protecting us. 10 m/s headway becomes a requirement (SYS-37). |
+| Delivery datum? | **Measured from the survivor; land on it ideally** | Aim at the torso centroid. Errors compound as budgeted. |
+| Local RTK base? | **Permitted** | Worth 82 delivery points. Now a committed BOM item. |
+| Ballistic parachute? | **No blast of any kind in the air** | Rules out pyrotechnic/CO₂ chutes — weakens the parachute route, strengthens rotor redundancy. |
+| Boundary format? | **KML file** | Parser requirement (SYS-38). Watch the `lon,lat` ordering. |
+| Survivors? | **Human-looking dummies** | Fine-tune on dummies, not people — HERIDAL/SARD are real humans (SYS-39). |
+| Pre-boot onboard computers? | **No** | Budget already assumed this, so 285 s stands — but a mitigation is gone. |
+| Video feeds? | **One per drone** (rule 8.14) | Free — three 480p15 feeds cost what one 720p30 did. |
+
+### 6.2 Still open
 
 | # | Question | Why it matters |
 |:--|:--|:--|
-| 1 | What point on the survivor is the delivery datum? | A prone adult is 1.7 m long, so head vs torso differs by up to 0.85 m against a 1 m Zone A. Worth ~18 points, free to fix if known. |
-| 2 | May the RTK base be surveyed and started before the setup window? | It's ground equipment, and setup has 15 s of margin. |
-| 3 | Is pre-booting the onboard computers allowed? | Same 15 s of margin. |
-| 4 | Real people, dummies, or both — in what postures and cover? | Drives the training dataset. |
-| 5 | Boundary polygon format and shape? | Drives the mission-file parser. |
-| 6 | Is a ballistic parachute permitted? Is motor-out tolerance separately required? | Decides the redundancy mechanism. |
-| 7 | Is there a maximum wind the mission runs in? | Decides whether the 8 m/s cliff matters. |
-
-**Already answered:** delivery is measured from the survivor · a local RTK base is permitted · scoring weights (§3) · every drone needs its own live feed.
+| 1 | May the **RTK base** be positioned, surveyed and started *before* the setup window, as ground equipment under rule 4.34? | The only structural relief left on a 15 s setup margin, now that pre-booting is refused. Elaboration drafted in [rulebook compliance](docs/requirements/rulebook-compliance.md) §6.7. |
+| 2 | Is **motor-out tolerance** separately required, and would a **non-pyrotechnic** canopy be accepted? | Decides redundancy now that ballistic chutes are out. |
 
 ---
 

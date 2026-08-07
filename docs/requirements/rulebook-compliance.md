@@ -269,26 +269,171 @@ fix if known, and unfixable on the day if not.**
 
 **Answered — closed:**
 
-- ~~Scoring weights across mission time, detection, delivery, autonomy~~ → §1.
-- ~~Automatic switching of a single video feed, or all feeds simultaneously?~~ →
-  8.14 requires a feed from **each** drone; costs nothing (§4.1).
-- ~~Is delivery measured from the true survivor position or the tagged position?~~
-  → **from the survivor** (§4.3). Errors compound; budget unchanged.
-- ~~Is a team-owned local RTK base station permitted?~~ → **yes** (§4.4). Case C
-  is reachable; RTK hardware becomes a committed BOM item.
+| Question | Answer | Consequence |
+|---|---|---|
+| Scoring weights | Rulebook §9 | §1 above |
+| One switched video feed or all? | Feed from **each** drone (8.14) | Free — §4.1 |
+| Delivery measured from tag or survivor? | **From the survivor** | Errors compound — §4.3 |
+| Local RTK base permitted? | **Yes** | Case C reachable — §4.4 |
+| Maximum wind? | **None. Wind is natural, not induced.** | No cap to design to, and no guarantee of calm — §6.1 |
+| Ballistic parachute? | **No blast of any kind in the air** | Pyrotechnic/CO₂ deployment ruled out — §6.2 |
+| Boundary polygon format? | **KML file** | Parser requirement — §6.3 |
+| Survivors — real or dummies? | **Human-looking dummies** | Dataset domain shift — §6.4 |
+| Pre-booting onboard computers? | **No** | Removes a setup mitigation — §6.5 |
+| Delivery datum on the survivor? | **"On the survivor, ideally"** | Aim at torso centroid — §6.6 |
 
-**Still open, in priority order:**
+**Still open:**
 
-1. **What point on the survivor is the delivery datum** — marked point, torso
-   centre, or nearest part of the body? Up to 0.85 m of ambiguity against a 1 m
-   Zone A (§4.5). Cheap to design for if known, unfixable on the day if not.
-2. **May the RTK base be surveyed and started before the 5-minute window opens**,
-   as ground equipment? (§4.4 — the setup budget has 15 s of margin.)
-3. Is **pre-booting** of onboard computers permitted before the window opens?
-4. Will survivors be **real humans, dummies, or both** — in what postures, clothing
-   and degree of cover? (Drives the P7 dataset; brief says "real humans or dummies".)
-5. What **shape, aspect ratio and file format** should the boundary polygon be?
-6. Is a **ballistic parachute** permitted, and is motor-out tolerance separately
-   required? (See `../sizing/configuration-trade.md` §5.4.)
-7. Is there a **maximum wind** condition under which the mission runs?
-   (See `../sizing/configuration-trade.md` §5.2.)
+1. **May the RTK base be surveyed and started before the setup window opens?**
+   Organisers asked us to elaborate — question drafted at §6.7. This is now the
+   *only* remaining structural relief on the setup budget, because pre-booting has
+   been refused.
+
+---
+
+## 6. Second round of answers
+
+### 6.1 Wind: natural, uncapped
+
+There is **no maximum wind** and no artificial wind. The mission runs in whatever
+weather occurs.
+
+This makes `../sizing/configuration-trade.md` §5.2 a **requirement, not a
+suggestion**. Search groundspeed is 8 m/s, so at 8 m/s of natural wind the
+aircraft cannot make headway at all and the mission fails outright. Nothing in the
+rules protects us from that.
+
+**PROPOSED SYS-37:** the aircraft shall retain positive headway at a sustained
+wind of **10 m/s**, sizing search *airspeed* accordingly while flying 8 m/s
+*groundspeed* nominally. Penetrating at 12 m/s costs 105 W of a 603 W hover draw —
+the power is available; the requirement simply has to be written down.
+
+Finals are in January, when much of India is comparatively calm, so the *expected*
+case is benign. That is luck, not design margin.
+
+### 6.2 Parachutes: my question was misread, and the answer rules out the usual hardware
+
+Two different things got conflated, and both answers matter:
+
+**(a) Aircraft recovery parachute** — what I actually asked about, for motor-out
+safety. The answer "no blast of any kind in the air" **rules out essentially every
+ballistic parachute on the market**, since they deploy by pyrotechnic charge or CO₂
+cartridge. Only spring-ejected or drogue-deployed canopies remain, and those are
+heavier, slower to deploy and less reliable at low altitude.
+
+**This materially weakens the redundancy recommendation in
+`../sizing/configuration-trade.md` §5.4**, which assumed a ~300 g ballistic unit.
+Rotor redundancy — hex or octo — becomes relatively more attractive, which
+connects directly to the open rotor-count question at §2.3 of that document.
+
+**(b) Parachuting the kit** — what the organisers answered, warning it would drift
+badly in wind. **They are right, and it is not our design.** The kit is a
+free-fall ballistic drop from 6 m:
+
+| Delivery method | Fall time | Drift at 3 m/s wind |
+|---|---|---|
+| **Free fall from 6 m (our design)** | 1.11 s | **0.34 m** |
+| Parachute descent at ~4 m/s | ~1.5 s | ~4 m+ |
+
+A parachuted kit would land outside Zone C in almost any wind. The hover-and-drop
+design already avoids this, and the organisers' warning confirms the choice.
+
+### 6.3 Boundary: KML
+
+The mission boundary arrives as a **KML file** during the setup window.
+
+**PROPOSED SYS-38:** the GCS shall parse a KML polygon and partition it without
+operator editing, within the setup budget's 30 s allowance.
+
+Two implementation notes worth writing down now, because both are classic sources
+of silent failure:
+
+- **KML coordinates are `longitude,latitude[,altitude]`** — longitude first. The
+  reversed convention is the single most common KML bug.
+- KML is WGS84 by definition; confirm the datum matches the RTK solution.
+
+Test against a real KML export before the finals, not a hand-written one.
+
+### 6.4 Survivors: human-looking dummies
+
+Confirmed as **human-looking dummies**, not live people. Postures and cover were
+not specified — assume varied and plan for the worst.
+
+This is a **domain-shift risk for perception**. HERIDAL and SARD are imagery of
+real humans; the competition targets are mannequins, which differ in texture,
+thermal signature, pose realism and material reflectance.
+
+**PROPOSED SYS-39:** the fine-tuning dataset shall consist principally of imagery
+of **human-looking dummies** at operational altitude, not live people. Pre-train on
+HERIDAL/SARD, then fine-tune on dummies.
+
+This is fortunate for logistics — dummies can be left in a field for hours, in any
+posture, in any weather.
+
+### 6.5 No pre-booting
+
+Onboard computers **may not be booted before the setup window**.
+
+The setup budget was already built this way — "aircraft out of case, battery in,
+power on (×3, serialised)" sits inside the window — so **the 285 s figure and its
+15 s of margin are unchanged**. What is lost is a mitigation: the sizing model
+listed "ask whether power-on may precede the window" as one of five ways to buy
+margin. That one is now closed.
+
+Remaining mitigations, in order of value:
+
+1. **Get the RTK base running early** (§6.7) — worth up to 60 s, and now the only
+   structural relief left.
+2. **Pre-load the TensorRT engine into a warm cache**; never JIT-build at boot.
+3. **Cache the GNSS almanac** for a hot start — saves 30–40 s over a cold start.
+4. **Cut companion boot time** (75 s) — the single largest software line.
+
+Companion boot and GNSS/RTK convergence together account for 180 s of a 285 s
+budget. **They are the setup problem.**
+
+### 6.6 Delivery datum: "on the survivor, ideally"
+
+The kit should land **on the survivor**. This resolves the aim point: target the
+**torso centroid** of the detected dummy, which is what a detector's bounding-box
+centre naturally gives.
+
+It does not fully resolve whether scoring measures from the dummy's centre or its
+nearest part — but aiming at the centroid is correct under either reading, and the
+0.50 m target-extent term in the error budget covers the residual. **No change to
+SYS-15.**
+
+One consequence to note: a 200 g kit falling 6 m arrives at ~9.7 m/s carrying
+about 9.4 J. That is harmless to a mannequin and would not be harmless to a person.
+Since the targets are confirmed dummies this is fine, but **the aim-at-the-body
+rule must never be carried over to a live-subject trial** without revisiting the
+release altitude.
+
+### 6.7 RTK base station — the elaboration requested
+
+*Draft text for the organisers:*
+
+> Our system uses a team-owned RTK base station to improve survivor geotagging
+> accuracy. This is **ground equipment** — a GNSS receiver on a surveyed tripod
+> beside the ground control station, connected to our own local radio link. It
+> does not fly, is not carried by any drone, and uses no external network: the
+> corrections travel only over our own equipment.
+>
+> Before it can supply corrections, the base must self-survey its own position,
+> which takes several minutes of continuous observation. If that must happen
+> inside the 5-minute setup window, it consumes most of the window on its own.
+>
+> **Question:** may the RTK base station be positioned, surveyed and left running
+> *before* the setup window begins — in the same way the Ground Control Station
+> and its antennas are positioned under rule 4.34 — given that it is ground
+> equipment rather than part of the drone system?
+>
+> We are not asking to pre-boot any onboard computer. All three aircraft would
+> remain unpowered until the window opens.
+
+**Why this matters:** rule 4.34 requires the C2 station and "all associated
+equipment such as antennas, displays, computers" to be *positioned* in the
+designated area, and does not place that inside the 5-minute window — 4.36 applies
+the window to setup. Mission brief §6 covers "drones, payloads, communication
+systems, and associated equipment" during setup, which is where the ambiguity
+lies. The distinction we are drawing is between **ground infrastructure** and
+**the drone system**.

@@ -44,6 +44,10 @@ here explicitly because they were quoted in the README and in the sizing documen
 | SYS-33 | Geotag only detections within ≤ 20° off-nadir; edge detections re-acquired near nadir | derived (4D-1) | A + T | P7 |
 | SYS-34 | Field ground elevation surveyed or measured during setup; ground-plane assumption error ≤ 1.0 m | derived (4D-1) | T | P7 |
 | SYS-35 | **[SCORED 50]** Complete the mission within 15 min (half the permitted 30) | 4D-5 | D | P9 |
+| SYS-37 | Retain positive headway at **10 m/s sustained wind**; size search *airspeed* for it while flying 8 m/s *groundspeed* nominally | derived — wind is natural and uncapped | T | P6 |
+| SYS-38 | Parse a **KML** boundary polygon and partition it without operator editing, inside the 30 s setup allowance | organiser answer | T | P4 |
+| SYS-39 | Fine-tune the detector principally on imagery of **human-looking dummies** at operational altitude, not live people | organiser answer | T | P7 |
+| SYS-40 | Kit delivered by **free-fall from 6 m**, not under a canopy | derived (4D-2) | T | P8 |
 
 ## 3. Autonomy and control
 

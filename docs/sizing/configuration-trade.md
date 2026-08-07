@@ -248,9 +248,14 @@ groundspeed *is* 8 m/s. That is total mission failure at ordinary flood weather,
 and no requirement currently forbids it. It is not a power problem — penetrating
 at 12 m/s costs 105 W against a 603 W hover draw.
 
-**PROPOSED:** state a maximum sustained wind requirement (suggest **10 m/s**),
-size search *airspeed* to retain headway at it while flying 8 m/s *groundspeed*
-nominally, and validate the high-speed end against §4.
+> **Confirmed by the organisers: wind is natural and uncapped.** There is no
+> maximum condition and no artificial wind — the mission runs in whatever weather
+> occurs, and nothing in the rules protects us from the 8 m/s cliff.
+
+**REQUIRED, not proposed** — now **SYS-37**: retain positive headway at **10 m/s**
+sustained wind, sizing search *airspeed* for it while flying 8 m/s *groundspeed*
+nominally, and validate the high-speed end against §4. The finals fall in January,
+when much of India is comparatively calm — but that is luck, not design margin.
 
 ### 5.3 Search altitude should be an output, not an input
 
@@ -291,15 +296,26 @@ time margin. The real case is **safety**: a 5 kg airframe losing a motor at 60 m
 over a field that may contain people.
 
 Hex and octo buy that at the cost of two or four more arms to unfold and check —
-a cost this study asserts but has **not measured** (§2.3). A **~300 g ballistic
-parachute** costs 0.9 kg of a 9.8 kg fleet margin, adds no arms, and covers
-structural, battery and flight-controller failures that extra rotors do not.
+a cost this study asserts but has **not measured** (§2.3).
 
-**PROPOSED:** parachute as the redundancy mechanism; ask the organisers whether it
-is permitted, and whether motor-out tolerance is separately required. Note the two
-options are not exclusive, and that if the P1 bench test shows extra arms cost
-little setup time, octo 8×14″ becomes attractive on its own merits (§2.3) and this
-trade should be re-opened rather than settled by the parachute.
+> **⚠ The parachute route is now largely closed.** The organisers have ruled that
+> there must be **no blast of any kind in the air**, which excludes essentially
+> every ballistic parachute on the market — they deploy by pyrotechnic charge or
+> CO₂ cartridge. Only spring-ejected or drogue canopies remain: heavier, slower,
+> and less reliable at the low altitudes where a motor-out actually happens.
+>
+> The ~300 g figure this section was built on assumed a ballistic unit and no
+> longer holds.
+
+**REVISED:** rotor redundancy is now the stronger of the two options, not the
+weaker. That makes the open question at §2.3 more consequential than it looked:
+octo 8×14″ already matches the quad on disk loading, VRS margin and gust
+sensitivity, beats it 2.5× on rotor bandwidth, and survives a motor failure. If
+the P1 bench test shows extra arms cost little setup time, **octo 8×14″ becomes the
+leading candidate** rather than a rejected one.
+
+Still worth asking the organisers whether motor-out tolerance is separately
+required, and whether a **non-pyrotechnic** canopy would be accepted.
 
 ### 5.5 Open risk: quad yaw authority
 
