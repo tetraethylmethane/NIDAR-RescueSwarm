@@ -1,26 +1,382 @@
 # NIDAR RescueSwarm
 
-> An autonomous multi-drone system for rapid flood survivor search, localization, and emergency aid delivery.
+> An autonomous multi-drone system for rapid flood survivor search, localization, and emergency aid delivery — built for communication-denied environments, and built in India.
+
+<p align="center">
+  <img src="docs/images/system-overview.png" width="900" alt="System Overview">
+</p>
+
+<p align="center">
+  <b>NIDAR 2.0 (2026–27) · Track 1: Drone Innovation</b><br>
+  MeitY · Drone Federation of India · SwaYaan Initiative
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/fleet-3%20aircraft-informational" alt="fleet">
+  <img src="https://img.shields.io/badge/fleet%20mass-17.8%20%2F%2025%20kg-success" alt="mass">
+  <img src="https://img.shields.io/badge/mission-7.7%20%2F%2030%20min-success" alt="mission time">
+  <img src="https://img.shields.io/badge/indigenous%20suppliers-95.5%25-orange" alt="indigenisation">
+  <img src="https://img.shields.io/badge/status-Phase%200%20%C2%B7%20requirements-blue" alt="status">
+</p>
 
 ---
 
 ## Overview
 
-RescueSwarm is a coordinated fleet of autonomous drones designed for disaster response in communication-denied environments. The system collaboratively searches flood-affected areas, detects stranded survivors, geotags their locations, delivers emergency medical kits, and reports the entire mission to a single operator.
+RescueSwarm is a coordinated fleet of three autonomous drones designed for disaster response where no external network exists. The system collaboratively searches a flood-affected area, detects stranded survivors, geotags their positions, delivers emergency medical kits, and reports the entire mission through a single operator interface.
 
-<p align="center">
-  <img src="docs/images/system-overview.png" width="900" alt="System Overview">
-</p>
+Everything after "start" is autonomous. The operator may load the mission file, press start, and abort or recall. Nothing else.
+
+---
+
+## Design Point
+
+The system has been sized end-to-end. These are not targets — they are the outputs of a closed engineering model ([`docs/sizing/`](docs/sizing/)).
+
+| Parameter | Value |
+|---|---|
+| Fleet | **3 aircraft**, identical |
+| Configuration | Quadrotor · 18 × 6.1 in CF folding props · 6S3P 21700 Li-ion |
+| MTOW per aircraft | **5.93 kg** (4 kits loaded) |
+| **Fleet all-up weight** | **17.8 kg** vs 25 kg limit → **29 % margin** |
+| Battery | 18 cells, ~1.45 kg, **292 Wh**, 13.5 Ah, 21.6 V nominal |
+| Hover power | ~810 W · disk loading 6.5 kg/m² |
+| Hover endurance | **~17.5 min** at 80 % DoD |
+| Design mission | **7.7 min** — 26 % of the 30 min allowance |
+| Thrust-to-weight | 2.8 static · hover at ~35 % of max thrust |
+| Search altitude / speed | 60 m AGL / 8 m/s **groundspeed** |
+| Ground sample distance | 1.82 cm/px → a person is ~93 px long |
+| Sweep time (10 ha, 3 drones) | ~93 s per drone including turns |
+| Geotag accuracy target | CEP50 ≤ 2.0 m with RTK · ≤ 3.5 m without |
+| Delivery accuracy target | ≤ 3 m CEP from a 6 m hover-and-drop |
+| Link margin | ≥ 13 dB at 600 m · offered load 2.5 Mbps |
+
+---
+
+## Five Findings That Shaped the Design
+
+**1. The mission is not coverage-limited.** Three drones sweep 10 ha in about three minutes against a 30-minute ceiling. Coverage is the problem everyone optimises and nobody is constrained by. The real constraints, in order, are detection recall, delivery time, deconfliction, and setup.
+
+**2. The 5-minute setup window is the only tight constraint in the system.** Modelled boot-to-launch is ~285 s with two people working in parallel — **15 seconds of margin**. Everything else has 25–55 % reserve. Cold-boot timing is the highest-priority measurement in the programme.
+
+**3. Release velocity dominates drop accuracy, not altitude.** 1 m/s of residual groundspeed costs 1.06 m of miss; 2 m of altitude error costs 7 cm. A multirotor can null its groundspeed — a fixed-wing cannot. Hence: hover at 6 m, gate release below 0.3 m/s, accept 12 extra seconds per drop.
+
+**4. The ground-height assumption is the largest geotag error term without RTK** — 2.76 m, bigger than GNSS itself, because a height error scales the projection ray by 37 m at frame edge. Systematic terms do not average out across frames. **Calibrate first, then fuse.**
+
+**5. Hold constant groundspeed, not airspeed.** At 6 m/s wind, constant-airspeed sweeps take 191 s instead of 83 s. Constant groundspeed makes sweep time wind-independent for 8 % more energy — and keeps motion blur constant, which matters for detection.
 
 ---
 
 ## Mission Flow
 
 ```text
-Launch
+Launch (sequenced, one aircraft at a time)
    │
    ▼
-Load Mission Boundary
+Load Mission Boundary ──► DARP equal-area partition
+   │
+   ▼
+Climb to 60 m · altitude-stratified per aircraft
+   │
+   ▼
+Parallel Boustrophedon Sweep  ◄── constant groundspeed, wind-compensated
+   │
+   ▼
+Detect Survivor ──► candidate
+   │
+   ▼
+Confirm (≥3 frames or 2 agents) ──► confirmed survivor
+   │
+   ▼
+Geotag ──► ray–ground intersection + multi-frame fusion
+   │
+   ▼
+CBBA Auction ──► delivery task assigned to one drone
+   │
+   ▼
+Transit · Descend to 6 m · Null groundspeed · Release
+   │
+   ▼
+Next task, or Return to Home
+   │
+   ▼
+Sequenced Recovery into the 3.66 m box
+```
+
+Search and delivery **overlap**. Drones do not wait for the sweep to finish before beginning deliveries.
+
+---
+
+## System Architecture
+
+<p align="center">
+  <img src="docs/images/architecture.png" width="900" alt="Architecture">
+</p>
+
+```
+                    Ground Control Station
+                    (read-only + abort/recall)
+                              │
+                    5.8 GHz mesh  ·  868 MHz safety link
+                              │
+        ┌─────────────────────┼─────────────────────┐
+        │                     │                     │
+     Drone A               Drone B               Drone C
+        │                     │                     │
+        └───── batman-adv mesh · replicated state ──┘
+                  Search • Detect • Deliver
+```
+
+**The GCS is a view, not a controller.** Rules §3 and §4 make any GCS-originated retasking a manual intervention, so the ground station is built read-only by construction — the violation is structurally impossible, not merely avoided by discipline.
+
+**Autonomy topology is hybrid:** centrally partitioned on the ground (deterministic, inspectable, fast), decentrally executed in the air (survives link loss). A drone that loses the mesh for 10 s continues its assigned bundle; at 60 s it returns home. **No behaviour requires the link to make progress.**
+
+---
+
+## Proven Methods
+
+Every algorithmic choice traces to published work rather than intuition.
+
+| Layer | Method | Source |
+|---|---|---|
+| Area partitioning | **DARP** — equal-area, connected sub-regions anchored to a common launch point | Kapoutsis, Chatzichristofis & Kosmatopoulos, *JINT* 86 (2017) |
+| Coverage within a region | **Boustrophedon cellular decomposition**, sweep along the longest axis | Choset, *Autonomous Robots* (2000) |
+| Delivery task allocation | **CBBA** — consensus-based bundle auction, provably conflict-free over local comms | Choi, Brunet & How, *IEEE T-RO* 25(4) (2009) |
+| Dynamic reallocation | Partial replanning variant, bounded reassignment on new detections | Buckman, Choi & How, *AIAA SciTech* (2019) |
+| Small-object detection | **SAHI** tiled inference — recovers recall that whole-frame resizing destroys | Akyon, Altinuc & Temizel, *ICIP* (2022) |
+| Detector training data | **HERIDAL** + **SARD** for pre-training, Indian field data for fine-tuning | Božić-Štulić et al.; Sambolek & Ivašić-Kos, *IEEE Access* (2021) |
+| Airdrop error model | Release-velocity dominance in ballistic dispersion | Mathisen et al., *Autonomous Robots* (2020) |
+| Mesh comms | **batman-adv** L2 mesh + sub-GHz safety channel | Marchese et al., *Drones* 5(2) (2021) |
+| Propulsion sizing | Momentum theory with figure of merit (FM = 0.60) | Standard rotorcraft practice |
+| Systems process | V-model with TRL gates, spiral overlay on high-uncertainty subsystems | NASA SE Handbook SP-2016-6105 |
+
+---
+
+## Perception
+
+A COCO-pretrained person detector will fail here. Aerial SAR targets occupy ~0.1 % of frame area, lying prone or partially covered — a distribution general detectors have never seen.
+
+- **Pre-train** on HERIDAL and SARD; reproduce published baselines (YOLOv5L reaches ~0.90 P / ~0.89 R on HERIDAL) to prove the pipeline before trusting your own data.
+- **Fine-tune on Indian field data.** HERIDAL and SARD are European — wrong terrain, wrong vegetation, wrong clothing, wrong sun angle. Target ≥ 2,000 annotated frames from our own camera at our own altitudes, with mannequins in supine, prone, seated and partially-occluded postures.
+- **Tiled inference** at 2× downsample, 640 px tiles, 20 % overlap, 2 Hz.
+- **Exploit the frame surplus.** At 8 m/s and 60 m the along-track footprint is 56 m, so even 2 Hz gives ~14 frames per target per pass. Multi-frame fusion is free — use it for temporal confirmation and geolocation averaging.
+- **Gate on body rate.** Suppress inference above 15 °/s: the imagery is smeared and the ground-plane assumption is worst in a bank. The turns are outside the search region anyway.
+
+**Detection recall is the long pole of the whole programme.** Field data collection starts in week 6, well before the aircraft are polished.
+
+---
+
+## Indigenisation
+
+NIDAR 2.0 exists to move India "from drone assembly to manufacturing the drone's brain in India." This build takes that seriously, and reports it honestly.
+
+| Basis | Score |
+|---|---|
+| Line items with an Indian supplier | **95.5 %** |
+| Programme value that is Indian | **60.2 %** |
+| Flight-hardware value that is Indian | **56.8 %** |
+| Payload, kits and ground-truth targets | **100 %** |
+
+The gap between 95 % and 60 % is not evasion. An Indian flight controller or camera module is Indian design, Indian firmware and Indian manufacture on imported silicon; the BOM scores those at 60 % rather than 100 %. **State which basis you are quoting.**
+
+**Two indigenisation choices that improve the system rather than compromise it:**
+
+- **NavIC.** ISRO's constellation sits directly overhead India — more satellites, faster time-to-first-fix (which directly buys margin in the 5-minute setup window), and a fallback if GPS is degraded or jammed.
+- **C-DAC VEGA.** The free RISC-V dev kits run the payload-release controller and failsafe watchdog — real Indian silicon flying, on a subsystem with a hardware bypass, off the flight-critical path.
+
+**Four things have no Indian option and are declared as such:** AI inference silicon (~20 TOPS class), high-drain 21700 cells at 45 A, 802.11/LoRa RF chipsets, and high-current connectors.
+
+Suppliers: Bharath Components · Mechtex · Flameback Tech · S R Aerospace · Agam Robotics · Zuppa · Teravolt Labs · Accord Software · e-con Systems · FxUAV Technologies · Kineco · Sundram Fasteners. Full BOM in [`hardware/bom/`](hardware/bom/).
+
+---
+
+## Mission Constraints
+
+| Requirement | Value | Our design |
+|---|---|---|
+| Minimum drones | 2 | **3** — one can fail and we stay compliant |
+| Search area | Up to 10 ha | 10 ha in ~93 s/drone |
+| Mission time | ≤ 30 min | **7.7 min** design mission |
+| Total fleet weight | ≤ 25 kg | **17.8 kg** |
+| Payload | 200 g, 200 × 100 × 50 mm | 4 kits/aircraft = 12 capacity for 10 survivors |
+| Launch / landing area | 12 × 12 ft (3.66 m) | Sequenced launch and recovery |
+| Setup to launch | 5 min | **~285 s modelled — 15 s margin** ⚠ |
+| Human operators | 1 operator, 2 setup crew | Rehearsed two-person choreography |
+| External network | Not allowed | Team-owned RF only; offline map tiles cached |
+
+---
+
+## Safety
+
+| Failsafe | Response |
+|---|---|
+| Low battery | Abort current task, return to home, sequenced landing |
+| C2 link loss | Continue assigned bundle autonomously; RTH at 60 s |
+| Mesh partition | Deterministic tie-break (lowest system ID); no task left unclaimed |
+| Geofence breach | Immediate hold, then return to home |
+| GPS degradation | Hold, climb for reacquisition, RTH on timeout |
+| Payload jam | Flag the task for reallocation; continue mission |
+| Mission abort | All aircraft hold, then sequenced recovery |
+| Emergency recall | Immediate RTH on the 868 MHz link |
+
+Deconfliction is layered: altitude stratification during search (55/60/65 m), exclusive spatial locks around each survivor during delivery, reciprocal velocity-obstacle avoidance as a runtime backstop, and strictly sequenced launch and recovery through the 3.66 m box.
+
+**Payload release requires a positive mechanical lock independent of servo power.** A brownout must not drop a kit.
+
+---
+
+## Development Roadmap
+
+| Phase | Milestone | Gate criterion | Week |
+|---|---|---|---|
+| P0 | Requirements baselined | Every rule clause maps to a testable requirement | 2 |
+| P1 | Architecture frozen | ICDs signed, long-lead items ordered | 5 |
+| P2/P3 | Design complete | Software and electronics pass review | 9 |
+| P4 | Simulation validated | ≥ 95 % completion over 200 Monte Carlo runs | 13 |
+| P5 | Bench prototype | Cold-boot < 180 s, RF and payload validated | 14 |
+| P6 | First autonomous flight | Stable auto waypoint flight, failsafes demonstrated | 18 |
+| P7 | Perception validated | Recall ≥ 0.90, geotag CEP ≤ 3 m | 20 |
+| P8 | Single-drone mission | 5 consecutive autonomous end-to-end missions | 21 |
+| P9 | Swarm operational | 3 consecutive 3-drone 10 ha missions | 25 |
+| P10 | Competition ready | 13/15 repeatability, setup ≤ 3:30, config frozen | 30 |
+
+Critical path runs P0 → P1 → P2 → P4 → P8 → P9 → P10, with **P7 (perception) as the parallel long pole**. Three weeks of unallocated buffer sit before P10.
+
+Full plan: [`docs/development-plan.md`](docs/development-plan.md)
+
+---
+
+## Verification Targets
+
+| ID | Requirement | Method | Verified in |
+|---|---|---|---|
+| SYS-01 | Fleet AUW ≤ 24.0 kg fully loaded | Test (calibrated scale) | P6 |
+| SYS-07 | ≥ 90 % survivor detection at operational altitude | Test | P7, P9 |
+| SYS-12 | Geotag CEP50 ≤ 2.0 m (RTK) | Test vs surveyed ground truth | P7 |
+| SYS-15 | ≥ 90 % of drops within 5.0 m of tag | Test (≥ 30 drops) | P8 |
+| SYS-19 | Zero operator input beyond load/start/abort/recall | Demonstration | P9 |
+| SYS-21 | Setup to launch ≤ 240 s | Demonstration (20 timed runs) | P10 |
+| SYS-23 | No external network used at any point | Inspection + analysis | P9 |
+| SYS-28 | Autonomous continuation on C2 loss; RTH at 60 s | Test (fault injection) | P4, P9 |
+
+---
+
+## Repository Structure
+
+```text
+.
+├── firmware/                 # Autopilot params, VEGA co-processor firmware
+│   ├── ardupilot-params/
+│   └── vega-payload-ctrl/
+├── autonomy/                 # Mission logic
+│   ├── coverage-planner/     # DARP partition + boustrophedon
+│   ├── task-allocation/      # CBBA + partial replanning
+│   ├── mission-state/        # State machine, failsafe matrix
+│   ├── shared-state/         # Replicated mission state, gossip sync
+│   └── deconfliction/        # Altitude layers, spatial locks, ORCA
+├── perception/
+│   ├── models/               # Weights registry, TensorRT engines
+│   ├── training/             # Fine-tuning pipeline, augmentation
+│   ├── tiling/               # SAHI-style inference
+│   ├── geotagging/           # Ray–ground intersection, multi-frame fusion
+│   └── calibration/          # Intrinsics + boresight extrinsics
+├── communication/
+│   ├── mesh/                 # batman-adv config, link monitoring
+│   ├── mavlink-router/       # 3 SYSIDs → one GCS
+│   └── safety-link/          # 868 MHz abort/recall
+├── ground-station/
+│   ├── frontend/             # Read-only mission view
+│   ├── backend/              # Telemetry ingest, video switching
+│   └── replay/               # Post-mission playback
+├── simulations/
+│   ├── sitl/                 # Multi-instance SITL + Gazebo
+│   ├── monte-carlo/          # 200-run campaign harness
+│   └── fault-injection/      # Link loss, drone loss, payload jam
+├── hardware/
+│   ├── cad/                  # Frame, magazine, mounts
+│   ├── electronics/          # Wiring, power tree, PDB
+│   ├── bom/                  # Indian BOM + indigenisation scorecard
+│   └── payload/              # Release mechanism, kit spec
+├── datasets/
+│   ├── field-campaign/       # Our Indian SAR imagery + annotations
+│   └── benchmarks/           # HERIDAL / SARD evaluation scripts
+├── tools/
+│   ├── sizing-model/         # Closed engineering model (Python)
+│   └── flight-log-analysis/
+├── tests/
+├── docs/
+│   ├── development-plan.md
+│   ├── sizing/
+│   ├── checklists/           # Setup choreography, pre-flight, contingency
+│   ├── images/
+│   └── diagrams/
+└── README.md
+```
+
+---
+
+## Getting Started
+
+```bash
+# Clone and set up
+git clone <repo> && cd rescueswarm
+docker compose build            # identical container for SITL and aircraft
+
+# Run the sizing model — every number in this README comes from here
+python3 tools/sizing-model/rescueswarm_sizing_model.py
+
+# Three-drone SITL mission
+docker compose up sitl
+ros2 launch autonomy swarm_mission.launch.py drones:=3 area:=configs/10ha_test.yaml
+
+# Monte Carlo campaign (200 runs, ~2 h)
+python3 simulations/monte-carlo/run_campaign.py --runs 200 --report
+
+# Ground station
+cd ground-station && npm install && npm run dev
+```
+
+**Rule for the team: no new autonomy code touches a real airframe until it has run 20 consecutive clean SITL missions.** SITL cycles cost minutes; a crash costs weeks.
+
+Every real flight runs a tagged commit, logged in the flight log with the tag.
+
+---
+
+## Technologies
+
+**Flight** — ArduPilot / PX4 · MAVLink 2 · C-DAC VEGA (RISC-V)
+**Autonomy** — ROS 2 · Fast DDS · DARP · CBBA
+**Perception** — YOLO-class detector · TensorRT · SAHI tiling · OpenCV calibration
+**Communication** — batman-adv mesh · 5.8 GHz + 868 MHz dual-band · mavlink-router
+**Navigation** — NavIC (L1 + L5) · RTK · dual-antenna heading
+**Ground** — React · offline ISRO Bhuvan tiles · mission replay
+**Simulation** — Gazebo · multi-instance SITL · Monte Carlo + fault injection
+
+---
+
+## Open Questions to Organisers
+
+Submitted in Phase 0 week 1 — several architecture decisions depend on the answers.
+
+1. Is a team-owned **local RTK base station** permitted, given corrections travel on our own local link and not the internet?
+2. What **shape, aspect ratio and file format** should we expect for the boundary polygon?
+3. Will survivors be **real humans, mannequins, or both**, in what postures and clothing, and under partial cover?
+4. What defines a **successful delivery** — maximum distance, measured to the tagged or the true position?
+5. Is **pre-booting** of onboard computers permitted before the 5-minute window begins?
+6. Is **automatic switching** of the single video feed acceptable, or must all feeds be simultaneously visible?
+7. What are the **scoring weights** across mission time, detection accuracy, delivery accuracy, autonomy and documentation?
+
+---
+
+## Project Goal
+
+Develop a fully autonomous multi-drone rescue system capable of locating flood survivors and delivering emergency aid quickly, safely, and without reliance on external communication networks — built, wherever possible, in India.
+
+---
+
+<p align="center">
+  <sub>Built for NIDAR 2.0 · MeitY · Drone Federation of India</sub>
+</p>
    │
    ▼
 Divide Search Area
