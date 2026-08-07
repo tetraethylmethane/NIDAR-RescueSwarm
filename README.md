@@ -13,7 +13,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/phase-P0%20requirements-blue" alt="phase">
   <img src="https://img.shields.io/badge/fleet-3%20aircraft-informational" alt="fleet">
-  <img src="https://img.shields.io/badge/mass-15.2%20%2F%2025%20kg-success" alt="mass">
+  <img src="https://img.shields.io/badge/mass-17.65%20%2F%2025%20kg-success" alt="mass">
   <img src="https://img.shields.io/badge/mission-7.7%20%2F%2030%20min-success" alt="mission">
   <img src="https://img.shields.io/badge/finals-Jan%202027-critical" alt="finals">
 </p>
@@ -62,19 +62,7 @@ About 21 weeks. But the real constraint is narrower: monsoon closes flying until
 
 Not targets. These are outputs of a closed model in [`tools/sizing-model/`](tools/sizing-model/).
 
-> ### ⚠ The design point is being revised — do not order cells against the table below
->
-> The sizing model uses **generic component masses**. The Indian BOM uses **real quoted masses**, which are **+471 g per aircraft** heavier. Fed back into the model, that breaks the reserve policy the whole design was sized to:
->
-> | Config | Hover | × mission | Reserve policy (≥ 2.0×) |
-> |:--|--:|--:|:--|
-> | 20 in / 6S2P — *the table below* | 13.7 min | **1.78×** | **fails** |
-> | 18 in / 6S3P — *the BOM* | 16.9 min | 2.20× | passes |
-> | 20 in / 6S3P | 18.4 min | 2.38× | passes |
->
-> **The BOM's 6S3P pack is correct and the model is optimistic.** The 5.93 kg / 17.8 kg figures that were once in this README were the Indian-BOM aircraft all along — they were removed for disagreeing with a model that had never been given real component masses.
->
-> **Action:** re-run the model with Indian masses, then republish this table. Order **18 cells per aircraft, not 12**. See [bom_reconcile.py](tools/sizing-model/bom_reconcile.py) and [its output](docs/sizing/bom-reconcile-output.txt).
+> **Provenance.** The model now uses the BOM's real Indian prop mass and the BOM's pack configuration, and **agrees with the BOM's bottom-up mass statement to within 1 %** (5.88 vs 5.93 kg per aircraft). Earlier revisions of this table showed 20 in / 6S2P, which the model produced only with generic component masses — with real parts that pack fails the 2× endurance reserve at 1.78×. See [bom_reconcile.py](tools/sizing-model/bom_reconcile.py).
 
 ### 2.1 Aircraft
 
@@ -82,13 +70,13 @@ Not targets. These are outputs of a closed model in [`tools/sizing-model/`](tool
 
 | Parameter | Value |
 |:--|:--|
-| Configuration | Quadrotor · 20 in props |
-| Battery | 6S2P 21700 Li-ion — 12 cells · 966 g · 194 Wh · 9.0 Ah · 21.6 V |
-| MTOW | 5.05 kg |
-| **Fleet** all-up weight | **15.2 kg** against a 25 kg cap — 39 % margin |
-| Hover power | 601 W · disk loading 6.2 kg/m² |
-| Hover endurance | 15.5 min at 80 % DoD |
-| Thrust-to-weight | 2.0 static · hover at 50 % of max thrust |
+| Configuration | Quadrotor · 18 in CF folding props |
+| Battery | 6S3P 21700 Li-ion — 18 cells · 1449 g · 292 Wh · 13.5 Ah · 21.6 V |
+| MTOW | 5.88 kg |
+| **Fleet** all-up weight | **17.65 kg** against a 25 kg cap — 29 % margin |
+| Hover power | 818 W · disk loading 9.0 kg/m² |
+| Hover endurance | 17.1 min at 80 % DoD — **2.22× the mission** |
+| Thrust-to-weight | 2.0 static · 2.94 kgf per motor · hover at 50 % of max thrust |
 
 ### 2.2 Mission
 
@@ -150,9 +138,9 @@ Full breakdown in [rulebook compliance](docs/requirements/rulebook-compliance.md
 
 | Decision | Outcome | Reasoning |
 |:--|:--|:--|
-| Coaxial X8? | **Rejected** | Sized properly it costs +61–84 % hover power and +26–34 % fleet mass, buys no footprint back (stacking rotors doesn't shorten arms), and has the worst attitude bandwidth of anything tested. |
+| Coaxial X8? | **Rejected** | Sized properly it costs +59–119 % hover power and +34–50 % fleet mass — cutting the 29 % mass margin to 2 % — buys no footprint back (stacking rotors doesn't shorten arms), and has the worst attitude bandwidth of anything tested. |
 | Rotor count | **Build the quad** | Hex 6×18″ is out on flight dynamics. Hex 6×16″ and octo 8×14″ genuinely match or beat the quad on physics — but a hex is 50 % more propulsion integration across three aircraft and an octo is double, on a 21-week calendar with no flight code written. Decided on schedule risk, not physics. Reopens only if organisers say motor-out tolerance is required. |
-| Prop diameter | **18 in, provisional** | Less rotor inertia, lower gust sensitivity. Design arms for 16–20 in and settle it on a bench in P5. |
+| Prop diameter | **18 in — adopted** | Matches the BOM, so no re-quote. Also better than 20 in on the dynamics that matter: descent sits at 0.42 v_i instead of 0.47, and gust sensitivity is 0.168 against 0.187. Arms still designed for 16–20 in so P5 can revisit. |
 | Thrust-to-weight | **Keep 2.0** | Tilt only reaches 12° at 15 m/s — attitude authority is never the wind limit. |
 | Recovery chute | **Fit one** | Permitted, ballistic deployment included. It can't meet the "land on the pad" condition — from 60 m in a 3 m/s breeze a canopy drifts 36 m against a 3.66 m pad — but −10 for landing outside beats −50 for a crash, so deploying is worth ~40 points anyway. |
 | Motor-out redundancy | **Still open** | Chute and extra rotors aren't substitutes. Only rotors keep the aircraft *flying and scoring*, and only rotors work during the 6 m delivery hover where a canopy can't inflate. Ties back to the rotor-count question above. |

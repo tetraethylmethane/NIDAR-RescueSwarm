@@ -45,9 +45,9 @@ eta_chain, P_avio = G['eta_prop_chain'], G['P_avio']
 m_avio, m_pay = G['m_avio'], G['m_payload_sys']
 k_struct, k_esc = G['k_struct'], G['k_esc']
 spec_thrust, T_W = G['spec_thrust_motor'], G['T_W']
-m_prop_20, DOD, e_liion = G['m_prop_ea'], G['DOD'], G['e_liion']
+m_prop_18, DOD, e_liion = G['m_prop_ea'], G['DOD'], G['e_liion']
 
-D20 = 20 * 0.0254
+D18 = 18 * 0.0254            # anchor: m_prop_ea is the 18 in mass
 BOX = 3.6576                 # 12 ft launch/landing box, m
 C_T = 0.012                  # thrust coeff on disk area + tip speed, typical
                              # multirotor prop. Used only for advance ratio.
@@ -70,12 +70,12 @@ per_del_t = (150 / v_transit + (h_search - h_drop) / v_desc + 8 + 2
 
 
 def prop_mass(D):
-    """Prop mass ~D^2.5 (planform x thickness), anchored at 20 in.
+    """Prop mass ~D^2.5 (planform x thickness), anchored at the 18 in BOM part.
 
     The main model holds prop mass fixed across diameters, which is fine when
     diameter is not the variable. Here it is, so it has to scale.
     """
-    return m_prop_20 * (D / D20) ** 2.5
+    return m_prop_18 * (D / D18) ** 2.5
 
 
 def converge_mass(n_motors, D, m_batt):
@@ -143,8 +143,8 @@ def footprint(n_arms, D, clr=0.03):
 
 
 CONFIGS = [
-    ('Quad  4x20"  (current)', 4, 4, 20, 4, 1.00),
-    ('Quad  4x18"',            4, 4, 18, 4, 1.00),
+    ('Quad  4x18"  (current)', 4, 4, 18, 4, 1.00),
+    ('Quad  4x20"',            4, 4, 20, 4, 1.00),
     ('Quad  4x16"',            4, 4, 16, 4, 1.00),
     ('Hex   6x18"',            6, 6, 18, 6, 1.00),
     ('Hex   6x16"',            6, 6, 16, 6, 1.00),
@@ -185,8 +185,13 @@ def main():
     print("  therefore proportional to hover power, and a power penalty compounds:")
     print("  more battery -> more mass -> more power. That is the coaxial story.")
     print()
-    print("  COAXIAL VERDICT: +61 to +84% hover power and +26 to +34% fleet mass,")
-    print("  eating the 39% mass margin down to ~19%. It buys NO footprint back --")
+    cx = [res[k] for k in res if 'coax' in k]
+    print(f"  COAXIAL VERDICT: +{min(100*(c['P']/base['P']-1) for c in cx):.0f} to "
+          f"+{max(100*(c['P']/base['P']-1) for c in cx):.0f}% hover power and "
+          f"+{min(100*(c['m']/base['m']-1) for c in cx):.0f} to "
+          f"+{max(100*(c['m']/base['m']-1) for c in cx):.0f}% fleet mass,")
+    print(f"  cutting the {100*(1-3*base['m']/25):.0f}% mass margin to "
+          f"{100*(1-3*max(c['m'] for c in cx)/25):.0f}%. It buys NO footprint back --")
     print("  stacking rotors does not shorten the arms, so the X8 footprint equals")
     print("  the quad it replaces. Coaxial pays only when rotors must shrink to fit")
     print("  a box; the quad already fits 3 per row. Rejected at every kappa.")
@@ -198,7 +203,7 @@ def main():
           f"{'gust dT/W':>11}{'J_rotor':>9}")
     print(f"{'':<26}{'m/s':>7}{'m/s':>15}{'x v_i':>10}{'per m/s':>11}{'rel':>9}")
     print('-' * 96)
-    J0 = res['Quad  4x20"  (current)']['J']
+    J0 = res['Quad  4x18"  (current)']['J']
     for lbl, *_ in CONFIGS:
         r = res[lbl]
         vi = r['v_i']
@@ -226,7 +231,7 @@ def main():
     print(f"  Retreating-blade effects appear above advance ratio mu ~ 0.30.\n")
     print(f"{'config':<26}{'v_tip':>8}{'mu @8':>8}{'mu @12':>8}{'mu @16':>8}{'mu @20':>8}")
     print('-' * 96)
-    for lbl in ['Quad  4x20"  (current)', 'Quad  4x18"', 'Quad  4x16"']:
+    for lbl in ['Quad  4x18"  (current)', 'Quad  4x20"', 'Quad  4x16"']:
         r = res[lbl]
         vt = r['v_tip']
         print(f"{lbl:<26}{vt:8.1f}" + ''.join(f"{v/vt:8.2f}" for v in (8, 12, 16, 20)))
@@ -238,9 +243,9 @@ def main():
 
     print("\n" + "=" * 96)
     print("SECTION 4  VRS-SAFE DESCENT PROFILE  (current quad, v_i = "
-          f"{res['Quad  4x20\"  (current)']['v_i']:.2f} m/s)")
+          f"{res['Quad  4x18\"  (current)']['v_i']:.2f} m/s)")
     print("=" * 96)
-    vi = res['Quad  4x20"  (current)']['v_i']
+    vi = res['Quad  4x18"  (current)']['v_i']
     print(f"{'descent rate':>14}{'x v_i':>8}{'verdict':>26}{'54 m takes':>13}"
           f"{'vs 2.5 m/s':>12}")
     print('-' * 96)
@@ -266,7 +271,7 @@ def main():
           f"{'pack':>8}{'hov thr':>9}")
     print('-' * 56)
     for tw in [2.0, 2.2, 2.5, 2.8, 3.0]:
-        r = size_to_policy(4, 4, D20, 1.0, T_W_=tw)
+        r = size_to_policy(4, 4, D18, 1.0, T_W_=tw)
         print(f"{tw:6.1f}{r['m']:8.2f}{3*r['m']:8.2f}{25.0-3*r['m']:9.2f}"
               f"{r['P']:8.0f}{r['E']:7.0f}W{100/tw:8.0f}%")
     print()

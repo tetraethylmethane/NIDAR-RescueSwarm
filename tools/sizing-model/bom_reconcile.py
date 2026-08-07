@@ -54,7 +54,10 @@ BOM = {
     'kits':            800.0,
 }
 
-# Model's own generic figures, for comparison (main model MASS STATEMENT)
+# Historical: what the model produced with GENERIC component masses at
+# 20 in / 6S2P, before the BOM's real Indian masses were fed back. Kept as
+# fixed constants because the model no longer produces them -- it is now at
+# 18 in / 6S3P with BOM prop masses and agrees with the BOM to within 1 %.
 MODEL_MTOW = 5.052
 MODEL_FLEET = 15.157
 
@@ -89,12 +92,14 @@ def main():
     print("=" * 84)
     print("BOM vs DESIGN POINT RECONCILIATION")
     print("=" * 84)
-    print(f"  Model (generic masses, 20 in, 6S2P):  MTOW {MODEL_MTOW:.2f} kg  "
+    print(f"  BEFORE  model, generic masses, 20 in / 6S2P : MTOW {MODEL_MTOW:.2f} kg, "
           f"fleet {MODEL_FLEET:.2f} kg")
-    print(f"  BOM tab 07 (Indian masses, 18 in, 6S3P): MTOW 5.93 kg  fleet 17.80 kg")
+    print(f"  BOM tab 07, Indian masses, 18 in / 6S3P     : MTOW 5.93 kg, fleet 17.80 kg")
+    print(f"  AFTER   model, BOM prop mass, 18 in / 6S3P  : MTOW "
+          f"{G['MTOW']:.2f} kg, fleet {3*G['MTOW']:.2f} kg")
     print()
-    print("  Two different aircraft. The BOM figures are the ones that were")
-    print("  corrected out of the README because the model does not produce them.")
+    print("  RESOLVED. The design point moved to the BOM's configuration and the")
+    print("  model was given the BOM's prop mass. Model and BOM now agree to ~1 %.")
 
     print("\n" + "-" * 84)
     print("REBUILT FROM THE BOM'S OWN GROUP MASSES")
@@ -105,9 +110,9 @@ def main():
           f"{'kg/m2':>7}{'min':>8}{'7.7min':>7}")
     print('-' * 84)
     rows = {}
-    for lbl, cells, d in [('20 in, 6S2P  DESIGN', 12, 20),
+    for lbl, cells, d in [('20 in, 6S2P  old', 12, 20),
                           ('18 in, 6S2P', 12, 18),
-                          ('18 in, 6S3P  BOM', 18, 18),
+                          ('18 in, 6S3P  DESIGN', 18, 18),
                           ('20 in, 6S3P', 18, 20)]:
         mtow, _ = build(cells, d)
         P, A, DL, t_hov, E = perf(mtow, d, cells)
@@ -122,19 +127,19 @@ def main():
     print("  reserve policy requires >= 2.0x. Configurations below that do not")
     print("  satisfy the policy the whole design was sized against.")
 
-    d_mtow = rows['20 in, 6S2P  DESIGN'][0] - MODEL_MTOW
+    d_mtow = rows['20 in, 6S2P  old'][0] - MODEL_MTOW
     print("\n" + "-" * 84)
     print("WHAT THE INDIAN MASSES COST  (tab 07's unactioned ACTION item)")
     print("-" * 84)
     print(f"  Model generic masses, 20 in / 6S2P : MTOW {MODEL_MTOW:.2f} kg, "
           f"fleet {MODEL_FLEET:.2f} kg")
     print(f"  Indian BOM masses,    20 in / 6S2P : MTOW "
-          f"{rows['20 in, 6S2P  DESIGN'][0]:.2f} kg, "
-          f"fleet {rows['20 in, 6S2P  DESIGN'][1]:.2f} kg")
+          f"{rows['20 in, 6S2P  old'][0]:.2f} kg, "
+          f"fleet {rows['20 in, 6S2P  old'][1]:.2f} kg")
     print(f"  Indigenisation penalty             : {d_mtow*1000:+.0f} g per "
           f"aircraft, {3*d_mtow:+.2f} kg fleet")
     print(f"  Fleet margin against the 25 kg cap : "
-          f"{100*(1-rows['20 in, 6S2P  DESIGN'][1]/25):.0f} %")
+          f"{100*(1-rows['20 in, 6S2P  old'][1]/25):.0f} %")
     print()
     print("  +471 g per aircraft is affordable against the 25 kg cap on its own.")
     print("  The problem is what it does to ENDURANCE, not to mass -- see below.")
@@ -162,7 +167,7 @@ def main():
     print("\n" + "-" * 84)
     print("IS 6S3P AFFORDABLE?")
     print("-" * 84)
-    for lbl in ('18 in, 6S3P  BOM', '20 in, 6S3P'):
+    for lbl in ('18 in, 6S3P  DESIGN', '20 in, 6S3P'):
         mtow, fleet, P, t = rows[lbl]
         print(f"  {lbl:<22} fleet {fleet:5.2f} kg, margin "
               f"{100*(1-fleet/25):.0f} %, hover {t:.1f} min ({t/7.7:.2f}x)")

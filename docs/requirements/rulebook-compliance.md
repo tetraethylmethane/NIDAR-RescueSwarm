@@ -142,7 +142,7 @@ requires **domain diversity** — see §3 on team composition.
 | Rule | Requirement | Status | Where |
 |---|---|---|---|
 | 8.8 / brief 1 | ≥2 drones as one coordinated system | **OK** — 3 aircraft | README |
-| 8.9 / brief 2 | Combined AUW ≤ 25 kg | **OK** — 15.18 kg, 39 % margin | model-output |
+| 8.9 / brief 2 | Combined AUW ≤ 25 kg | **OK** — 17.65 kg, 29 % margin | model-output |
 | 8.2 / brief 2 | **No COTS ready-to-fly airframes**; components OK | **OK by intent** — custom frame | needs explicit design evidence for 4A |
 | brief 2 | Payload exactly **200 g, 200×100×50 mm rectangular box** | **OK** | sizing §payload |
 | 8.10 / brief 7 | Take off and land within 12 ft × 12 ft | **OK** — 1046 mm footprint, 3/row | model STEP 11 |

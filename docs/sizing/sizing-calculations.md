@@ -10,26 +10,46 @@
 | Parameter | Value |
 |---|---|
 | Fleet | **3 aircraft**, identical |
-| Configuration | Quadrotor, 20 in props, 6S2P 21700 Li-ion |
-| MTOW per aircraft (4 kits loaded) | **5.05 kg** |
-| **Fleet all-up weight** | **15.2 kg** vs 25.0 kg limit → **39 % margin** |
-| Empty mass (no battery, no kits) | 3.29 kg |
-| Battery | 12 × 21700, 966 g, **194 Wh**, 9.0 Ah, 21.6 V nom |
-| Disk loading | 6.2 kg/m² |
-| Hover power (electrical) | **601 W** · power loading 8.4 g/W |
-| Hover endurance @ 80 % DoD | **15.5 min** |
+| Configuration | Quadrotor, 18 in CF folding props, 6S3P 21700 Li-ion |
+| MTOW per aircraft (4 kits loaded) | **5.88 kg** |
+| **Fleet all-up weight** | **17.65 kg** vs 25.0 kg limit → **29 % margin** |
+| Empty mass (no battery, no kits) | 3.63 kg |
+| Battery | 18 × 21700, 1449 g, **292 Wh**, 13.5 Ah, 21.6 V nom |
+| Disk loading | 9.0 kg/m² |
+| Hover power (electrical) | **818 W** · power loading 7.2 g/W |
+| Hover endurance @ 80 % DoD | **17.1 min** (2.22× the mission) |
 | Design mission duration | **7.7 min** (26 % of the 30 min allowance) |
-| Design mission energy | 70 Wh = **45 % of usable** → lands at ~64 % SoC |
-| Thrust-to-weight (static, SL) | 2.0 → 2.53 kgf per motor |
+| Design mission energy | 95 Wh = **41 % of usable** → lands at ~68 % SoC |
+| Thrust-to-weight (static, SL) | 2.0 → 2.94 kgf per motor |
 | Hover throttle point | 50 % of max motor thrust |
 | Search altitude / speed | 60 m AGL / 8 m/s **groundspeed** |
 | GSD at 60 m | 1.82 cm/px → person ≈ 93 px long |
 | Sweep time (10 ha, 3 drones) | ~93 s per drone including turns |
-| Geotag accuracy (design target) | CEP50 ≤ 2.0 m with RTK, ≤ 3.5 m without |
-| Delivery accuracy (design target) | ≤ 3 m CEP with a 6 m hover-and-drop |
-| Peak current | 74 A (8.2 C) — pack burst capability 90 A, 21 % margin |
+| Geotag accuracy (design target) | **CEP50 ≤ 0.75 m** with RTK — scoring-derived, see `../requirements/rulebook-compliance.md` |
+| Delivery accuracy (design target) | **≥ 60 % within 2 m, ≥ 30 % within 1 m** of the survivor, from a 6 m hover-and-drop |
+| Peak current | 102 A (7.6 C) — pack burst capability 135 A, 32 % margin |
 
-**The headline result: nothing about this mission is tight except the 5-minute setup window.** Mass has 39 % margin, energy has 55 % margin, coverage uses a quarter of the allowed time, and the link budget has >13 dB of fade margin. Setup has **15 seconds** of margin. Allocate engineering effort accordingly.
+**The headline result: nothing about this mission is tight except the 5-minute setup window.** Mass has 29 % margin, energy has 59 % margin, coverage uses a quarter of the allowed time, and the link budget has >13 dB of fade margin. Setup has **15 seconds** of margin. Allocate engineering effort accordingly.
+
+---
+
+> ### ⚠ Read §0 as current; read §2–§4 as history
+>
+> The design point card above is **current** — 18 in props, 6S3P, reconciled with the
+> Indian BOM to within 1 %.
+>
+> The derivation sections that follow (**§2 fleet sizing, §3 rotor sizing, §4 battery
+> sizing**) still work through the **earlier 20 in / 6S2P** design, because that is the
+> path the model originally took. Their *method* is sound and worth reading; their
+> *numbers* — 5.05 kg MTOW, 39 % margin, "20 in selected", the 6S2P pack — are
+> superseded.
+>
+> Why the design point moved: with generic component masses the 6S2P pack met the
+> 2× endurance reserve at 2.01×. With the BOM's real Indian masses it does not, at
+> 1.78×. See [`bom_reconcile.py`](../../tools/sizing-model/bom_reconcile.py) and
+> [`bom-reconcile-output.txt`](bom-reconcile-output.txt).
+>
+> **Rewriting §2–§4 against the new design point is a P1 task.**
 
 ---
 

@@ -52,6 +52,13 @@ distinction is the whole coaxial argument, and it is why this needs its own
 script: `prop_area()` in the main model multiplies disk area by `N_rot`, which
 assumes every rotor has its own free-stream disk. A coaxial pair does not.
 
+> **These figures predate the BOM reconciliation.** They were computed when the
+> baseline was 20 in / 6S2P with generic component masses. The *conclusions* are
+> unchanged and in most cases strengthened — coaxial is now +59 to +119 % power
+> rather than +61 to +84 % — but re-read the live numbers in
+> [`config-trade-output.txt`](config-trade-output.txt), which regenerate from the
+> current design point.
+
 | Config | Pack Wh | MTOW kg | Fleet kg | P_hov W | Disk load | Footprint mm | Fits box | ΔP | Δmass |
 |---|---|---|---|---|---|---|---|---|---|
 | **Quad 4×20″** (current) | 194 | 5.06 | 15.18 | 603 | 6.24 | 1046 | 3/row | — | — |
@@ -236,7 +243,7 @@ The model sizes against margins it already has:
 
 | Constraint | Limit | Design | Margin | Binding? |
 |---|---|---|---|---|
-| Fleet mass | 25 kg | 15.18 kg | 39 % | No |
+| Fleet mass | 25 kg | 17.65 kg | 29 % | No |
 | Mission time | 30 min | 7.7 min | 74 % | No |
 | Coverage | 10 ha | 93 s/drone | ~95 % | No |
 | Link margin | — | 13.7 dB @ 600 m | large | No |

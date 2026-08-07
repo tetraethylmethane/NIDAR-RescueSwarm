@@ -1,66 +1,66 @@
-================================================================================
+﻿================================================================================
 STEP 3b  BATTERY SIZED BY RESERVE POLICY  (coupled: pack mass <-> MTOW <-> energy)
 ================================================================================
   Policy: pack must deliver  [nominal mission + one full re-sweep + 4 min loiter]
           within an 80% depth of discharge, and hover endurance >= 2x mission time.
 
-  LiPo  : pack  928 g (153 Wh) -> MTOW 4.99 kg, fleet 14.98 kg, hover 12.4 min, mission 7.7 min, endurance ratio 1.6x
-           nominal 69 Wh + re-sweep 14 Wh + loiter 39 Wh = 123 Wh needed
-  Li-ion: pack  688 g (138 Wh) -> MTOW 4.61 kg, fleet 13.83 kg, hover 12.4 min, mission 7.7 min, endurance ratio 1.6x
-           nominal 62 Wh + re-sweep 13 Wh + loiter 35 Wh = 110 Wh needed
+  LiPo  : pack 1130 g (186 Wh) -> MTOW 5.38 kg, fleet 16.13 kg, hover 12.4 min, mission 7.7 min, endurance ratio 1.6x
+           nominal 84 Wh + re-sweep 17 Wh + loiter 48 Wh = 149 Wh needed
+  Li-ion: pack  815 g (163 Wh) -> MTOW 4.88 kg, fleet 14.63 kg, hover 12.4 min, mission 7.7 min, endurance ratio 1.6x
+           nominal 73 Wh + re-sweep 15 Wh + loiter 42 Wh = 130 Wh needed
 
 ================================================================================
 FINAL DESIGN POINT  -  'RS-1' search & delivery quad
 ================================================================================
-  Configuration          : quadrotor, 20 in props, 6S2P 21700 Li-ion
-  Pack                   : 12 cells, 966 g, 194 Wh, 9.0 Ah, 21.6 V nom (18-25.2 V)
+  Configuration          : quadrotor, 18 in props, 6S3P 21700 Li-ion
+  Pack                   : 18 cells, 1449 g, 292 Wh, 13.5 Ah, 21.6 V nom (18-25.2 V)
   Pack specific energy   : 201 Wh/kg (pack level)
-  MTOW (4 kits loaded)   : 5.05 kg      Empty (no batt/kits): 3.29 kg
-  FLEET OF 3             : 15.16 kg   vs 25.0 kg limit -> margin 9.84 kg (39%)
-  Disk loading           : 6.23 kg/m2   power loading 8.4 g/W
-  Hover power            : 426 W shaft / 601 W electrical
-  Hover endurance (80% DoD): 15.5 min
-  Design mission         : 7.7 min, 70 Wh = 45% of usable energy
-  Land-with SoC          : 64 %
+  MTOW (4 kits loaded)   : 5.88 kg      Empty (no batt/kits): 3.63 kg
+  FLEET OF 3             : 17.65 kg   vs 25.0 kg limit -> margin 7.35 kg (29%)
+  Disk loading           : 8.96 kg/m2   power loading 7.2 g/W
+  Hover power            : 594 W shaft / 818 W electrical
+  Hover endurance (80% DoD): 17.1 min
+  Design mission         : 7.7 min, 95 Wh = 41% of usable energy
+  Land-with SoC          : 68 %
 
   MASS STATEMENT (per aircraft)
-    Structure: frame, arms, landing gear, hardware     1187 g   23.5%
-    Motors (4)                                          508 g   10.1%
-    ESCs (4)                                            178 g    3.5%
-    Propellers (4)                                      248 g    4.9%
-    Battery pack                                        966 g   19.1%
-    Avionics + wiring harness                           925 g   18.3%
-    Payload magazine + release                          240 g    4.8%
-    Survivor kits (4 x 200 g)                           800 g   15.8%
-    MTOW                                               5052 g
-    Fleet of 3 (weigh-in figure)                      15157 g
-    Growth allowance to 24.0 kg fleet target           8843 g  = 58% build overweight tolerated
+    Structure: frame, arms, landing gear, hardware     1383 g   23.5%
+    Motors (4)                                          592 g   10.1%
+    ESCs (4)                                            207 g    3.5%
+    Propellers (4)                                      288 g    4.9%
+    Battery pack                                       1449 g   24.6%
+    Avionics + wiring harness                           925 g   15.7%
+    Payload magazine + release                          240 g    4.1%
+    Survivor kits (4 x 200 g)                           800 g   13.6%
+    MTOW                                               5884 g
+    Fleet of 3 (weigh-in figure)                      17651 g
+    Growth allowance to 24.0 kg fleet target           6349 g  = 36% build overweight tolerated
 
   PROPULSION
-    Static thrust required (T/W 2.0)        99 N  (10.10 kgf), 2.53 kgf per motor
-    Hover thrust per motor                  1.26 kgf  = 50% of max (good: 45-55% band)
-    Hover current                           27.8 A  (3.09 C)
-    Peak current at T/W=2                   74 A  (8.23 C), 1601 W
-    Pack burst capability (2P x 45 A)      90 A -> OK, margin 21%
-    ESC rating                              19 A peak/motor -> specify 50-60 A ESC
-    Main power leads                        74 A -> 10 AWG; motor leads 14 AWG
+    Static thrust required (T/W 2.0)        115 N  (11.77 kgf), 2.94 kgf per motor
+    Hover thrust per motor                  1.47 kgf  = 50% of max (good: 45-55% band)
+    Hover current                           37.9 A  (2.81 C)
+    Peak current at T/W=2                   102 A  (7.59 C), 2213 W
+    Pack burst capability (3P x 45 A)      135 A -> OK, margin 32%
+    ESC rating                              26 A peak/motor -> specify 50-60 A ESC
+    Main power leads                        102 A -> 10 AWG; motor leads 14 AWG
 
   MISSION SEGMENTS
     segment                                       t       P        E
-    Arm, spin-up, launch queue                  45s    210W     2.6Wh
-    Climb to 60 m                               20s    792W     4.4Wh
-    Transit to sub-region                       10s    563W     1.6Wh
-    Area sweep                                  93s    563W    14.6Wh
-    Delivery (3.3 drops)                       185s    552W    28.3Wh
-    RTH transit ~250 m                          21s    563W     3.3Wh
-    Recovery hold, descend, land                90s    601W    15.0Wh
-    TOTAL                                      464s           69.8Wh   (7.7 min of a 30 min allowance)
+    Arm, spin-up, launch queue                  45s    286W     3.6Wh
+    Climb to 60 m                               20s   1040W     5.8Wh
+    Transit to sub-region                       10s    765W     2.1Wh
+    Area sweep                                  93s    765W    19.8Wh
+    Delivery (3.3 drops)                       185s    749W    38.5Wh
+    RTH transit ~250 m                          21s    765W     4.4Wh
+    Recovery hold, descend, land                90s    818W    20.4Wh
+    TOTAL                                      464s           94.6Wh   (7.7 min of a 30 min allowance)
 ================================================================================
 STEP 6  QUAD vs HEX REDUNDANCY TRADE
 ================================================================================
-  quad 4x20"   MTOW 5.05 kg  fleet 15.16 kg  P_hov  601 W  hover 15.4 min  DL 6.23 kg/m2  margin  9.84 kg
-  hex  6x16"   MTOW 5.25 kg  fleet 15.75 kg  P_hov  646 W  hover 14.4 min  DL 6.74 kg/m2  margin  9.25 kg
-  hex  6x15"   MTOW 5.25 kg  fleet 15.75 kg  P_hov  685 W  hover 13.5 min  DL 7.67 kg/m2  margin  9.25 kg
+  quad 4x20"   MTOW 5.88 kg  fleet 17.65 kg  P_hov  742 W  hover 18.8 min  DL 7.26 kg/m2  margin  7.35 kg
+  hex  6x16"   MTOW 6.11 kg  fleet 18.34 kg  P_hov  797 W  hover 17.5 min  DL 7.85 kg/m2  margin  6.66 kg
+  hex  6x15"   MTOW 6.11 kg  fleet 18.34 kg  P_hov  847 W  hover 16.4 min  DL 8.94 kg/m2  margin  6.66 kg
   Hex adds 2 motors+ESCs+props+arms; buys single-motor-out controllability.
   Both fit the 25 kg fleet cap with >30% margin -> redundancy is affordable here.
 
@@ -169,18 +169,18 @@ STEP 10  RF LINK BUDGET
 ================================================================================
 STEP 11  GEOMETRY, STRUCTURE, CG
 ================================================================================
-  20" prop, 30 mm tip clearance -> wheelbase (diagonal) 761 mm, overall footprint ~1046 mm square
+  18" prop, 30 mm tip clearance -> wheelbase (diagonal) 689 mm, overall footprint ~944 mm square
   Launch/landing box 12 ft = 3.66 m -> 3 aircraft fit per row, 9 total statically
   -> all three fit simultaneously, but sequence launches anyway: prop wash and
      downwash interaction at <1 rotor diameter separation is a real upset risk.
 
-  Arm root bending moment at T/W=2: M = 24.8 N x 0.380 m = 9.4 N.m
-  With a 25x23 mm CF tube (I ~ 5438 mm^4), sigma = 22 MPa vs ~600 MPa CF UD -> SF 28
+  Arm root bending moment at T/W=2: M = 28.8 N x 0.345 m = 9.9 N.m
+  With a 25x23 mm CF tube (I ~ 5438 mm^4), sigma = 23 MPa vs ~600 MPa CF UD -> SF 26
   (bending is not the driver; joint/clamp design and vibration fatigue are)
 
   CG SHIFT on releasing one 200 g kit from a magazine 5 cm off centreline:
-    CG moves 1.98 mm; residual moment 0.098 N.m
-    -> counter-thrust needed 26 g of differential thrust: trivial,
+    CG moves 1.70 mm; residual moment 0.098 N.m
+    -> counter-thrust needed 29 g of differential thrust: trivial,
        but the STEP change excites the attitude loop. Mount magazine on the CG axis and
        feed a mass-change event to the controller / hold position 2 s after release.
 ================================================================================
@@ -262,12 +262,12 @@ CORRECTION 4  WIND, DRAG AND FORWARD-FLIGHT LIMITS
   Frontal area (tilted airframe + arms + gear) 0.075 m2, Cd 1.1
    airspeed    drag    tilt  thrust/W   extra P
          0m/s   0.00N    0.0deg    1.000        0W
-         5m/s   1.19N    1.4deg    1.000        8W
-         8m/s   3.04N    3.5deg    1.002       31W
-        10m/s   4.74N    5.5deg    1.005       61W
-        12m/s   6.83N    7.8deg    1.009      105W
-        15m/s  10.67N   12.2deg    1.023      206W
-        20m/s  18.97N   21.0deg    1.071      487W
+         5m/s   1.19N    1.2deg    1.000        8W
+         8m/s   3.04N    3.0deg    1.001       31W
+        10m/s   4.74N    4.7deg    1.003       61W
+        12m/s   6.83N    6.8deg    1.007      105W
+        15m/s  10.67N   10.5deg    1.017      206W
+        20m/s  18.97N   18.2deg    1.053      487W
   -> attitude authority is never the wind limit (tilt stays small). The real limits are
      (a) groundspeed loss upwind, (b) position-hold quality during the drop, (c) energy.
     sweep time per drone in 0 m/s wind (alternating transects): 83 s vs 83 s still-air (+0%)
@@ -315,8 +315,10 @@ CORRECTION 6  SETUP TIME BUDGET vs THE 5-MINUTE RULE
   Margin against the 300 s rule: 15 s (5%)
 
   The single biggest lever is RTK convergence and companion boot. Mitigations:
-   1. Survey and start the RTK base BEFORE the window opens (it is ground equipment).
+   1. REFUSED by the organisers: the RTK base may NOT start before the window.
+      Instead skip survey-in, declare the first 3D fix as the reference, and
+      gate launch on a 3D fix not an RTK fix (SYS-42/43, setup_budget.py).
    2. Pre-load the TensorRT engine into a warm cache; do not JIT-build at boot.
    3. Cache the GNSS almanac (hot start) - saves 30-40 s over a true cold start.
-   4. Ask the organisers whether power-on may precede the window (question 6 in the plan).
+   4. REFUSED by the organisers: onboard computers may not be pre-booted.
    5. Measure all of these on real hardware in Phase 5. These are estimates, not data.

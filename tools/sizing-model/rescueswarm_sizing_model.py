@@ -49,7 +49,9 @@ T_W        = 2.0     # design thrust-to-weight at MTOW (sea level static)
 N_rot      = 4
 spec_thrust_motor = 195.0  # N of max static thrust per kg of motor mass (T-Motor MN-class empirical)
 k_esc      = 0.35          # ESC mass as fraction of motor mass
-m_prop_ea  = 0.062         # kg, 20 in CF prop (matches D = 20*0.0254 below)
+m_prop_ea  = 0.072         # kg, 18 in CF folding prop + folding hub, from the
+                           # Indian BOM tab 01: row 15 gives 116 g per matched
+                           # PAIR (58 g each) and row 16 adds a 14 g hub.
 
 def prop_area(D):
     return N_rot*np.pi*(D/2)**2
@@ -89,7 +91,7 @@ def endurance_min(m_batt, D, e_spec):
 e_lipo  = 165.0   # 6S high-C LiPo, pack level incl. case/leads
 e_liion = 200.0   # 21700 Li-ion (Molicel P45B class), pack level incl. holders/BMS/wiring
 
-D = 20*0.0254
+D = 18*0.0254
 v_climb, v_desc = 3.0, 2.5
 h_search, h_transit, h_drop = 60.0, 40.0, 6.0
 v_search, v_transit = 8.0, 12.0
@@ -151,7 +153,7 @@ for chem,e in [('LiPo  ',e_lipo),('Li-ion',e_liion)]:
 # ================= FINAL DESIGN POINT =================
 # choose Li-ion, then round the pack UP to a buildable cell count and re-check
 cell = dict(name='21700 Li-ion, 4500 mAh 45 A class', mAh=4500, V=3.6, g=70.0, Imax=45.0)
-S_cells, P_par = 6, 2
+S_cells, P_par = 6, 3
 n_cells = S_cells*P_par
 m_cells = n_cells*cell['g']/1000
 m_pack  = m_cells*1.15                       # +15% holders, BMS, leads, wrap
@@ -528,8 +530,10 @@ par=60+max(25+45+60, 75+20)+45+30+20
 print(f"  With parallelism (2 people; boot, GNSS/RTK and magazine loading overlapped): ~{par} s = {par/60:.1f} min")
 print(f"  Margin against the 300 s rule: {300-par} s ({(300-par)/300:.0%})")
 print("\n  The single biggest lever is RTK convergence and companion boot. Mitigations:")
-print("   1. Survey and start the RTK base BEFORE the window opens (it is ground equipment).")
+print("   1. REFUSED by the organisers: the RTK base may NOT start before the window.")
+print("      Instead skip survey-in, declare the first 3D fix as the reference, and")
+print("      gate launch on a 3D fix not an RTK fix (SYS-42/43, setup_budget.py).")
 print("   2. Pre-load the TensorRT engine into a warm cache; do not JIT-build at boot.")
 print("   3. Cache the GNSS almanac (hot start) - saves 30-40 s over a true cold start.")
-print("   4. Ask the organisers whether power-on may precede the window (question 6 in the plan).")
+print("   4. REFUSED by the organisers: onboard computers may not be pre-booted.")
 print("   5. Measure all of these on real hardware in Phase 5. These are estimates, not data.")
