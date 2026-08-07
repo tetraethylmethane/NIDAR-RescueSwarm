@@ -282,18 +282,21 @@ fix if known, and unfixable on the day if not.**
 | Pre-booting onboard computers? | **No** | Removes a setup mitigation — §6.5 |
 | Delivery datum on the survivor? | **"On the survivor, ideally"** | Aim at torso centroid — §6.6 |
 
+| May the RTK base start before the window? | **No** | Setup must absorb it — §6.7 |
+
 **Still open:**
 
-1. **May the RTK base be surveyed and started before the setup window opens?**
-   Organisers asked us to elaborate — question drafted at §6.7. This is now the
-   *only* remaining structural relief on the setup budget, because pre-booting has
-   been refused.
+1. **How is "correctly geotagged" verified** — displayed coordinates against
+   surveyed truth, and to what tolerance? Decides whether the base's ~1–2 m
+   absolute error costs us anything against 250 points (§6.8).
 2. **Is a recovery-canopy descent scored as an emergency landing (−10, or exempt)
    or as a crash (−50)?** Worth 40 points per incident. The rules define a crash as
    "uncontrolled ground impact, collision resulting in loss of flight, or crash
    landing", and a canopy descent is arguably none of those (§6.2).
 3. **Is motor-out tolerance separately required?** Ties directly to the open
    rotor-count decision at `../sizing/configuration-trade.md` §2.3.
+4. **Is prior site access available** to survey the launch pad? Only matters if
+   the answer to (1) makes absolute accuracy count.
 
 ---
 
@@ -421,7 +424,83 @@ Since the targets are confirmed dummies this is fine, but **the aim-at-the-body
 rule must never be carried over to a live-subject trial** without revisiting the
 release altitude.
 
-### 6.7 RTK base station — the elaboration requested
+### 6.7 RTK base station — ANSWERED: NO
+
+**The base may not be positioned, surveyed or started before the setup window.**
+It must be set up inside the 5 minutes, alongside the aircraft.
+
+This is the hardest answer received so far, because it lands on the only
+constraint that had no margin. Modelled in
+[`../../tools/sizing-model/setup_budget.py`](../../tools/sizing-model/setup_budget.py),
+output in [`../sizing/setup-budget-output.txt`](../sizing/setup-budget-output.txt).
+Figures below are calibrated against the main model's 285 s baseline:
+
+| Case | Launch | Verdict |
+|---|---|---|
+| **A** Base pre-started *(no longer allowed)* | 285 s | OK — the old baseline |
+| **B** Base in-window, 90 s survey-in, RTK fix before launch | **475 s** | **Fails by 175 s** |
+| **C** Base declares its first 3D fix, RTK fix before launch | **390 s** | **Fails by 90 s** |
+| **D** As C, RTK converges *in flight* | **285 s** | **OK — fully recovers** |
+
+Two changes together absorb the ruling completely:
+
+**(1) Do not survey-in. Declare the base's first 3D fix as its reference.**
+Survey-in buys absolute accuracy, and §6.8 shows we barely need it. Saves ~90 s.
+
+**(2) Stop gating launch on an RTK fix.** The rule constrains setup-to-**launch**;
+nothing requires an RTK fix at takeoff. RTK only has to be fixed before the first
+*geotag*, which is after the launch queue, climb and transit. Saves ~105 s.
+
+**PROPOSED SYS-42:** the RTK base is positioned, powered and set to a fixed
+reference from its first 3D fix, inside the setup window, without survey-in.
+**PROPOSED SYS-43:** launch is gated on a 3D fix, not an RTK fix. The first geotag
+is gated on RTK-fixed; detections made before that are geotagged in float and
+re-fused once fixed.
+
+**Residual gap.** RTK fixes ~30 s after the first sweep line begins, so roughly
+the first third of the sweep is float-quality. Float is typically 0.3–0.5 m
+horizontal — well short of fixed, but far better than standalone, and the ~12
+looks per target make re-fusing after the fix nearly free. **Verify in P7 that a
+re-fused float-then-fixed track meets SYS-12.**
+
+### 6.8 Does RTK need an external network? — an honest answer
+
+Asked directly, and the earlier answer was incomplete.
+
+**The corrections link needs no network.** A team-owned base computes corrections
+and transmits them to the aircraft over our own radio. Nothing touches GSM, LTE,
+the internet, or an NTRIP caster. This is what rules 8.4 and 8.17 prohibit, and we
+are clear of it.
+
+**But the base's own position is a separate question**, and the earlier phrasing
+glossed it:
+
+| How the base gets its position | Network? | Absolute accuracy |
+|---|---|---|
+| Self-survey (averaging its own fix) | **No** | ~1–2 m |
+| Declared from first 3D fix (SYS-42) | **No** | ~1–2 m |
+| Surveyed benchmark | No, but needs prior site access | cm |
+| NTRIP / network-corrected fix | **Yes — prohibited** | cm |
+
+So a precise *absolute* position would normally involve a network or prior
+surveying. **We use neither, and accept ~1–2 m absolute.**
+
+**Why that is acceptable — and where it isn't.** RTK provides *relative* precision.
+A base position error shifts every aircraft by the same vector, so:
+
+- **Delivery (200 points): the error cancels exactly.** The survivor is geotagged
+  by a drone carrying the shift, and the delivery drone flies to that coordinate
+  carrying the same shift, so the kit lands on the true survivor.
+- **Geotag score (250 points): it may not cancel.** If judges compare our
+  *displayed* coordinates against surveyed truth, a 1–2 m common-mode bias is a
+  real error against that check.
+
+**NEW QUESTION FOR THE ORGANISERS:** how is "correctly geotagged" verified — by
+comparing our displayed coordinates against a surveyed truth position, and if so
+to what tolerance? If the tolerance is tight, the base's absolute accuracy matters
+for 250 points and prior site access to survey the pad becomes valuable.
+
+### 6.9 Original elaboration, as sent
 
 *Draft text for the organisers:*
 

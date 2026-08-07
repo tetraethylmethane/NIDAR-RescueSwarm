@@ -1,0 +1,62 @@
+﻿==============================================================================
+SETUP-TO-LAUNCH BUDGET  -  5 min window, 2 crew
+==============================================================================
+  Automatic tasks (boots, GNSS, RTK) overlap with manual work.
+  Manual tasks queue on the two crew members.
+
+  *** CALIBRATION WARNING ***
+  Case A below is the same scenario the main model calls ~285 s, and
+  this scheduler makes it 185 s. This model is therefore ~100 s
+  OPTIMISTIC: it omits walking between aircraft, per-aircraft checks,
+  fumbling, and any serialisation the main model assumed. TRUST THE
+  DELTAS BETWEEN CASES, NOT THE ABSOLUTE NUMBERS. Add ~100 s to every
+  case for a pessimistic read -- which puts case C over the window.
+  The P1 bench test is what calibrates this.
+
+A  Base pre-surveyed and running before the window  [NO LONGER ALLOWED]
+  launch at   185 s   margin   +115 s   [OK]   |  +100 s calibrated: 285 s [OK]
+  RTK fixed at 145 s (before launch)
+  corrections available at t=0; this is the 285 s case in the main model
+
+B  Base set up in-window, 90 s survey-in, RTK fix required before launch
+  launch at   375 s   margin    -75 s   [OVER]   |  +100 s calibrated: 475 s [OVER]
+  RTK fixed at 375 s (before launch)
+  the literal reading of the ruling -- this is the problem case
+
+C  Base declares its first 3D fix as its reference, RTK before launch
+  launch at   290 s   margin    +10 s   [OK]   |  +100 s calibrated: 390 s [OVER]
+  RTK fixed at 290 s (before launch)
+  absolute position ~1-2 m off, but that error is COMMON MODE
+
+D  As C, but RTK converges during climb and transit  [RECOMMENDED]
+  launch at   185 s   margin   +115 s   [OK]   |  +100 s calibrated: 285 s [OK]
+  RTK fixed at 290 s (in flight)
+  nothing in the rules requires an RTK fix at launch
+
+==============================================================================
+DOES OPTION D ACTUALLY WORK?  -  when is the first geotag needed
+==============================================================================
+  launch                          185 s
+  RTK fixed                       290 s
+  first sweep line begins         260 s (launch + 45 s queue + 20 s climb + 10 s transit)
+  slack before first geotag       -30 s [INSUFFICIENT]
+
+  Gate the first geotag on RTK-fixed rather than gating launch on it.
+  If RTK has not fixed by the first detection, geotag in float and
+  re-fuse once fixed -- the frame surplus makes that nearly free.
+
+==============================================================================
+WHY THE ABSOLUTE BASE POSITION BARELY MATTERS FOR DELIVERY
+==============================================================================
+  The base's absolute error shifts every aircraft position by the same
+  vector. The survivor is geotagged from a drone carrying that shift,
+  and the delivery drone flies to that coordinate carrying the SAME
+  shift -- so the kit lands on the true survivor. The error cancels.
+
+  It does NOT cancel if the 250-point geotag score is judged by
+  comparing our DISPLAYED coordinates against surveyed truth. That is
+  an open question and the reason to still want a good absolute fix.
+
+  Consequence: a long survey-in buys accuracy we mostly do not need.
+  Trading 90 s of survey-in for ~1-2 m of common-mode bias is a good
+  trade when the window has 15 s of margin.

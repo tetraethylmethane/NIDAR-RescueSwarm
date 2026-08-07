@@ -151,7 +151,7 @@ Reasoning and numbers in [configuration trade](docs/sizing/configuration-trade.m
 
 | Risk | Detail | Status |
 |:--|:--|:--|
-| **Setup margin** | 15 seconds against a 5-minute rule — and modelled, not measured | Bench test in P1 |
+| **Setup margin** | 15 seconds against a 5-minute rule — modelled, not measured. The RTK base must now be set up *inside* the window too, which the literal approach blows by 175 s | Recovered by SYS-42/43; bench test in P1 |
 | **VRS on every delivery** | The 2.5 m/s descent sits at 0.48 v_i, on the vortex-ring onset boundary, and a nulled-groundspeed descent is exactly what triggers it | Fix in the flight profile, not the airframe |
 | **Wind cliff at 8 m/s** | Search groundspeed is 8 m/s, so at that windspeed the aircraft can't make headway at all. Organisers confirm wind is **natural and uncapped** — nothing protects us | Now a requirement: 10 m/s headway (SYS-37) |
 | **Business strategy** | 200 points, barely started — sponsorship evidence can't be produced in the final week | Start now |
@@ -172,15 +172,17 @@ Reasoning and numbers in [configuration trade](docs/sizing/configuration-trade.m
 | Boundary format? | **KML file** | Parser requirement (SYS-38). Watch the `lon,lat` ordering. |
 | Survivors? | **Human-looking dummies** | Fine-tune on dummies, not people — HERIDAL/SARD are real humans (SYS-39). |
 | Pre-boot onboard computers? | **No** | Budget already assumed this, so 285 s stands — but a mitigation is gone. |
+| Start the RTK base before the window? | **No** | The hardest answer yet — it lands on the only constraint with no margin. Recovered by not surveying-in and letting RTK converge in flight (SYS-42/43). |
 | Video feeds? | **One per drone** (rule 8.14) | Free — three 480p15 feeds cost what one 720p30 did. |
 
 ### 6.2 Still open
 
 | # | Question | Why it matters |
 |:--|:--|:--|
-| 1 | May the **RTK base** be positioned, surveyed and started *before* the setup window, as ground equipment under rule 4.34? | The only structural relief left on a 15 s setup margin, now that pre-booting is refused. Elaboration drafted in [rulebook compliance](docs/requirements/rulebook-compliance.md) §6.7. |
+| 1 | How is **"correctly geotagged" verified** — displayed coordinates against surveyed truth, and to what tolerance? | Decides whether the base's ~1–2 m absolute error costs anything against 250 points. It cancels for delivery; it may not cancel here. |
 | 2 | Is a **recovery-canopy descent** scored as an emergency landing (−10, or exempt) or as a **crash** (−50)? | Worth 40 points per incident. A canopy descent is arguably not "uncontrolled ground impact". |
 | 3 | Is **motor-out tolerance** separately required? | Ties to the rotor-count decision. |
+| 4 | Is **prior site access** available to survey the launch pad? | Only matters if the answer to (1) makes absolute accuracy count. |
 
 ---
 
@@ -210,6 +212,7 @@ python3 tools/sizing-model/rescueswarm_sizing_model.py   # the design point
 python3 tools/sizing-model/config_trade.py               # quad vs hex vs coaxial
 python3 tools/sizing-model/delivery_accuracy.py          # sets geotag + drop targets
 python3 tools/sizing-model/mission_profile.py            # altitude, geotag error, downlink
+python3 tools/sizing-model/setup_budget.py               # the 5-minute window, 2 crew
 ```
 
 Outputs are committed beside each script in [`docs/sizing/`](docs/sizing/).

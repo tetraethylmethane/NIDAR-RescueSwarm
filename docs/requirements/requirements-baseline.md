@@ -57,6 +57,8 @@ here explicitly because they were quoted in the README and in the sizing documen
 | SYS-20 | GCS shall be incapable of originating a retask, waypoint change or drop command by construction | 8.16 | I (source review) | P2 |
 | SYS-21 | Setup to launch ≤ 240 s internal target against the 300 s rule, with 2 people | MB §3, MB §6 | D (20 timed runs) | P10 |
 | SYS-22 | Mission file received during setup, parsed, partitioned and rendered without operator editing | MB §3 | D | P9 |
+| SYS-42 | RTK base positioned, powered and set to a fixed reference from its **first 3D fix**, inside the setup window, **without survey-in** | organiser answer + setup budget | T | P5 |
+| SYS-43 | Launch gated on a **3D fix, not an RTK fix**. First geotag gated on RTK-fixed; earlier detections geotagged in float and re-fused once fixed | derived — setup budget | T | P7 |
 | SYS-24 | **[SCORED 50]** Collaborative execution: area allocation, task distribution, coordination, consolidated reporting | 4D-3, 8.15 | D | P9 |
 | SYS-28 | Autonomous continuation on C2 loss; RTH at 60 s | 8.19, MB §8 | T (fault injection) | P4, P9 |
 | SYS-29 | No component swapped, replaced or added after mission start | MB §3 | I | P9 |
