@@ -106,3 +106,69 @@ Ordered by deadline pressure, not by importance:
    beats the quad on physics if the assumption turns out to be wrong. See
    [`sizing/configuration-trade.md`](sizing/configuration-trade.md) §2.3.
 5. **Order long-lead items** once P1 freezes the architecture.
+
+---
+
+## 6. Work that is not blocked on organiser answers
+
+Four questions are outstanding
+([`requirements/organiser-questions.md`](requirements/organiser-questions.md)).
+Between them they block **two** decisions: how much to invest in absolute RTK base
+accuracy, and the final rotor count. **Everything else can proceed**, and the two
+items with irreducible calendar cost are among them.
+
+### 6.1 Start today — these have someone else's clock on them
+
+| Task | Why it can't wait | Blocked? |
+|---|---|---|
+| **Register the team** | Deadline is this month; disqualification if missed | No |
+| **Build or buy the survivor dummies** | Human-looking dummies confirmed. Everything in perception depends on having them, and they are a physical build with lead time. Aim for ~10 to rehearse a full mission, but **two are enough to start collecting data** | No |
+| **Begin the recall dataset** | The 250-point long pole and the single longest calendar item. Needs dummies, a camera and a field — not an aircraft | No |
+| **Open sponsorship conversations** | 20 points, and it runs on other people's decision cycles. The only section of the business pitch that cannot be written the week before | No |
+
+### 6.2 The measurement that matters most
+
+**Cold-boot and setup timing — and it is now harder than when it was last modelled.**
+
+The RTK ruling added base positioning, power-on and reference-setting to a budget
+that had 15 s of margin, and the recovery route (SYS-42/43) has never been tried.
+The bench test should now cover:
+
+1. Unpack-to-armed with two people, timed, repeatedly.
+2. **RTK base set up inside the window** — position, power, first fix, declare
+   reference, corrections flowing. This is the new and untested part.
+3. **Time-to-RTK-fix from a cold base**, to check SYS-43's assumption that it
+   converges before the first geotag rather than before launch.
+4. **4-arm against 6-arm unpack time**, which is the unmeasured claim the rotor
+   count currently rests on ([`sizing/configuration-trade.md`](sizing/configuration-trade.md) §2.3).
+
+None of this needs a flying aircraft — a companion computer, a flight controller,
+GNSS modules, the base station and a stopwatch. It resolves the binding constraint
+and half the rotor-count question at the same time.
+
+### 6.3 Cheap, high-leverage, unblocked
+
+| Task | Value |
+|---|---|
+| **KML parser + adversarial polygons** (SYS-38) | Format is confirmed. A day's work removes a setup-window failure mode. Test long-thin, concave and high-aspect polygons — and get the `lon,lat` ordering right |
+| **Stand up multi-instance SITL** | Everything in autonomy depends on it, and P4 needs 200 Monte Carlo runs |
+| **Start the cost sheet** | Reconstructing spend in January is far harder than recording it now |
+| **Write the boresight / lever-arm calibration procedure** (SYS-48) | Required before any geotag accuracy claim is meaningful |
+| **Lock the read-only GCS architecture** | Structural, worth 50 points and −50 per violation avoided |
+
+### 6.4 Procurement: order what the frame decision doesn't touch
+
+The rotor count is unresolved, but most long-lead items do not depend on it —
+compute, camera and lens, radios, GNSS and RTK hardware, batteries, payload
+mechanism. **Order those now.** Hold only the motors, ESCs, props and frame, which
+are the items a quad-to-hex change would strand.
+
+### 6.5 Genuinely blocked — defer
+
+| Item | Waiting on |
+|---|---|
+| Final rotor count | Q3 (is motor-out tolerance required) + the P1 bench measurement |
+| Whether to invest in absolute base accuracy | Q1 (how "correctly geotagged" is verified) |
+| Whether to survey the pad in advance | Q4, which only matters if Q1 goes a particular way |
+
+That is a short list. **Do not let it hold up anything in §6.1.**
