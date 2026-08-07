@@ -24,10 +24,11 @@ disagrees with `sizing-calculations.md`, the README or `configuration-trade.md`,
 ready". Finals are **January 2027**, roughly **22 weeks** from registration in
 August 2026. **The plan is ~8 weeks longer than the competition allows.**
 
-The plan must be re-baselined against these dates, not against a 30-week
-abstraction. Two fixed interior checkpoints now exist that the plan does not
-acknowledge: **Progress Review 1 in October** and **Progress Review 2 in
-December**.
+**RESOLVED:** re-baselined in [`../schedule-baseline.md`](../schedule-baseline.md),
+which governs where it disagrees with `development-plan.md`. Two fixed interior
+checkpoints the old plan did not acknowledge — **Progress Review 1 (October)** and
+**Progress Review 2 (December)** — are now phases P3 and P8. Buffer falls from
+three weeks to one.
 
 ---
 
@@ -62,7 +63,12 @@ repeat breach by same drone −20 · **manual input or reset −50/instance** ·
 **(a) The ≤3 m delivery target is the worst-scoring zone.**
 The current design target — "≤ 3 m CEP from a 6 m hover-and-drop" — lands in
 **Zone C, worth 8 points of an available 20**. Across 10 drops that is 80 points
-instead of 200. **The delivery requirement must be re-baselined to ≤1 m.**
+instead of 200. **RESOLVED.** Re-baselined in [`requirements-baseline.md`](requirements-baseline.md).
+The right requirement is not a single "≤1 m" figure but a distribution — see
+[`../sizing/delivery-accuracy-output.txt`](../sizing/delivery-accuracy-output.txt),
+which converts total error into expected points. Case C (RTK + fusion +
+calibrated ground plane) yields **1.00 m total RSS → 17.7 pts/drop, 177 of 200**;
+no RTK yields 3.09 m → **75 of 200**.
 
 **(b) Geolocation accuracy gates 450 of the 600 flight points, not 250.**
 Detection + geotag is 250 directly. But the delivery zones are measured from the
@@ -103,11 +109,15 @@ the 15 min bonus threshold.
 | 8 | Go-to-Market Strategy & Partnership | 20 |
 | 9 | Regulatory, Safety & Adoption Readiness | 10 |
 
-**This is worth exactly as much as the entire Design Review, and the repository
-contains nothing addressing it.** A detailed cost sheet and BOM are required
-deliverables (7.5) — the BOM exists in `hardware/bom/`, the cost sheet does not.
-Item 6 (funds raised, sponsorships) has lead time and cannot be produced the week
-before finals.
+**This is worth exactly as much as the entire Design Review.** A detailed cost
+sheet and BOM are required deliverables (7.5) — the BOM exists in
+`hardware/bom/`, the cost sheet did not.
+
+**PARTLY RESOLVED:** structure and preparation sequence in
+[`../business/README.md`](../business/README.md), cost-sheet template in
+[`../business/cost-sheet.md`](../business/cost-sheet.md). These are skeletons —
+the content still has to be gathered, and **items 6 and 8 (funds raised,
+partnerships) have lead time that cannot be recovered in January**.
 
 ### 1.4 Design Review — 200 points
 
@@ -192,8 +202,13 @@ concurrent feeds. Options, in rough order of preference:
 2. Widen the channel or accept a lower link margin at a higher MCS.
 3. Keep 720p but reduce framerate aggressively.
 
-Option 1 preserves the deliberate low-MCS margin strategy, which remains right.
-**Re-run §12.1 with a three-feed load before Design Review.**
+**RESOLVED — compliance is free.** Re-run in
+[`../sizing/mission-profile-output.txt`](../sizing/mission-profile-output.txt) §3:
+**three 480p15 H.265 feeds cost 1.80 Mbps, exactly what one 720p30 feed cost.**
+Total offered load stays at the 2.5 Mbps the link was designed around (18 %
+utilisation at MCS3), so the deliberate low-MCS margin strategy survives intact.
+Three *720p30* feeds would push utilisation past 40 %, which is where latency and
+jitter on a shared mesh begin to bite. Captured as **SYS-27**.
 
 ### 4.2 Pre-Flight Inspection is an unplanned hard gate
 
@@ -202,9 +217,10 @@ of the drone system, C2 station and associated equipment. **Only one retry is
 permitted**, and failing it means not flying at all — forfeiting the entire 600
 points. A model checklist is to be released separately (4.31).
 
-**PROPOSED:** treat this as a formal internal gate before the finals, and track the
-model checklist's release. Nothing in the development plan currently corresponds
-to it.
+**RESOLVED:** added as **SYS-36** in
+[`requirements-baseline.md`](requirements-baseline.md) and as a mock inspection in
+P10 of [`../schedule-baseline.md`](../schedule-baseline.md). The model checklist
+(4.31) is still to be released — track it.
 
 ### 4.3 Delivery measurement datum still ambiguous
 

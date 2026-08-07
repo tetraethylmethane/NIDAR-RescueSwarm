@@ -226,11 +226,25 @@ a recall requirement rather than being fixed at 60 m.
 | **40 m** | **1.22 cm/px** | **140 px** | **149 s** | **8 %** |
 | 30 m | 0.91 cm/px | 186 px | 187 s | 10 % |
 
-40 m gives **50 % more pixels on target** for 56 s of a 1800 s budget, and shrinks
-the **dominant geotag error term** — the 2.76 m ground-height term scales with the
-37 m frame-edge distance, which falls with altitude.
+40 m gives **50 % more pixels on target** for 56 s of a 1800 s budget.
 
-**PROPOSED:** re-baseline to 40 m pending P7 recall-vs-GSD measurement.
+> **Correction.** An earlier revision of this section also claimed that lowering
+> altitude shrinks the dominant 2.76 m ground-height geotag term, "because it
+> scales with the 37 m frame-edge distance, which falls with altitude". **That is
+> wrong.** The frame-edge distance is `r = h·tan θ` and the projection error is
+> `(Δh/h)·r = Δh·tan θ` — the `h` cancels. The term depends only on the
+> ground-height uncertainty and the off-nadir angle, so **flying lower does not
+> touch it**. What does: surveying the field elevation (or a laser rangefinder) to
+> shrink `Δh`, and geotagging only near-nadir detections to shrink `tan θ`. See
+> [`mission-profile-output.txt`](mission-profile-output.txt) §2. Altitude *does*
+> shrink the attitude/boresight term, which scales as `h·ε`, and improves centroid
+> accuracy through GSD — but the case for going lower rests on **recall**, not
+> geotagging.
+
+**PROPOSED:** re-baseline to 40 m pending P7 recall-vs-GSD measurement. The
+scoring structure strengthens this considerably — see
+[`../requirements/rulebook-compliance.md`](../requirements/rulebook-compliance.md)
+§1.2, where detection is 250 points and speed is 50 that are already won.
 
 ### 5.4 Redundancy: parachute, not rotors
 

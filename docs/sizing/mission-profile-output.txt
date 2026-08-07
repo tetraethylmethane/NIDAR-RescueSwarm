@@ -1,0 +1,91 @@
+﻿============================================================================================
+SECTION 1  SEARCH ALTITUDE  -  spending surplus time on recall
+============================================================================================
+  Sensor-derived HFOV 63.3 deg (the sweep planner in the main model hardcodes 70 deg -- see docstring)
+  Fast-completion bonus needs <= 15 min; hard limit 30 min
+
+  AGL   swath      GSD  person  lines   sweep  mission  of bonus   verdict
+    m       m    cm/px      px              s      min                    
+--------------------------------------------------------------------------------------------
+   25    30.8     0.76     224     12     224      8.9       60%  BONUS OK
+   30    37.0     0.91     186     10     187      8.5       56%  BONUS OK
+   35    43.2     1.06     160      9     168      8.3       55%  BONUS OK
+   40    49.3     1.22     140      8     149      8.1       54%  BONUS OK
+   45    55.5     1.37     124      7     131      7.9       53%  BONUS OK
+   50    61.7     1.52     112      6     112      7.8       52%  BONUS OK
+   60    74.0     1.82      93      5      93      7.7       52%  BONUS OK
+   70    86.3     2.13      80      5      93      8.0       53%  BONUS OK
+
+  Detection is 250 points; the speed bonus is 50 and needs only 15 min.
+  Every altitude down to 25 m keeps the bonus with room to spare, so
+  altitude should be chosen by recall, not by time.
+
+  RECOMMENDED: 40 m. 140 px on a person against 93 px at 60 m, for
+  ~2.5 min of a 15 min allowance. Going below 40 m keeps adding pixels
+  but the marginal recall gain must be measured (P7) before paying for
+  it in line count and turn overhead.
+
+============================================================================================
+SECTION 2  GEOTAG ERROR vs ALTITUDE  -  correcting an earlier claim
+============================================================================================
+  An earlier revision of configuration-trade.md section 5.3 claimed the
+  2.76 m ground-height term 'scales with the 37 m frame-edge distance,
+  which comes down with altitude'. That is WRONG. For a ground-height
+  error dh and an off-nadir angle theta:
+
+      ground position error = dh * tan(theta)
+
+  because the frame-edge distance r = h*tan(theta) and the projection
+  error is (dh/h)*r. The h cancels. The term depends on the ground-height
+  uncertainty and the off-nadir angle ONLY -- flying lower does not help.
+
+  dh (m)  edge 10deg  edge 20deg  edge 32deg
+--------------------------------------------------------------------------------------------
+     0.5        0.09        0.18        0.31
+     1.0        0.18        0.36        0.62
+     2.0        0.35        0.73        1.23
+     3.0        0.53        1.09        1.85
+     4.5        0.79        1.64        2.77
+
+  Frame half-angle is 31.7 deg, so a detection at the
+  frame edge suffers tan = 0.62 times the height error.
+
+  WHAT ACTUALLY REDUCES IT:
+    1. Reduce dh -- survey the field elevation during setup, or carry a
+       downward laser rangefinder. This is the cheapest large win.
+    2. Reduce theta -- only geotag detections in the central portion of
+       the frame. At 20 deg instead of 31.6 deg the term drops 41%.
+       Costs nothing: the frame surplus is ~14 looks per target, so
+       edge detections can be discarded and re-acquired near nadir.
+    3. Multi-frame fusion does NOT help -- it is systematic, not noise.
+
+  Altitude reduction DOES shrink the attitude/boresight term, which
+  scales as h*epsilon, and improves centroid accuracy through GSD.
+  It simply does not touch the dominant term.
+
+============================================================================================
+SECTION 3  DOWNLINK BUDGET  -  rule 8.14 requires a feed from EACH drone
+============================================================================================
+  Detection runs onboard. The downlink carries video for the judges'
+  display only, so resolution is a compliance question, not a
+  perception one. 8.14 requires a live camera feed from each drone.
+
+option                                     video   total   util MCS3   util MCS5
+                                            Mbps    Mbps                        
+--------------------------------------------------------------------------------------------
+1 x 720p30 H.265  (old, non-compliant)      1.80    2.50        18%          9% 
+3 x 720p30 H.265                            5.40    6.11        43%         21% 
+3 x 720p15 H.265                            3.00    3.71        26%         13% 
+3 x 480p15 H.265  (recommended)             1.80    2.50        18%          9% 
+3 x 360p15 H.265                            1.05    1.75        12%          6% 
+
+  Non-video load 0.70 Mbps (telemetry + swarm state + detections).
+  Usable throughput taken as 55% of PHY rate, which is optimistic for a
+  multi-hop mesh -- treat these utilisations as a floor.
+
+  READING: three 480p15 feeds cost 1.80 Mbps, exactly what ONE 720p30
+  feed cost before. Compliance with 8.14 is therefore free: the total
+  offered load stays at the 2.5 Mbps the link was designed around, and
+  the deliberate low-MCS margin strategy survives intact.
+  Three 720p30 feeds would push utilisation past 40% at MCS3, which is
+  where latency and jitter on a shared mesh start to bite.

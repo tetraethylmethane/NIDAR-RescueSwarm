@@ -29,15 +29,18 @@ Everything after "start" is autonomous. The operator may load the mission file, 
 
 The system has been sized end-to-end. These are not targets — they are the outputs of a closed engineering model ([`docs/sizing/`](docs/sizing/)).
 
-> ### ⚠ Rulebook check — [`docs/requirements/rulebook-compliance.md`](docs/requirements/rulebook-compliance.md)
+> ### Scoring-driven baseline — [`docs/requirements/`](docs/requirements/)
 >
-> Reading the NIDAR 2026–27 Rulebook against this design found three things that change priorities:
+> The design is now baselined against the NIDAR 2026–27 Rulebook rather than against round numbers. What that changed:
 >
-> - **Delivery scores by zone: ≤1 m = 20 pts, ≤2 m = 14, ≤3 m = 8.** The ≤3 m target below is the *worst* zone — 80 points instead of 200 across ten drops. **The delivery requirement should be ≤1 m.**
-> - **Geolocation gates 450 of the 600 flight points**, not 250: kits are scored by distance from the survivor, so a drop can be no better than the tag it aimed at. RTK becomes a scoring requirement, not an optimisation.
-> - **Speed is worth 50 points and is already won** — the bonus needs ≤15 min against a 7.7 min mission. Time is surplus and nearly worthless; spend it on accuracy.
+> - **Delivery scores by zone — ≤1 m = 20 pts, ≤2 m = 14, ≤3 m = 8.** The old ≤3 m target was the *worst* zone, and the old SYS-15 ("within 5.0 m of tag") was outside every zone and scored **zero**.
+> - **Geolocation gates 450 of the 600 flight points.** Kits are scored from the survivor, so a drop is no better than the tag it aimed at — geotag is **75–83 % of delivery error variance**. RTK is worth **82 delivery points** alone; fusion and ground-plane calibration add **20** more.
+> - **Speed is worth 50 points and is already won** (≤15 min needed, 7.7 min flown). Time is the one surplus resource — spend it on recall.
+> - **Rule 8.14 needs a feed from every drone, and compliance is free:** three 480p15 feeds cost 1.80 Mbps, exactly what one 720p30 feed cost.
 >
-> Also: rule 8.14 requires a live feed from **each** drone, which breaks the single-switched-feed RF budget; **Business Strategy is 200 points** (equal to Design Review) and is unaddressed; and the 30-week plan **overruns the January 2027 finals by ~8 weeks**.
+> **Documents:** [requirements baseline](docs/requirements/requirements-baseline.md) · [rulebook compliance](docs/requirements/rulebook-compliance.md) · [schedule baseline](docs/schedule-baseline.md) · [business strategy](docs/business/README.md)
+>
+> ⚠ **Registration closes in the 2nd week of August 2026** and the finals are **January 2027** — the old 30-week plan overran by ~8 weeks. See [`docs/schedule-baseline.md`](docs/schedule-baseline.md).
 
 > **Configuration decision and constraint review** — [`docs/sizing/configuration-trade.md`](docs/sizing/configuration-trade.md). **Coaxial is rejected**: sized to the reserve policy it costs +61–84 % hover power and +26–34 % fleet mass, and has the worst attitude bandwidth of any option. **Stay quad** — 4 arms protects setup, the only constraint under 20 % margin. **Prop diameter provisionally 18 in** (lower gust sensitivity and 38 % less rotor inertia), arms designed to accept 16–20 in and confirmed on a bench in P5. Three constraints bind and none is a stated requirement yet: **VRS on descent** (the current 2.5 m/s sits on the onset boundary — a flight-profile fix, not a hardware one), **wind penetration**, and **detection recall**. The design point below is unchanged until those are adopted.
 
@@ -55,8 +58,8 @@ The system has been sized end-to-end. These are not targets — they are the out
 | Search altitude / speed | 60 m AGL / 8 m/s **groundspeed** |
 | Ground sample distance | 1.82 cm/px → a person is ~93 px long |
 | Sweep time (10 ha, 3 drones) | ~93 s per drone including turns |
-| Geotag accuracy target | CEP50 ≤ 2.0 m with RTK · ≤ 3.5 m without ⚠ *see below* |
-| Delivery accuracy target | ≤ 3 m CEP from a 6 m hover-and-drop ⚠ *scores worst zone — see below* |
+| Geotag accuracy target | **CEP50 ≤ 0.75 m** with RTK (0.91 m RSS) — *scoring-derived* |
+| Delivery accuracy target | **≥ 60 % within 2 m, ≥ 30 % within 1 m** of the survivor — *scoring-derived* |
 | Link margin | ≥ 13 dB at 600 m · offered load 2.5 Mbps |
 
 ---
@@ -258,8 +261,10 @@ Full plan: [`docs/development-plan.md`](docs/development-plan.md)
 |---|---|---|---|
 | SYS-01 | Fleet AUW ≤ 24.0 kg fully loaded | Test (calibrated scale) | P6 |
 | SYS-07 | ≥ 90 % survivor detection at operational altitude | Test | P7, P9 |
-| SYS-12 | Geotag CEP50 ≤ 2.0 m (RTK) — ⚠ tighten toward 0.9 m; Zone A is unreachable at 2.0 m | Test vs surveyed ground truth | P7 |
-| SYS-15 | ≥ 90 % of drops within 5.0 m of tag — ⚠ scores zero; zones are 1/2/3 m | Test (≥ 30 drops) | P8 |
+| SYS-12 | Geotag CEP50 ≤ **0.75 m** (RTK), 0.91 m RSS | Test vs surveyed ground truth | P7 |
+| SYS-15 | ≥ 60 % of drops within **2.0 m** and ≥ 30 % within **1.0 m** of the survivor | Test (≥ 30 drops) | P8 |
+| SYS-27 | Three concurrent video feeds within the link budget (rule 8.14) | Analysis + test | P5 |
+| SYS-36 | Pass the Pre-Flight Inspection first attempt (Pass/Fail, one retry) | Inspection | P10 |
 | SYS-19 | Zero operator input beyond load/start/abort/recall | Demonstration | P9 |
 | SYS-21 | Setup to launch ≤ 240 s | Demonstration (20 timed runs) | P10 |
 | SYS-23 | No external network used at any point | Inspection + analysis | P9 |
@@ -314,7 +319,10 @@ The project is in **Phase 0 (requirements)**. The layout below is the target str
 ├── tests/
 ├── docs/
 │   ├── development-plan.md      ✔
-│   ├── sizing/                  ✔  # Calculations + committed model output
+│   ├── schedule-baseline.md     ✔  # Re-baselined against the real calendar
+│   ├── requirements/            ✔  # Requirements baseline + rulebook compliance
+│   ├── business/                ✔  # Phase 4B strategy + cost sheet (200 pts)
+│   ├── sizing/                  ✔  # Calculations + committed model outputs
 │   ├── checklists/                 # Setup choreography, pre-flight, contingency
 │   └── diagrams/
 └── README.md                    ✔
@@ -335,6 +343,12 @@ python3 tools/sizing-model/rescueswarm_sizing_model.py
 
 # Configuration trade: quad vs hex vs octo vs coaxial X8, and the T/W sweep
 python3 tools/sizing-model/config_trade.py
+
+# Delivery accuracy against the NIDAR scoring zones — sets SYS-12 and SYS-15
+python3 tools/sizing-model/delivery_accuracy.py
+
+# Search altitude, geotag error structure, and the three-feed downlink budget
+python3 tools/sizing-model/mission_profile.py
 ```
 
 Committed outputs are [`docs/sizing/model-output.txt`](docs/sizing/model-output.txt) and [`docs/sizing/config-trade-output.txt`](docs/sizing/config-trade-output.txt); the derivation and assumptions are in [`docs/sizing/sizing-calculations.md`](docs/sizing/sizing-calculations.md) and [`docs/sizing/configuration-trade.md`](docs/sizing/configuration-trade.md). **If you change the model, re-run it and commit the new output in the same commit** — the README and the sizing documents are both checked against those files. `config_trade.py` imports its constants live from the sizing model, so it cannot drift from the design point.

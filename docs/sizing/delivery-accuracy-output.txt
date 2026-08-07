@@ -1,0 +1,106 @@
+﻿========================================================================================
+DELIVERY ACCURACY vs THE NIDAR SCORING ZONES
+========================================================================================
+  Convention check: RSS 3.06 m -> CEP50 2.55 m (sizing doc section 11 says 2.54 m)
+
+  Zone A <=1 m = 20 pts | Zone B <=2 m = 14 | Zone C <=3 m = 8 | 10 drops = 200 max
+
+----------------------------------------------------------------------------------------
+SECTION 1  Expected points vs total delivery error
+----------------------------------------------------------------------------------------
+ total RSS   CEP50  P(<=1m)  P(<=2m)  P(<=3m)  pts/drop  10 drops
+----------------------------------------------------------------------------------------
+      0.50    0.42     0.98     1.00     1.00      19.9       199
+      0.70    0.58     0.87     1.00     1.00      19.2       192
+      0.90    0.75     0.71     0.99     1.00      18.2       182
+      1.10    0.92     0.56     0.96     1.00      17.1       171
+      1.30    1.08     0.45     0.91     1.00      16.1       161
+      1.60    1.33     0.32     0.79     0.97      14.4       144
+      2.00    1.67     0.22     0.63     0.89      12.3       123
+      2.50    2.08     0.15     0.47     0.76       9.8        98
+      3.00    2.50     0.11     0.36     0.63       7.8        78
+      3.50    2.91     0.08     0.28     0.52       6.3        63
+
+  Diminishing returns set in below ~0.7 m; the steep part of the
+  curve is between 2.5 m and 1.0 m. That is where the points are.
+
+----------------------------------------------------------------------------------------
+SECTION 2  Combined budget: geotag + nav + release + wind + kit
+----------------------------------------------------------------------------------------
+  Release gate 0.30 m/s residual groundspeed, 6 m release, nav 0.20 m, kit 0.15 m
+
+geotag case                        wind   comp   total  pts/drop  10 drops
+----------------------------------------------------------------------------------------
+A  no RTK, single frame              0m     0%    3.09       7.5        75
+A  no RTK, single frame              3m     0%    3.11       7.5        75
+A  no RTK, single frame              6m     0%    3.23       7.1        71
+A  no RTK, single frame              3m    70%    3.09       7.5        75
+A  no RTK, single frame              6m    70%    3.10       7.5        75
+
+B  RTK, single frame                 0m     0%    1.36      15.7       157
+B  RTK, single frame                 3m     0%    1.40      15.5       155
+B  RTK, single frame                 6m     0%    1.66      14.1       141
+B  RTK, single frame                 3m    70%    1.37      15.7       157
+B  RTK, single frame                 6m    70%    1.39      15.6       156
+
+C  RTK + fusion + calibrated         0m     0%    1.00      17.7       177
+C  RTK + fusion + calibrated         3m     0%    1.05      17.4       174
+C  RTK + fusion + calibrated         6m     0%    1.38      15.7       157
+C  RTK + fusion + calibrated         3m    70%    1.00      17.7       177
+C  RTK + fusion + calibrated         6m    70%    1.04      17.5       175
+
+----------------------------------------------------------------------------------------
+SECTION 3  Contribution breakdown (RTK + fusion, 3 m/s wind)
+----------------------------------------------------------------------------------------
+
+  Wind compensation 0%  ->  total 1.05 m
+    geotag      0.91 m    74.9% of variance
+    wind        0.34 m    10.2% of variance
+    release     0.32 m     9.2% of variance
+    nav         0.20 m     3.6% of variance
+    kit         0.15 m     2.0% of variance
+
+  Wind compensation 70%  ->  total 1.00 m
+    geotag      0.91 m    82.6% of variance
+    release     0.32 m    10.2% of variance
+    nav         0.20 m     4.0% of variance
+    kit         0.15 m     2.2% of variance
+    wind        0.10 m     1.0% of variance
+
+----------------------------------------------------------------------------------------
+SECTION 4  Release-gate sensitivity (RTK + fusion, 3 m/s, 70% comp)
+----------------------------------------------------------------------------------------
+ v_residual  release miss   total  pts/drop
+----------------------------------------------------------------------------------------
+      0.10m         0.11m    0.96      17.9
+      0.20m         0.21m    0.97      17.8
+      0.30m         0.32m    1.00      17.7
+      0.50m         0.53m    1.09      17.2
+      0.75m         0.80m    1.24      16.4
+      1.00m         1.06m    1.42      15.4
+
+  Tightening the gate below ~0.3 m/s buys little once geotag
+  dominates. Fix geolocation first, then the release gate.
+
+========================================================================================
+SECTION 5  REQUIREMENT DERIVATION
+========================================================================================
+  For an expected 14 pts/drop (Zone B value) in 3 m/s wind with 70%
+  wind compensation, the geotag budget must be <= 1.63 m RSS.
+  Case C (RTK + fusion + calibrated ground plane) gives 1.00 m
+  total -> 17.7 pts/drop, 177 of 200.
+  Case B (RTK, no fusion)  1.37 m -> 157 of 200.
+  Case A (no RTK)          3.09 m -> 75 of 200.
+
+  RTK is worth 82 points on delivery alone, before its effect on the 250-point
+  detection-and-geotag score. Multi-frame fusion and ground-plane
+  calibration add a further 20 points.
+
+  PROPOSED REQUIREMENTS
+    SYS-12  Geotag CEP50 <= 0.75 m with RTK (0.91 m RSS), verified
+            against surveyed ground truth.
+    SYS-15  >= 60% of drops within 2.0 m and >= 30% within 1.0 m of
+            the survivor, over >= 30 drops in <= 3 m/s wind.
+    SYS-31  Release gated at <= 0.30 m/s residual groundspeed.
+    SYS-32  Wind-compensated release aim point, >= 70% of estimated
+            drift removed.
