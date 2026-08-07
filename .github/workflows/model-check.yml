@@ -1,0 +1,100 @@
+name: model outputs reproduce
+
+# The repository's core rule is that every published number traces to the sizing
+# model, and that changing the model means committing the regenerated output in
+# the same commit. That rule has been broken twice: the README once carried a
+# design point the model did not produce, and the BOM still describes a
+# different aircraft. This check enforces it mechanically.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  reproduce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r tools/sizing-model/requirements.txt
+
+      - name: Regenerate every model output
+        run: |
+          set -e
+          python tools/sizing-model/rescueswarm_sizing_model.py > /tmp/model-output.txt
+          python tools/sizing-model/config_trade.py            > /tmp/config-trade-output.txt
+          python tools/sizing-model/delivery_accuracy.py       > /tmp/delivery-accuracy-output.txt
+          python tools/sizing-model/mission_profile.py         > /tmp/mission-profile-output.txt
+          python tools/sizing-model/setup_budget.py            > /tmp/setup-budget-output.txt
+          python tools/sizing-model/bom_reconcile.py           > /tmp/bom-reconcile-output.txt
+
+      - name: Compare against the committed outputs
+        run: |
+          fail=0
+          for f in model-output config-trade-output delivery-accuracy-output \
+                   mission-profile-output setup-budget-output bom-reconcile-output; do
+            if diff -q "docs/sizing/$f.txt" "/tmp/$f.txt" > /dev/null; then
+              echo "ok    $f.txt"
+            else
+              echo "DRIFT $f.txt — the committed output does not match the model"
+              diff -u "docs/sizing/$f.txt" "/tmp/$f.txt" | head -40 || true
+              fail=1
+            fi
+          done
+          if [ "$fail" = "1" ]; then
+            echo
+            echo "A model was changed without committing its regenerated output."
+            echo "Re-run the scripts and commit the new outputs in the same commit."
+            exit 1
+          fi
+
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check internal markdown links resolve
+        run: |
+          python - <<'PY'
+          import glob, os, re, sys
+          bad = 0
+          for md in glob.glob('**/*.md', recursive=True):
+              base = os.path.dirname(md)
+              for m in re.finditer(r'\[([^\]]*)\]\(([^)]+)\)', open(md, encoding='utf-8').read()):
+                  t = m.group(2).split('#')[0].strip()
+                  if not t or t.startswith(('http://', 'https://', 'mailto:')):
+                      continue
+                  if not os.path.exists(os.path.normpath(os.path.join(base, t))):
+                      print(f'BROKEN {md}: [{m.group(1)}]({t})')
+                      bad += 1
+          print(f'{bad} broken link(s)' if bad else 'all internal links resolve')
+          sys.exit(1 if bad else 0)
+          PY
+
+  requirements:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Every SYS-xx referenced must be defined in the baseline
+        run: |
+          python - <<'PY'
+          import glob, re, sys
+          baseline = open('docs/requirements/requirements-baseline.md', encoding='utf-8').read()
+          defined = set(re.findall(r'^\| (SYS-\d+)', baseline, re.M))
+          used = set()
+          for f in glob.glob('**/*.md', recursive=True) + glob.glob('**/*.py', recursive=True):
+              used |= set(re.findall(r'SYS-\d+', open(f, encoding='utf-8').read()))
+          missing = sorted(used - defined)
+          if missing:
+              print('Referenced but not defined in requirements-baseline.md:')
+              for m in missing:
+                  print('  ', m)
+              sys.exit(1)
+          print(f'{len(defined)} requirements defined, all references resolve')
+          PY
