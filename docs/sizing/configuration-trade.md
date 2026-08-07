@@ -20,7 +20,7 @@ the README is **unchanged** until those are adopted.
 | Rotor count? | **Stay quad — provisionally.** Hex 6×18″ is rejected on flight dynamics. Hex 6×16″ and octo 8×14″ are *not*; they are held off on assembly and preflight cost, which is **asserted, not measured**. | **Low — see §2.3** |
 | Prop diameter? | **18 in provisionally**, arms designed to accept 16–20 in. Confirm in P5. | Medium — rests on an inertia proxy |
 | Thrust-to-weight? | **Keep 2.0.** Attitude authority is never the wind limit. | High |
-| Motor-out redundancy? | **Parachute, not rotors.** | Medium — needs an organiser ruling |
+| Motor-out redundancy? | **Fit a recovery chute; rotor redundancy still open.** They cover different failures — only rotors preserve *score*. | Medium — §5.4 |
 | VRS on descent? | **Fix the flight profile, not the airframe.** | High |
 
 ---
@@ -288,31 +288,70 @@ scoring structure strengthens this considerably — see
 [`../requirements/rulebook-compliance.md`](../requirements/rulebook-compliance.md)
 §1.2, where detection is 250 points and speed is 50 that are already won.
 
-### 5.4 Redundancy: parachute, not rotors
+### 5.4 Redundancy: fit both, because they cover different failures
 
-Per-aircraft motor-out redundancy is weak value on *mission* grounds — the fleet
-already carries it, flying 3 aircraft where 2 are the minimum and holding 74 %
-time margin. The real case is **safety**: a 5 kg airframe losing a motor at 60 m
-over a field that may contain people.
+**Organiser position (final):** a recovery parachute for the aircraft **is
+permitted, including pyrotechnic and CO₂ deployment** — the earlier "no blast"
+answer referred to parachuting the *kit*, not the airframe. The condition attached
+is that the aircraft **must land on the landing pad**.
 
-Hex and octo buy that at the cost of two or four more arms to unfold and check —
-a cost this study asserts but has **not measured** (§2.3).
+#### The landing-pad condition cannot be met under canopy
 
-> **⚠ The parachute route is now largely closed.** The organisers have ruled that
-> there must be **no blast of any kind in the air**, which excludes essentially
-> every ballistic parachute on the market — they deploy by pyrotechnic charge or
-> CO₂ cartridge. Only spring-ejected or drogue canopies remain: heavier, slower,
-> and less reliable at the low altitudes where a motor-out actually happens.
->
-> The ~300 g figure this section was built on assumed a ballistic unit and no
-> longer holds.
+Drift under canopy is `wind × h / v_descent`. At a typical 5 m/s descent for a
+5 kg airframe, against a 3.66 m pad:
 
-**REVISED:** rotor redundancy is now the stronger of the two options, not the
-weaker. That makes the open question at §2.3 more consequential than it looked:
-octo 8×14″ already matches the quad on disk loading, VRS margin and gust
-sensitivity, beats it 2.5× on rotor bandwidth, and survives a motor failure. If
-the P1 bench test shows extra arms cost little setup time, **octo 8×14″ becomes the
-leading candidate** rather than a rejected one.
+| Release altitude | 2 m/s wind | 3 m/s wind | 6 m/s wind |
+|---|---|---|---|
+| 60 m (search) | 24 m | **36 m** | 72 m |
+| 40 m | 16 m | 24 m | 48 m |
+| 20 m | 8 m | 12 m | 24 m |
+| 6 m (drop hover) | 2.4 m | 3.6 m | 7.2 m |
+
+To stay inside the pad you would have to deploy below **4.6 m** in a 2 m/s breeze,
+**3.0 m** at 3 m/s, **1.5 m** at 6 m/s — all below the altitude at which a canopy
+can inflate at all (typically 15–20 m minimum for this class). **A recovery chute
+and the landing-pad condition are physically incompatible in flight.**
+
+#### The penalties make it worth deploying anyway
+
+| Outcome | Penalty | Airframe |
+|---|---|---|
+| Motor-out, no chute | **−50** (crash) + likely −10 (landed outside) | Destroyed |
+| Motor-out, chute deployed, lands off-pad | **−10** (landed outside) | Usually survives |
+
+Deploying is worth **~40 points** even accepting the off-pad penalty, before
+counting the airframe and the safety case. Penalty 1 also exempts an
+"organiser-approved emergency landing", which a canopy descent plausibly is.
+
+**NEW QUESTION FOR THE ORGANISERS:** is a recovery-canopy descent scored as an
+*emergency landing* (−10, or exempt) or as a *crash* (−50)? The rules define a
+crash as "uncontrolled ground impact, collision resulting in loss of flight, or
+crash landing", and a canopy descent is arguably none of those. The answer is
+worth 40 points per incident.
+
+#### Chute and rotor redundancy are not substitutes
+
+They fail differently and the mission outcomes differ completely:
+
+| | Rotor redundancy (hex / octo) | Recovery chute |
+|---|---|---|
+| Covers | Single motor or ESC failure | Total power loss, structural failure, FC failure, multi-motor loss |
+| Mission outcome | **Continues — no points lost** | Aircraft is down; its share of coverage and deliveries is lost |
+| Score impact | 0 | −10 at best, −50 if scored as a crash |
+| Works during the 6 m delivery hover? | **Yes** | **No** — too low to inflate |
+| Mass cost | +2 or +4 motors, ESCs, arms | ~300 g |
+| Setup cost | more arms to unfold — **unmeasured** (§2.3) | negligible |
+
+The chute covers the search phase, which is most of the flight time, and does
+nothing during the delivery hover. Rotor redundancy covers the one failure mode
+that is both most likely and most recoverable, and is the only one of the two that
+**preserves score** rather than merely preserving hardware.
+
+**RECOMMENDED: fit both.** Three chutes cost ~0.9 kg of a 9.8 kg fleet margin,
+which is cheap for eliminating the −50 crash case and the safety hazard of a 5 kg
+airframe falling on a field. Rotor redundancy remains the open question at §2.3,
+and is now decided on *scoring* grounds rather than safety ones — a hex or octo
+keeps flying and keeps earning, where a chute ends that aircraft's mission.
 
 Still worth asking the organisers whether motor-out tolerance is separately
 required, and whether a **non-pyrotechnic** canopy would be accepted.

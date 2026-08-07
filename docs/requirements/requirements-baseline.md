@@ -85,6 +85,7 @@ here explicitly because they were quoted in the README and in the sizing documen
 | SYS-10 | **[SCORED −50/crash]** No crash, uncontrolled ground impact or crash landing | 4D-penalty | D | P9 |
 | SYS-11 | Failsafes for: low battery · C2 link loss · geofence breach · mission abort · emergency recall · RTH | 8.19, MB §8 | T (fault injection) | P6 |
 | SYS-18 | Payload release requires a positive mechanical lock independent of servo power | derived (safety) | T | P5 |
+| SYS-41 | Each aircraft carries a recovery parachute, armed above 20 m AGL and inhibited below it | organiser answer + derived | T | P6 |
 | SYS-36 | Pass the Pre-Flight Inspection on the first attempt | **4.29–4.32** | I | P10 |
 
 ## 7. Programme and deliverables

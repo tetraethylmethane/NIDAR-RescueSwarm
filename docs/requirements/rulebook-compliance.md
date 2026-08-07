@@ -288,6 +288,12 @@ fix if known, and unfixable on the day if not.**
    Organisers asked us to elaborate — question drafted at §6.7. This is now the
    *only* remaining structural relief on the setup budget, because pre-booting has
    been refused.
+2. **Is a recovery-canopy descent scored as an emergency landing (−10, or exempt)
+   or as a crash (−50)?** Worth 40 points per incident. The rules define a crash as
+   "uncontrolled ground impact, collision resulting in loss of flight, or crash
+   landing", and a canopy descent is arguably none of those (§6.2).
+3. **Is motor-out tolerance separately required?** Ties directly to the open
+   rotor-count decision at `../sizing/configuration-trade.md` §2.3.
 
 ---
 
@@ -311,20 +317,27 @@ the power is available; the requirement simply has to be written down.
 Finals are in January, when much of India is comparatively calm, so the *expected*
 case is benign. That is luck, not design margin.
 
-### 6.2 Parachutes: my question was misread, and the answer rules out the usual hardware
+### 6.2 Parachutes: two different questions, two different answers
 
-Two different things got conflated, and both answers matter:
+The first exchange conflated them; both are now settled.
 
-**(a) Aircraft recovery parachute** — what I actually asked about, for motor-out
-safety. The answer "no blast of any kind in the air" **rules out essentially every
-ballistic parachute on the market**, since they deploy by pyrotechnic charge or CO₂
-cartridge. Only spring-ejected or drogue-deployed canopies remain, and those are
-heavier, slower to deploy and less reliable at low altitude.
+**(a) Aircraft recovery parachute — PERMITTED, ballistic deployment included.**
+Pyrotechnic and CO₂ units are allowed. The "no blast in the air" answer referred
+to the *kit*, not the airframe. The attached condition is that the aircraft **must
+land on the landing pad**.
 
-**This materially weakens the redundancy recommendation in
-`../sizing/configuration-trade.md` §5.4**, which assumed a ~300 g ballistic unit.
-Rotor redundancy — hex or octo — becomes relatively more attractive, which
-connects directly to the open rotor-count question at §2.3 of that document.
+That condition **cannot be met under canopy**: drift is `wind × h / v_descent`, so
+from 60 m at 3 m/s wind a 5 m/s canopy drifts 36 m against a 3.66 m pad. Staying
+on the pad needs deployment below 3 m — well under the ~15–20 m a canopy of this
+class needs to inflate.
+
+**Fit one regardless.** A crash costs −50; landing outside the zone costs −10. So
+deploying is worth ~40 points even accepting the penalty, before counting the
+airframe and the safety case. Full analysis in
+[`../sizing/configuration-trade.md`](../sizing/configuration-trade.md) §5.4.
+
+**(b) Parachuting the kit** — what the organisers answered on, warning it would
+drift badly in wind.
 
 **(b) Parachuting the kit** — what the organisers answered, warning it would drift
 badly in wind. **They are right, and it is not our design.** The kit is a

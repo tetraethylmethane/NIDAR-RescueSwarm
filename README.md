@@ -140,7 +140,8 @@ Full breakdown in [rulebook compliance](docs/requirements/rulebook-compliance.md
 | Rotor count | **Stay quad — provisional, low confidence** | Hex 6×18″ is out on flight dynamics (inside the VRS window, most gust-sensitive). But hex 6×16″ and octo 8×14″ match the quad on disk loading, VRS and gust while having 2–2.5× better rotor bandwidth and motor-out survivability — on physics, octo is arguably the better aircraft. Staying quad rests on assembly cost we have asserted but **not measured**. Extend the P1 cold-boot bench to time a 4-arm against a 6-arm frame, then decide. |
 | Prop diameter | **18 in, provisional** | Less rotor inertia, lower gust sensitivity. Design arms for 16–20 in and settle it on a bench in P5. |
 | Thrust-to-weight | **Keep 2.0** | Tilt only reaches 12° at 15 m/s — attitude authority is never the wind limit. |
-| Motor-out redundancy | **Reopened** | The parachute route assumed a ballistic unit, and organisers have ruled out any blast in the air. Only spring/drogue canopies remain — heavier, slower, less reliable low down. Rotor redundancy is now the stronger option, which makes the rotor-count question above more consequential. |
+| Recovery chute | **Fit one** | Permitted, ballistic deployment included. It can't meet the "land on the pad" condition — from 60 m in a 3 m/s breeze a canopy drifts 36 m against a 3.66 m pad — but −10 for landing outside beats −50 for a crash, so deploying is worth ~40 points anyway. |
+| Motor-out redundancy | **Still open** | Chute and extra rotors aren't substitutes. Only rotors keep the aircraft *flying and scoring*, and only rotors work during the 6 m delivery hover where a canopy can't inflate. Ties back to the rotor-count question above. |
 
 Reasoning and numbers in [configuration trade](docs/sizing/configuration-trade.md).
 
@@ -166,7 +167,8 @@ Reasoning and numbers in [configuration trade](docs/sizing/configuration-trade.m
 | Maximum wind? | **None — natural, not induced** | The 8 m/s cliff is now a real risk with no rule protecting us. 10 m/s headway becomes a requirement (SYS-37). |
 | Delivery datum? | **Measured from the survivor; land on it ideally** | Aim at the torso centroid. Errors compound as budgeted. |
 | Local RTK base? | **Permitted** | Worth 82 delivery points. Now a committed BOM item. |
-| Ballistic parachute? | **No blast of any kind in the air** | Rules out pyrotechnic/CO₂ chutes — weakens the parachute route, strengthens rotor redundancy. |
+| Aircraft recovery chute? | **Allowed, ballistic/CO₂ included — but must land on the pad** | Fit one anyway: the pad condition is unmeetable under canopy, and −10 beats −50. |
+| Parachuting the *kit*? | **Would drift badly in wind** | Correct, and not our design — free fall from 6 m drifts 0.34 m where a canopy would drift 4 m+. |
 | Boundary format? | **KML file** | Parser requirement (SYS-38). Watch the `lon,lat` ordering. |
 | Survivors? | **Human-looking dummies** | Fine-tune on dummies, not people — HERIDAL/SARD are real humans (SYS-39). |
 | Pre-boot onboard computers? | **No** | Budget already assumed this, so 285 s stands — but a mitigation is gone. |
@@ -177,7 +179,8 @@ Reasoning and numbers in [configuration trade](docs/sizing/configuration-trade.m
 | # | Question | Why it matters |
 |:--|:--|:--|
 | 1 | May the **RTK base** be positioned, surveyed and started *before* the setup window, as ground equipment under rule 4.34? | The only structural relief left on a 15 s setup margin, now that pre-booting is refused. Elaboration drafted in [rulebook compliance](docs/requirements/rulebook-compliance.md) §6.7. |
-| 2 | Is **motor-out tolerance** separately required, and would a **non-pyrotechnic** canopy be accepted? | Decides redundancy now that ballistic chutes are out. |
+| 2 | Is a **recovery-canopy descent** scored as an emergency landing (−10, or exempt) or as a **crash** (−50)? | Worth 40 points per incident. A canopy descent is arguably not "uncontrolled ground impact". |
+| 3 | Is **motor-out tolerance** separately required? | Ties to the rotor-count decision. |
 
 ---
 
