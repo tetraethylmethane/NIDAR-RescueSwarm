@@ -103,7 +103,49 @@ here explicitly because they were quoted in the README and in the sizing documen
 
 ---
 
-## 8. Requirements with no verification yet planned
+## 8. Engineering requirements from the sizing model
+
+These come from §17 of [`../sizing/sizing-calculations.md`](../sizing/sizing-calculations.md),
+which maintained a **second, colliding SYS-xx register**. Reconciled here; that
+document now points at these IDs rather than defining its own.
+
+| ID | Requirement | Source | Method | Phase |
+|---|---|---|---|---|
+| SYS-04 | Thrust-to-weight ≥ 2.0 static at MTOW; hover throttle 45–55 % | sizing §6 | T (thrust stand) | P5 |
+| SYS-06 | Peak current capability ≥ 90 A; ESC ≥ 50 A each; 10 AWG mains | sizing §6 | T | P5 |
+| SYS-14 | Hover endurance ≥ 15 min at MTOW; land with ≥ 25 % SoC | sizing §4, §9.1 | T | P6 |
+| SYS-44 | Search altitude held to ±5 m; GSD ≤ 2.0 cm/px ⚠ *altitude under review — 40 m recommended* | sizing §8 | T | P7 |
+| SYS-45 | Shutter ≤ 1/1000 s; inference gated at body rate < 15 °/s | sizing §8.1 | T | P7 |
+| SYS-46 | Detection at ≥ 2 Hz with ≥ 12 frames per target per pass | sizing §8.2 | T | P7 |
+| SYS-47 | Constant **groundspeed** 8 m/s during sweep, wind-compensated | sizing §9.2 | T | P6 |
+| SYS-48 | Boresight and lever-arm calibration completed before any accuracy claim | sizing §11 | I + T | P7 |
+| SYS-49 | Payload released at 6 m AGL | sizing §10 | T | P8 |
+| SYS-50 | Kit survives a 9.7 m/s impact | sizing §10 | T | P5 |
+| SYS-51 | Link margin ≥ 13 dB at 600 m; offered load ≤ 3 Mbps | sizing §12 | A + T | P5 |
+| SYS-52 | Sequenced launch and recovery, one aircraft at a time through the box | sizing §13 | D | P9 |
+| SYS-53 | Compute-bay forced-air cooling active from power-on | sizing §14 | T | P5 |
+
+### 8.1 Superseded by the rulebook
+
+The old sizing register contained four requirements that the scoring structure
+has since overturned. They are listed here so that anyone who read the sizing
+document before this reconciliation can see what changed.
+
+| Old sizing ID | Old text | Superseded by |
+|---|---|---|
+| SYS-12 | Geotag CEP50 ≤ 2.0 m (RTK) | **SYS-12** — CEP50 ≤ 0.75 m. Zone A is unreachable at 2.0 m. |
+| SYS-15 | Delivery CEP ≤ 3 m | **SYS-15** — ≥ 60 % within 2 m, ≥ 30 % within 1 m. 3 m is the worst-scoring zone. |
+| SYS-20 | "…one video feed" | **SYS-26/27** — rule 8.14 requires a feed from *each* drone. |
+| SYS-17 | Mission ≤ 12 min | **SYS-35** — ≤ 15 min is what the bonus actually needs. |
+
+`SYS-01` also appeared in both registers with different numbers: the sizing
+document's **≤ 24.0 kg** is an internal build-margin target against the rulebook's
+**≤ 25.0 kg** limit. Both stand; SYS-01 here carries the rule, and 24.0 kg is the
+internal target the fleet is designed to.
+
+---
+
+## 9. Requirements with no verification yet planned
 
 Honest gaps, to be closed before the P0 gate can be called complete:
 

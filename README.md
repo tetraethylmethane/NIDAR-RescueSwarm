@@ -41,7 +41,7 @@ Everything after "start" is autonomous. The operator loads the mission file, pre
 | # | Action | Deadline | Why it's first |
 |:--|:--|:--|:--|
 | 1 | **Register the team** | 2nd week Aug 2026 | Hard disqualification. Nothing else matters if this slips. |
-| 2 | Send the remaining organiser questions | This week | They have external latency; nothing else on this list does. |
+| 2 | [Send the organiser questions](docs/requirements/organiser-questions.md) — **drafted, ready to go** | This week | They have external latency; nothing else on this list does. |
 | 3 | Start collecting recall data | P1 | The long pole, worth 250 points, with irreducible calendar cost. |
 | 4 | Bench the cold-boot timing | P1 | The only constraint under 20 % margin — and still modelled, not measured. |
 
@@ -177,6 +177,8 @@ Reasoning and numbers in [configuration trade](docs/sizing/configuration-trade.m
 
 ### 6.2 Still open
 
+Drafted ready to send: [organiser-questions.md](docs/requirements/organiser-questions.md)
+
 | # | Question | Why it matters |
 |:--|:--|:--|
 | 1 | How is **"correctly geotagged" verified** — displayed coordinates against surveyed truth, and to what tolerance? | Decides whether the base's ~1–2 m absolute error costs anything against 250 points. It cancels for delivery; it may not cancel here. |
@@ -225,6 +227,7 @@ Outputs are committed beside each script in [`docs/sizing/`](docs/sizing/).
 |:--|:--|
 | [System overview](docs/system-overview.md) | Mission flow, architecture, methods, perception, indigenisation, failsafes |
 | [Requirements baseline](docs/requirements/requirements-baseline.md) | Every SYS-xx requirement, traced to a rule and a verification method |
+| [Organiser questions](docs/requirements/organiser-questions.md) | The four still open, drafted ready to send, plus every answer received |
 | [Rulebook compliance](docs/requirements/rulebook-compliance.md) | Rule-by-rule matrix, scoring structure, conflicts |
 | [Schedule baseline](docs/schedule-baseline.md) | Phases against the real calendar |
 | [Sizing calculations](docs/sizing/sizing-calculations.md) | The full engineering derivation |

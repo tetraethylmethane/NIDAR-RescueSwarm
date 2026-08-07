@@ -491,36 +491,51 @@ With two people and aggressive overlapping (boots, GNSS/RTK convergence and maga
 
 ## 17. Numbers to write into the requirement register
 
-| ID | Requirement | Source |
+> **⚠ This section used to define its own SYS-xx numbers, which collided with the
+> requirement register in
+> [`../requirements/requirements-baseline.md`](../requirements/requirements-baseline.md)
+> — the same IDs meant different things in the two documents. That register is now
+> the single authority.** The IDs below are the canonical ones. Four requirements
+> that once lived here have been overturned by the scoring structure and are
+> listed in §8.1 of the baseline.
+
+| ID | Requirement | Derived in |
 |---|---|---|
-| SYS-01 | Fleet AUW, fully loaded, ≤ 24.0 kg (design 15.2 kg) | §2, §5 |
+| SYS-01 | Fleet AUW fully loaded ≤ 25.0 kg by rule; **≤ 24.0 kg internal target** (design 15.2 kg) | §2, §5 |
 | SYS-04 | Thrust-to-weight ≥ 2.0 static at MTOW; hover throttle 45–55 % | §6 |
-| SYS-05 | Hover endurance ≥ 15 min at MTOW; land with ≥ 25 % SoC | §4, §9.1 |
 | SYS-06 | Peak current capability ≥ 90 A; ESC ≥ 50 A each; 10 AWG mains | §6 |
-| SYS-08 | Search altitude 60 m AGL ± 5 m; GSD ≤ 2.0 cm/px | §8 |
-| SYS-09 | Shutter ≤ 1/1000 s; inference gated at body rate < 15 °/s | §8.1 |
-| SYS-10 | Detection at ≥ 2 Hz with ≥ 12 frames per target per pass | §8.2 |
-| SYS-11 | Constant groundspeed 8 m/s during sweep, wind-compensated | §9.2 |
-| SYS-12 | Geotag CEP50 ≤ 2.0 m (RTK) / ≤ 3.5 m (standard GNSS) | §11 |
-| SYS-13 | Boresight and lever-arm calibration before any accuracy claim | §11 |
-| SYS-15 | Payload release at 6 m AGL, groundspeed < 0.3 m/s; delivery CEP ≤ 3 m | §10 |
-| SYS-16 | Kit survives 9.7 m/s impact | §10 |
-| SYS-17 | Mission complete ≤ 12 min (design 7.7 min) vs 30 min limit | §9.1 |
-| SYS-20 | Link margin ≥ 13 dB at 600 m; offered load ≤ 3 Mbps; one video feed | §12 |
+| SYS-14 | Hover endurance ≥ 15 min at MTOW; land with ≥ 25 % SoC | §4, §9.1 |
+| SYS-44 | Search altitude held to ±5 m; GSD ≤ 2.0 cm/px ⚠ *altitude under review* | §8 |
+| SYS-45 | Shutter ≤ 1/1000 s; inference gated at body rate < 15 °/s | §8.1 |
+| SYS-46 | Detection at ≥ 2 Hz with ≥ 12 frames per target per pass | §8.2 |
+| SYS-47 | Constant groundspeed 8 m/s during sweep, wind-compensated | §9.2 |
+| SYS-48 | Boresight and lever-arm calibration before any accuracy claim | §11 |
+| SYS-49 | Payload released at 6 m AGL | §10 |
+| SYS-50 | Kit survives 9.7 m/s impact | §10 |
+| SYS-51 | Link margin ≥ 13 dB at 600 m; offered load ≤ 3 Mbps | §12 |
+| SYS-52 | Sequenced launch and recovery, one aircraft at a time through the box | §13 |
+| SYS-53 | Compute bay forced-air cooling active from power-on | §14 |
 | SYS-21 | Boot-to-launch ≤ 240 s (modelled 285 s — **requires optimisation**) | §15 |
-| SYS-25 | Sequenced launch and recovery, one aircraft at a time through the box | §13 |
-| SYS-26 | Compute bay forced-air cooling active from power-on | §14 |
+
+**Superseded by scoring — do not build to these:** geotag CEP50 ≤ 2.0 m (now
+0.75 m), delivery CEP ≤ 3 m (now ≥ 60 % within 2 m / ≥ 30 % within 1 m), one video
+feed (now one per drone), mission ≤ 12 min (now ≤ 15 min for the bonus). See
+baseline §8.1.
 
 ---
 
 ## 18. Sensitivity — what would change these answers
 
-| If… | Then… |
-|---|---|
-| Rulebook weights mission time heavily | Raise search altitude to 70–80 m, increase groundspeed to 12 m/s (shutter to 1/2000 s), consider drop-on-the-fly. Saves ~2 min; costs detection margin and drop accuracy. |
-| Rulebook weights delivery proximity heavily | Keep 6 m hover-and-drop, add RTK, and consider a winch or guided pod. Current design already targets ~1.5 m. |
-| RTK base is disallowed | Geotag degrades to ~3 m CEP. Compensate with a surveyed ground plane during setup (drops the dominant height term), longer dwell over each target, and a wider delivery tolerance assumption. |
-| Survivors are under partial cover | Detection recall dominates everything. Lower altitude to 40–50 m, accept 149 s of sweep (still trivial), and consider a second oblique pass over low-confidence candidates. Budget allows both. |
+> **Three of these branches are now resolved.** This table was written before the
+> rulebook was read; the outcomes are marked below. It called the delivery case
+> correctly.
+
+| If… | Then… | Outcome |
+|---|---|---|
+| Rulebook weights mission time heavily | Raise search altitude to 70–80 m, increase groundspeed to 12 m/s (shutter to 1/2000 s), consider drop-on-the-fly. Saves ~2 min; costs detection margin and drop accuracy. | ❌ **Did not happen.** Time is worth 50 points and is already won at 7.7 min against a 15 min threshold. Go the *other* way — lower and slower. |
+| Rulebook weights delivery proximity heavily | Keep 6 m hover-and-drop, add RTK, and consider a winch or guided pod. Current design already targets ~1.5 m. | ✅ **Happened.** 200 points on tight zones (1/2/3 m). RTK is now committed and worth 82 delivery points. This row called it right. |
+| RTK base is disallowed | Geotag degrades to ~3 m CEP. Compensate with a surveyed ground plane during setup (drops the dominant height term), longer dwell over each target, and a wider delivery tolerance assumption. | ✅ **Permitted** — but it may not be started before the setup window, which cost 175 s until mitigated. See `../requirements/rulebook-compliance.md` §6.7. |
+| Survivors are under partial cover | Detection recall dominates everything. Lower altitude to 40–50 m, accept 149 s of sweep (still trivial), and consider a second oblique pass over low-confidence candidates. Budget allows both. | ⚠ **Targets are human-looking dummies**, posture and cover unspecified. The 40–50 m recommendation here is exactly what the scoring analysis independently reached. |
 | Boundary polygon is long and thin (e.g. 800 × 125 m) | Transect count halves but each is longer; sweep time similar. Partitioning must handle high-aspect-ratio regions — this is exactly the adversarial-polygon unit test in P2. |
 | Build comes in 20 % overweight | Fleet 18.2 kg, still 27 % under the cap. Endurance drops to ~13 min, still 1.7× the mission. **No redesign needed** — this is what the margin is for. |
 | You switch to hexacopter | +0.2 kg per aircraft, −1 min endurance, +45 W hover power. All within margin. Buys motor-out tolerance. |
