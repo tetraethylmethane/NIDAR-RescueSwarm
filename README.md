@@ -29,6 +29,8 @@ Everything after "start" is autonomous. The operator may load the mission file, 
 
 The system has been sized end-to-end. These are not targets — they are the outputs of a closed engineering model ([`docs/sizing/`](docs/sizing/)).
 
+> **Open configuration questions.** A trade study of quad vs hex vs coaxial, and a review of which constraints actually bind, is in [`docs/sizing/configuration-trade.md`](docs/sizing/configuration-trade.md). Headline: coaxial is ruled out (~30 % hover-power penalty for no footprint gain); hex 6×18″ is the redundancy option of record; and the two constraints that genuinely bind are **wind penetration** and **detection recall**, neither of which is a stated requirement yet. Those are recommendations — the design point below is unchanged.
+
 | Parameter | Value |
 |---|---|
 | Fleet | **3 aircraft**, identical |
@@ -318,9 +320,12 @@ git clone https://github.com/tetraethylmethane/NIDAR-RescueSwarm.git && cd NIDAR
 # Run the sizing model — every number in this README comes from here
 pip install -r tools/sizing-model/requirements.txt
 python3 tools/sizing-model/rescueswarm_sizing_model.py
+
+# Configuration trade: quad vs hex vs octo vs coaxial X8, and the T/W sweep
+python3 tools/sizing-model/config_trade.py
 ```
 
-Its committed output is [`docs/sizing/model-output.txt`](docs/sizing/model-output.txt); the derivation and assumptions are in [`docs/sizing/sizing-calculations.md`](docs/sizing/sizing-calculations.md). **If you change the model, re-run it and commit the new output in the same commit** — the README and the sizing document are both checked against that file.
+Committed outputs are [`docs/sizing/model-output.txt`](docs/sizing/model-output.txt) and [`docs/sizing/config-trade-output.txt`](docs/sizing/config-trade-output.txt); the derivation and assumptions are in [`docs/sizing/sizing-calculations.md`](docs/sizing/sizing-calculations.md) and [`docs/sizing/configuration-trade.md`](docs/sizing/configuration-trade.md). **If you change the model, re-run it and commit the new output in the same commit** — the README and the sizing documents are both checked against those files. `config_trade.py` imports its constants live from the sizing model, so it cannot drift from the design point.
 
 **Planned once the corresponding subsystems exist** (none of these run yet):
 
