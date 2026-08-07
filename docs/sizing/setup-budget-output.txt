@@ -33,13 +33,26 @@ D  As C, but RTK converges during climb and transit  [RECOMMENDED]
   RTK fixed at 290 s (in flight)
   nothing in the rules requires an RTK fix at launch
 
+E  Base survey-in 90 s for ABSOLUTE accuracy, RTK converges in flight
+  launch at   185 s   margin   +115 s   [OK]   |  +100 s calibrated: 285 s [OK]
+  RTK fixed at 375 s (in flight)
+  worst-case answer to Q1 (geotag judged against surveyed truth)
+
 ==============================================================================
 DOES OPTION D ACTUALLY WORK?  -  when is the first geotag needed
 ==============================================================================
-  launch                          185 s
-  RTK fixed                       290 s
-  first sweep line begins         260 s (launch + 45 s queue + 20 s climb + 10 s transit)
-  slack before first geotag       -30 s [INSUFFICIENT]
+
+  D  fixed-pos
+    launch                        185 s
+    RTK fixed                     290 s
+    first sweep line begins       260 s
+    slack before first geotag     -30 s [float for the first 30 s of sweep]
+
+  E  90 s survey-in
+    launch                        185 s
+    RTK fixed                     375 s
+    first sweep line begins       260 s
+    slack before first geotag    -115 s [float for the first 115 s of sweep]
 
   Gate the first geotag on RTK-fixed rather than gating launch on it.
   If RTK has not fixed by the first detection, geotag in float and

@@ -90,6 +90,97 @@ the map instead, Q4 does not matter and can be disregarded.
 
 ---
 
+## If every answer comes back badly
+
+A no-regrets analysis: assume the **worst** answer to each question, and take the
+cheapest action now that makes the answer stop mattering. Three actions cover all
+four questions, and none of them is wasted if the answers come back well.
+
+### Q1 worst case — geotag judged against surveyed truth, tight tolerance
+
+Our base takes its position from its first 3D fix: **~1.5 m absolute**. Total
+absolute error is that compounded with the geotag budget itself (0.91 m):
+
+| Base position from | Base abs | Total abs | Cost |
+|---|---|---|---|
+| First 3D fix *(current plan)* | ~1.5 m | **1.75 m** | free |
+| 90 s survey-in | ~1.0 m | **1.35 m** | **free — see below** |
+| 90 s survey-in + **GAGAN/SBAS** | ~0.7 m | **1.15 m** | free |
+| Surveyed pad *(needs Q4)* | ~0.05 m | 0.91 m | needs site access |
+
+**The floor is 0.91 m — the geotag error itself.** Survey-in plus GAGAN gets
+within 27 % of that floor **without site access and without a network.**
+
+**Action 1 — put a 90 s survey-in in the setup procedure.** Modelled in
+[`setup-budget-output.txt`](../sizing/setup-budget-output.txt) case E: it costs
+**zero launch time** (launch stays at 285 s calibrated) because launch is gated on
+a 3D fix, not an RTK fix. It only pushes the RTK fix from 290 s to 375 s, so more
+of the sweep is float-quality. That barely matters: float is 0.3–0.5 m relative
+against a budget where the 0.70 m unmodelled and 0.50 m target-extent terms
+dominate, and **tags can be re-fused once RTK fixes, before deliveries begin.**
+
+**Action 2 — configure the base to use GAGAN.** ISRO's satellite augmentation is a
+**broadcast signal received passively, exactly like GNSS itself** — not GSM, LTE,
+Wi-Fi, internet or cloud, none of which rule 8.4 permits. It is also Indian, so it
+helps the indigenisation score. *Worth confirming with the organisers that SBAS is
+not read as an external network — but the same argument already applies to GNSS.*
+
+### Q2 worst case — a canopy descent is scored as a crash (−50)
+
+**Fit the parachute anyway.** The arithmetic is unchanged: crashing without a
+canopy also costs −50, and you additionally lose the airframe and create a safety
+event. Worst case, the chute is score-neutral and airframe-positive.
+
+What the worst case *does* change is the trigger logic:
+
+- Deploy **only** on unrecoverable conditions — attitude beyond 60° held for
+  >0.5 s, or total thrust loss. Never on a recoverable fault.
+- **Never** deploy for low battery, link loss or geofence breach. Those have
+  powered responses, and a powered landing outside the pad costs −10 where a
+  canopy might cost −50.
+- Keep the below-20 m inhibit (SYS-41): below that it cannot inflate anyway.
+
+A spurious deployment on a healthy aircraft is the only way this loses points that
+would not otherwise be lost. Tune the trigger conservatively.
+
+### Q3 worst case — motor-out tolerance is required, forcing a hex
+
+This is the expensive one: 3–4 weeks of frame and propulsion rework against an
+8-week flight window.
+
+**Action 3 — cut the centre plate with both 4-arm and 6-arm bolt patterns.** It is
+the same part with more holes: no extra material, no extra process step, perhaps
+30–50 g. It converts "redesign the aircraft" into "bolt on two more arms". Do this
+even though the quad is the decision.
+
+**And order 18 motors and ESCs rather than 12.** Either they build three
+hexacopters, or they are six spares for a quad fleet — and motors and ESCs are the
+highest-failure-rate items in a flight-test programme. **They are not wasted in
+either outcome**, and they carry a 3–4 week lead time that the flight window
+cannot absorb twice.
+
+### Q4 worst case — no site access at all
+
+Fully covered by Action 1 and Action 2. Q4 only ever mattered as a route to a
+better absolute position, and survey-in plus GAGAN gets most of the way there
+independently. **If Q4 comes back "no", nothing changes.**
+
+### Summary: three actions, no regrets
+
+| # | Action | Cost if the answers are good |
+|---|---|---|
+| 1 | 90 s base survey-in in the setup procedure | None — zero launch time either way |
+| 2 | Configure the base for GAGAN/SBAS | None — better absolute position regardless |
+| 3 | Dual-pattern centre plate + order 18 motors/ESCs | ~40 g and six spare motors that get used anyway |
+
+Taking all three now means **no answer can cost more than about a week**, and the
+combined worst case — tight tolerance, no site access, hex required, canopy scored
+as a crash — degrades geotag absolute accuracy from 0.91 m to 1.15 m and adds
+roughly a week of assembly. That is a survivable outcome from the worst branch of
+every question.
+
+---
+
 ## Notes on questions we are *not* asking
 
 Recorded so the team does not re-raise them:

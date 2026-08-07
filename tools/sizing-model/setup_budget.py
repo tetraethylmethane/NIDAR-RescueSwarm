@@ -141,23 +141,31 @@ def main():
            tasks_c, rtk_before_launch=False,
            note="nothing in the rules requires an RTK fix at launch")
 
+    # --- E: survey-in for absolute accuracy, RTK still in flight ---------
+    tasks_e = BASE_TASKS + BASE_IN_WINDOW + [SURVEY_IN]
+    report("E  Base survey-in 90 s for ABSOLUTE accuracy, RTK converges in flight",
+           tasks_e, rtk_before_launch=False,
+           note="worst-case answer to Q1 (geotag judged against surveyed truth)")
+
     # --- what the first geotag needs ------------------------------------
     print("\n" + "=" * 78)
     print("DOES OPTION D ACTUALLY WORK?  -  when is the first geotag needed")
     print("=" * 78)
-    start, finish = schedule(tasks_c)
-    launch = finish['pre-arm + arm']
-    corr = finish['base fixed-pos']
-    rtk_fix = max(corr, finish['rover GNSS 3D fix']) + RTK_CONV
     climb, transit = 60.0 / 3.0, 120.0 / 12.0
-    first_sweep = launch + 45 + climb + transit      # +45 s arm/spin-up/launch queue
-    print(f"  launch                       {launch:6.0f} s")
-    print(f"  RTK fixed                    {rtk_fix:6.0f} s")
-    print(f"  first sweep line begins      {first_sweep:6.0f} s "
-          f"(launch + 45 s queue + {climb:.0f} s climb + {transit:.0f} s transit)")
-    slack = first_sweep - rtk_fix
-    print(f"  slack before first geotag    {slack:+6.0f} s "
-          f"[{'OK' if slack >= 0 else 'INSUFFICIENT'}]")
+    for lbl, tasks, key in [('D  fixed-pos', tasks_c, 'base fixed-pos'),
+                            ('E  90 s survey-in', tasks_e, 'base survey-in')]:
+        start, finish = schedule(tasks)
+        launch = finish['pre-arm + arm']
+        rtk_fix = max(finish[key], finish['rover GNSS 3D fix']) + RTK_CONV
+        first_sweep = launch + 45 + climb + transit
+        slack = first_sweep - rtk_fix
+        print(f"\n  {lbl}")
+        print(f"    launch                     {launch:6.0f} s")
+        print(f"    RTK fixed                  {rtk_fix:6.0f} s")
+        print(f"    first sweep line begins    {first_sweep:6.0f} s")
+        print(f"    slack before first geotag  {slack:+6.0f} s "
+              f"[{'OK' if slack >= 0 else 'float for the first '
+                 + str(int(-slack)) + ' s of sweep'}]")
     print()
     print("  Gate the first geotag on RTK-fixed rather than gating launch on it.")
     print("  If RTK has not fixed by the first detection, geotag in float and")
