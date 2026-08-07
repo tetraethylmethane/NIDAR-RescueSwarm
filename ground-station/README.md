@@ -11,6 +11,31 @@ Requirements this directory must satisfy: **SYS-20, SYS-25, SYS-26, SYS-27** —
 
 **➜ Plan to mission-ready: [`PLAN.md`](PLAN.md)**
 
+## What is built here
+
+`mission_backend/` — the multi-vehicle mission layer that does not exist in the
+inherited codebase. Stdlib + Flask, drops into the existing server.
+
+| Module | Serves |
+|---|---|
+| [`kml.py`](mission_backend/kml.py) | SYS-38 — KML boundary parsing, longitude-first handling, area check |
+| [`fleet.py`](mission_backend/fleet.py) | Rule 8.14 — multi-vehicle state, survivor dedup, delivery status, consolidated progress |
+| [`api.py`](mission_backend/api.py) | Flask factory with the **SYS-20 module split** |
+| [`dev_commands.py`](mission_backend/dev_commands.py) | Flight-test commands, **never imported in mission mode** |
+
+```bash
+cd ground-station && pip install -r requirements.txt && python -m pytest tests -q
+```
+
+**34 tests.** `tests/test_sys20.py` asserts against the live Flask URL map that
+no command route exists in the mission build — so SYS-20 is checked by CI on
+every push rather than by a source review someone has to remember. Verified to
+fail when a command route is deliberately reintroduced.
+
+Still to do, in the GSC repo: delete the internet poller, wire MAVLink through
+mavlink-router, MediaMTX video gateway, and the client map layers. See
+[`PLAN.md`](PLAN.md) §5.
+
 ---
 
 ## Review of NIDAR-GSC, at commit `5d0a687`
