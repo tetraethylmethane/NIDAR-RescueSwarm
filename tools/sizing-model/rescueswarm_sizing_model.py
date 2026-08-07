@@ -168,7 +168,7 @@ T,E,segs = mission(MTOW)
 print("\n"+"="*80)
 print("FINAL DESIGN POINT  -  'RS-1' search & delivery quad")
 print("="*80)
-print(f"  Configuration          : quadrotor, 20 in props, {S_cells}S{P_par}P 21700 Li-ion")
+print(f"  Configuration          : quadrotor, {D/0.0254:.0f} in props, {S_cells}S{P_par}P 21700 Li-ion")
 print(f"  Pack                   : {n_cells} cells, {m_pack*1000:.0f} g, {E_pack:.0f} Wh, {Ah_pack:.1f} Ah, "
       f"{V_nom:.1f} V nom ({V_min:.0f}-{V_max:.1f} V)")
 print(f"  Pack specific energy   : {E_pack/m_pack:.0f} Wh/kg (pack level)")
@@ -213,7 +213,8 @@ print(f"    {'TOTAL':<40}{T:6.0f}s{'':7}{E:8.1f}Wh   ({T/60:.1f} min of a 30 min
 
 # ==================== from sizing4.py ====================
 e_liion=200.0
-D=20*0.0254; m_pack=0.966; E_pack=194.0
+# D, m_pack and E_pack carry over from the final design point above -- do not
+# re-hardcode them here, or they silently go stale when the pack changes.
 MTOW,bd = converge(m_pack,D); Ph,_=hover_power_elec(MTOW,D)
 
 # ---------------------------------------------------------------- HEX VARIANT
@@ -384,7 +385,7 @@ print("\n"+"="*80); print("STEP 11  GEOMETRY, STRUCTURE, CG"); print("="*80)
 D_prop=D; clr=0.03
 wb=(D_prop+clr)*np.sqrt(2)   # quad X wheelbase (motor-to-motor diagonal) for non-overlapping props
 foot=D_prop+clr+ (D_prop)    # overall square footprint approx
-print(f"  20\" prop, 30 mm tip clearance -> wheelbase (diagonal) {wb*1000:.0f} mm, "
+print(f"  {D_prop/0.0254:.0f}\" prop, {clr*1000:.0f} mm tip clearance -> wheelbase (diagonal) {wb*1000:.0f} mm, "
       f"overall footprint ~{ (wb/np.sqrt(2)+D_prop)*1000:.0f} mm square")
 box=3.6576
 print(f"  Launch/landing box 12 ft = {box:.2f} m -> {np.floor(box/((wb/np.sqrt(2)+D_prop))):.0f} aircraft fit "
@@ -407,7 +408,7 @@ print(f"       feed a mass-change event to the controller / hold position 2 s af
 
 
 # ==================== from sizing5.py ====================
-D=20*0.0254; m_pack=0.966
+# D and m_pack carry over from the final design point above (see note at STEP 6).
 MTOW,bd=converge(m_pack,D); Ph,_=hover_power_elec(MTOW,D)
 sensor_w,px_w,f_mm=7.4,4056,6.0
 HFOV=2*np.arctan(sensor_w/(2*f_mm)); h=60.0
