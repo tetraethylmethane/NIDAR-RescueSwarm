@@ -54,7 +54,7 @@ Everything after "start" is autonomous. The operator loads the mission file, pre
 | Progress Review 2 | 2nd week Dec 2026 | Attendance mandatory |
 | **Finals** | **January 2027** | Design review · business strategy · pre-flight · mission |
 
-About 22 weeks from registration. The original 30-week plan overran it by eight, so the schedule has been re-baselined — see [schedule baseline](docs/schedule-baseline.md).
+About 21 weeks. But the real constraint is narrower: monsoon closes flying until late September and exams land in December, so the **flight-test window is about eight weeks**. See the [development plan](docs/development-plan.md).
 
 ---
 
@@ -195,7 +195,6 @@ Drafted ready to send: [organiser-questions.md](docs/requirements/organiser-ques
 ```text
 docs/
   system-overview.md        how the system actually works
-  schedule-baseline.md      re-baselined against the real calendar
   requirements/             requirements baseline + rulebook compliance
   business/                 phase 4B strategy + cost sheet
   sizing/                   calculations, trades, committed model outputs
@@ -230,7 +229,7 @@ Outputs are committed beside each script in [`docs/sizing/`](docs/sizing/).
 | [Requirements baseline](docs/requirements/requirements-baseline.md) | Every SYS-xx requirement, traced to a rule and a verification method |
 | [Organiser questions](docs/requirements/organiser-questions.md) | The four still open, drafted ready to send, plus every answer received |
 | [Rulebook compliance](docs/requirements/rulebook-compliance.md) | Rule-by-rule matrix, scoring structure, conflicts |
-| [Schedule baseline](docs/schedule-baseline.md) | Phases against the real calendar |
+| [Development plan](docs/development-plan.md) | Phase-to-phase schedule, critical path, risk and de-scope order |
 | [Sizing calculations](docs/sizing/sizing-calculations.md) | The full engineering derivation |
 | [Configuration trade](docs/sizing/configuration-trade.md) | Quad vs hex vs coaxial, flight dynamics, constraint review |
 | [Business strategy](docs/business/README.md) | Phase 4B structure and cost sheet |

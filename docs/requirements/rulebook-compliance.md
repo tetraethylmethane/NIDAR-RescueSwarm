@@ -18,17 +18,16 @@ disagrees with `sizing-calculations.md`, the README or `configuration-trade.md`,
 | **Progress Review 2** | **2nd week Dec 2026** | Attendance mandatory |
 | **Finals 4A–4D** | **January 2027** | Design Review, Business Strategy, Pre-Flight Inspection, Final Mission |
 
-### 0.1 The development plan overruns the competition
+### 0.1 The development plan overran the competition — RESOLVED
 
-`docs/development-plan.md` runs a **30-week** programme with P10 "competition
-ready". Finals are **January 2027**, roughly **22 weeks** from registration in
-August 2026. **The plan is ~8 weeks longer than the competition allows.**
+The original plan ran a **30-week** programme against a **~21-week** calendar,
+never mentioned registration, and ignored both mandatory progress reviews.
 
-**RESOLVED:** re-baselined in [`../schedule-baseline.md`](../schedule-baseline.md),
-which governs where it disagrees with `development-plan.md`. Two fixed interior
-checkpoints the old plan did not acknowledge — **Progress Review 1 (October)** and
-**Progress Review 2 (December)** — are now phases P3 and P8. Buffer falls from
-three weeks to one.
+**Rewritten as [`../development-plan.md`](../development-plan.md)**, which is now
+the single schedule authority. The reviews are phases **P3** and **P7**. The
+binding constraint turned out not to be the 21 weeks at all, but the
+**~8-week flight-test window** left once monsoon and end-semester exams are
+accounted for.
 
 ---
 
@@ -219,7 +218,7 @@ points. A model checklist is to be released separately (4.31).
 
 **RESOLVED:** added as **SYS-36** in
 [`requirements-baseline.md`](requirements-baseline.md) and as a mock inspection in
-P10 of [`../schedule-baseline.md`](../schedule-baseline.md). The model checklist
+P8 of [`../development-plan.md`](../development-plan.md). The model checklist
 (4.31) is still to be released — track it.
 
 ### 4.3 Delivery measurement datum — ANSWERED

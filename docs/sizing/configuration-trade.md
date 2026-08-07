@@ -17,7 +17,7 @@ the README is **unchanged** until those are adopted.
 | Decision | Outcome | Confidence |
 |---|---|---|
 | Coaxial (X8)? | **No.** +61–84 % power, +26–34 % fleet mass, worst attitude bandwidth of any option. | High — robust at every κ |
-| Rotor count? | **Stay quad — provisionally.** Hex 6×18″ is rejected on flight dynamics. Hex 6×16″ and octo 8×14″ are *not*; they are held off on assembly and preflight cost, which is **asserted, not measured**. | **Low — see §2.3** |
+| Rotor count? | **Build the quad.** Hex 6×18″ is rejected on flight dynamics; hex 6×16″ and octo 8×14″ are *not*, and match or beat the quad on physics (§2.3). Decided on **build-and-debug effort** (§2.4), not the unmeasured setup claim. | Medium — reopens only if organiser Q3 requires motor-out tolerance |
 | Prop diameter? | **18 in provisionally**, arms designed to accept 16–20 in. Confirm in P5. | Medium — rests on an inertia proxy |
 | Thrust-to-weight? | **Keep 2.0.** Attitude authority is never the wind limit. | High |
 | Motor-out redundancy? | **Fit a recovery chute; rotor redundancy still open.** They cover different failures — only rotors preserve *score*. | Medium — §5.4 |
@@ -124,7 +124,7 @@ The claim that two or four extra arms meaningfully consume the 15 s of setup
 margin is **plausible and unquantified**.
 
 **PROPOSED:** treat "stay quad" as provisional and low-confidence. The P1
-cold-boot bench test (see [`../schedule-baseline.md`](../schedule-baseline.md) §5)
+cold-boot bench test (see [`../development-plan.md`](../development-plan.md) P2)
 already exists and is the highest-priority measurement in the programme —
 **extend it to time unpack-to-armed for a 4-arm and a 6-arm frame**. That single
 measurement converts this from an assertion into a decision. Until then, avoid
