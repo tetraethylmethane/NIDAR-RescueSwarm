@@ -9,6 +9,8 @@ Read-only mission view, telemetry ingest, video, replay.
 Requirements this directory must satisfy: **SYS-20, SYS-25, SYS-26, SYS-27** — see
 [`../docs/requirements/requirements-baseline.md`](../docs/requirements/requirements-baseline.md).
 
+**➜ Plan to mission-ready: [`PLAN.md`](PLAN.md)**
+
 ---
 
 ## Review of NIDAR-GSC, at commit `5d0a687`

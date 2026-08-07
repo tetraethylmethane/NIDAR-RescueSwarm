@@ -96,6 +96,7 @@ reconciled with the BOM** · orders placed for long-lead items · roles assigned
 | A | Frame design complete; manufacture started; payload magazine and release built |
 | B | **Long-lead orders placed**: compute, camera + lens, radios, GNSS/RTK, cells, connectors |
 | C | DARP partition + boustrophedon in SITL, single aircraft; **KML parser** (SYS-38) |
+| C | **GCS multi-vehicle data model + delete the internet poller** — see [`../ground-station/PLAN.md`](../ground-station/PLAN.md). Retrofitting multi-vehicle later means building every display twice |
 | D | Detector pre-trained on HERIDAL/SARD; pipeline runs on the real camera + SBC |
 | A/D | **Build the dummies** — two is enough to start |
 
@@ -113,7 +114,8 @@ detector reproduces a published baseline.
 | A | Airframe assembled; thrust-stand runs; **prop diameter settled** (16/18/20 in) |
 | B | Full avionics stack on the bench; mesh between 3 nodes + GCS; video at 3 × 480p15 |
 | B | **COLD-BOOT AND SETUP TIMING MEASURED** — including RTK base set up *inside* the window (SYS-42/43) |
-| C | Task allocation (CBBA) in SITL; GCS read-only architecture locked |
+| C | Task allocation (CBBA) in SITL; GCS command module split so the mission build has no retask path (SYS-20) |
+| C | Mission-state ingest; MediaMTX video gateway proven with 3 SITL sources |
 | D | Field data collection with dummies at 40 m and 60 m — *ground-based, no aircraft needed* |
 
 **Gate:** setup-to-launch **measured**, not modelled · one aircraft complete and
