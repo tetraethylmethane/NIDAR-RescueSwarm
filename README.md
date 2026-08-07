@@ -137,7 +137,7 @@ Full breakdown in [rulebook compliance](docs/requirements/rulebook-compliance.md
 | Decision | Outcome | Reasoning |
 |:--|:--|:--|
 | Coaxial X8? | **Rejected** | Sized properly it costs +61–84 % hover power and +26–34 % fleet mass, buys no footprint back (stacking rotors doesn't shorten arms), and has the worst attitude bandwidth of anything tested. |
-| Rotor count | **Stay quad** | Hex and octo both win on paper, but setup is the only tight constraint and extra arms land straight on it. |
+| Rotor count | **Stay quad — provisional, low confidence** | Hex 6×18″ is out on flight dynamics (inside the VRS window, most gust-sensitive). But hex 6×16″ and octo 8×14″ match the quad on disk loading, VRS and gust while having 2–2.5× better rotor bandwidth and motor-out survivability — on physics, octo is arguably the better aircraft. Staying quad rests on assembly cost we have asserted but **not measured**. Extend the P1 cold-boot bench to time a 4-arm against a 6-arm frame, then decide. |
 | Prop diameter | **18 in, provisional** | Less rotor inertia, lower gust sensitivity. Design arms for 16–20 in and settle it on a bench in P5. |
 | Thrust-to-weight | **Keep 2.0** | Tilt only reaches 12° at 15 m/s — attitude authority is never the wind limit. |
 | Motor-out redundancy | **Parachute, not rotors** | Covers more failure modes and adds nothing to unfold. |

@@ -100,4 +100,9 @@ Ordered by deadline pressure, not by importance:
    controller, a GNSS module and a stopwatch — no airframe. It is the only
    constraint with under 20 % margin, and the number is currently modelled
    rather than measured.
+   **Extend it to time unpack-to-armed for a 4-arm against a 6-arm frame.**
+   The rotor-count decision currently rests on an unmeasured assumption that
+   extra arms consume setup margin; this measurement settles it, and octo 8×14″
+   beats the quad on physics if the assumption turns out to be wrong. See
+   [`sizing/configuration-trade.md`](sizing/configuration-trade.md) §2.3.
 5. **Order long-lead items** once P1 freezes the architecture.

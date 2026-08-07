@@ -17,7 +17,7 @@ the README is **unchanged** until those are adopted.
 | Decision | Outcome | Confidence |
 |---|---|---|
 | Coaxial (X8)? | **No.** +61–84 % power, +26–34 % fleet mass, worst attitude bandwidth of any option. | High — robust at every κ |
-| Rotor count? | **Stay quad.** 4 arms protects setup, the only constraint under 20 % margin. | High |
+| Rotor count? | **Stay quad — provisionally.** Hex 6×18″ is rejected on flight dynamics. Hex 6×16″ and octo 8×14″ are *not*; they are held off on assembly and preflight cost, which is **asserted, not measured**. | **Low — see §2.3** |
 | Prop diameter? | **18 in provisionally**, arms designed to accept 16–20 in. Confirm in P5. | Medium — rests on an inertia proxy |
 | Thrust-to-weight? | **Keep 2.0.** Attitude authority is never the wind limit. | High |
 | Motor-out redundancy? | **Parachute, not rotors.** | Medium — needs an organiser ruling |
@@ -92,6 +92,43 @@ resource in surplus, and §3 shows it is the *worst* configuration on the two th
 are not: it has the lowest disk loading of any option, making it the most
 gust-sensitive, and its 2.3–6.9 m/s VRS window puts the current 2.5 m/s descent
 rate **inside** the vortex-ring band.
+
+**This rejection is on flight dynamics, not on setup time.** An earlier summary
+of this document gave setup as the reason, which was wrong and is corrected in
+§2.3.
+
+### 2.3 Hex 6×16″ and octo 8×14″: the genuinely open case
+
+Rejecting hex 6×18″ does **not** dispose of the other two, and an earlier
+revision wrongly implied it did by treating "hex and octo" as one option.
+
+| | Power | Mass | VRS @2.5 m/s | Gust | Rotor inertia | Motor-out |
+|---|---|---|---|---|---|---|
+| Quad 4×20″ | — | — | 0.48 v_i | 0.194 | 1.00 | ✗ |
+| Hex 6×16″ | +0.6 % | −0.9 % | 0.48 v_i | 0.191 | **0.55** | ✓ |
+| Octo 8×14″ | −1.7 % | −1.9 % | 0.48 v_i | 0.194 | **0.40** | ✓ |
+
+Neither is a paper win on power — hex 6×16″ is a wash and octo is −1.7 %. But
+neither carries the hex 6×18″ dynamics penalty either: **both match the quad
+exactly on disk loading, VRS margin and gust sensitivity**, while offering
+**2–2.5× better rotor bandwidth** and motor-out survivability.
+
+On physics, **octo 8×14″ is arguably the better aircraft than the quad we have
+chosen.**
+
+The case for staying quad therefore rests almost entirely on **assembly and
+preflight cost — which this study has not measured.** The setup budget
+(main model, CORRECTION 6) carries a single 60 s line, "aircraft out of case,
+battery in, power on (×3, serialised)", with no per-arm or per-rotor breakdown.
+The claim that two or four extra arms meaningfully consume the 15 s of setup
+margin is **plausible and unquantified**.
+
+**PROPOSED:** treat "stay quad" as provisional and low-confidence. The P1
+cold-boot bench test (see [`../schedule-baseline.md`](../schedule-baseline.md) §5)
+already exists and is the highest-priority measurement in the programme —
+**extend it to time unpack-to-armed for a 4-arm and a 6-arm frame**. That single
+measurement converts this from an assertion into a decision. Until then, avoid
+frame design choices that would preclude a 6-arm variant.
 
 ---
 
@@ -253,13 +290,16 @@ already carries it, flying 3 aircraft where 2 are the minimum and holding 74 %
 time margin. The real case is **safety**: a 5 kg airframe losing a motor at 60 m
 over a field that may contain people.
 
-Hex and octo buy that at the cost of two more arms to unfold and check, taxing the
-only constraint under 20 % margin. A **~300 g ballistic parachute** costs 0.9 kg of
-a 9.8 kg fleet margin, adds no arms, and covers structural, battery and
-flight-controller failures that extra rotors do not.
+Hex and octo buy that at the cost of two or four more arms to unfold and check —
+a cost this study asserts but has **not measured** (§2.3). A **~300 g ballistic
+parachute** costs 0.9 kg of a 9.8 kg fleet margin, adds no arms, and covers
+structural, battery and flight-controller failures that extra rotors do not.
 
 **PROPOSED:** parachute as the redundancy mechanism; ask the organisers whether it
-is permitted, and whether motor-out tolerance is separately required.
+is permitted, and whether motor-out tolerance is separately required. Note the two
+options are not exclusive, and that if the P1 bench test shows extra arms cost
+little setup time, octo 8×14″ becomes attractive on its own merits (§2.3) and this
+trade should be re-opened rather than settled by the parachute.
 
 ### 5.5 Open risk: quad yaw authority
 
