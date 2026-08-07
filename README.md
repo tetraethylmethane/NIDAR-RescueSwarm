@@ -157,6 +157,7 @@ Reasoning and numbers in [configuration trade](docs/sizing/configuration-trade.m
 | **VRS on every delivery** | The 2.5 m/s descent sits at 0.48 v_i, on the vortex-ring onset boundary, and a nulled-groundspeed descent is exactly what triggers it | Fix in the flight profile, not the airframe |
 | **Wind cliff at 8 m/s** | Search groundspeed is 8 m/s, so at that windspeed the aircraft can't make headway at all. Organisers confirm wind is **natural and uncapped** — nothing protects us | Now a requirement: 10 m/s headway (SYS-37) |
 | **Business strategy** | 200 points, barely started — sponsorship evidence can't be produced in the final week | Start now |
+| **Ground station** | The candidate codebase ([NIDAR-GSC](https://github.com/tetraethylmethane/NIDAR-GSC)) **polls the internet every 5 s** and switches to online map tiles — a direct 8.4 breach. It's also single-vehicle and a full controller, so **SYS-20 and SYS-23 are failing, not pending** | [Review + plan](ground-station/README.md) |
 
 ---
 
