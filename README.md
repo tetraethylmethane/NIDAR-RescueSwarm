@@ -29,6 +29,16 @@ Everything after "start" is autonomous. The operator may load the mission file, 
 
 The system has been sized end-to-end. These are not targets — they are the outputs of a closed engineering model ([`docs/sizing/`](docs/sizing/)).
 
+> ### ⚠ Rulebook check — [`docs/requirements/rulebook-compliance.md`](docs/requirements/rulebook-compliance.md)
+>
+> Reading the NIDAR 2026–27 Rulebook against this design found three things that change priorities:
+>
+> - **Delivery scores by zone: ≤1 m = 20 pts, ≤2 m = 14, ≤3 m = 8.** The ≤3 m target below is the *worst* zone — 80 points instead of 200 across ten drops. **The delivery requirement should be ≤1 m.**
+> - **Geolocation gates 450 of the 600 flight points**, not 250: kits are scored by distance from the survivor, so a drop can be no better than the tag it aimed at. RTK becomes a scoring requirement, not an optimisation.
+> - **Speed is worth 50 points and is already won** — the bonus needs ≤15 min against a 7.7 min mission. Time is surplus and nearly worthless; spend it on accuracy.
+>
+> Also: rule 8.14 requires a live feed from **each** drone, which breaks the single-switched-feed RF budget; **Business Strategy is 200 points** (equal to Design Review) and is unaddressed; and the 30-week plan **overruns the January 2027 finals by ~8 weeks**.
+
 > **Configuration decision and constraint review** — [`docs/sizing/configuration-trade.md`](docs/sizing/configuration-trade.md). **Coaxial is rejected**: sized to the reserve policy it costs +61–84 % hover power and +26–34 % fleet mass, and has the worst attitude bandwidth of any option. **Stay quad** — 4 arms protects setup, the only constraint under 20 % margin. **Prop diameter provisionally 18 in** (lower gust sensitivity and 38 % less rotor inertia), arms designed to accept 16–20 in and confirmed on a bench in P5. Three constraints bind and none is a stated requirement yet: **VRS on descent** (the current 2.5 m/s sits on the onset boundary — a flight-profile fix, not a hardware one), **wind penetration**, and **detection recall**. The design point below is unchanged until those are adopted.
 
 | Parameter | Value |
@@ -45,8 +55,8 @@ The system has been sized end-to-end. These are not targets — they are the out
 | Search altitude / speed | 60 m AGL / 8 m/s **groundspeed** |
 | Ground sample distance | 1.82 cm/px → a person is ~93 px long |
 | Sweep time (10 ha, 3 drones) | ~93 s per drone including turns |
-| Geotag accuracy target | CEP50 ≤ 2.0 m with RTK · ≤ 3.5 m without |
-| Delivery accuracy target | ≤ 3 m CEP from a 6 m hover-and-drop |
+| Geotag accuracy target | CEP50 ≤ 2.0 m with RTK · ≤ 3.5 m without ⚠ *see below* |
+| Delivery accuracy target | ≤ 3 m CEP from a 6 m hover-and-drop ⚠ *scores worst zone — see below* |
 | Link margin | ≥ 13 dB at 600 m · offered load 2.5 Mbps |
 
 ---
@@ -236,6 +246,8 @@ Deconfliction is layered: altitude stratification during search (55/60/65 m), ex
 
 Critical path runs P0 → P1 → P2 → P4 → P8 → P9 → P10, with **P7 (perception) as the parallel long pole**. Three weeks of unallocated buffer sit before P10.
 
+> ⚠ **This 30-week plan overruns the competition.** Registration closes in the 2nd week of August 2026 and the finals are in **January 2027** — roughly 22 weeks. Fixed interior checkpoints the plan does not account for: **Progress Review 1 (2nd week Oct 2026)** and **Progress Review 2 (2nd week Dec 2026)**, both mandatory. The plan needs re-baselining against real dates. See [`docs/requirements/rulebook-compliance.md`](docs/requirements/rulebook-compliance.md) §0.
+
 Full plan: [`docs/development-plan.md`](docs/development-plan.md)
 
 ---
@@ -246,8 +258,8 @@ Full plan: [`docs/development-plan.md`](docs/development-plan.md)
 |---|---|---|---|
 | SYS-01 | Fleet AUW ≤ 24.0 kg fully loaded | Test (calibrated scale) | P6 |
 | SYS-07 | ≥ 90 % survivor detection at operational altitude | Test | P7, P9 |
-| SYS-12 | Geotag CEP50 ≤ 2.0 m (RTK) | Test vs surveyed ground truth | P7 |
-| SYS-15 | ≥ 90 % of drops within 5.0 m of tag | Test (≥ 30 drops) | P8 |
+| SYS-12 | Geotag CEP50 ≤ 2.0 m (RTK) — ⚠ tighten toward 0.9 m; Zone A is unreachable at 2.0 m | Test vs surveyed ground truth | P7 |
+| SYS-15 | ≥ 90 % of drops within 5.0 m of tag — ⚠ scores zero; zones are 1/2/3 m | Test (≥ 30 drops) | P8 |
 | SYS-19 | Zero operator input beyond load/start/abort/recall | Demonstration | P9 |
 | SYS-21 | Setup to launch ≤ 240 s | Demonstration (20 timed runs) | P10 |
 | SYS-23 | No external network used at any point | Inspection + analysis | P9 |
@@ -357,15 +369,15 @@ Every real flight runs a tagged commit, logged in the flight log with the tag.
 
 ## Open Questions to Organisers
 
-Submitted in Phase 0 week 1 — several architecture decisions depend on the answers.
+Two of the original seven are now **answered by the rulebook** — scoring weights (§9 of the rulebook) and video feeds (rule 8.14 requires a feed from *each* drone). The revised list, in priority order, is maintained in [`docs/requirements/rulebook-compliance.md`](docs/requirements/rulebook-compliance.md) §5:
 
-1. Is a team-owned **local RTK base station** permitted, given corrections travel on our own local link and not the internet?
-2. What **shape, aspect ratio and file format** should we expect for the boundary polygon?
-3. Will survivors be **real humans, mannequins, or both**, in what postures and clothing, and under partial cover?
-4. What defines a **successful delivery** — maximum distance, measured to the tagged or the true position?
-5. Is **pre-booting** of onboard computers permitted before the 5-minute window begins?
-6. Is **automatic switching** of the single video feed acceptable, or must all feeds be simultaneously visible?
-7. What are the **scoring weights** across mission time, detection accuracy, delivery accuracy, autonomy and documentation?
+1. Is delivery accuracy measured from the **true survivor position or the tagged position**? — gates 200 points.
+2. Is a team-owned **local RTK base station** permitted, given corrections travel on our own local link and not the internet? — now scoring-critical.
+3. Is **pre-booting** of onboard computers permitted before the 5-minute window begins?
+4. Will survivors be **real humans, dummies, or both**, in what postures and clothing, and under partial cover?
+5. What **shape, aspect ratio and file format** should we expect for the boundary polygon?
+6. Is a **ballistic parachute** permitted, and is motor-out tolerance separately required?
+7. Is there a **maximum wind** condition under which the mission runs?
 
 ---
 
