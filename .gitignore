@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+
+# Office lock files (BOM spreadsheets)
+~$*.xlsx
+~$*.xls
+
+# Build / logs
+build/
+dist/
+*.log
+
+# Flight and simulation artefacts (large; keep out of git)
+*.BIN
+*.tlog
+*.ulg
+logs/
+datasets/field-campaign/

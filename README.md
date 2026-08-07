@@ -3,17 +3,13 @@
 > An autonomous multi-drone system for rapid flood survivor search, localization, and emergency aid delivery — built for communication-denied environments, and built in India.
 
 <p align="center">
-  <img src="docs/images/system-overview.png" width="900" alt="System Overview">
-</p>
-
-<p align="center">
   <b>NIDAR 2.0 (2026–27) · Track 1: Drone Innovation</b><br>
   MeitY · Drone Federation of India · SwaYaan Initiative
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/fleet-3%20aircraft-informational" alt="fleet">
-  <img src="https://img.shields.io/badge/fleet%20mass-17.8%20%2F%2025%20kg-success" alt="mass">
+  <img src="https://img.shields.io/badge/fleet%20mass-15.2%20%2F%2025%20kg-success" alt="mass">
   <img src="https://img.shields.io/badge/mission-7.7%20%2F%2030%20min-success" alt="mission time">
   <img src="https://img.shields.io/badge/indigenous%20suppliers-95.5%25-orange" alt="indigenisation">
   <img src="https://img.shields.io/badge/status-Phase%200%20%C2%B7%20requirements-blue" alt="status">
@@ -36,14 +32,14 @@ The system has been sized end-to-end. These are not targets — they are the out
 | Parameter | Value |
 |---|---|
 | Fleet | **3 aircraft**, identical |
-| Configuration | Quadrotor · 18 × 6.1 in CF folding props · 6S3P 21700 Li-ion |
-| MTOW per aircraft | **5.93 kg** (4 kits loaded) |
-| **Fleet all-up weight** | **17.8 kg** vs 25 kg limit → **29 % margin** |
-| Battery | 18 cells, ~1.45 kg, **292 Wh**, 13.5 Ah, 21.6 V nominal |
-| Hover power | ~810 W · disk loading 6.5 kg/m² |
-| Hover endurance | **~17.5 min** at 80 % DoD |
+| Configuration | Quadrotor · 20 in props · 6S2P 21700 Li-ion |
+| MTOW per aircraft | **5.05 kg** (4 kits loaded) |
+| **Fleet all-up weight** | **15.2 kg** vs 25 kg limit → **39 % margin** |
+| Battery | 12 cells, 966 g, **194 Wh**, 9.0 Ah, 21.6 V nominal |
+| Hover power | 601 W electrical (426 W shaft) · disk loading 6.2 kg/m² |
+| Hover endurance | **15.5 min** at 80 % DoD |
 | Design mission | **7.7 min** — 26 % of the 30 min allowance |
-| Thrust-to-weight | 2.8 static · hover at ~35 % of max thrust |
+| Thrust-to-weight | 2.0 static · hover at 50 % of max thrust |
 | Search altitude / speed | 60 m AGL / 8 m/s **groundspeed** |
 | Ground sample distance | 1.82 cm/px → a person is ~93 px long |
 | Sweep time (10 ha, 3 drones) | ~93 s per drone including turns |
@@ -108,10 +104,6 @@ Search and delivery **overlap**. Drones do not wait for the sweep to finish befo
 ---
 
 ## System Architecture
-
-<p align="center">
-  <img src="docs/images/architecture.png" width="900" alt="Architecture">
-</p>
 
 ```
                     Ground Control Station
@@ -197,7 +189,7 @@ Suppliers: Bharath Components · Mechtex · Flameback Tech · S R Aerospace · A
 | Minimum drones | 2 | **3** — one can fail and we stay compliant |
 | Search area | Up to 10 ha | 10 ha in ~93 s/drone |
 | Mission time | ≤ 30 min | **7.7 min** design mission |
-| Total fleet weight | ≤ 25 kg | **17.8 kg** |
+| Total fleet weight | ≤ 25 kg | **15.2 kg** |
 | Payload | 200 g, 200 × 100 × 50 mm | 4 kits/aircraft = 12 capacity for 10 survivors |
 | Launch / landing area | 12 × 12 ft (3.66 m) | Sequenced launch and recovery |
 | Setup to launch | 5 min | **~285 s modelled — 15 s margin** ⚠ |
@@ -263,6 +255,8 @@ Full plan: [`docs/development-plan.md`](docs/development-plan.md)
 
 ## Repository Structure
 
+The project is in **Phase 0 (requirements)**. The layout below is the target structure; `✔` marks what exists in the repository today — everything else is planned and not yet written.
+
 ```text
 .
 ├── firmware/                 # Autopilot params, VEGA co-processor firmware
@@ -295,44 +289,46 @@ Full plan: [`docs/development-plan.md`](docs/development-plan.md)
 ├── hardware/
 │   ├── cad/                  # Frame, magazine, mounts
 │   ├── electronics/          # Wiring, power tree, PDB
-│   ├── bom/                  # Indian BOM + indigenisation scorecard
+│   ├── bom/               ✔  # Indian BOM + indigenisation scorecard
 │   └── payload/              # Release mechanism, kit spec
 ├── datasets/
 │   ├── field-campaign/       # Our Indian SAR imagery + annotations
 │   └── benchmarks/           # HERIDAL / SARD evaluation scripts
 ├── tools/
-│   ├── sizing-model/         # Closed engineering model (Python)
+│   ├── sizing-model/      ✔  # Closed engineering model (Python)
 │   └── flight-log-analysis/
 ├── tests/
 ├── docs/
-│   ├── development-plan.md
-│   ├── sizing/
-│   ├── checklists/           # Setup choreography, pre-flight, contingency
-│   ├── images/
+│   ├── development-plan.md      ✔
+│   ├── sizing/                  ✔  # Calculations + committed model output
+│   ├── checklists/                 # Setup choreography, pre-flight, contingency
 │   └── diagrams/
-└── README.md
+└── README.md                    ✔
 ```
 
 ---
 
 ## Getting Started
 
+**Runnable today** — the sizing model is the only executable artefact in Phase 0:
+
 ```bash
-# Clone and set up
-git clone <repo> && cd rescueswarm
-docker compose build            # identical container for SITL and aircraft
+git clone https://github.com/tetraethylmethane/NIDAR-RescueSwarm.git && cd NIDAR-RescueSwarm
 
 # Run the sizing model — every number in this README comes from here
+pip install -r tools/sizing-model/requirements.txt
 python3 tools/sizing-model/rescueswarm_sizing_model.py
+```
 
-# Three-drone SITL mission
+Its committed output is [`docs/sizing/model-output.txt`](docs/sizing/model-output.txt); the derivation and assumptions are in [`docs/sizing/sizing-calculations.md`](docs/sizing/sizing-calculations.md). **If you change the model, re-run it and commit the new output in the same commit** — the README and the sizing document are both checked against that file.
+
+**Planned once the corresponding subsystems exist** (none of these run yet):
+
+```bash
+docker compose build            # identical container for SITL and aircraft
 docker compose up sitl
 ros2 launch autonomy swarm_mission.launch.py drones:=3 area:=configs/10ha_test.yaml
-
-# Monte Carlo campaign (200 runs, ~2 h)
 python3 simulations/monte-carlo/run_campaign.py --runs 200 --report
-
-# Ground station
 cd ground-station && npm install && npm run dev
 ```
 
@@ -377,140 +373,3 @@ Develop a fully autonomous multi-drone rescue system capable of locating flood s
 <p align="center">
   <sub>Built for NIDAR 2.0 · MeitY · Drone Federation of India</sub>
 </p>
-   │
-   ▼
-Divide Search Area
-   │
-   ▼
-Parallel Autonomous Search
-   │
-   ▼
-Detect Survivors
-   │
-   ▼
-Geotag Locations
-   │
-   ▼
-Assign Delivery Drone
-   │
-   ▼
-Deliver Medical Kit
-   │
-   ▼
-Mission Complete
-   │
-   ▼
-Return to Home
-```
-
----
-
-## Features
-
-| Capability             | Description                                           |
-| ---------------------- | ----------------------------------------------------- |
-| Autonomous Search      | Multiple drones collaboratively scan the mission area |
-| Survivor Detection     | Detects and localizes stranded survivors              |
-| Geotagging             | Records GPS coordinates automatically                 |
-| Collaborative Planning | Dynamic task allocation between drones                |
-| Medical Delivery       | Drops emergency aid near survivors                    |
-| Local Communication    | Fully offline drone-to-drone coordination             |
-| Ground Station         | Single interface for monitoring the entire mission    |
-| Safety System          | Automatic failsafe and emergency recall               |
-
----
-
-## System Architecture
-
-<p align="center">
-  <img src="docs/images/architecture.png" width="900" alt="Architecture">
-</p>
-
-```
-                    Ground Control Station
-                           │
-        ┌──────────────────┼──────────────────┐
-        │                  │                  │
-     Drone A           Drone B           Drone C
-        │                  │                  │
-        └──────── Shared Local Network ───────┘
-                 Search • Detect • Deliver
-```
-
----
-
-## Mission Constraints
-
-| Requirement        | Value                  |
-| ------------------ | ---------------------- |
-| Minimum Drones     | 2                      |
-| Search Area        | Up to 10 hectares      |
-| Mission Time       | ≤ 30 minutes           |
-| Total Drone Weight | ≤ 25 kg                |
-| Payload            | 200 g (20 × 10 × 5 cm) |
-| Launch Area        | 12 × 12 ft             |
-| Human Operators    | 1                      |
-| External Network   | Not Allowed            |
-
----
-
-## Autonomous Workflow
-
-* Load mission boundary
-* Divide search area
-* Coordinate multiple drones
-* Detect survivors
-* Geotag locations
-* Assign delivery tasks
-* Deliver medical kits
-* Return to launch point
-
----
-
-## Safety
-
-* Return-to-Home
-* Low Battery Failsafe
-* Command Link Loss Recovery
-* Geofence Protection
-* Mission Abort
-* Emergency Recall
-
----
-
-## Repository Structure
-
-```text
-.
-├── firmware/
-├── autonomy/
-├── perception/
-├── communication/
-├── ground-station/
-├── simulations/
-├── hardware/
-├── docs/
-│   ├── images/
-│   └── diagrams/
-└── README.md
-```
-
----
-
-## Technologies
-
-* PX4 / ArduPilot
-* ROS 2
-* MAVLink
-* Computer Vision
-* Multi-Agent Mission Planning
-* Edge AI
-* Local Mesh Communication
-
----
-
-## Project Goal
-
-Develop a fully autonomous multi-drone rescue system capable of locating flood survivors and delivering emergency aid quickly, safely, and without reliance on external communication networks.
-
----

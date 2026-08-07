@@ -49,7 +49,7 @@ T_W        = 2.0     # design thrust-to-weight at MTOW (sea level static)
 N_rot      = 4
 spec_thrust_motor = 195.0  # N of max static thrust per kg of motor mass (T-Motor MN-class empirical)
 k_esc      = 0.35          # ESC mass as fraction of motor mass
-m_prop_ea  = 0.062         # kg, 18 in CF prop
+m_prop_ea  = 0.062         # kg, 20 in CF prop (matches D = 20*0.0254 below)
 
 def prop_area(D):
     return N_rot*np.pi*(D/2)**2
