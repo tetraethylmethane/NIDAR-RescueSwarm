@@ -1,44 +1,73 @@
 # ground-station
 
-Read-only mission view, telemetry ingest, video, replay.
+Mission view, telemetry ingest, video, replay.
 
-**Status: an existing codebase has been identified but not adopted.**
-[`tetraethylmethane/NIDAR-GSC`](https://github.com/tetraethylmethane/NIDAR-GSC)
-— "Team Sammpaati's Custom Ground Station", React client + Flask/DroneKit server.
+**Implementation lives in [`tetraethylmethane/NIDAR-GSC`](https://github.com/tetraethylmethane/NIDAR-GSC)** —
+React client + Flask/DroneKit server, originally Team Sammpaati's AUVSI SUAS
+ground station. This directory holds the engineering record: what was wrong for
+NIDAR, what was changed, and what must not be changed back.
 
-Requirements this directory must satisfy: **SYS-20, SYS-25, SYS-26, SYS-27** — see
+Requirements this directory must satisfy: **SYS-20, SYS-23, SYS-25, SYS-26,
+SYS-27** — see
 [`../docs/requirements/requirements-baseline.md`](../docs/requirements/requirements-baseline.md).
 
-**➜ Plan to mission-ready: [`PLAN.md`](PLAN.md)**
-
-## What is built here
-
-`mission_backend/` — the multi-vehicle mission layer that does not exist in the
-inherited codebase. Stdlib + Flask, drops into the existing server.
-
-| Module | Serves |
-|---|---|
-| [`kml.py`](mission_backend/kml.py) | SYS-38 — KML boundary parsing, longitude-first handling, area check |
-| [`fleet.py`](mission_backend/fleet.py) | Rule 8.14 — multi-vehicle state, survivor dedup, delivery status, consolidated progress |
-| [`api.py`](mission_backend/api.py) | Flask factory with the **SYS-20 module split** |
-| [`dev_commands.py`](mission_backend/dev_commands.py) | Flight-test commands, **never imported in mission mode** |
-
-```bash
-cd ground-station && pip install -r requirements.txt && python -m pytest tests -q
-```
-
-**34 tests.** `tests/test_sys20.py` asserts against the live Flask URL map that
-no command route exists in the mission build — so SYS-20 is checked by CI on
-every push rather than by a source review someone has to remember. Verified to
-fail when a command route is deliberately reintroduced.
-
-Still to do, in the GSC repo: delete the internet poller, wire MAVLink through
-mavlink-router, MediaMTX video gateway, and the client map layers. See
-[`PLAN.md`](PLAN.md) §5.
+**➜ Remaining work: [`PLAN.md`](PLAN.md)** · **Mission-build rules: [`MISSION.md` in NIDAR-GSC](https://github.com/tetraethylmethane/NIDAR-GSC/blob/main/MISSION.md)**
 
 ---
 
-## Review of NIDAR-GSC, at commit `5d0a687`
+## Status
+
+| Blocker found in review | State |
+|---|---|
+| Internet poller every 5 s (rule 8.4) | ✅ **Fixed** — removed, guarded by `scripts/check-no-network.sh` |
+| Controller, not a view (SYS-20) | ✅ **Fixed** — `MISSION_MODE` module split, enforced by tests |
+| Single-vehicle by construction (8.13) | ✅ **Backend done** — `mission_backend/fleet.py`; client wiring outstanding |
+| No 8.14 mission displays | 🟡 **Backend done** — client map layers outstanding |
+| One MJPEG video feed (8.14) | 🟡 **Gateway + component done** — end-to-end untested |
+
+**SYS-20 and SYS-23 are no longer failing.** Both are now enforced mechanically
+rather than by discipline:
+
+```bash
+cd server && python -m pytest mission_tests -q    # 34 tests, incl. test_sys20.py
+./scripts/check-no-network.sh                     # no outbound internet calls
+```
+
+Both guards were verified to **fail** when the fault is deliberately
+reintroduced — a command route forced into the mission build fails three tests,
+and a restored ArcGIS URL fails the network check. A guard that cannot fail is
+not a guard.
+
+### What was built
+
+| In NIDAR-GSC | Serves |
+|---|---|
+| `server/mission_backend/kml.py` | SYS-38 — KML boundary, longitude-first handling, area check |
+| `server/mission_backend/fleet.py` | Rule 8.14 — multi-vehicle state, survivor dedup, delivery status, progress |
+| `server/mission_backend/api.py` | Read-only mission routes + abort/recall |
+| `server/mission_backend/dev_commands.py` | Flight-test commands, never imported in mission mode |
+| `client/src/components/VideoWall.js` | Rule 8.14 — three WebRTC panes |
+| `scripts/mediamtx.yml` | Video gateway, H.264, no STUN |
+| `scripts/check-no-network.sh` | Rule 8.4 regression guard |
+| `MISSION.md` | What must not be changed back |
+
+### Still to do
+
+Client-side, and untestable without hardware:
+
+1. **Map layers** — per-drone regions (the visible proof for the 50-point
+   collaboration criterion), survivor markers with fix quality, delivery state.
+2. **mavlink-router** wiring — three SYSIDs into `Fleet.update_vehicle`.
+3. **Mission-state UDP listener** — feed the 5 Hz mesh document into
+   `Fleet.update_mission`.
+4. **End-to-end video** — three SITL sources through MediaMTX, proven in P2.
+5. **Tile pre-cache** for the venue region, weeks ahead (§4.4 of the plan).
+
+---
+
+## Review of NIDAR-GSC at commit `5d0a687` — the state that prompted the work
+
+*Historical. Blockers 1 and 3 are fixed as of `ab8c09d`; blocker 2's backend is done.*
 
 It is a competent single-vehicle MAVLink ground station with clear AUVSI SUAS
 lineage — ODLC image handling, airdrop/flight boundary icons, a Submissions tab,
