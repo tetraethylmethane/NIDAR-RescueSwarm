@@ -1,0 +1,90 @@
+﻿====================================================================================
+BOM vs DESIGN POINT RECONCILIATION
+====================================================================================
+  Model (generic masses, 20 in, 6S2P):  MTOW 5.05 kg  fleet 15.16 kg
+  BOM tab 07 (Indian masses, 18 in, 6S3P): MTOW 5.93 kg  fleet 17.80 kg
+
+  Two different aircraft. The BOM figures are the ones that were
+  corrected out of the README because the model does not produce them.
+
+------------------------------------------------------------------------------------
+REBUILT FROM THE BOM'S OWN GROUP MASSES
+------------------------------------------------------------------------------------
+config                  cells    MTOW   fleet   cap   P_hov     DL   hover  x mis
+                                   kg      kg  25kg       W  kg/m2     min 7.7min
+------------------------------------------------------------------------------------
+20 in, 6S2P  DESIGN        12    5.52   16.57    OK     680   6.81    13.7   1.78
+18 in, 6S2P                12    5.45   16.36    OK     736   8.30    12.7   1.65
+18 in, 6S3P  BOM           18    5.93   17.80    OK     828   9.03    16.9   2.20
+20 in, 6S3P                18    6.00   18.01    OK     763   7.40    18.4   2.38
+
+  'x mis' is hover endurance over the 7.7 min design mission. The
+  reserve policy requires >= 2.0x. Configurations below that do not
+  satisfy the policy the whole design was sized against.
+
+------------------------------------------------------------------------------------
+WHAT THE INDIAN MASSES COST  (tab 07's unactioned ACTION item)
+------------------------------------------------------------------------------------
+  Model generic masses, 20 in / 6S2P : MTOW 5.05 kg, fleet 15.16 kg
+  Indian BOM masses,    20 in / 6S2P : MTOW 5.52 kg, fleet 16.57 kg
+  Indigenisation penalty             : +471 g per aircraft, +1.41 kg fleet
+  Fleet margin against the 25 kg cap : 34 %
+
+  +471 g per aircraft is affordable against the 25 kg cap on its own.
+  The problem is what it does to ENDURANCE, not to mass -- see below.
+
+====================================================================================
+THE BOM IS RIGHT AND THE MODEL IS OPTIMISTIC
+====================================================================================
+  Read the 'x mis' column again. Against the reserve policy the whole
+  design was sized to -- hover endurance >= 2.0x mission time:
+
+     20 in / 6S2P  (design point)   1.78x   FAILS THE POLICY
+     18 in / 6S2P                   1.65x   FAILS
+     18 in / 6S3P  (the BOM)        2.20x   passes
+     20 in / 6S3P                   2.38x   passes
+
+  With generic component masses the 6S2P pack scrapes 2.01x. With real
+  Indian parts it does not close. THE BOM'S 6S3P PACK IS NOT A STALE
+  LEFTOVER -- IT IS THE CORRECT RESPONSE TO HEAVIER INDIAN COMPONENTS.
+  Whoever built the BOM did the engineering the model never had.
+
+  The consequence is that the design point, not the BOM, is what needs
+  to move. The 5.93 kg / 17.8 kg figures once in the README were the
+  Indian-BOM aircraft all along.
+
+------------------------------------------------------------------------------------
+IS 6S3P AFFORDABLE?
+------------------------------------------------------------------------------------
+  18 in, 6S3P  BOM       fleet 17.80 kg, margin 29 %, hover 16.9 min (2.20x)
+  20 in, 6S3P            fleet 18.01 kg, margin 28 %, hover 18.4 min (2.38x)
+
+  Yes. Both keep close to 30 % margin against the 25 kg cap. The
+  reserve policy is self-imposed rather than a rule, but it exists so
+  that a re-sweep and a 4 min loiter stay available after the nominal
+  mission. Relaxing it to justify a lighter pack would be moving the
+  goalposts to fit the hardware.
+
+====================================================================================
+PROCUREMENT ACTIONS
+====================================================================================
+  ORDER NOW -- unaffected by the open questions:
+    motors (2.53 kgf each covers every case), ESCs (60 A covers every
+    case), flight controller, GNSS x2 + antennas, compute, camera,
+    lens, radios, RTK base, payload servos, fasteners, wire and PDB
+    (10 AWG mains either way).
+
+  ORDER 18 CELLS PER AIRCRAFT (54 fleet), not 12. The BOM is correct.
+    Cells have no Indian source, so this is imported spend -- but
+    under-ordering costs a re-order and 3 weeks, which the flight
+    window cannot absorb.
+
+  HOLD PROPS until the diameter is settled. 20 in is more efficient
+    (763 W vs 828 W) and gives more endurance margin; 18 in has lower
+    rotor inertia and better gust rejection. Both pass the policy at
+    6S3P. 3 week lead -- decide at the P2 thrust-stand run, or order
+    one set of each and settle it on measured data.
+
+  RE-RUN THE MAIN SIZING MODEL with Indian component masses before
+    the design point is republished. That is tab 07's ACTION item and
+    it is still open.

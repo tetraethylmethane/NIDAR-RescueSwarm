@@ -74,13 +74,20 @@ Weeks counted from **10 August 2026**. Finals at ~W21.
 | All | Assign roles; confirm exam and monsoon dates (§1.1) |
 | All | **Send organiser questions** ([drafted](requirements/organiser-questions.md)) |
 | A | Frame CAD started to [frame-design-constraints](frame-design-constraints.md) |
-| B | Procurement list for everything the frame decision doesn't touch |
+| B | **Resolve the BOM-vs-design-point conflict before any order** — [`bom_reconcile.py`](../tools/sizing-model/bom_reconcile.py). The BOM is right; the model needs Indian masses fed back |
+| B | Order everything the frame and pack decisions don't touch (motors, ESCs, FC, GNSS, compute, camera, radios, RTK base) |
 | C | Repo structure, CI, SITL environment stood up |
 | D | Public flood/SAR datasets acquired; pipeline scaffold |
 | Biz | First sponsorship approaches |
 
-**Gate:** every rule clause maps to a testable requirement ✅ · orders placed for
-long-lead items · roles assigned.
+**Gate:** every rule clause maps to a testable requirement ✅ · **design point
+reconciled with the BOM** · orders placed for long-lead items · roles assigned.
+
+> **P0 blocker found.** The BOM and the sizing model describe different aircraft,
+> and the BOM is the correct one — with real Indian component masses the 6S2P pack
+> fails the 2× endurance reserve at 1.78×. Republish the design point at **6S3P**
+> before ordering cells, and re-run the model with Indian masses. Motors, ESCs,
+> avionics, compute and comms are unaffected and should be ordered now.
 
 ### P1 · Architecture freeze & procurement — W2–4 (24 Aug – 13 Sep) · monsoon
 

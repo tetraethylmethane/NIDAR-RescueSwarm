@@ -60,7 +60,21 @@ About 21 weeks. But the real constraint is narrower: monsoon closes flying until
 
 ## 2. Design point
 
-Not targets. These are outputs of a closed model in [`tools/sizing-model/`](tools/sizing-model/). **If a document disagrees with the model, the document is wrong.**
+Not targets. These are outputs of a closed model in [`tools/sizing-model/`](tools/sizing-model/).
+
+> ### ⚠ The design point is being revised — do not order cells against the table below
+>
+> The sizing model uses **generic component masses**. The Indian BOM uses **real quoted masses**, which are **+471 g per aircraft** heavier. Fed back into the model, that breaks the reserve policy the whole design was sized to:
+>
+> | Config | Hover | × mission | Reserve policy (≥ 2.0×) |
+> |:--|--:|--:|:--|
+> | 20 in / 6S2P — *the table below* | 13.7 min | **1.78×** | **fails** |
+> | 18 in / 6S3P — *the BOM* | 16.9 min | 2.20× | passes |
+> | 20 in / 6S3P | 18.4 min | 2.38× | passes |
+>
+> **The BOM's 6S3P pack is correct and the model is optimistic.** The 5.93 kg / 17.8 kg figures that were once in this README were the Indian-BOM aircraft all along — they were removed for disagreeing with a model that had never been given real component masses.
+>
+> **Action:** re-run the model with Indian masses, then republish this table. Order **18 cells per aircraft, not 12**. See [bom_reconcile.py](tools/sizing-model/bom_reconcile.py) and [its output](docs/sizing/bom-reconcile-output.txt).
 
 ### 2.1 Aircraft
 
@@ -214,6 +228,7 @@ python3 tools/sizing-model/config_trade.py               # quad vs hex vs coaxia
 python3 tools/sizing-model/delivery_accuracy.py          # sets geotag + drop targets
 python3 tools/sizing-model/mission_profile.py            # altitude, geotag error, downlink
 python3 tools/sizing-model/setup_budget.py               # the 5-minute window, 2 crew
+python3 tools/sizing-model/bom_reconcile.py              # BOM vs design point — read this before ordering
 ```
 
 Outputs are committed beside each script in [`docs/sizing/`](docs/sizing/).
