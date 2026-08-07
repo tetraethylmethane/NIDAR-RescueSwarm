@@ -64,12 +64,14 @@ Not targets. These are outputs of a closed model in [`tools/sizing-model/`](tool
 
 ### 2.1 Aircraft
 
+<sub>Per aircraft unless the row says fleet. The fleet is three identical airframes.</sub>
+
 | Parameter | Value |
 |:--|:--|
-| Configuration | 3 identical quadrotors · 20 in props · 6S2P 21700 Li-ion |
-| MTOW | 5.05 kg per aircraft |
-| Fleet all-up weight | **15.2 kg** against a 25 kg cap — 39 % margin |
-| Battery | 12 cells · 966 g · 194 Wh |
+| Configuration | Quadrotor · 20 in props |
+| Battery | 6S2P 21700 Li-ion — 12 cells · 966 g · 194 Wh · 9.0 Ah · 21.6 V |
+| MTOW | 5.05 kg |
+| **Fleet** all-up weight | **15.2 kg** against a 25 kg cap — 39 % margin |
 | Hover power | 601 W · disk loading 6.2 kg/m² |
 | Hover endurance | 15.5 min at 80 % DoD |
 | Thrust-to-weight | 2.0 static · hover at 50 % of max thrust |
