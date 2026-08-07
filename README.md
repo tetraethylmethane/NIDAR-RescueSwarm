@@ -40,7 +40,7 @@ Everything after "start" is autonomous. The operator loads the mission file, pre
 
 | # | Action | Deadline | Why it's first |
 |:--|:--|:--|:--|
-| 1 | **Register the team** | 2nd week Aug 2026 | Hard disqualification. Nothing else matters if this slips. |
+| ✅ | ~~Register the team~~ | — | **Done.** |
 | 2 | [Send the organiser questions](docs/requirements/organiser-questions.md) — **drafted, ready to go** | This week | They have external latency; nothing else on this list does. |
 | 3 | Start collecting recall data | P1 | The long pole, worth 250 points, with irreducible calendar cost. |
 | 4 | Bench the cold-boot timing | P1 | The only constraint under 20 % margin — and still modelled, not measured. |
@@ -137,7 +137,7 @@ Full breakdown in [rulebook compliance](docs/requirements/rulebook-compliance.md
 | Decision | Outcome | Reasoning |
 |:--|:--|:--|
 | Coaxial X8? | **Rejected** | Sized properly it costs +61–84 % hover power and +26–34 % fleet mass, buys no footprint back (stacking rotors doesn't shorten arms), and has the worst attitude bandwidth of anything tested. |
-| Rotor count | **Stay quad — provisional, low confidence** | Hex 6×18″ is out on flight dynamics (inside the VRS window, most gust-sensitive). But hex 6×16″ and octo 8×14″ match the quad on disk loading, VRS and gust while having 2–2.5× better rotor bandwidth and motor-out survivability — on physics, octo is arguably the better aircraft. Staying quad rests on assembly cost we have asserted but **not measured**. Extend the P1 cold-boot bench to time a 4-arm against a 6-arm frame, then decide. |
+| Rotor count | **Build the quad** | Hex 6×18″ is out on flight dynamics. Hex 6×16″ and octo 8×14″ genuinely match or beat the quad on physics — but a hex is 50 % more propulsion integration across three aircraft and an octo is double, on a 21-week calendar with no flight code written. Decided on schedule risk, not physics. Reopens only if organisers say motor-out tolerance is required. |
 | Prop diameter | **18 in, provisional** | Less rotor inertia, lower gust sensitivity. Design arms for 16–20 in and settle it on a bench in P5. |
 | Thrust-to-weight | **Keep 2.0** | Tilt only reaches 12° at 15 m/s — attitude authority is never the wind limit. |
 | Recovery chute | **Fit one** | Permitted, ballistic deployment included. It can't meet the "land on the pad" condition — from 60 m in a 3 m/s breeze a canopy drifts 36 m against a 3.66 m pad — but −10 for landing outside beats −50 for a crash, so deploying is worth ~40 points anyway. |
@@ -226,6 +226,7 @@ Outputs are committed beside each script in [`docs/sizing/`](docs/sizing/).
 | Document | What's in it |
 |:--|:--|
 | [System overview](docs/system-overview.md) | Mission flow, architecture, methods, perception, indigenisation, failsafes |
+| [Frame design constraints](docs/frame-design-constraints.md) | What CAD needs before the first part is cut |
 | [Requirements baseline](docs/requirements/requirements-baseline.md) | Every SYS-xx requirement, traced to a rule and a verification method |
 | [Organiser questions](docs/requirements/organiser-questions.md) | The four still open, drafted ready to send, plus every answer received |
 | [Rulebook compliance](docs/requirements/rulebook-compliance.md) | Rule-by-rule matrix, scoring structure, conflicts |

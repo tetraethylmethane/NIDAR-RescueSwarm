@@ -130,6 +130,34 @@ already exists and is the highest-priority measurement in the programme —
 measurement converts this from an assertion into a decision. Until then, avoid
 frame design choices that would preclude a 6-arm variant.
 
+### 2.4 The third axis: build and debug effort
+
+The trade above weighs physics and setup time. There is a third axis that a
+22-week programme with no flight code written cannot ignore, and it is **not** a
+physics question:
+
+| | Quad | Hex | Octo |
+|---|---|---|---|
+| Motors, ESCs, props to mount and wire, across 3 aircraft | **36** | 54 | 72 |
+| Motor/ESC channels to calibrate and tune | **12** | 18 | 24 |
+| Independent propulsion failure points during integration | **12** | 18 | 24 |
+
+A hex is **50 % more propulsion integration** than a quad; an octo is double. That
+is soldering, calibration, tuning, and — more importantly — debugging time during
+the phase where the schedule is tightest and the team is also writing autonomy,
+perception and a ground station from nothing.
+
+**This is a judgement about programme risk, not a measurement**, and it is stated
+as such. But it points the same way for a student team on a compressed calendar:
+the physics case for hex or octo is real and modest, while the schedule case for
+the quad is substantial. Complexity is what most often kills projects of this
+shape, and 21 weeks is not long.
+
+**RECOMMENDED: build the quad**, on schedule-risk grounds rather than the
+unmeasured setup claim that §2.3 corrects. Revisit only if the organisers answer
+that motor-out tolerance is *required* (Q3), in which case the decision is made
+for us and the extra integration has to be absorbed.
+
 ---
 
 ## 3. Flight dynamics — what steady-state momentum theory misses
