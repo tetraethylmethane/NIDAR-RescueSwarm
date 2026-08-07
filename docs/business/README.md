@@ -113,6 +113,18 @@ Honesty about what is *not* Indian (AI inference silicon, high-drain cells, RF
 chipsets, high-current connectors) is a credibility asset under jury
 questioning, not a weakness.
 
+**Name the two deliberate scope limits before a juror finds them**, so they read
+as engineering judgement rather than oversight:
+
+- **RGB-only sensing.** Correct for this competition — the targets are
+  human-looking dummies scored in daylight, and thermal detects body heat a
+  mannequin does not have. For real flood response, thermal is a genuine
+  roadmap item: live humans emit heat and it works at night.
+- **GNSS-dependent navigation.** The 450-point accuracy case rests on RTK. Real
+  deployments face jamming, urban canyon and indoor voids — and NIDAR's own
+  Mission 2 is explicitly GPS-denied. Visual-inertial odometry as a GNSS
+  fallback is the natural next capability, and saying so costs nothing now.
+
 ## 8. Go-to-market (20) — ⏳ partner lead time
 
 Pilot-first: one district authority, one monsoon season, measured outcomes.

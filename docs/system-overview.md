@@ -95,7 +95,40 @@ Every algorithmic choice traces to published work rather than intuition.
 
 ## Perception
 
-A COCO-pretrained person detector will fail here. Aerial SAR targets occupy
+> **Terminology.** "SAR" in the dataset names below means **Search And Rescue**,
+> not Synthetic Aperture Radar. HERIDAL and SARD are public aerial *photographic*
+> datasets of people in search-and-rescue scenarios. **There is no radar on this
+> aircraft.**
+
+### Why a plain RGB camera
+
+The only sensor is a **12 MP RGB camera with a 6 mm lens** (BOM tab 01, rows
+35–36). That is a deliberate choice, not a default:
+
+| Alternative | Why not |
+|---|---|
+| **Synthetic aperture radar** | Tens of kg and hundreds of watts. The whole aircraft is 5.88 kg with a 200 g payload allowance. Not physically possible in this class. |
+| **Thermal / LWIR** | **It would fail on the actual targets.** The organisers confirmed survivors are *human-looking dummies*. A mannequin sits at ambient temperature, so a thermal camera sees no body-heat signature to separate it from the ground. Thermal detects the one thing these targets do not have. |
+| **Lidar** | Gives structure, not identity. A prone human and a log are similar point clouds; and it adds mass and power for a problem RGB already solves. |
+
+RGB also happens to be **required anyway**: rule 8.14 obliges the GCS to display a
+live camera feed from every drone, so a camera is on the aircraft regardless of
+what detects the survivors. And the mission is flown "under standard daylight
+conditions" (MB §7), which removes the usual reason to reach for thermal or radar
+— night capability.
+
+Resolution is not the constraint either. CNN detectors need 20–30 px on target;
+at 40 m this camera gives **140 px on a prone adult**, clearing that by 5×.
+
+> **Product-roadmap note, not a competition change.** For *real* flood response,
+> thermal is genuinely valuable — live humans emit heat and it works at night. The
+> reason it is wrong here is specific to dummies being scored in daylight. Worth
+> saying explicitly in the business pitch (§7 competitive advantage, §9 adoption
+> readiness) rather than letting a jury assume RGB-only was an oversight.
+
+### The detection problem
+
+A COCO-pretrained person detector will fail here. Aerial search-and-rescue targets occupy
 ~0.1 % of frame area, lying prone or partially covered — a distribution general
 detectors have never seen.
 

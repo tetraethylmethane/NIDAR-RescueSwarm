@@ -77,7 +77,7 @@ Weeks counted from **10 August 2026**. Finals at ~W21.
 | B | **Resolve the BOM-vs-design-point conflict before any order** — [`bom_reconcile.py`](../tools/sizing-model/bom_reconcile.py). The BOM is right; the model needs Indian masses fed back |
 | B | Order everything the frame and pack decisions don't touch (motors, ESCs, FC, GNSS, compute, camera, radios, RTK base) |
 | C | Repo structure, CI, SITL environment stood up |
-| D | Public flood/SAR datasets acquired; pipeline scaffold |
+| D | Public flood and search-and-rescue image datasets acquired; pipeline scaffold |
 | Biz | First sponsorship approaches |
 
 **Gate:** every rule clause maps to a testable requirement ✅ · **design point

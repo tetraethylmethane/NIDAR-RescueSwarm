@@ -226,7 +226,7 @@ A quadrotor **has no motor-out tolerance** — losing one rotor means losing yaw
 
 *(10 ha as 400 × 250 m, 30 % sidelap, 3 drones, 8 m/s, ~6 s per 180° turn.)*
 
-Aerial SAR targets in HERIDAL/SARD occupy roughly **0.1 % of frame area**, and CNN detectors need on the order of 20–30 px on target for reliable small-object recall. Every row above clears that by more than 2×.
+Aerial search-and-rescue targets in HERIDAL/SARD occupy roughly **0.1 % of frame area**, and CNN detectors need on the order of 20–30 px on target for reliable small-object recall. Every row above clears that by more than 2×.
 
 **60 m selected.** Going from 60 m to 80 m saves 18 seconds of a 30-minute allowance and costs 25 % of the pixels on target. That is a bad trade. **Altitude is chosen for detection margin, because coverage is not the binding constraint.**
 
