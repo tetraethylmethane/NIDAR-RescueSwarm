@@ -1,11 +1,16 @@
 # RescueSwarm — Configuration Decision and Sizing-Constraint Review
 ### NIDAR 2026–27 Track 1 · Companion to `sizing-calculations.md`
 
-**Status.** Coaxial is **decided — rejected**. The rotor-count decision (stay quad)
-is **decided**. Prop diameter is **provisionally 18 in, to be confirmed on a bench
-in Phase 5**. Everything marked **PROPOSED** is a recommendation awaiting a call.
-The baseline design point in [`sizing-calculations.md`](sizing-calculations.md) and
-the README is **unchanged** until those are adopted.
+**Status.** Coaxial **rejected**. Rotor count **decided — quad**. Prop diameter
+**decided — 18 in, adopted into the design point**, with arms still sized for
+16–20 in so P5 can revisit. Everything marked **PROPOSED** is still awaiting a
+call.
+
+The design point has since **moved to 18 in / 6S3P** and been reconciled with the
+Indian BOM — see [`bom-reconcile-output.txt`](bom-reconcile-output.txt). Tables in
+§2–§3 below were computed against the older 20 in / 6S2P baseline; their
+conclusions hold and mostly strengthen, but the live numbers are in
+[`config-trade-output.txt`](config-trade-output.txt).
 
 **Reproduce:** `python tools/sizing-model/config_trade.py`
 → committed output in [`config-trade-output.txt`](config-trade-output.txt).
@@ -16,9 +21,9 @@ the README is **unchanged** until those are adopted.
 
 | Decision | Outcome | Confidence |
 |---|---|---|
-| Coaxial (X8)? | **No.** +61–84 % power, +26–34 % fleet mass, worst attitude bandwidth of any option. | High — robust at every κ |
+| Coaxial (X8)? | **No.** +59–119 % power, +34–50 % fleet mass, cutting the margin to 2 %, and the worst attitude bandwidth of any option. | High — robust at every κ |
 | Rotor count? | **Build the quad.** Hex 6×18″ is rejected on flight dynamics; hex 6×16″ and octo 8×14″ are *not*, and match or beat the quad on physics (§2.3). Decided on **build-and-debug effort** (§2.4), not the unmeasured setup claim. | Medium — reopens only if organiser Q3 requires motor-out tolerance |
-| Prop diameter? | **18 in provisionally**, arms designed to accept 16–20 in. Confirm in P5. | Medium — rests on an inertia proxy |
+| Prop diameter? | **18 in — adopted.** Matches the BOM, and beats 20 in on descent margin (0.42 v_i vs 0.47) and gust sensitivity (0.168 vs 0.187). Arms still accept 16–20 in. | Medium–high |
 | Thrust-to-weight? | **Keep 2.0.** Attitude authority is never the wind limit. | High |
 | Motor-out redundancy? | **Fit a recovery chute; rotor redundancy still open.** They cover different failures — only rotors preserve *score*. | Medium — §5.4 |
 | VRS on descent? | **Fix the flight profile, not the airframe.** | High |
@@ -74,8 +79,8 @@ assumes every rotor has its own free-stream disk. A coaxial pair does not.
 
 ### 2.1 Coaxial: rejected
 
-Sized honestly, coaxial costs **+61 to +84 % hover power and +26 to +34 % fleet
-mass**, eating the 39 % mass margin down to roughly 19 %. What it is supposed to
+Sized honestly, coaxial costs **+59 to +119 % hover power and +34 to +50 % fleet
+mass**, eating the 29 % mass margin down to roughly 2 %. What it is supposed to
 buy is compactness, and here it buys none: **stacking rotors does not shorten the
 arms**, so the X8 footprint is *identical* to the quad it replaces (1046 mm).
 
