@@ -54,7 +54,7 @@ here explicitly because they were quoted in the README and in the sizing documen
 | ID | Requirement | Source | Method | Phase |
 |---|---|---|---|---|
 | SYS-19 | **[SCORED −50 each]** Zero operator input beyond mission-file load, start, safety abort, emergency recall | 8.16, MB §3 | D | P9 |
-| SYS-20 | GCS shall be incapable of originating a retask, waypoint change or drop command by construction | 8.16 | I (source review) | P2 |
+| SYS-20 | GCS shall be incapable of originating a retask, waypoint change or drop command by construction. **Abort and recall are exempt** — permitted by 8.16 and required by 8.19 | 8.16 | I (source review) | P2 |
 | SYS-21 | Setup to launch ≤ 240 s internal target against the 300 s rule, with 2 people | MB §3, MB §6 | D (20 timed runs) | P10 |
 | SYS-22 | Mission file received during setup, parsed, partitioned and rendered without operator editing | MB §3 | D | P9 |
 | SYS-42 | RTK base positioned, powered and set to a fixed reference from its **first 3D fix**, inside the setup window, **without survey-in** | organiser answer + setup budget | T | P5 |

@@ -111,23 +111,61 @@ an external imaging service over HTTP and is not wired to anything NIDAR needs.
 
 ---
 
-## Recommendation: two builds from one codebase
+## Recommendation: one codebase, two deployments
 
-Do not try to make one ground station satisfy both jobs, and do not throw this
-away.
+### Why remove the command paths at all
 
-**1. Test GCS — adopt NIDAR-GSC largely as-is.**
-During P3–P6 you *want* arm/disarm, mode changes and manual waypoints; that is how
-flight testing works. Fix the internet poller (it will otherwise leak into habits
-and demos) and use it as the development ground station.
+**Not because having them is illegal.** Rule 8.16 penalises the *action* —
+"manual waypoint modification… during mission execution" — not the capability. A
+ground station full of controls that nobody touches is fully compliant. Any
+argument that the rules *require* a command-free GCS is overstated.
 
-**2. Mission GCS — build read-only, sharing components.**
-Reuse the map, tiles, telemetry ingest and component library. Omit every command
-path at the *server* level, so SYS-20 can be verified by source review rather than
-asserted. Add the 8.14 mission displays and multi-vehicle support, which are new
-work regardless.
+The real reason is **accident prevention**, and it is concrete here.
+`FlightMap.js:200` inserts a waypoint at `event.latlng` on a map click:
 
-The shared layer is the map and telemetry; the divergence is the command surface.
-Splitting there costs little and makes SYS-20 provable.
+```js
+let point = { lat: event.latlng.lat, lng: event.latlng.lng, ...,
+              cmd: Commands[props.getters.placementType] }
+```
+
+The operator watches that map for eight minutes, under competition pressure,
+with jurors present. **One stray click is −50 points** — more than the entire
+fast-completion bonus — and it cannot be rehearsed to zero.
+
+Two secondary reasons, both real but weaker:
+
+- **Design Review item 7** (Autonomous Mission Execution, 30 pts): "the GCS
+  cannot retask, here is the source" is *verifiable*; "we did not touch it" is a
+  promise. Rule 8.6 lets the jury check.
+- **Pre-Flight Inspection** is Pass/Fail with one retry. Demonstrable absence is
+  easier to pass than arguing intent.
+
+### It is not "read-only"
+
+Safety abort and emergency recall are explicitly permitted (8.16, MB §3) and
+required (8.19). The correct framing is **no mission-altering commands** — abort
+and recall stay.
+
+### Do NOT build two ground stations
+
+An earlier version of this recommendation said to build a separate mission GCS.
+**That is the wrong answer.** In a 21-week programme with an 8-week flight window
+you would develop and test against the dev build and compete on the less-tested
+one — the classic "worked in testing" failure, and a worse risk than the one it
+solves.
+
+**Instead: one codebase, one client, one test suite.** Put the command endpoints
+in a server module that the mission deployment does not load. Same map, same
+telemetry, same UI flown behind all season — the mission build simply has no route
+that can insert a waypoint.
+
+| | Dev deployment | Mission deployment |
+|---|---|---|
+| Map, tiles, telemetry, video | ✔ | ✔ |
+| Abort / recall | ✔ | ✔ *(required by 8.19)* |
+| Waypoint insert, mode change, arm, params, servos | ✔ | **module not loaded** |
+
+That satisfies SYS-20 by source review, carries no divergence risk, and is about
+a day of architecture rather than weeks of duplication.
 
 **Until this is done, treat SYS-20 and SYS-23 as failing**, not pending.
