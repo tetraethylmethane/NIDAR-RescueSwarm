@@ -383,11 +383,11 @@ Every real flight runs a tagged commit, logged in the flight log with the tag.
 
 ## Open Questions to Organisers
 
-Two of the original seven are now **answered by the rulebook** — scoring weights (§9 of the rulebook) and video feeds (rule 8.14 requires a feed from *each* drone). The revised list, in priority order, is maintained in [`docs/requirements/rulebook-compliance.md`](docs/requirements/rulebook-compliance.md) §5:
+Four are now closed — scoring weights and video feeds by the rulebook itself, and two by the organisers: **delivery is measured from the survivor**, and **a local RTK base station is permitted**. Both confirm assumptions the error budget already used, so the baseline stands unchanged and delivery is worth **177 of 200** rather than 75. Full list in [`docs/requirements/rulebook-compliance.md`](docs/requirements/rulebook-compliance.md) §5:
 
-1. Is delivery accuracy measured from the **true survivor position or the tagged position**? — gates 200 points.
-2. Is a team-owned **local RTK base station** permitted, given corrections travel on our own local link and not the internet? — now scoring-critical.
-3. Is **pre-booting** of onboard computers permitted before the 5-minute window begins?
+1. **What point on the survivor is the delivery datum?** A prone adult is 1.7 m long, so head vs torso-centre differs by up to 0.85 m against a **1 m** Zone A — worth ~18 points, and free to remove if known.
+2. May the **RTK base be surveyed and started before** the 5-minute window opens, as ground equipment? Setup has 15 s of margin.
+3. Is **pre-booting** of onboard computers permitted before the window begins?
 4. Will survivors be **real humans, dummies, or both**, in what postures and clothing, and under partial cover?
 5. What **shape, aspect ratio and file format** should we expect for the boundary polygon?
 6. Is a **ballistic parachute** permitted, and is motor-out tolerance separately required?

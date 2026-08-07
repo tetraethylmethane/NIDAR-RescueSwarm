@@ -222,39 +222,73 @@ points. A model checklist is to be released separately (4.31).
 P10 of [`../schedule-baseline.md`](../schedule-baseline.md). The model checklist
 (4.31) is still to be released — track it.
 
-### 4.3 Delivery measurement datum still ambiguous
+### 4.3 Delivery measurement datum — ANSWERED
 
-The zones are stated as "within 1 / 2 / 3 metres" but the rulebook does not say
-**measured from what** — the true survivor position or the team's tagged position.
-This materially changes the error budget: measuring from the true position means
-geotag error and drop dispersion compound (§1.2b); measuring from the tag would
-isolate drop dispersion alone.
+**Delivery is measured from the survivor**, confirmed by the organisers.
 
-**Still an open question for the organisers** — and now a higher-priority one,
-because it determines whether 200 points depend on geolocation or not.
+Geotag error and release dispersion therefore compound, exactly as §1.2b assumed.
+The budget in [`../sizing/delivery-accuracy-output.txt`](../sizing/delivery-accuracy-output.txt)
+stands unchanged, and geolocation genuinely gates 450 of the 600 flight points.
+
+### 4.4 RTK — ANSWERED, and now a committed design item
+
+**A team-owned local RTK base station is permitted**, confirmed by the organisers.
+
+Consequences, all of which were assumed and are now committed:
+
+- **Case C (0.91 m RSS geotag) is reachable**, so SYS-12 at CEP50 ≤ 0.75 m stands
+  and delivery is worth **177 of 200** rather than 75.
+- The **RTK base station, survey tripod and ground radio move from conditional to
+  required** in the BOM and cost sheet — see
+  [`../business/cost-sheet.md`](../business/cost-sheet.md) §B.
+- SYS-13 (degraded mode flagged on the GCS when RTK is unavailable) remains, as a
+  failsafe rather than a planned operating mode.
+- **Residual sub-question:** the setup budget assumes the base is *surveyed and
+  running before* the 5-minute window opens, on the grounds that it is ground
+  equipment rather than a drone. MB §6 covers "drones, payloads, communication
+  systems, and associated equipment", which is ambiguous about the base. Worth
+  confirming — the setup budget has only 15 s of modelled margin, and surveying
+  inside the window would consume far more than that.
+
+### 4.5 New: what point *on* the survivor is the datum?
+
+Now that delivery is measured from the survivor, this matters more than it did.
+A prone adult is ~1.7 m long, so head, torso-centre and feet differ by up to
+**0.85 m — comparable to the entire 1 m Zone A radius**. The sizing document
+already carries a 0.50 m "target extent / centroid" term for this, which is the
+**second-largest contributor in case C** (31 % of variance, behind only the 0.70 m
+unmodelled allowance).
+
+If the organisers score from a marked point on the dummy, our detector's centroid
+must be biased toward that point rather than the blob centre. **This is cheap to
+fix if known, and unfixable on the day if not.**
 
 ---
 
 ## 5. Open questions — revised
 
-Answered by the rulebook, and to be removed from the list:
+**Answered — closed:**
 
 - ~~Scoring weights across mission time, detection, delivery, autonomy~~ → §1.
 - ~~Automatic switching of a single video feed, or all feeds simultaneously?~~ →
-  8.14 requires a feed from **each** drone.
+  8.14 requires a feed from **each** drone; costs nothing (§4.1).
+- ~~Is delivery measured from the true survivor position or the tagged position?~~
+  → **from the survivor** (§4.3). Errors compound; budget unchanged.
+- ~~Is a team-owned local RTK base station permitted?~~ → **yes** (§4.4). Case C
+  is reachable; RTK hardware becomes a committed BOM item.
 
-Still open, in priority order:
+**Still open, in priority order:**
 
-1. **Is delivery accuracy measured from the true survivor position or the tagged
-   position?** (§4.3 — gates 200 points.)
-2. **Is a team-owned local RTK base station permitted**, given corrections travel
-   on our own local link and not an external network? (Now scoring-critical, §1.2b.)
-3. Is **pre-booting** of onboard computers permitted before the 5-minute window
-   opens? (Setup has 15 s of modelled margin.)
+1. **What point on the survivor is the delivery datum** — marked point, torso
+   centre, or nearest part of the body? Up to 0.85 m of ambiguity against a 1 m
+   Zone A (§4.5). Cheap to design for if known, unfixable on the day if not.
+2. **May the RTK base be surveyed and started before the 5-minute window opens**,
+   as ground equipment? (§4.4 — the setup budget has 15 s of margin.)
+3. Is **pre-booting** of onboard computers permitted before the window opens?
 4. Will survivors be **real humans, dummies, or both** — in what postures, clothing
-   and degree of cover? (Brief says "real humans or dummies".)
+   and degree of cover? (Drives the P7 dataset; brief says "real humans or dummies".)
 5. What **shape, aspect ratio and file format** should the boundary polygon be?
 6. Is a **ballistic parachute** permitted, and is motor-out tolerance separately
-   required? (See `configuration-trade.md` §5.4.)
-7. Is there a **maximum wind** condition under which the mission runs, or is it
-   flown in whatever weather occurs? (See `configuration-trade.md` §5.2.)
+   required? (See `../sizing/configuration-trade.md` §5.4.)
+7. Is there a **maximum wind** condition under which the mission runs?
+   (See `../sizing/configuration-trade.md` §5.2.)

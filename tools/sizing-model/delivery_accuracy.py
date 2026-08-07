@@ -157,9 +157,49 @@ def main():
     print("  Tightening the gate below ~0.3 m/s buys little once geotag")
     print("  dominates. Fix geolocation first, then the release gate.")
 
+    # --- survivor datum ambiguity -----------------------------------------
+    print("\n" + "-" * 88)
+    print("SECTION 5  SURVIVOR-DATUM OFFSET  (delivery is measured from the survivor)")
+    print("-" * 88)
+    print("  Confirmed: drops are scored from the SURVIVOR, so geotag error and")
+    print("  release dispersion compound -- as budgeted above. But a prone adult is")
+    print("  ~1.7 m long, so 'the survivor's position' is ambiguous by up to 0.85 m")
+    print("  depending on whether the datum is a marked point, the torso centre or")
+    print("  the nearest body part. That is comparable to the whole Zone A radius.")
+    print()
+    print("  A datum offset is a BIAS, not noise: it shifts the whole distribution")
+    print("  and multi-frame fusion cannot remove it.\n")
+    gt = GEOTAG['C  RTK + fusion + calibrated']
+    base, _ = budget(gt, 0.30, 3, 0.7)
+    print(f"{'datum bias':>11}{'P(<=1m)':>10}{'P(<=2m)':>10}{'pts/drop':>10}"
+          f"{'10 drops':>10}{'vs zero':>9}")
+    print('-' * 88)
+    ref = None
+    for bias in [0.0, 0.25, 0.50, 0.85]:
+        # offset Rice distribution, evaluated by quadrature over the 2-D Gaussian
+        s = base / np.sqrt(2)
+        n = 400
+        xs = np.linspace(-5 * s + bias, 5 * s + bias, n)
+        ys = np.linspace(-5 * s, 5 * s, n)
+        X, Y = np.meshgrid(xs, ys)
+        w = np.exp(-((X - bias) ** 2 + Y ** 2) / (2 * s ** 2))
+        w /= w.sum()
+        r = np.hypot(X, Y)
+        p1, p2, p3 = (w[r <= R].sum() for R in (1.0, 2.0, 3.0))
+        pts = 20 * p1 + 14 * (p2 - p1) + 8 * (p3 - p2)
+        if ref is None:
+            ref = pts
+        print(f"{bias:10.2f}m{p1:10.2f}{p2:10.2f}{pts:10.1f}"
+              f"{N_DROPS*pts:10.0f}{N_DROPS*(pts-ref):+9.0f}")
+    print()
+    print("  A worst-case 0.85 m datum bias costs ~18 points -- less than RTK (82)")
+    print("  but comparable to fusion plus ground-plane calibration (20), and it is")
+    print("  free to remove. Ask which point is scored, then bias the detector")
+    print("  centroid toward it.")
+
     # --- requirement derivation -------------------------------------------
     print("\n" + "=" * 88)
-    print("SECTION 5  REQUIREMENT DERIVATION")
+    print("SECTION 6  REQUIREMENT DERIVATION")
     print("=" * 88)
     tgt = 0.90
     lo, hi = 0.05, 5.0

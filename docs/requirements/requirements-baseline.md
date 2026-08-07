@@ -104,6 +104,7 @@ Honest gaps, to be closed before the P0 gate can be called complete:
 |---|---|
 | SYS-21 | Setup timing is **modelled, not measured**. 15 s of margin on the binding constraint. Bench measurement is the highest-priority test in the programme. |
 | SYS-07 | Recall target of 90 % is asserted, not demonstrated. Needs field data at the chosen altitude. |
-| SYS-12 | 0.91 m RSS geotag depends on RTK being permitted — **unresolved organiser question**. Without RTK the achievable figure is 3.06 m RSS, worth 75 of 200 delivery points instead of 177. |
-| SYS-15 | Depends on whether the measurement datum is the survivor or the tag — **unresolved organiser question**. |
+| SYS-12 | **RTK confirmed permitted**, so 0.91 m RSS is reachable and the target stands. Remaining risk is the 0.70 m *unmodelled* allowance, now the largest single term in case C (60 % of variance) — it shrinks only by measuring in P7. |
+| SYS-15 | **Datum confirmed as the survivor**, so geotag and dispersion compound as budgeted. Open: *which point* on the survivor — up to 0.85 m of ambiguity for a prone adult against a 1 m Zone A. See [`rulebook-compliance.md`](rulebook-compliance.md) §4.5. |
+| SYS-33 | The 0.50 m target-extent/centroid term is the second-largest in case C (31 % of variance) and is partly irreducible until the datum question above is answered. |
 | SYS-36 | Model Pre-Flight Inspection checklist is "to be released separately" (4.31) and is not yet available. |

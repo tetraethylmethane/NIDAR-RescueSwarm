@@ -44,7 +44,7 @@ the roll-up.
 | GCS computer | | |
 | GCS mesh node + sector antenna + mast | | |
 | 868 MHz ground radio | | |
-| **RTK base station + survey tripod** | | Subject to organiser ruling — see compliance §5 |
+| **RTK base station + survey tripod** | | **Confirmed permitted — required item.** Worth 82 delivery points; see compliance §4.4 |
 | Cases, transport, field kit | | |
 | **Ground segment subtotal** | | |
 
