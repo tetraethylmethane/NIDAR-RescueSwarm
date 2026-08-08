@@ -34,7 +34,23 @@
 
 **Phase 0/1.** The system is sized end to end, the requirements are baselined against the rulebook, and **the ground station runs as a system** — verified against three real ArduCopter SITL autopilots with a browser on the page, live video, offline tiles and abort acknowledged end to end.
 
-**The aircraft and the perception stack do not exist.** `perception/` contains no source files. The coverage planner, the ArduPilot parameter sets and the safety-link protocol are written and tested; none has met hardware. See the [implementation plan](docs/implementation-plan.md).
+<p align="center">
+  <img src="ground-station/gcs-in-flight.png" alt="The Drikr NIDAR Ground Station mid-mission: three drones in AUTO at 40 m over offline satellite imagery" width="100%">
+  <br>
+  <sub>
+    <b>The operator's screen, mid-mission.</b> Three real ArduCopter autopilots flying the coverage planner's own output in AUTO,
+    in 6 m/s of wind — <code>ARMED 3/3</code>, RTK fixed, batteries drawing down 59/60/62 %, each aircraft in its own search strip
+    over locally cached imagery. Every number came from an autopilot; nothing here is a mock-up.
+    <br>
+    ▶ <b><a href="ground-station/mission-flight.mp4">mission-flight.mp4</a></b> — the whole flight, five real-time minutes
+    (download to play; GitHub does not preview repo-hosted video).
+    Details in <a href="ground-station/README.md">ground-station/README.md</a>.
+  </sub>
+</p>
+
+All three aircraft reached waypoint 9/9, peaked at 40.1–40.2 m and landed on their pads. The staggered recovery visible in the clip — 11/19/29 m — is the per-drone `RTL_ALT` of 25/30/35 m in [`firmware/ardupilot-params/`](firmware/ardupilot-params/) working, observed rather than asserted.
+
+**The aircraft and the perception stack do not exist.** `perception/` contains no source files, so there is **no camera anywhere in the loop** — survivors and deliveries have only ever come from a simulator. The coverage planner, the ArduPilot parameter sets and the safety-link protocol are written and tested; none has met hardware. See the [implementation plan](docs/implementation-plan.md).
 
 Everything after "start" is autonomous. The operator loads the mission file, presses start, and can abort or recall. Nothing else — anything more costs 50 points a time.
 
