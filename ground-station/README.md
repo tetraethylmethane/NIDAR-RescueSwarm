@@ -192,6 +192,53 @@ fail is not a guard.
 
 ---
 
+## The coverage plan has been flown
+
+```
+coverage planner -> QGC WPL 110 -> 3 x ArduCopter SITL in AUTO -> the GCS
+```
+
+Three real ArduPilot autopilots flew the planner's own output, in wind, and
+completed it:
+
+| | result |
+|---|---|
+| drone 1 | **COMPLETED** — wp 9/9, max alt 40.1 m, landed on its pad |
+| drone 2 | **COMPLETED** — wp 9/9, max alt 40.2 m, landed on its pad |
+| drone 3 | **COMPLETED** — wp 9/9, max alt 40.1 m, landed on its pad |
+
+6 m/s wind, turbulence 3. Nothing in the flown path was hand-written — it is
+`mission.py`'s `QGC WPL 110` output, uploaded over `MISSION_ITEM_INT` (the int
+variant deliberately: `MISSION_ITEM` uses float32 for latitude and quantises to
+1–2 m, and the whole delivery budget is 1 m zones).
+
+Run it with [`scripts/sim-flight.sh`](https://github.com/tetraethylmethane/NIDAR-GSC/blob/main/scripts/sim-flight.sh).
+
+### It took seven attempts, and one of them is worth reading
+
+Three runs were diagnosed from readings of *"alt 0.00 m, throttle 0 %, no RC"*.
+None of those were measurements. The flight harness was a **passive listener**
+on its private MAVLink link, so ArduPilot sent it heartbeats and nothing else,
+and every variable sat at its initialised `0.0`.
+
+That is exactly the defect found in the ground station's own ingest earlier the
+same day — reproduced in the harness written to watch for it. The GCS, which
+*does* request streams, was reporting the same aircraft at 40 m at the time.
+
+**Absent data is not zero data.** Two confident wrong diagnoses were built on
+that confusion, including one about RC failsafe, before `SET_MESSAGE_INTERVAL`
+was added to the harness too.
+
+The other six taught smaller lessons, all of the same shape: arming is a
+request that can be *refused* (checking the ACK surfaced *"Gyros inconsistent"*
+and *"AHRS: waiting for home"*); switching to AUTO does not start a mission and
+`MISSION_START` returns `ACCEPTED` without starting one either; `DISARM_DELAY`
+disarms the first aircraft while the third is still passing pre-arm; and
+completion is *landed and disarmed*, not a mode change, because the mission
+ends with RTL as an **item** so the mode stays AUTO throughout.
+
+---
+
 ## It has now run as a system
 
 Client, backend, **three real ArduCopter autopilots**, the mission-state feed,
@@ -289,8 +336,13 @@ to surface.
 - **No tiles are cached for the venue.** The tooling is fixed and 681 tiles were
   cached for the test area to prove the path, but the real coordinates are not
   known and this must be run weeks ahead.
-- **No real aircraft.** SITL is a genuine ArduPilot autopilot, but it has no
-  radio link, no companion computer, no mesh and no wind.
+- **No real aircraft.** SITL is a genuine ArduPilot autopilot flying the real
+  plan in simulated wind, but it has no radio link, no companion computer, no
+  mesh, no camera and no airframe.
+- **No camera anywhere in the loop.** SITL renders nothing, so the
+  perception → geotag → mission-state → GCS chain has only ever been driven by
+  `sim_mission.py`. Closing that needs Gazebo, which is blocked on a `sudo`
+  password in WSL.
 - **The measured video bitrate means nothing.** Synthetic test patterns are
   nearly static and compress to almost nothing; the 0.9 Mbps per feed in the RF
   budget is untested against real flood imagery.
