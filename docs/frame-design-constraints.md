@@ -12,7 +12,7 @@ frame is designed, not after.
 |---|---|---|---|
 | 1 | **Configuration** | **Quadrotor, 4 arms** | Physics marginally favours hex/octo, but a hex is 50 % more propulsion integration across three aircraft and an octo is double, on a 21-week calendar with no flight code written. See [configuration-trade](sizing/configuration-trade.md) §2.4. **Revisit only if organiser Q3 says motor-out tolerance is required.** |
 | 2 | **Arms accept 16–20 in props** | Wheelbase sized for 20 in with 30 mm tip clearance → **761 mm diagonal** | Prop diameter is provisionally 18 in but settles on a bench in P5. Late-binding costs nothing now and everything later. |
-| 3 | **Battery bay** | 6S2P, 12 × 21700, 966 g, with ~20 % volume growth | The reserve policy sizes the pack from hover power. If the pack grows, the bay must not be the thing that stops it. |
+| 3 | **Battery bay** | **6S3P, 18 × 21700, 1449 g.** Bare cell block ≈ **126 × 70 × 63 mm** (6 across × 3 deep, cells lying down); allow **≈ 140 × 80 × 78 mm** with holders, wrap, BMS and leads, plus ~15 % growth on the 63 mm axis | ⚠ **This entry previously said 6S2P, 12 cells, 966 g.** That was the pre-BOM design point. With real Indian component masses (+471 g/aircraft) the 6S2P pack **fails the ≥2.0× endurance reserve at 1.78×**; 6S3P makes it at 2.05×. The change is **+6 cells and +483 g** — a whole extra row. The old "~20 % volume growth" allowance covered 14.4 cells, so a bay built to the old entry **could not take the real pack even with its stated margin**. Authoritative source: [`sizing/model-output.txt`](sizing/model-output.txt). |
 | 4 | **Payload magazine** | 4 kits, each 200 × 100 × 50 mm, 200 g | Fixed by rule — MB §2. Can be designed and built today, independent of everything else. |
 | 5 | **Parachute mount** | Top-centre, clear deployment cone, no prop or antenna in the path | Permitted and worth fitting (SYS-41). **Must be designed in** — a retrofitted mount fouls props or deploys into an arm. |
 
@@ -37,6 +37,27 @@ points. Three of its terms are decided by *mechanical design*, not software:
 | 12 | **Setup handling** | Unpack-to-armed is the binding constraint. Every fastener, connector and folding joint on the outside of this airframe is spending the 15 s of margin. Prefer captive fasteners, keyed connectors and folds that cannot be assembled wrongly |
 
 ---
+
+## 3a. Two constraints that fight each other
+
+These are not independent, and CAD has to resolve them together rather than
+satisfying each in turn.
+
+**Parachute cone vs GNSS antennas — both want the top centre.** #5 needs a clear
+deployment cone straight up from top-centre with nothing in the path. #8 wants
+two GNSS antennas symmetric about the CG, raised, clear of carbon. Antennas on
+masts either side of centre are directly in the canopy's way, and a chute that
+snags on an antenna mast is worse than no chute — it deploys asymmetrically and
+takes the aircraft down inverted. **Resolve by putting the antennas on the arms
+or on booms outboard of the cone**, keeping them symmetric about the CG, and
+proving the cone clear with a swept-volume check in CAD rather than by eye.
+
+**Folding joints vs boresight vs setup time.** Folds help transport and cost
+setup seconds (#12). More importantly they must not sit between the camera and
+the GNSS antennas: every folding joint in that load path is a lever-arm term
+that changes each time the aircraft is unpacked, which breaks #6 and #7 and
+invalidates SYS-48. **The camera, the IMU and the GNSS antenna mounts must all
+be on one rigid core structure**, with folds only outboard of them.
 
 ## 4. Still open — do not let these block the build
 
