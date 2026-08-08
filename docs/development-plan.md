@@ -2,7 +2,8 @@
 ### NIDAR 2026–27 · Track 1 · Mission 1 · Registered August 2026
 
 **This is the single schedule authority.** Where anything else disagrees, this
-governs. Requirements live in
+governs. *What* to build and how simple it can be is in
+[`implementation-plan.md`](implementation-plan.md). Requirements live in
 [`requirements/requirements-baseline.md`](requirements/requirements-baseline.md);
 architecture rationale lives in [`system-overview.md`](system-overview.md); this
 document is *when* and *in what order*.

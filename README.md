@@ -32,7 +32,9 @@
 
 ## 1. Status
 
-**Phase 0 — requirements.** The system is sized end to end and the requirements are baselined against the rulebook. No flight code exists yet.
+**Phase 0/1.** The system is sized end to end, the requirements are baselined against the rulebook, and the ground-station display layer is built and tested.
+
+**The aircraft, the autonomy, the perception and the failsafes do not exist yet.** `autonomy/`, `perception/`, `firmware/` and `communication/` contain zero source files. The abort button sets a flag that nothing reads. See the [implementation plan](docs/implementation-plan.md).
 
 Everything after "start" is autonomous. The operator loads the mission file, presses start, and can abort or recall. Nothing else — anything more costs 50 points a time.
 
@@ -234,6 +236,7 @@ Outputs are committed beside each script in [`docs/sizing/`](docs/sizing/).
 | [Organiser questions](docs/requirements/organiser-questions.md) | The four still open, drafted ready to send, plus every answer received |
 | [Rulebook compliance](docs/requirements/rulebook-compliance.md) | Rule-by-rule matrix, scoring structure, conflicts |
 | [Development plan](docs/development-plan.md) | Phase-to-phase schedule, critical path, risk and de-scope order |
+| [Implementation plan](docs/implementation-plan.md) | What to build for autonomy, perception and failsafes — and how much of it can be skipped |
 | [Sizing calculations](docs/sizing/sizing-calculations.md) | The full engineering derivation |
 | [Configuration trade](docs/sizing/configuration-trade.md) | Quad vs hex vs coaxial, flight dynamics, constraint review |
 | [Business strategy](docs/business/README.md) | Phase 4B structure and cost sheet |
