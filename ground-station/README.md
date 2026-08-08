@@ -19,25 +19,51 @@ SYS-27** — see
 
 ---
 
-## Status
+## Status — complete for the display and safety layers
 
-| Blocker found in review | State |
+| Blocker from the review | State |
 |---|---|
-| Internet poller every 5 s (rule 8.4) | ✅ **Fixed** — removed, guarded by `scripts/check-no-network.sh` |
-| Controller, not a view (SYS-20) | ✅ **Fixed** — `MISSION_MODE` split **plus** a 403 guard on the 31 legacy `/uav` routes |
-| Single-vehicle by construction (8.13) | ✅ **Fixed** — MAVLink ingest, three SYSIDs into one `Fleet` |
-| No 8.14 mission displays | ✅ **Fixed** — regions, survivors, deliveries, progress; client builds |
-| One MJPEG video feed (8.14) | 🟡 **Built** — MediaMTX + 3 WebRTC panes; needs a real MediaMTX run |
-| Live arm/disarm buttons in the nav bar | ✅ **Fixed** — status-only in mission mode, and the client defaults to the safe UI if it cannot reach the backend |
+| Internet poller every 5 s (rule 8.4) | ✅ Removed, guarded by `check-no-network.sh` |
+| Controller, not a view (SYS-20) | ✅ `MISSION_MODE` split + 403 guard on 31 legacy `/uav` routes |
+| Single-vehicle by construction (8.13) | ✅ MAVLink ingest, 3 SYSIDs into one `Fleet` |
+| No 8.14 mission displays | ✅ All eight, **and now actually rendered** |
+| One MJPEG feed (8.14) | ✅ 3 WebRTC panes; ⚠ needs a real MediaMTX run |
+| No abort/recall UI | ✅ Built, transmitting, per-aircraft acknowledgement |
 
-**86 tests** (was 34), all passing. `SYS-20`, `SYS-23`, `SYS-25/26/27` resolved.
+**89 server tests.** `SYS-20`, `SYS-23`, `SYS-25/26/27` resolved.
 
 ```bash
-# in NIDAR-GSC (the smoke test needs the real app.py):
-cd server && python -m pytest mission_tests -q     # 86 tests
+cd server && python -m pytest mission_tests -q     # 89 tests
 ./scripts/check-no-network.sh                      # rule 8.4 guard
 python scripts/sim_mission.py --speed 8            # 3 drones, no aircraft
 ```
+
+### The gap that mattered most
+
+`VideoWall.js` and `MissionStatus.js` were **built but referenced by zero
+files**. They existed, they compiled, and they were on no screen — so rule 8.14's
+live-feed-per-drone, mission status, delivery state, comms health and
+consolidated progress were all still unmet. **A component that renders nowhere
+satisfies nothing**, and "the code is written" had been reported as if it did.
+
+All four are now in the page, fed by a single fleet poll — which is what makes it
+a unified operator interface rather than three panels sharing a window.
+
+### Abort now transmits, and says so honestly
+
+`/api/safety/abort` used to set a boolean nothing read and return 200 with a
+green tick. It now drives the [safety-link protocol](../communication/safety_link/):
+framed sequenced commands repeated for ten seconds, per-aircraft acknowledgement
+polled into the UI.
+
+**With no radio attached it returns 503 and `NO_RADIO`**, and the panel shows a
+red *NOT IMPLEMENTED* banner pointing at the safety pilot's transmitter. A safety
+control that reports success when it transmitted nothing is worse than no
+control, because it stops someone reaching for the thing that would have worked.
+
+Two-step arm-then-confirm, arm lapsing after 5 s. And it remains the *secondary*
+path — the primary is `RC7_OPTION=4` driving the flight controller directly, which
+survives a hung companion.
 
 ### The hole the smoke test found
 

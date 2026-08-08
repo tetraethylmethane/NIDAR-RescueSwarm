@@ -162,7 +162,7 @@ Reasoning and numbers in [configuration trade](docs/sizing/configuration-trade.m
 | **VRS on every delivery** | The 2.5 m/s descent sits at 0.48 v_i, on the vortex-ring onset boundary, and a nulled-groundspeed descent is exactly what triggers it | Fix in the flight profile, not the airframe |
 | **Wind cliff at 8 m/s** | Search groundspeed is 8 m/s, so at that windspeed the aircraft can't make headway at all. Organisers confirm wind is **natural and uncapped** — nothing protects us | Now a requirement: 10 m/s headway (SYS-37) |
 | **Business strategy** | 200 points, barely started — sponsorship evidence can't be produced in the final week | Start now |
-| **Ground station** | Two rule breaches found and fixed in [NIDAR-GSC](https://github.com/tetraethylmethane/NIDAR-GSC) — the 5 s internet poller and the command surface. Both now enforced by tests. Client map layers, mavlink-router wiring and end-to-end video remain | [Status](ground-station/README.md) |
+| **Ground station** | Complete for display and safety: all eight rule-8.14 displays rendered, abort/recall transmitting with per-aircraft acknowledgement, mavlink-router configured. ⚠ **The safety radio is not connected** — abort reports `NO_RADIO` until it is | [Status](ground-station/README.md) |
 
 ---
 

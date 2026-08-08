@@ -85,7 +85,7 @@ here explicitly because they were quoted in the README and in the sizing documen
 | SYS-08 | **[SCORED −10/drone]** All drones launch from and land within the 12 ft × 12 ft area, no part outside during launch or landing | 8.10, MB §7 | D | P9 |
 | SYS-09 | **[SCORED −20/instance]** All drones remain within the mission boundary | 8.18, MB §7 | T | P9 |
 | SYS-10 | **[SCORED −50/crash]** No crash, uncontrolled ground impact or crash landing | 4D-penalty | D | P9 |
-| SYS-11 | Failsafes for: low battery · C2 link loss · geofence breach · mission abort · emergency recall · RTH | 8.19, MB §8 | T (fault injection) | P6 |
+| SYS-11 | Failsafes for: low battery · C2 link loss · geofence breach · mission abort · emergency recall · RTH. Four are ArduPilot parameters ([`firmware/ardupilot-params/`](../../firmware/ardupilot-params/)); abort and recall are the [safety link](../../communication/safety_link/) — **built, radio not yet connected** | 8.19, MB §8 | T (fault injection) | P6 |
 | SYS-18 | Payload release requires a positive mechanical lock independent of servo power | derived (safety) | T | P5 |
 | SYS-41 | Each aircraft carries a recovery parachute, armed above 20 m AGL and inhibited below it | organiser answer + derived | T | P6 |
 | SYS-36 | Pass the Pre-Flight Inspection on the first attempt | **4.29–4.32** | I | P10 |
@@ -159,4 +159,4 @@ Honest gaps, to be closed before the P0 gate can be called complete:
 | SYS-36 | Model Pre-Flight Inspection checklist is "to be released separately" (4.31) and is not yet available. |
 | SYS-20 | **Resolved.** `MISSION_MODE` split **plus** a 403 guard on the 31 legacy `/uav` routes — the split alone was insufficient, and `test_app_smoke.py` caught it. Enforced against the live app. |
 | SYS-23 | **Resolved for the GCS.** Poller removed in NIDAR-GSC `ab8c09d`; `scripts/check-no-network.sh` guards it. Still to verify: the aircraft side, and the whole system with interfaces physically down (P9). |
-| SYS-25/26/27 | **Resolved.** MAVLink ingest (3 SYSIDs), mission-state UDP listener, and client map layers all built and tested — 86 tests. Outstanding: a real MediaMTX run for video, and flight validation. |
+| SYS-25/26/27 | **Resolved.** MAVLink ingest (3 SYSIDs), mission-state listener, map layers, status panel and video wall all built **and rendered** — 89 tests. Outstanding: a real MediaMTX run, and flight validation. |
