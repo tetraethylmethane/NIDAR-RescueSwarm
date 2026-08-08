@@ -51,6 +51,7 @@ BOM = {
     'compute':         460.0,
     'comms':           117.0,
     'payload_mech':    242.0,
+    'safety':          300.0,        # recovery parachute + mount, SYS-41
     'kits':            800.0,
 }
 
@@ -75,7 +76,7 @@ def build(cells, d_in):
     total = (m['structure'] + m['propulsion_18'] + m_prop_adj + m['power_dist']
              + cells * CELL_G + PACK_OVERHEAD[cells]
              + m['avionics'] + m['compute'] + m['comms']
-             + m['payload_mech'] + m['kits'])
+             + m['payload_mech'] + m['safety'] + m['kits'])
     return total / 1000.0, m_prop_adj
 
 

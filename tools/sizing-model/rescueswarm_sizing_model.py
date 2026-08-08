@@ -41,6 +41,11 @@ m_avio = sum(avionics.values())
 payload_system = {
  'release/magazine mechanism + servos':0.240,
  '4 x survivor kit @200 g':0.800,
+ # SYS-41. Organisers confirmed a recovery parachute is permitted, ballistic
+ # deployment included. A crash costs -50 and landing outside the pad costs
+ # -10, so deploying is worth ~40 points even accepting the penalty. Canopy
+ # 240 g + mount and bridle 60 g, per the Indian BOM tab 01 rows 48-49.
+ 'recovery parachute + mount':0.300,
 }
 m_payload_sys = sum(payload_system.values())
 

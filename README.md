@@ -13,7 +13,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/phase-P0%20requirements-blue" alt="phase">
   <img src="https://img.shields.io/badge/fleet-3%20aircraft-informational" alt="fleet">
-  <img src="https://img.shields.io/badge/mass-17.65%20%2F%2025%20kg-success" alt="mass">
+  <img src="https://img.shields.io/badge/mass-19.1%20%2F%2025%20kg-success" alt="mass">
   <img src="https://img.shields.io/badge/mission-7.7%20%2F%2030%20min-success" alt="mission">
   <img src="https://img.shields.io/badge/finals-Jan%202027-critical" alt="finals">
 </p>
@@ -64,7 +64,9 @@ About 21 weeks. But the real constraint is narrower: monsoon closes flying until
 
 Not targets. These are outputs of a closed model in [`tools/sizing-model/`](tools/sizing-model/).
 
-> **Provenance.** The model now uses the BOM's real Indian prop mass and the BOM's pack configuration, and **agrees with the BOM's bottom-up mass statement to within 1 %** (5.88 vs 5.93 kg per aircraft). Earlier revisions of this table showed 20 in / 6S2P, which the model produced only with generic component masses — with real parts that pack fails the 2× endurance reserve at 1.78×. See [bom_reconcile.py](tools/sizing-model/bom_reconcile.py).
+> **Provenance.** Model and BOM are reconciled: the model carries the BOM's real prop mass, pack and parachute, and the two agree to ~2 % (6.36 vs 6.23 kg — the model's structural growth factor runs slightly ahead of the bottom-up count).
+>
+> ⚠ **The reserve is now spent.** The 300 g recovery parachute takes hover endurance to **≈2.0×** the mission against a self-imposed **≥2.0×** policy — 2.05× on the BOM's bottom-up mass, 1.99× on the model's. It still clears the 25 kg rule with 24 % margin, but **any further mass growth breaks the reserve policy**, and the next 200 g has to come out of something else. See [bom_reconcile.py](tools/sizing-model/bom_reconcile.py).
 
 ### 2.1 Aircraft
 
@@ -74,11 +76,12 @@ Not targets. These are outputs of a closed model in [`tools/sizing-model/`](tool
 |:--|:--|
 | Configuration | Quadrotor · 18 in CF folding props |
 | Battery | 6S3P 21700 Li-ion — 18 cells · 1449 g · 292 Wh · 13.5 Ah · 21.6 V |
-| MTOW | 5.88 kg |
-| **Fleet** all-up weight | **17.65 kg** against a 25 kg cap — 29 % margin |
-| Hover power | 818 W · disk loading 9.0 kg/m² |
-| Hover endurance | 17.1 min at 80 % DoD — **2.22× the mission** |
-| Thrust-to-weight | 2.0 static · 2.94 kgf per motor · hover at 50 % of max thrust |
+| MTOW | 6.36 kg *(model)* · 6.23 kg *(BOM bottom-up)* |
+| **Fleet** all-up weight | **19.1 kg** against a 25 kg cap — 24 % margin |
+| Hover power | 913 W · disk loading 9.7 kg/m² |
+| Hover endurance | 15.3 min at 80 % DoD — **≈2.0× the mission** ⚠ *at the reserve limit* |
+| Thrust-to-weight | 2.0 static · hover at 50 % of max thrust |
+| Recovery parachute | 300 g per aircraft (SYS-41) |
 
 ### 2.2 Mission
 
@@ -204,7 +207,7 @@ docs/
   business/                 phase 4B strategy + cost sheet
   sizing/                   calculations, trades, committed model outputs
 tools/sizing-model/         the model everything traces back to
-hardware/bom/               Indian BOM + indigenisation scorecard
+hardware/bom/               Indian BOM + indigenisation scorecard + CHANGELOG
 ```
 
 Everything else in the tree — `firmware/`, `autonomy/`, `perception/`, `communication/`, `ground-station/`, `simulations/` — is planned, not written.

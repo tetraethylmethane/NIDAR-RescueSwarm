@@ -1,9 +1,9 @@
-﻿====================================================================================
+====================================================================================
 BOM vs DESIGN POINT RECONCILIATION
 ====================================================================================
   BEFORE  model, generic masses, 20 in / 6S2P : MTOW 5.05 kg, fleet 15.16 kg
   BOM tab 07, Indian masses, 18 in / 6S3P     : MTOW 5.93 kg, fleet 17.80 kg
-  AFTER   model, BOM prop mass, 18 in / 6S3P  : MTOW 5.88 kg, fleet 17.65 kg
+  AFTER   model, BOM prop mass, 18 in / 6S3P  : MTOW 6.36 kg, fleet 19.08 kg
 
   RESOLVED. The design point moved to the BOM's configuration and the
   model was given the BOM's prop mass. Model and BOM now agree to ~1 %.
@@ -14,10 +14,10 @@ REBUILT FROM THE BOM'S OWN GROUP MASSES
 config                  cells    MTOW   fleet   cap   P_hov     DL   hover  x mis
                                    kg      kg  25kg       W  kg/m2     min 7.7min
 ------------------------------------------------------------------------------------
-20 in, 6S2P  old           12    5.52   16.57    OK     680   6.81    13.7   1.78
-18 in, 6S2P                12    5.45   16.36    OK     736   8.30    12.7   1.65
-18 in, 6S3P  DESIGN        18    5.93   17.80    OK     828   9.03    16.9   2.20
-20 in, 6S3P                18    6.00   18.01    OK     763   7.40    18.4   2.38
+20 in, 6S2P  old           12    5.82   17.47    OK     731   7.18    12.8   1.66
+18 in, 6S2P                12    5.75   17.26    OK     793   8.76    11.8   1.53
+18 in, 6S3P  DESIGN        18    6.23   18.70    OK     887   9.49    15.8   2.05
+20 in, 6S3P                18    6.30   18.91    OK     816   7.77    17.1   2.23
 
   'x mis' is hover endurance over the 7.7 min design mission. The
   reserve policy requires >= 2.0x. Configurations below that do not
@@ -27,9 +27,9 @@ config                  cells    MTOW   fleet   cap   P_hov     DL   hover  x mi
 WHAT THE INDIAN MASSES COST  (tab 07's unactioned ACTION item)
 ------------------------------------------------------------------------------------
   Model generic masses, 20 in / 6S2P : MTOW 5.05 kg, fleet 15.16 kg
-  Indian BOM masses,    20 in / 6S2P : MTOW 5.52 kg, fleet 16.57 kg
-  Indigenisation penalty             : +471 g per aircraft, +1.41 kg fleet
-  Fleet margin against the 25 kg cap : 34 %
+  Indian BOM masses,    20 in / 6S2P : MTOW 5.82 kg, fleet 17.47 kg
+  Indigenisation penalty             : +771 g per aircraft, +2.31 kg fleet
+  Fleet margin against the 25 kg cap : 30 %
 
   +471 g per aircraft is affordable against the 25 kg cap on its own.
   The problem is what it does to ENDURANCE, not to mass -- see below.
@@ -57,8 +57,8 @@ THE BOM IS RIGHT AND THE MODEL IS OPTIMISTIC
 ------------------------------------------------------------------------------------
 IS 6S3P AFFORDABLE?
 ------------------------------------------------------------------------------------
-  18 in, 6S3P  DESIGN    fleet 17.80 kg, margin 29 %, hover 16.9 min (2.20x)
-  20 in, 6S3P            fleet 18.01 kg, margin 28 %, hover 18.4 min (2.38x)
+  18 in, 6S3P  DESIGN    fleet 18.70 kg, margin 25 %, hover 15.8 min (2.05x)
+  20 in, 6S3P            fleet 18.91 kg, margin 24 %, hover 17.1 min (2.23x)
 
   Yes. Both keep close to 30 % margin against the 25 kg cap. The
   reserve policy is self-imposed rather than a rule, but it exists so

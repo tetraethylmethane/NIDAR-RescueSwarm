@@ -1,27 +1,27 @@
-﻿================================================================================================
+================================================================================================
 SECTION 1  CONFIGS SIZED TO THE RESERVE POLICY (battery spiral included)
 ================================================================================================
 config                       pack   MTOW   fleet   cap   P_hov     DL   foot  /box      dP   dmass
                                Wh     kg      kg  25kg       W  kg/m2     mm       vs quad vs quad
 ------------------------------------------------------------------------------------------------
-Quad  4x18"  (current)        238   5.47   16.42    OK     740   8.34    944     3   +0.0%   +0.0%
-Quad  4x20"                   213   5.41   16.23    OK     660   6.67   1046     3  -10.8%   -1.2%
-Quad  4x16"                   281   5.70   17.10    OK     874  10.99    843     4  +18.1%   +4.1%
-Hex   6x18"                   190   5.32   15.97    OK     591   5.40   1432     2  -20.1%   -2.8%
-Hex   6x16"                   212   5.32   15.95    OK     657   6.83   1279     2  -11.2%   -2.9%
-Octo  8x14"  (flat)           206   5.25   15.74    OK     639   6.61   1363     2  -13.6%   -4.1%
-X8 coax 4x2x20" k=.85         380   7.33   22.00    OK    1179   9.04   1046     3  +59.4%  +33.9%
-X8 coax 4x2x20" k=.80         442   7.83   23.48    OK    1372   9.65   1046     3  +85.4%  +43.0%
-X8 coax 4x2x18" k=.80         522   8.19   24.56    OK    1621  12.47    944     3 +119.0%  +49.5%
-X8 coax 4x2x22" k=.80         406   7.86   23.58    OK    1260   8.01   1148     3  +70.3%  +43.6%
+Quad  4x18"  (current)        299   6.43   19.29    OK     927   9.79    944     3   +0.0%   +0.0%
+Quad  4x20"                   261   6.27   18.81    OK     810   7.73   1046     3  -12.5%   -2.5%
+Quad  4x16"                   364   6.83   20.49    OK    1129  13.16    843     4  +21.8%   +6.2%
+Hex   6x18"                   231   6.12   18.36    OK     716   6.21   1432     2  -22.8%   -4.8%
+Hex   6x16"                   261   6.19   18.56    OK     811   7.95   1279     2  -12.5%   -3.8%
+Octo  8x14"  (flat)           254   6.11   18.32    OK     788   7.69   1363     2  -14.9%   -5.0%
+X8 coax 4x2x20" k=.85         475   8.56   25.69  FAIL    1474  10.56   1046     3  +59.0%  +33.2%
+X8 coax 4x2x20" k=.80         567   9.30   27.89  FAIL    1760  11.47   1046     3  +89.9%  +44.6%
+X8 coax 4x2x18" k=.80         736  10.37   31.10  FAIL    2286  15.79    944     3 +146.6%  +61.2%
+X8 coax 4x2x22" k=.80         500   9.09   27.26  FAIL    1553   9.26   1148     3  +67.6%  +41.3%
 
   Every config lands at exactly 15.5 min hover / 2.00x mission, because the
   2x-endurance rule -- not the energy rule -- is what binds. Pack size is
   therefore proportional to hover power, and a power penalty compounds:
   more battery -> more mass -> more power. That is the coaxial story.
 
-  COAXIAL VERDICT: +59 to +119% hover power and +34 to +50% fleet mass,
-  cutting the 34% mass margin to 2%. It buys NO footprint back --
+  COAXIAL VERDICT: +59 to +147% hover power and +33 to +61% fleet mass,
+  cutting the 23% mass margin to -24%. It buys NO footprint back --
   stacking rotors does not shorten the arms, so the X8 footprint equals
   the quad it replaces. Coaxial pays only when rotors must shrink to fit
   a box; the quad already fits 3 per row. Rejected at every kappa.
@@ -32,16 +32,16 @@ SECTION 2  FLIGHT DYNAMICS  -  what steady-state momentum theory misses
 config                        v_i     VRS window  desc@2.5  gust dT/W  J_rotor
                               m/s            m/s     x v_i    per m/s      rel
 ------------------------------------------------------------------------------------------------
-Quad  4x18"  (current)       5.96      3.0 - 8.9      0.42      0.168     1.00
-Quad  4x20"                  5.33      2.7 - 8.0      0.47      0.187     1.61
-Quad  4x16"                  6.84     3.4 - 10.3      0.37      0.146     0.59
-Hex   6x18"                  4.80      2.4 - 7.2      0.52      0.208     1.50  <-- IN VRS
-Hex   6x16"                  5.40      2.7 - 8.1      0.46      0.185     0.88
-Octo  8x14"  (flat)          5.31      2.7 - 8.0      0.47      0.188     0.65
-X8 coax 4x2x20" k=.85        6.21      3.1 - 9.3      0.40      0.161     3.21
-X8 coax 4x2x20" k=.80        6.42      3.2 - 9.6      0.39      0.156     3.21
-X8 coax 4x2x18" k=.80        7.29     3.6 - 10.9      0.34      0.137     2.00
-X8 coax 4x2x22" k=.80        5.85      2.9 - 8.8      0.43      0.171     4.93
+Quad  4x18"  (current)       6.46      3.2 - 9.7      0.39      0.155     1.00
+Quad  4x20"                  5.74      2.9 - 8.6      0.44      0.174     1.61
+Quad  4x16"                  7.49     3.7 - 11.2      0.33      0.133     0.59
+Hex   6x18"                  5.15      2.6 - 7.7      0.49      0.194     1.50
+Hex   6x16"                  5.82      2.9 - 8.7      0.43      0.172     0.88
+Octo  8x14"  (flat)          5.72      2.9 - 8.6      0.44      0.175     0.65
+X8 coax 4x2x20" k=.85        6.71     3.4 - 10.1      0.37      0.149     3.21
+X8 coax 4x2x20" k=.80        6.99     3.5 - 10.5      0.36      0.143     3.21
+X8 coax 4x2x18" k=.80        8.20     4.1 - 12.3      0.30      0.122     2.00
+X8 coax 4x2x22" k=.80        6.28      3.1 - 9.4      0.40      0.159     4.93
 
   v_i        hover induced velocity, sqrt(DL*g/2rho)
   VRS        vertical descent band where vortex ring state develops.
@@ -64,9 +64,9 @@ SECTION 3  BLADE STALL / ADVANCE RATIO
 
 config                       v_tip   mu @8  mu @12  mu @16  mu @20
 ------------------------------------------------------------------------------------------------
-Quad  4x18"  (current)        77.0    0.10    0.16    0.21    0.26
-Quad  4x20"                   68.9    0.12    0.17    0.23    0.29
-Quad  4x16"                   88.4    0.09    0.14    0.18    0.23
+Quad  4x18"  (current)        83.4    0.10    0.14    0.19    0.24
+Quad  4x20"                   74.1    0.11    0.16    0.22    0.27
+Quad  4x16"                   96.7    0.08    0.12    0.17    0.21
 
   READING: blade stall is NOT a limit at search (8 m/s) or transit (12 m/s)
   speed -- mu stays near 0.2. But mu approaches 0.30 around 20 m/s, so if
@@ -74,22 +74,22 @@ Quad  4x16"                   88.4    0.09    0.14    0.18    0.23
   assuming the drag-only model of CORRECTION 4 still holds.
 
 ================================================================================================
-SECTION 4  VRS-SAFE DESCENT PROFILE  (current quad, v_i = 5.96 m/s)
+SECTION 4  VRS-SAFE DESCENT PROFILE  (current quad, v_i = 6.46 m/s)
 ================================================================================================
   descent rate   x v_i                   verdict   54 m takes  vs 2.5 m/s
 ------------------------------------------------------------------------------------------------
-       1.00 m/s    0.17                      safe       54.0 s      +32.4 s
-       1.25 m/s    0.21                      safe       43.2 s      +21.6 s
-       1.50 m/s    0.25                  marginal       36.0 s      +14.4 s
-       2.00 m/s    0.34                  marginal       27.0 s       +5.4 s
-       2.50 m/s    0.42                  marginal       21.6 s       +0.0 s
-       3.00 m/s    0.50                  VRS RISK       18.0 s       -3.6 s
+       1.00 m/s    0.15                      safe       54.0 s      +32.4 s
+       1.25 m/s    0.19                      safe       43.2 s      +21.6 s
+       1.50 m/s    0.23                      safe       36.0 s      +14.4 s
+       2.00 m/s    0.31                  marginal       27.0 s       +5.4 s
+       2.50 m/s    0.39                  marginal       21.6 s       +0.0 s
+       3.00 m/s    0.46                  marginal       18.0 s       -3.6 s
 
   Nulled-groundspeed descent is near-vertical, which is exactly the
   condition VRS needs. Two fixes, both nearly free against a 74% time margin:
     (a) descend at <= 1.25 m/s (0.25 v_i) -- costs +21.6 s per drop, or
         ~+72 s per aircraft over 3.3 drops, on a 7.7 of 30 min mission;
-    (b) keep horizontal speed >= v_i (6.0 m/s) through the descent and
+    (b) keep horizontal speed >= v_i (6.5 m/s) through the descent and
         decelerate to hover at the 6 m drop altitude -- costs nothing.
   (b) is preferred: it also cuts exposure time in the gust-sensitive regime.
 
@@ -98,11 +98,11 @@ SECTION 5  THRUST-TO-WEIGHT SWEEP  -  what the mass margin would buy
 ================================================================================================
    T/W    MTOW   fleet   margin   P_hov    pack  hov thr
 --------------------------------------------------------
-   2.0    5.47   16.42     8.58     740    238W      50%
-   2.2    5.71   17.14     7.86     785    253W      45%
-   2.5    6.13   18.39     6.61     866    279W      40%
-   2.8    6.63   19.89     5.11     968    312W      36%
-   3.0    7.03   21.10     3.90    1052    339W      33%
+   2.0    6.43   19.29     5.71     927    299W      50%
+   2.2    6.74   20.21     4.79     990    319W      45%
+   2.5    7.28   21.84     3.16    1105    356W      40%
+   2.8    7.96   23.87     1.13    1255    404W      36%
+   3.0    8.53   25.58    -0.58    1386    446W      33%
 
   READING: do not spend margin here. CORRECTION 4 of the main model shows
   tilt reaches only 12.2 deg at 15 m/s airspeed (thrust factor 1.023), so

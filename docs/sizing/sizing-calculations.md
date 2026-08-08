@@ -11,13 +11,13 @@
 |---|---|
 | Fleet | **3 aircraft**, identical |
 | Configuration | Quadrotor, 18 in CF folding props, 6S3P 21700 Li-ion |
-| MTOW per aircraft (4 kits loaded) | **5.88 kg** |
-| **Fleet all-up weight** | **17.65 kg** vs 25.0 kg limit → **29 % margin** |
-| Empty mass (no battery, no kits) | 3.63 kg |
+| MTOW per aircraft (4 kits loaded) | **6.36 kg** |
+| **Fleet all-up weight** | **19.08 kg** vs 25.0 kg limit → **24 % margin** |
+| Empty mass (no battery, no kits) | 4.11 kg |
 | Battery | 18 × 21700, 1449 g, **292 Wh**, 13.5 Ah, 21.6 V nom |
-| Disk loading | 9.0 kg/m² |
-| Hover power (electrical) | **818 W** · power loading 7.2 g/W |
-| Hover endurance @ 80 % DoD | **17.1 min** (2.22× the mission) |
+| Disk loading | 9.7 kg/m² |
+| Hover power (electrical) | **913 W** · power loading 7.0 g/W |
+| Hover endurance @ 80 % DoD | **15.3 min** (≈2.0× the mission — **at the reserve limit**) |
 | Design mission duration | **7.7 min** (26 % of the 30 min allowance) |
 | Design mission energy | 95 Wh = **41 % of usable** → lands at ~68 % SoC |
 | Thrust-to-weight (static, SL) | 2.0 → 2.94 kgf per motor |
@@ -29,7 +29,7 @@
 | Delivery accuracy (design target) | **≥ 60 % within 2 m, ≥ 30 % within 1 m** of the survivor, from a 6 m hover-and-drop |
 | Peak current | 102 A (7.6 C) — pack burst capability 135 A, 32 % margin |
 
-**The headline result: nothing about this mission is tight except the 5-minute setup window.** Mass has 29 % margin, energy has 59 % margin, coverage uses a quarter of the allowed time, and the link budget has >13 dB of fade margin. Setup has **15 seconds** of margin. Allocate engineering effort accordingly.
+**The headline result: nothing about this mission is tight except the 5-minute setup window and, now, the endurance reserve.** Mass has 24 % margin, energy has 59 % margin, coverage uses a quarter of the allowed time, and the link budget has >13 dB of fade margin. Setup has **15 seconds** of margin. Allocate engineering effort accordingly.
 
 ---
 
