@@ -1,0 +1,108 @@
+==============================================================================
+HOW MUCH BORESIGHT ERROR IS THE BUDGET BUYING?
+==============================================================================
+  The 0.16 m case-C allocation corresponds to:
+     0.153 deg at 60 m AGL   (2.67 mrad)
+     0.229 deg at 40 m AGL   (4.00 mrad)
+
+      angle     @40 m     @60 m   note
+      0.05d     0.03m     0.05m   
+      0.10d     0.07m     0.10m   
+      0.15d     0.10m     0.16m   the budgeted allocation at 60 m
+      0.25d     0.17m     0.26m   
+      0.50d     0.35m     0.52m   
+      1.00d     0.70m     1.05m   a mount that shifted, or a skipped calibration
+      2.00d     1.40m     2.10m   
+==============================================================================
+BUT CHECK ITS LEVERAGE BEFORE SPENDING MONEY ON IT
+==============================================================================
+  Case C geotag RSS with every term at budget: 0.884 m
+
+                        term   value   share of variance
+                  unmodelled   0.70m              62.7%
+    target extent / centroid   0.50m              32.0%
+          boresight residual   0.16m               3.3%
+       GNSS-camera lever arm   0.10m               1.3%
+                    attitude   0.07m               0.6%
+              pixel centroid   0.02m               0.1%
+
+  Boresight at budget is a SMALL term -- a few percent of variance. The
+  0.70 m unmodelled allowance and the 0.50 m target-extent term dominate
+  case C between them.
+
+  boresight doubles to 0.32 m                geotag 0.93 m  (+0.04 m)
+  boresight quadruples to 0.64 m             geotag 1.08 m  (+0.20 m)
+  boresight becomes 1.05 m = 1 deg at 60 m   geotag 1.37 m  (+0.48 m)
+
+  THE POINT IS NOT OPTIMISATION, IT IS FAILURE MODE.
+  Tightening boresight below its 0.16 m allocation buys almost nothing.
+  Letting it go to a degree -- one shifted mount, one skipped
+  calibration -- makes it the largest single term in the stack and
+  costs about 0.5 m of geotag, silently, with nothing on the screen to
+  say so. Design the mount to HOLD calibration, not to be precise.
+==============================================================================
+WHAT THAT MEANS IN MILLIMETRES
+==============================================================================
+  A mount rotates when one side moves relative to the other. Over a
+  fastener spacing L, an angular error a needs a differential of
+  L * tan(a):
+
+    spacing    0.15 deg    0.50 deg    1.0 deg
+       40mm      0.105mm      0.349mm     0.698mm
+       60mm      0.157mm      0.524mm     1.047mm
+       80mm      0.209mm      0.698mm     1.396mm
+      120mm      0.314mm      1.047mm     2.095mm
+
+  Read the 0.15 deg column. On an 80 mm fastener spacing the budget is
+  0.21 mm of differential movement -- TOTAL, for the life of the
+  airframe, through transport, vibration and every landing.
+
+  A clearance-hole bolted joint does not hold 0.2 mm. Standard M3
+  clearance is 0.2-0.4 mm of radial slop on its own, and it only takes
+  one hard landing to take it up. That is the argument for dowel pins
+  or a bonded joint, and it is a number rather than a preference.
+==============================================================================
+THERMAL -- the one nobody checks
+==============================================================================
+  Carbon fibre is ~1 ppm/K. Aluminium is ~23 ppm/K. An aluminium camera
+  bracket bolted flat to a CF plate is a bimetallic strip.
+
+    bracket    dT  differential   as angle over 80 mm
+       60mm   15K        0.020mm                0.014d
+       60mm   30K        0.040mm                0.028d
+      100mm   15K        0.033mm                0.024d
+      100mm   30K        0.066mm                0.047d
+
+  A 100 mm aluminium bracket over a 30 K day-night swing moves 0.066 mm,
+  which is a third of the whole 0.15 deg allowance if it turns into
+  rotation. It will not all become rotation in a well-designed joint --
+  but it will in an over-constrained one.
+
+  Calibrate at the temperature you fly at, or make the bracket CF, or
+  constrain it kinematically so growth translates instead of rotating.
+==============================================================================
+LEVER ARM -- cheap, so just do it properly
+==============================================================================
+  The GNSS-camera lever arm is budgeted at 0.10 m and is systematic.
+  Measured to 1 cm instead: geotag 0.878 m against 0.884 m
+
+  Worth 0.005 m. Almost nothing -- and that is the useful finding,
+  because it means the lever arm does NOT justify design compromises.
+  What it does justify is a MEASURABLE DATUM: a defined feature you can
+  put callipers on between the antenna phase centre and the camera
+  mounting face. The cost of that is one dimension on a drawing, and
+  without it the 0.10 m is a guess rather than a budget line.
+==============================================================================
+WHAT CAD HAS TO DELIVER
+==============================================================================
+  1. Camera, IMU and both GNSS antenna mounts on ONE rigid core. No
+     folding joint anywhere in that load path -- a fold re-datums the
+     lever arm on every unpack and invalidates SYS-48.
+  2. Camera located by DOWELS or bonded, not by bolt friction. Budget
+     is 0.21 mm of differential over an 80 mm spacing, for life.
+  3. A measurable datum between antenna phase centre and camera face.
+  4. Kinematic or CF bracket so thermal growth translates, not rotates.
+  5. A calibration target arrangement that can be re-flown in the field,
+     because the honest assumption is that boresight WILL move and the
+     question is whether anyone finds out.
+==============================================================================

@@ -26,8 +26,40 @@ points. Three of its terms are decided by *mechanical design*, not software:
 
 | # | Constraint | Requirement |
 |---|---|---|
-| 6 | **Camera mount rigidity** | Boresight must hold calibration through transport, launch vibration and landing. A flexible or re-clampable mount invalidates SYS-48 and silently degrades every geotag. Prefer a bonded or doweled mount over one that relies on bolt friction. |
-| 7 | **GNSS–camera lever arm** | Must be **fixed, known and measurable** to ~1 cm. It is a 0.10 m term in the error budget only because it is assumed rigid. Design a measurable datum between the GNSS antenna phase centre and the camera. |
+| 6 | **Camera mount rigidity** | **0.21 mm of differential movement over an 80 mm fastener spacing — total, for the life of the airframe.** Dowelled or bonded; **not** bolt friction. Kinematic or CF bracket so thermal growth translates rather than rotates. |
+| 7 | **GNSS–camera lever arm** | A **measurable datum** — a defined feature callipers can reach, between antenna phase centre and camera mounting face. One dimension on a drawing. |
+
+**Where #6 comes from, and what it is *not* for** ([`boresight_budget.py`](../tools/sizing-model/boresight_budget.py)):
+
+The 0.16 m case-C boresight allocation is **0.153° at 60 m AGL**. Over an 80 mm
+fastener spacing that is 0.21 mm of differential movement. An M3 clearance hole
+has 0.2–0.4 mm of radial slop on its own, and one hard landing takes it up —
+which is why this is a dowel-or-bond requirement rather than a preference.
+
+But check the leverage before over-engineering it. At budget, boresight is
+**3.3 % of geotag variance**; the 0.70 m unmodelled allowance (62.7 %) and the
+0.50 m target-extent term (32.0 %) dominate. Tightening boresight *below* 0.16 m
+buys essentially nothing:
+
+| boresight | geotag RSS | delta |
+|:--|--:|--:|
+| 0.16 m (budget) | 0.884 m | — |
+| 0.32 m | 0.93 m | +0.04 m |
+| 0.64 m | 1.08 m | +0.20 m |
+| 1.05 m (= 1° at 60 m) | 1.37 m | **+0.48 m** |
+
+**So this is a failure-mode requirement, not an optimisation.** Design the mount
+to *hold* whatever calibration you achieve. A shifted mount or a skipped
+calibration costs ~0.5 m of geotag **silently** — nothing on the operator's
+screen says the camera moved.
+
+The lever arm is the same story inverted: measuring it to 1 cm instead of 10 cm
+is worth **0.005 m**. It does not justify any design compromise — it justifies a
+datum, so the 0.10 m is a budget line rather than a guess.
+
+> **Thermal.** A 100 mm aluminium bracket on a CF plate moves 0.066 mm over a
+> 30 K day–night swing — a third of the whole allowance if it becomes rotation.
+> Calibrate at flight temperature, use CF, or constrain it kinematically.
 | 8 | **Dual GNSS antenna baseline** | As long as the frame allows, symmetric about the CG, clear of carbon and power wiring. Heading accuracy scales with baseline length. |
 
 ## 3. Constraints from the mission
