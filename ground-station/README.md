@@ -1,36 +1,13 @@
 # ground-station
 
-Mission view, telemetry ingest, video, replay.
+The **Drikr NIDAR Ground Station** — mission view, telemetry, video, abort.
 
-**The Drikr NIDAR Ground Station lives in
-[`tetraethylmethane/NIDAR-GSC`](https://github.com/tetraethylmethane/NIDAR-GSC)** —
-React client + Flask server. This directory holds the engineering record: what
-was wrong for NIDAR, what was changed, and what must not be changed back.
+Code lives in [`tetraethylmethane/NIDAR-GSC`](https://github.com/tetraethylmethane/NIDAR-GSC);
+this directory holds the engineering record. Mission-build rules that must not be
+undone are in [`MISSION.md`](https://github.com/tetraethylmethane/NIDAR-GSC/blob/main/MISSION.md).
 
-It began as a fork of Team Sammpaati's AUVSI SUAS ground station. It is no longer
-that: branding, AUVSI interop features and the AUVSI competition coordinates are
-gone, and the provenance is kept only as a record of what that lineage broke.
-
-Requirements this directory must satisfy: **SYS-20, SYS-23, SYS-25, SYS-26,
-SYS-27** — see
+Requirements: **SYS-20, SYS-23, SYS-25, SYS-26, SYS-27** — see
 [`../docs/requirements/requirements-baseline.md`](../docs/requirements/requirements-baseline.md).
-
-**➜ Remaining work: [`PLAN.md`](PLAN.md)** · **Mission-build rules: [`MISSION.md` in NIDAR-GSC](https://github.com/tetraethylmethane/NIDAR-GSC/blob/main/MISSION.md)**
-
----
-
-## Status — complete for the display and safety layers
-
-| Blocker from the review | State |
-|---|---|
-| Internet poller every 5 s (rule 8.4) | ✅ Removed, guarded by `check-no-network.sh` |
-| Controller, not a view (SYS-20) | ✅ `MISSION_MODE` split + 403 guard on 31 legacy `/uav` routes |
-| Single-vehicle by construction (8.13) | ✅ MAVLink ingest, 3 SYSIDs into one `Fleet` |
-| No 8.14 mission displays | ✅ All eight, **and now actually rendered** |
-| One MJPEG feed (8.14) | ✅ 3 WebRTC panes; ⚠ needs a real MediaMTX run |
-| No abort/recall UI | ✅ Built, transmitting, per-aircraft acknowledgement |
-
-**89 server tests.** `SYS-20`, `SYS-23`, `SYS-25/26/27` resolved.
 
 ```bash
 cd server && python -m pytest mission_tests -q     # 89 tests
@@ -38,57 +15,105 @@ cd server && python -m pytest mission_tests -q     # 89 tests
 python scripts/sim_mission.py --speed 8            # 3 drones, no aircraft
 ```
 
-### The gap that mattered most
+---
 
-`VideoWall.js` and `MissionStatus.js` were **built but referenced by zero
-files**. They existed, they compiled, and they were on no screen — so rule 8.14's
-live-feed-per-drone, mission status, delivery state, comms health and
-consolidated progress were all still unmet. **A component that renders nowhere
-satisfies nothing**, and "the code is written" had been reported as if it did.
+## Status
 
-All four are now in the page, fed by a single fleet poll — which is what makes it
-a unified operator interface rather than three panels sharing a window.
-
-### Abort now transmits, and says so honestly
-
-`/api/safety/abort` used to set a boolean nothing read and return 200 with a
-green tick. It now drives the [safety-link protocol](../communication/safety_link/):
-framed sequenced commands repeated for ten seconds, per-aircraft acknowledgement
-polled into the UI.
-
-**With no radio attached it returns 503 and `NO_RADIO`**, and the panel shows a
-red *NOT IMPLEMENTED* banner pointing at the safety pilot's transmitter. A safety
-control that reports success when it transmitted nothing is worse than no
-control, because it stops someone reaching for the thing that would have worked.
-
-Two-step arm-then-confirm, arm lapsing after 5 s. And it remains the *secondary*
-path — the primary is `RC7_OPTION=4` driving the flight controller directly, which
-survives a hung companion.
-
-### The hole the smoke test found
-
-`test_app_smoke.py` checks the **live `app.py`**, not the isolated factory, and
-failed immediately. The `MISSION_MODE` split covered the new blueprint but the
-legacy `/uav` blueprint — which predates NIDAR — still exposed 31 routes
-including `/uav/commands/insert`, `/uav/commands/jump`, `/uav/arm` and
-`/uav/mode/set`. **The previous commit claimed a command-free mission build that
-did not exist.** Now every state-changing method on `/uav` and `/image` returns
-403 in mission mode, asserted against nine specific paths.
-
-### Three defects found in the inherited code
-
-| Defect | Impact |
+| Requirement | State |
 |---|---|
-| `npm run build` lacked `--openssl-legacy-provider` that `start` had | **The client could not be built on any Node ≥ 17** — every current machine |
-| `sys.stdin.reconfigure()` unguarded in `app.py` | Crashed under pytest, gunicorn, or systemd without a tty, before Flask was constructed |
-| DroneKit is unmaintained and does `collections.MutableMapping` | **Cannot be imported on Python ≥ 3.10 at all.** The mission path uses pymavlink directly and sidesteps it |
+| No external network (SYS-23, rule 8.4) | ✅ Poller removed, CI-guarded |
+| No mission-altering commands (SYS-20, rule 8.16) | ✅ `MISSION_MODE` split + 403 on 31 legacy routes |
+| Single unified interface, 3 drones (SYS-25, rule 8.13) | ✅ MAVLink ingest, 3 SYSIDs → one `Fleet` |
+| All eight rule 8.14 displays (SYS-26) | ✅ Built **and rendered** |
+| Three video feeds (SYS-27, rule 8.14) | ✅ Built · ⚠ never run |
+| Abort and recall (rule 8.19) | ✅ Transmitting · ⚠ **no radio attached** |
 
-### Verified end-to-end, without hardware
+---
 
-`sim_mission.py` flies three synthetic drones and deliberately includes the
-awkward cases — a drone dropping off the mesh, a survivor re-tagged with a better
-fix by a different drone, and a tag taken without RTK. Against a real `Fleet` and
-a real socket:
+## What is left
+
+### Nothing has run as a system
+
+Everything is unit-tested. **None of it has been executed end to end.**
+
+- **No React component has ever rendered.** The client *builds* — that proves it
+  compiles, not that it works. No browser has loaded the page.
+- **MediaMTX has never been run.** The video path is unproven.
+- **Never connected to a real autopilot, or even SITL.** `mavlink_ingest` is
+  tested against synthetic pymavlink messages.
+- **The safety radio is not connected**, which abort correctly reports as
+  `NO_RADIO` rather than pretending otherwise.
+
+### Three concrete gaps
+
+**1. The server cannot start on Python 3.10+.**
+`app.py` → `groundstation.py` → `handlers/uav.py` → `dronekit`, and DroneKit does
+`collections.MutableMapping`, removed in 3.10. The smoke test stubs it; the real
+server will not boot on a modern interpreter.
+
+The fix is better than pinning Python 3.9: **in mission mode the legacy
+`UAVHandler` is redundant**, because `mavlink_ingest` already provides telemetry
+through pymavlink. Skipping `GroundStation` in mission mode drops DroneKit from
+the mission path entirely.
+
+**2. No offline tiles are cached.**
+`client/public/map` does not exist, so with the network down the map is **blank**.
+`slippy_map_getter.py` solves this, but it has to be run **weeks ahead** over a
+generous region around the venue — the mission area is not known until the KML
+arrives during setup.
+
+**3. Dev UI still ships in the mission build.**
+`Servo`, `FlightPlanToolbar` and `Params` still render. The server 403s them so no
+rule is broken, but the "one stray click" argument that removed the map's
+waypoint insert applies equally, and controls that silently do nothing are their
+own hazard. Gate them on `mission_mode` like the arm buttons.
+
+### Needs hardware, versus does not
+
+| Needs hardware | Does not |
+|---|---|
+| Safety radio bridge + aircraft receiver | Dropping DroneKit from the mission path |
+| Real autopilot / SITL telemetry | Offline tile pre-cache |
+| Video end to end through MediaMTX | Gating the dev UI on mission mode |
+| Field validation | Component tests · a full-stack local run |
+
+**The right next step is a full-stack local run** — `MISSION_MODE=1 python app.py`,
+`npm start` and `sim_mission.py` together, and actually look at the page. That is
+the first time this exists as a system rather than as parts, and it needs no
+aircraft.
+
+---
+
+## How it works
+
+**Two ingest paths, deliberately separate.** MAVLink via mavlink-router carries
+position, mode, battery and GNSS fix. A 5 Hz JSON document over the mesh carries
+region, task, detections and deliveries — MAVLink has no message for *"survivor
+at lat/lon, confidence 0.91, confirmed over 7 frames, RTK-fixed"*, and bending
+`NAMED_VALUE_FLOAT` into that shape is a trap.
+
+**Mission mode is structural, not a flag.** `MISSION_MODE=1` (the default, so the
+safe build is the default) never imports the command blueprint, and refuses every
+state-changing method on the legacy `/uav` routes. A flag can be flipped by a
+config file; an unimported module cannot be reached.
+
+**Survivor dedup prefers fix quality over recency.** Two aircraft can see the same
+survivor, and a later `RTK_FLOAT` tag is metres worse than an earlier
+`RTK_FIXED` one. Ranking is fix → frames → confidence; confidence is last because
+it is worth nothing in position terms.
+
+**Abort is the secondary path.** The primary is `RC7_OPTION=4` driving the flight
+controller directly, which survives a hung companion — and a hung companion is a
+reason to abort. This layer adds addressing, acknowledgement and an audit trail.
+
+---
+
+## Verified without hardware
+
+`sim_mission.py` flies three synthetic drones including the awkward cases — a
+drone dropping off the mesh, a survivor re-tagged with a better fix by a
+different aircraft, and a tag taken without RTK. Against a real `Fleet` and a
+real socket:
 
 ```
 datagrams accepted : 5287      rejected : 0
@@ -97,177 +122,14 @@ survivor 3 fix     : RTK_FIXED (drone 3)   ← dedup preferred fix over recency
 warnings           : survivor 6 tagged without RTK (3D)
 ```
 
-### Still to do
-
-Client-side, and untestable without hardware:
-
-1. **Map layers** — per-drone regions (the visible proof for the 50-point
-   collaboration criterion), survivor markers with fix quality, delivery state.
-2. **mavlink-router** wiring — three SYSIDs into `Fleet.update_vehicle`.
-3. **Mission-state UDP listener** — feed the 5 Hz mesh document into
-   `Fleet.update_mission`.
-4. **End-to-end video** — three SITL sources through MediaMTX, proven in P2.
-5. **Tile pre-cache** for the venue region, weeks ahead (§4.4 of the plan).
+Both safety guards were verified to **fail** when the fault is reintroduced: a
+command route forced into the mission build fails three tests, and a restored
+ArcGIS URL fails the network check. A guard that cannot fail is not a guard.
 
 ---
 
-## Review of the inherited codebase at commit `5d0a687` — the state that prompted the work
+## History
 
-*Historical. Blockers 1 and 3 are fixed as of `ab8c09d`; blocker 2's backend is done.*
-
-It is a competent single-vehicle MAVLink ground station with clear AUVSI SUAS
-lineage — ODLC image handling, airdrop/flight boundary icons, a Submissions tab,
-UGV support. **That lineage is the problem: it was built for a different
-competition with different rules.**
-
-### 🔴 Blocker 1 — it polls the internet every 5 seconds
-
-`client/src/components/FlightMap.js`:
-
-```js
-const checkInternet = () => {
-    if (navigator.onLine) {
-        fetch("https://g.co", { mode: "no-cors" }).then(() => {
-            tileRef.current.setUrl("https://server.arcgisonline.com/.../{z}/{y}/{x}")
-        }).catch(() => { tileRef.current.setUrl("/map/{z}/{x}/{y}.png") })
-    } else { tileRef.current.setUrl("/map/{z}/{x}/{y}.png") }
-}
-useInterval(5000, checkInternet)
-```
-
-It probes `g.co` on a 5-second timer and **switches to online ArcGIS tiles
-whenever connectivity exists**.
-
-Rule **8.4** prohibits internet connectivity during mission execution outright.
-Rule **8.17** prohibits relying on any external network. MB §5 makes use of an
-external network interface "a violation or manual/external intervention". And
-rule **8.6** gives the jury the right to inspect source configuration.
-
-**This fails SYS-23 as written.** The fix is two lines — delete `checkInternet`
-and hardcode `/map/{z}/{x}/{y}.png` — but it has to be found *before* the
-Pre-Flight Inspection, which is Pass/Fail with a single retry.
-
-Offline tiles are already supported: `server/utils/slippy_map_getter.py`
-pre-downloads into `client/public/map`. **The capability is there; the default
-behaviour is wrong.**
-
-### 🔴 Blocker 2 — single-vehicle by construction
-
-`grep -rn "sysid\|target_system\|vehicle_id"` across client and server returns
-**nothing**. `apps/uav.py` and `handlers/uav.py` are singular, and the server
-holds one vehicle object.
-
-Rule **8.13** requires all drones through a single GCS and a unified operator
-interface. That is worth **50 binary points**, and multi-drone collaborative
-execution is a further **50**. Both are all-or-nothing.
-
-This is not a patch. It is the central data-model assumption.
-
-### 🔴 Blocker 3 — it is a controller, not a view
-
-The command surface in `server/handlers/uav.py` includes:
-
-`arm()` · `disarm()` · `set_flight_mode()` · **`insert_command(command, lat, lon, alt)`** ·
-**`jump_to_command()`** · `clear_commands()` · `write_commands()` · `set_param()` ·
-`set_params()` · `servos()` · `set_home()` · `calibrate()` · `restart()`
-
-`insert_command` and `jump_to_command` are *precisely* the actions rule **8.16**
-defines as manual intervention — "manual waypoint modification, flight-path
-correction, payload-release command… or mission replanning during execution" —
-at **−50 points each**.
-
-**SYS-20 requires the GCS be "incapable of originating a retask, waypoint change
-or drop command *by construction*", verified by source review.** This codebase is
-the opposite of that requirement. The architecture claim in
-[`../docs/system-overview.md`](../docs/system-overview.md) — that the violation is
-"structurally impossible rather than avoided by discipline" — **is not currently
-true of any code we have.**
-
-### 🟡 Gap — none of rule 8.14's mission displays exist
-
-Searching client and server for `survivor`, `geotag`, `delivery`, `detect`
-returns **zero hits**. Rule 8.14 mandates the GCS display, at minimum:
-
-| 8.14 requires | Present? |
-|---|---|
-| Mission status | partial |
-| Live camera feed from **each** drone | single MJPEG stream only |
-| Position of each drone | single vehicle |
-| **Assigned search area or task per drone** | ✗ |
-| **Detected and geotagged survivor locations** | ✗ |
-| **Survival-kit delivery status** | ✗ |
-| Communication and system health | partial |
-| Consolidated mission progress | ✗ |
-
-The ODLC image handling is AUVSI's analogue of survivor detection, but it talks to
-an external imaging service over HTTP and is not wired to anything NIDAR needs.
-
-### 🟢 Genuinely worth keeping
-
-- **`slippy_map_getter.py`** — offline tile pre-download. Directly serves the
-  no-external-network rule and is a solved problem we would otherwise repeat.
-- Leaflet map with polygon, geofence, marker and waypoint drawing tools.
-- MAVLink/DroneKit telemetry plumbing and the parameter UI.
-- The React component library (`UIElements`, `Containers`, theming).
-- SITL scripts — `scripts/run-sim.sh`, `sim.parm`, `sim_locations.txt`.
-
----
-
-## Recommendation: one codebase, two deployments
-
-### Why remove the command paths at all
-
-**Not because having them is illegal.** Rule 8.16 penalises the *action* —
-"manual waypoint modification… during mission execution" — not the capability. A
-ground station full of controls that nobody touches is fully compliant. Any
-argument that the rules *require* a command-free GCS is overstated.
-
-The real reason is **accident prevention**, and it is concrete here.
-`FlightMap.js:200` inserts a waypoint at `event.latlng` on a map click:
-
-```js
-let point = { lat: event.latlng.lat, lng: event.latlng.lng, ...,
-              cmd: Commands[props.getters.placementType] }
-```
-
-The operator watches that map for eight minutes, under competition pressure,
-with jurors present. **One stray click is −50 points** — more than the entire
-fast-completion bonus — and it cannot be rehearsed to zero.
-
-Two secondary reasons, both real but weaker:
-
-- **Design Review item 7** (Autonomous Mission Execution, 30 pts): "the GCS
-  cannot retask, here is the source" is *verifiable*; "we did not touch it" is a
-  promise. Rule 8.6 lets the jury check.
-- **Pre-Flight Inspection** is Pass/Fail with one retry. Demonstrable absence is
-  easier to pass than arguing intent.
-
-### It is not "read-only"
-
-Safety abort and emergency recall are explicitly permitted (8.16, MB §3) and
-required (8.19). The correct framing is **no mission-altering commands** — abort
-and recall stay.
-
-### Do NOT build two ground stations
-
-An earlier version of this recommendation said to build a separate mission GCS.
-**That is the wrong answer.** In a 21-week programme with an 8-week flight window
-you would develop and test against the dev build and compete on the less-tested
-one — the classic "worked in testing" failure, and a worse risk than the one it
-solves.
-
-**Instead: one codebase, one client, one test suite.** Put the command endpoints
-in a server module that the mission deployment does not load. Same map, same
-telemetry, same UI flown behind all season — the mission build simply has no route
-that can insert a waypoint.
-
-| | Dev deployment | Mission deployment |
-|---|---|---|
-| Map, tiles, telemetry, video | ✔ | ✔ |
-| Abort / recall | ✔ | ✔ *(required by 8.19)* |
-| Waypoint insert, mode change, arm, params, servos | ✔ | **module not loaded** |
-
-That satisfies SYS-20 by source review, carries no divergence risk, and is about
-a day of architecture rather than weeks of duplication.
-
-**Until this is done, treat SYS-20 and SYS-23 as failing**, not pending.
+The inherited codebase and the three blockers it shipped with are archived in
+[`../docs/gcs-inherited-review.md`](../docs/gcs-inherited-review.md). Worth
+reading before adopting any other codebase written for a different competition.
