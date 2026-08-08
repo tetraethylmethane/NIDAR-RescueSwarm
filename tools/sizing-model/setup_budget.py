@@ -48,6 +48,35 @@ SURVEY_IN = ('base survey-in',   90, ['base 3D fix'],   False)
 FIXED_POS = ('base fixed-pos',    5, ['base 3D fix'],   False)
 RTK_CONV = 60      # rover float -> fix once corrections flow
 
+# --- airframe deployment: the folding-arm question --------------------------
+# `unpack+power` above is 20 s and was the ONLY airframe line item, which
+# silently assumed the aircraft comes out of its case ready to fly. That is a
+# fixed-arm assumption, and it was never stated.
+#
+# Folding arms have to be unfolded, locked, and the locks VERIFIED -- the last
+# of those is not optional on an airframe that will hover over people, and it
+# is the part crews rush. This models it as extra crew-consuming work per
+# aircraft, which is what it is: crew are the binding resource, not wall clock.
+#
+# Folding PROPS are already the design (18 in CF folding) and are not modelled
+# here: they self-deploy on spin-up and cost seconds, not tens of seconds.
+def deploy_task(i: int, seconds: float):
+    return (f'deploy+lock arms A{i}', seconds, [f'unpack+power A{i}'], True)
+
+
+def with_arm_deploy(tasks, seconds: float):
+    """Insert per-aircraft arm deployment before pre-arm."""
+    if seconds <= 0:
+        return tasks
+    out = []
+    for t in tasks:
+        if t[0] == 'pre-arm + arm':
+            deps = list(t[2]) + [f'deploy+lock arms A{i}' for i in (1, 2, 3)]
+            out.append((t[0], t[1], deps, t[3]))
+        else:
+            out.append(t)
+    return out + [deploy_task(i, seconds) for i in (1, 2, 3)]
+
 
 def schedule(tasks, crew=CREW):
     """Greedy list scheduler over `crew` interchangeable people."""
@@ -146,6 +175,53 @@ def main():
     report("E  Base survey-in 90 s for ABSOLUTE accuracy, RTK converges in flight",
            tasks_e, rtk_before_launch=False,
            note="worst-case answer to Q1 (geotag judged against surveyed truth)")
+
+    # --- folding arms: what do they cost? --------------------------------
+    print("\n" + "=" * 78)
+    print("FOLDING ARMS  -  what deployment time does the window afford?")
+    print("=" * 78)
+    print("  Case D (recommended) with per-aircraft deploy-and-verify time added.")
+    print("  Read the CALIBRATED column: case D calibrated sits at 285 s against")
+    print("  a 300 s window, so there is ~15 s of real margin to spend.")
+    print()
+    print(f"  {'per aircraft':>13}{'launch':>9}{'margin':>9}"
+          f"{'calibrated':>12}{'verdict':>10}")
+    for secs in (0, 10, 15, 20, 22, 25, 28, 30, 45):
+        tasks = with_arm_deploy(BASE_TASKS + BASE_IN_WINDOW + [FIXED_POS], secs)
+        _, finish = schedule(tasks)
+        launch = finish['pre-arm + arm']
+        cal = launch + 100
+        label = "fixed arms" if secs == 0 else f"{secs} s"
+        print(f"  {label:>13}{launch:>8.0f}s{WINDOW - launch:>+8.0f}s"
+              f"{cal:>11.0f}s{'OK' if cal <= WINDOW else 'OVER':>10}")
+    print()
+    print("  THE RESULT IS NOT THE ONE THE ARGUMENT EXPECTED. Deployment is FREE")
+    print("  up to about 20 s per aircraft: launch stays at 185 s. It hides in")
+    print("  crew slack, because the critical path in this window is not the")
+    print("  crew at all -- it is the 75 s companion boot, then mesh association")
+    print("  and mission-file parse. Two crew have idle time during that, and")
+    print("  unfolding arms is exactly the kind of work that fits into it.")
+    print()
+    print("  Free to 22 s. At 25-28 s it starts pushing pre-arm and the")
+    print("  calibrated case lands on 290-299 s -- inside 300 s arithmetically,")
+    print("  but 1 s is not margin, it is a coin toss. Over at 30 s.")
+    print()
+    print("  So the honest budget is 22 s per aircraft, and 28 s is the point")
+    print("  of no return. Deploy, lock and VERIFY in 22 s is achievable with")
+    print("  quick-release clamps and a lock indicator you can see from a metre")
+    print("  away. It is not achievable with bolts, and it is not achievable if")
+    print("  the crew have to think about it.")
+    print()
+    print("  The launch box does not force the decision either: three aircraft")
+    print("  at 1046 mm square (20 in props) sit side by side in 3138 mm, inside")
+    print("  the 3.66 m box, unfolded. Folding buys TRANSPORT volume only --")
+    print("  roughly 944 mm square down to ~450 mm with arms back.")
+    print()
+    print("  What remains against folding is structural, not schedule: a fold is")
+    print("  a designed break point, and any fold between the camera and the")
+    print("  GNSS antennas is a lever arm that changes on every unpack, which")
+    print("  invalidates SYS-48. Keep folds strictly outboard of that core and")
+    print("  the boresight objection goes away too.")
 
     # --- what the first geotag needs ------------------------------------
     print("\n" + "=" * 78)

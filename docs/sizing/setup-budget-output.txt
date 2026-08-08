@@ -39,6 +39,52 @@ E  Base survey-in 90 s for ABSOLUTE accuracy, RTK converges in flight
   worst-case answer to Q1 (geotag judged against surveyed truth)
 
 ==============================================================================
+FOLDING ARMS  -  what deployment time does the window afford?
+==============================================================================
+  Case D (recommended) with per-aircraft deploy-and-verify time added.
+  Read the CALIBRATED column: case D calibrated sits at 285 s against
+  a 300 s window, so there is ~15 s of real margin to spend.
+
+   per aircraft   launch   margin  calibrated   verdict
+     fixed arms     185s    +115s        285s        OK
+           10 s     185s    +115s        285s        OK
+           15 s     185s    +115s        285s        OK
+           20 s     185s    +115s        285s        OK
+           22 s     185s    +115s        285s        OK
+           25 s     190s    +110s        290s        OK
+           28 s     199s    +101s        299s        OK
+           30 s     205s     +95s        305s      OVER
+           45 s     230s     +70s        330s      OVER
+
+  THE RESULT IS NOT THE ONE THE ARGUMENT EXPECTED. Deployment is FREE
+  up to about 20 s per aircraft: launch stays at 185 s. It hides in
+  crew slack, because the critical path in this window is not the
+  crew at all -- it is the 75 s companion boot, then mesh association
+  and mission-file parse. Two crew have idle time during that, and
+  unfolding arms is exactly the kind of work that fits into it.
+
+  Free to 22 s. At 25-28 s it starts pushing pre-arm and the
+  calibrated case lands on 290-299 s -- inside 300 s arithmetically,
+  but 1 s is not margin, it is a coin toss. Over at 30 s.
+
+  So the honest budget is 22 s per aircraft, and 28 s is the point
+  of no return. Deploy, lock and VERIFY in 22 s is achievable with
+  quick-release clamps and a lock indicator you can see from a metre
+  away. It is not achievable with bolts, and it is not achievable if
+  the crew have to think about it.
+
+  The launch box does not force the decision either: three aircraft
+  at 1046 mm square (20 in props) sit side by side in 3138 mm, inside
+  the 3.66 m box, unfolded. Folding buys TRANSPORT volume only --
+  roughly 944 mm square down to ~450 mm with arms back.
+
+  What remains against folding is structural, not schedule: a fold is
+  a designed break point, and any fold between the camera and the
+  GNSS antennas is a lever arm that changes on every unpack, which
+  invalidates SYS-48. Keep folds strictly outboard of that core and
+  the boresight objection goes away too.
+
+==============================================================================
 DOES OPTION D ACTUALLY WORK?  -  when is the first geotag needed
 ==============================================================================
 
