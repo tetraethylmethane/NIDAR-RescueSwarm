@@ -1,0 +1,112 @@
+==============================================================================
+COVERAGE PARTITION  -  static equal-area strips vs DARP
+==============================================================================
+  static equal-area strips  (autonomy/coverage_planner/partition.py)
+    drone 1:  3.33 ha   3 lines    1,254 m   168.8 s
+    drone 2:  3.33 ha   3 lines    1,254 m   168.8 s
+    drone 3:  3.33 ha   3 lines    1,254 m   168.8 s
+    WORST DRONE: 168.8 s     imbalance 0.0%
+
+  DARP-style grid partition  (7 x 12 cells)
+    drone 1:  28 cells   7 turns      966 m   162.8 s
+    drone 2:  28 cells   7 turns      966 m   162.8 s
+    drone 3:  28 cells   7 turns      966 m   162.8 s
+    WORST DRONE: 162.8 s
+
+  VERDICT: DARP is faster by 6.0 s (3.6%) on the worst drone.
+
+  This is NOT the result the code comments predicted, and the reason
+  is worth recording.
+
+  The static partition splits FIRST and lays transects SECOND, so
+  every strip rounds its own transect count up independently:
+      9 lines flown  vs  8 lines actually needed
+      (3 strips x 3 lines, each strip 83 m wide / 34.5 m spacing = 2.4 -> rounds to 3)
+  DARP grids the whole area first, so it pays that rounding once
+  rather than three times. It spends the saving on turns -- ragged
+  cell boundaries fragment rows -- and still comes out ahead.
+
+  3.6% is small, and it is inside the noise of this transect
+  model, which counts turns crudely. It does NOT justify implementing
+  DARP. But it does mean the comment in partition.py claiming DARP
+  buys nothing here is wrong, and the honest reason to keep the
+  static partition is determinism and inspectability, not speed.
+
+  The cheaper fix for the rounding penalty, if it ever matters: pick
+  the strip count so strip width is close to a whole multiple of the
+  line spacing, or let adjacent strips share a boundary transect.
+
+  DARP would earn its keep if: the boundary becomes concave or has a
+  no-fly island, the aircraft stop being identical, or a drone is lost
+  mid-mission and the area must be re-divided in flight.
+==============================================================================
+TASK ALLOCATION  -  greedy claim-and-lock vs CBBA
+==============================================================================
+  10 survivors, 3 drones, one launch pad. Figure of merit is the LAST
+  drone to finish, because that is when the mission ends.
+
+  Averaged over 200 random survivor layouts per link quality.
+
+     link |            CBBA            |   greedy claim-and-lock   
+          |    worst    dupes  DROPPED |    worst    dupes  DROPPED
+  --------------------------------------------------------------------
+    100% |      51s     0.00     2.09 |      54s     0.00     0.00
+     90% |      47s     0.00     2.54 |      57s     1.27     0.00
+     70% |      46s     0.00     2.84 |      63s     3.08     0.00
+     50% |      43s     0.07     3.43 |      66s     4.79     0.00
+     30% |      46s     0.45     3.75 |      71s     6.71     0.00
+
+  !! READ THE CBBA COLUMN WITH SUSPICION. It drops ~2 tasks even on a
+  PERFECT link, and real CBBA does not -- with converged consensus it is
+  provably conflict-free and complete. The fault is in this
+  implementation: faithful CBBA carries per-task timestamps and a full
+  consensus action table, and the simplification here leaves stale
+  winning bids that nobody can outbid after a release cascade.
+
+  So this is NOT a head-to-head score, and the decision does not rest
+  on one. Publishing CBBA's dropped-task count as evidence would be
+  scoring an algorithm on a bug in my model of it.
+
+  WHAT THE TABLE DOES SUPPORT, because greedy is modelled faithfully:
+
+    * greedy is conflict-free on a perfect link (0.00 duplicates) and
+      NEVER drops a task at any link quality -- 0.00 in every row. It
+      has no release step, so there is no mechanism by which a survivor
+      can end up unowned.
+    * its degradation is entirely duplicate visits, rising from 0 to
+      6.7 at a 30 % link. Two drones fly to the same survivor:
+      slower, and nothing lost.
+    * the cost is time. Worst-drone time rises from 54 s to 71 s across
+      the same range -- against a 15 min mission allowance of which the
+      design uses 7.7 min. There is room for that.
+
+  The argument for greedy is therefore about FAILURE MODE, not
+  efficiency, and it stands on greedy's own measured behaviour: on a
+  mesh expected to partition, degrading to 'slower' beats degrading to
+  'missed'. A dropped survivor is 25 detection points plus up to 20
+  delivery points and is unrecoverable inside the mission.
+
+  If CBBA is ever revisited, implement it properly and re-measure --
+  do not cite this table.
+==============================================================================
+CONCLUSION
+==============================================================================
+  Both decisions in implementation-plan.md hold. One of them holds for a
+  different reason than the one written down.
+
+    * DARP is 3.6% FASTER here, not slower, because the static
+      partition rounds its transect count up once per strip. The margin
+      is inside this model's noise and nowhere near the implementation
+      cost, so the decision stands -- but the stated rationale in
+      partition.py is wrong and should say determinism, not speed.
+
+    * Greedy claim-and-lock never drops a task at any link quality -- it
+      has no release step, so a survivor cannot end up unowned. It pays
+      in duplicate visits and time instead, which the 15 min allowance
+      absorbs. That is measured, and it is the whole argument.
+      The CBBA side of the table is NOT trustworthy; see the warning
+      above. Do not cite it.
+
+  Revisit DARP if the boundary becomes concave, the fleet becomes
+  heterogeneous, or in-flight re-partition after a drone loss is needed.
+==============================================================================

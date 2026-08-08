@@ -31,6 +31,30 @@ PACK_MAH = 13500
 LOW_V_PER_CELL = 3.40          # ~20 % SoC resting for 21700 NMC
 CRT_V_PER_CELL = 3.20          # ~10 %; below this the cells are being damaged
 
+# Pack internal resistance, ohms. BATT_FS_VOLTSRC = 1 below asks ArduPilot to
+# reconstruct RESTING voltage as `measured + current * BATT_RESISTANCE`, which
+# is the only way the per-cell thresholds above mean what they say -- they were
+# read off a resting discharge curve.
+#
+# THIS WAS UNSET, AND UNSET MEANS ZERO. The sag compensation therefore did
+# nothing, and the failsafe compared a LOADED voltage against a RESTING
+# threshold. tools/sizing-model/battery_failsafe.py puts the consequence at
+#
+#     BATT_LOW_VOLT (RTL)             fired at ~53 % SoC, not 20 %
+#     BATT_CRT_VOLT (land immediately) fired at ~30 % SoC, not 10 %
+#
+# An RTL at 53 % aborts the search mid-mission and destroys the 2.0x endurance
+# reserve the entire pack sizing rests on.
+#
+# 0.040 ohm = 6 x (15 mOhm cell / 3 parallel) + 10 mOhm wiring, connectors and
+# BMS shunt, at 50 % SoC and 25 C.
+#
+# ⚠ PREDICTED, NOT MEASURED. Bench-discharge the real pack with a current step
+# and compute R = dV/dI before first flight; that measurement beats the model
+# outright and takes an afternoon. This value exists because the alternative
+# sitting in the firmware was 0, which is not a better estimate.
+BATT_RESISTANCE = 0.040
+
 # Base parameters, identical on every aircraft.
 BASE: dict[str, float] = {
     # --- battery failsafe (SYS-11) -------------------------------------
@@ -46,6 +70,11 @@ BASE: dict[str, float] = {
     "BATT_FS_LOW_ACT": 2,                    # RTL
     "BATT_FS_CRT_ACT": 1,                    # Land immediately
     "BATT_FS_VOLTSRC": 1,                    # sag-compensated voltage
+    "BATT_RESISTANCE": BATT_RESISTANCE,      # without this, VOLTSRC=1 is inert
+    # Explicit rather than relying on the 10 s default: a delivery manoeuvre
+    # pulls ~115 A for a second or two, and a transient must not be able to end
+    # the mission on its own.
+    "BATT_LOW_TIMER": 10,
 
     # --- geofence (SYS-09, rule 8.18, -20 per breach) -------------------
     "FENCE_ENABLE": 1,
@@ -156,6 +185,49 @@ def validate(params: dict[str, float]) -> list[str]:
     if fence_alt and fence_alt <= 60:
         problems.append(
             f"FENCE_ALT_MAX={fence_alt:g} m is at or below the search altitude"
+        )
+
+    # Sag compensation without a resistance is not sag compensation.
+    #
+    # BATT_FS_VOLTSRC=1 asks ArduPilot to reconstruct resting voltage from
+    # `measured + current * BATT_RESISTANCE`. With the resistance at its 0
+    # default the reconstruction is a no-op, and BATT_LOW_VOLT -- picked off a
+    # RESTING discharge curve -- gets compared against a LOADED voltage. It
+    # fired at ~53 % SoC instead of 20 %, which is an RTL in the middle of the
+    # search. This shipped, and only turned up when someone read the params
+    # against the pack model.
+    if params.get("BATT_FS_VOLTSRC", 0) == 1 and not params.get("BATT_RESISTANCE", 0):
+        problems.append(
+            "BATT_FS_VOLTSRC=1 (sag-compensated) with BATT_RESISTANCE unset or "
+            "zero — the compensation does nothing, so BATT_LOW_VOLT is compared "
+            "against loaded voltage and fires roughly 30 points of SoC early. "
+            "Set BATT_RESISTANCE, or set BATT_FS_VOLTSRC=0 and move the "
+            "thresholds onto the loaded curve. See "
+            "tools/sizing-model/battery_failsafe.py."
+        )
+
+    # The two corrections are alternatives; applying both pushes the failsafe
+    # dangerously late, which is the worse mistake.
+    if params.get("BATT_RESISTANCE", 0) and params.get("BATT_FS_VOLTSRC", 0) == 1:
+        low_v = params.get("BATT_LOW_VOLT", 0)
+        if low_v and low_v < 3.30 * CELLS:
+            problems.append(
+                f"BATT_LOW_VOLT={low_v:g} is on the LOADED curve while "
+                f"BATT_RESISTANCE is set and VOLTSRC=1, which already corrects "
+                f"for sag. The correction is applied twice and the failsafe "
+                f"fires far too late."
+            )
+
+    # Coulomb counting is the one failsafe that is independent of resistance,
+    # temperature and load. It must not be weakened to paper over a voltage
+    # threshold.
+    cap = params.get("BATT_CAPACITY", 0)
+    low_mah = params.get("BATT_LOW_MAH", 0)
+    if cap and low_mah and low_mah < 0.15 * cap:
+        problems.append(
+            f"BATT_LOW_MAH={low_mah:g} is below 15 % of {cap:g} mAh — the "
+            f"capacity failsafe is the backstop for a wrong voltage estimate "
+            f"and the DoD policy is 20 %"
         )
     return problems
 

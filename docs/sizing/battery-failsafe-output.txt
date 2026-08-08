@@ -1,0 +1,122 @@
+==============================================================================
+PACK ELECTRICAL MODEL  -  6S3P 21700, 45 A class
+==============================================================================
+  Cells                  : 18 (6S3P), 45 A continuous each
+  Cell IR  @50% SoC 25C  : 0.0150 ohm
+  Cell IR  @20% SoC 25C  : 0.0177 ohm   (cells stiffen as they empty)
+  Cell IR  @20% SoC 12C  : 0.0245 ohm   (a cold pack is a stiff pack)
+  Wiring / connectors    : 0.0100 ohm  (nickel, XT90, 10 AWG, BMS shunt)
+
+  PACK R  @50% SoC 25C   : 0.0400 ohm   <-- BATT_RESISTANCE
+  PACK R  @20% SoC 25C   : 0.0454 ohm
+  PACK R  @20% SoC 12C   : 0.0590 ohm
+==============================================================================
+CURRENT DRAW AND OHMIC LOSS
+==============================================================================
+  Hover           :   42.3 A pack,  14.1 A/cell (31% of rating), I2R    54 W
+  Peak (T/W 2.0)  :  114.8 A pack,  38.3 A/cell (85% of rating), I2R   395 W
+
+  Hover I2R is 5.9% of hover power. The sizing model's flat
+  Wh bucket does not account for it, so usable energy is optimistic by
+  roughly that fraction.
+==============================================================================
+THE DEFECT: A THRESHOLD PICKED OFF THE WRONG CURVE
+==============================================================================
+  BATT_FS_VOLTSRC = 1 (sag-compensated), but BATT_RESISTANCE was unset,
+  so it defaults to 0 and the compensation does nothing. The failsafe
+  compares LOADED voltage against a threshold chosen from the RESTING
+  curve.
+
+  threshold       intended SoC    SoC it ACTUALLY fires at
+  BATT_LOW_VOLT           20%                        53%
+  BATT_CRT_VOLT           10%                        30%
+
+  BATT_FS_LOW_ACT = 2 is RTL. Firing at 53% instead of 20 % aborts the
+  search mid-mission and destroys the 2.0x reserve the pack was sized to.
+==============================================================================
+THE FIX  -  and the two options are ALTERNATIVES, not both
+==============================================================================
+  BATT_LOW_VOLT is compared against whatever BATT_FS_VOLTSRC selects.
+  Setting the resistance AND lowering the threshold would apply the
+  correction twice and push the failsafe dangerously LATE -- the
+  opposite mistake, and a worse one.
+
+  OPTION A  (recommended)  keep VOLTSRC = 1, set the resistance
+      BATT_RESISTANCE = 0.040
+      BATT_LOW_VOLT   = 20.4     unchanged -- correct once
+      BATT_CRT_VOLT   = 19.2     compensation actually works
+    ArduPilot reconstructs resting voltage, so the 3.40 / 3.20 V-per-cell
+    thresholds finally mean what they were chosen to mean. This is the
+    right option because the thresholds stay readable as SoC.
+
+  OPTION B  raw voltage, thresholds moved onto the loaded curve
+      BATT_FS_VOLTSRC = 0
+      BATT_LOW_VOLT   = 18.48  (3.08 V/cell loaded at hover)
+      BATT_CRT_VOLT   = 17.18  (2.86 V/cell loaded at hover)
+    Simpler, no resistance to get wrong, but the thresholds are now tied
+    to ONE current. They read early in a climb and late in a descent.
+
+  THE REAL BACKSTOP is coulomb counting, and it is already correct:
+      BATT_LOW_MAH = 2700  (20 %)      BATT_CRT_MAH = 1350  (10 %)
+    It is independent of resistance, sag and temperature. ArduPilot acts
+    on whichever failsafe fires first, so a correctly-set mAh threshold
+    protects the pack even if the voltage estimate is wrong. Do NOT
+    weaken it to compensate for a voltage threshold.
+
+  ALSO SET, in either option:
+      BATT_LOW_TIMER = 10   explicit, so a delivery manoeuvre transient
+                            cannot end the mission by itself
+==============================================================================
+PEAK DRAW AT END OF MISSION  -  the brownout question
+==============================================================================
+  A delivery manoeuvre near the end of the search is the worst case:
+  lowest SoC, highest transient current.
+
+     SoC   temp      OCV   hover V   peak V  peak V/cell
+    50%    25C    21.96     20.27    17.37         2.89
+    50%    12C    21.96     19.78    16.04         2.67
+    30%    25C    21.00     19.21    16.13         2.69
+    30%    12C    21.00     18.68    14.70         2.45
+    20%    25C    20.40     18.48    15.19         2.53
+    20%    12C    20.40     17.91    13.63         2.27
+    10%    25C    19.44     17.18    13.30         2.22
+    10%    12C    19.44     16.47    11.38         1.90
+
+  Worst case above: 13.63 V pack = 2.27 V/cell.
+
+  MODEL VALIDITY. This is a purely ohmic sag model, so it OVERSTATES the
+  droop at the bottom-right of the table -- real cells add polarisation
+  but the ESCs also current-limit long before 1.9 V/cell. Read the 10 %
+  rows as 'do not go there', not as a prediction. You should never be
+  there anyway: with the failsafe fixed, the aircraft lands at 20 %.
+  The 5 V avionics rail is fed from this bus. A BEC needs roughly 1-2 V
+  of headroom, so the rail is safe on voltage -- but the Jetson, the FC,
+  the mesh radio and the camera all sit behind it, and a companion
+  brownout loses perception AND the mission-state feed to the GCS.
+  Specify the BEC for the WORST case above, not the nominal 21.6 V.
+==============================================================================
+THERMAL
+==============================================================================
+  Adiabatic rise, one 93 s sweep      :   4.0 K
+  Adiabatic rise, full 7.7 min mission:  19.7 K
+  Adiabatic = no cooling at all, which is pessimistic for a pack sitting
+  in propwash. If this is comfortable the real figure certainly is.
+==============================================================================
+WHAT IS PREDICTED VERSUS MEASURED
+==============================================================================
+  EVERY number above is a prediction from datasheet-class cell data.
+  None of it is measured. Before first flight:
+
+    * Bench-discharge the real pack with a current step and compute
+      R = dV / dI. That measurement beats this model outright and takes
+      an afternoon.
+    * Log a hover and compare measured sag against the table above.
+    * Only then trust BATT_LOW_VOLT.
+
+  The values here exist because the alternative currently in the
+  firmware is BATT_RESISTANCE = 0, which is not a better estimate.
+
+  If you have a MATLAB licence, a Simscape Electrical pack model adds
+  diffusion/relaxation dynamics, per-cell imbalance and a real thermal
+  network. Those refine the numbers; they do not change the finding.
+==============================================================================
