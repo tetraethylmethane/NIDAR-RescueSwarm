@@ -16,13 +16,34 @@ frame is not, and CAD is the next place that error lands.
 
 So the driving dimensions come from a file the model writes.
 
-### Linking it in SolidWorks
+### Getting the variables into a part
 
-1. **Tools → Equations…**
-2. Tick **Link to external file**, browse to `rescueswarm-frame-equations.txt`
-3. The variables appear in the Equations dialog, greyed out — they are read-only
-   because the file owns them
-4. Drive sketch dimensions by expression instead of typing numbers:
+**Use the script.** From the repo root, with SolidWorks installed:
+
+```
+python tools/cad/sw_build_skeleton.py
+```
+
+It launches SolidWorks, creates a part in MMGS, pushes all 25 variables in, and
+draws the layout sketch. **Then immediately `Save As` under your own filename**
+and model from there — the generated `rescueswarm-skeleton.SLDPRT` is
+gitignored and will be overwritten the next time anyone runs the script.
+
+> **The external-file link does not work through the API, and this was tested.**
+> `IEquationMgr.FilePath` and `.LinkToFile` can both be set and SolidWorks reads
+> them back correctly, but the equations are never imported: **count stays 0**
+> across every ordering, every encoding (utf-8, utf-8-sig, utf-16, ansi) and a
+> forced rebuild. `Add2` works and accepts exactly the syntax this file uses, so
+> the script pushes the variables in directly.
+>
+> Linking the file **through the UI** (Tools → Equations → Link to external
+> file) is the documented workflow and probably does work — but **I have not
+> verified it**, so treat it as untested. If it does work for you it is the
+> better option, because the variables then update on rebuild instead of
+> needing the script re-run.
+
+Once the variables exist, drive sketch dimensions by expression instead of
+typing numbers:
 
    | dimension | expression |
    |:--|:--|
@@ -31,8 +52,23 @@ So the driving dimensions come from a file the model writes.
    | magazine cut-out | `= "magazine_length"` |
    | camera mount hole spacing | `= "cam_fastener_spacing"` |
 
-5. Change the pack → re-run the generator → **rebuild**. The frame follows.
-   Nobody retypes 761.
+Change the pack → re-run `cad_equations.py` → re-run `sw_build_skeleton.py` (or
+rebuild, if you got the UI link working). The frame follows. Nobody retypes 761.
+
+### What the skeleton contains
+
+Reference geometry only — no solids. It is the layout other parts mate to:
+
+- four motor axes at `"wheelbase_diag"/2` on the diagonals
+- prop-tip circles at `"prop_dia_max"/2`, so tip clearance is **visible** rather
+  than trusted (30 mm at 20 in)
+- battery bay footprint, 140 × 84 mm
+- magazine footprint, 400 × 200 mm
+- overall footprint, 1046 mm square
+
+Verified by closing the part, reopening it from disk and reading it back:
+**25 of 25 variables match the generated file exactly**, and `Sketch1` plus the
+`Equations` folder are present.
 
 ### File format
 
