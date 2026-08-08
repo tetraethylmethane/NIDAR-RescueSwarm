@@ -20,36 +20,51 @@ SYS-27** — see
 | Blocker found in review | State |
 |---|---|
 | Internet poller every 5 s (rule 8.4) | ✅ **Fixed** — removed, guarded by `scripts/check-no-network.sh` |
-| Controller, not a view (SYS-20) | ✅ **Fixed** — `MISSION_MODE` module split, enforced by tests |
-| Single-vehicle by construction (8.13) | ✅ **Backend done** — `mission_backend/fleet.py`; client wiring outstanding |
-| No 8.14 mission displays | 🟡 **Backend done** — client map layers outstanding |
-| One MJPEG video feed (8.14) | 🟡 **Gateway + component done** — end-to-end untested |
+| Controller, not a view (SYS-20) | ✅ **Fixed** — `MISSION_MODE` split **plus** a 403 guard on the 31 legacy `/uav` routes |
+| Single-vehicle by construction (8.13) | ✅ **Fixed** — MAVLink ingest, three SYSIDs into one `Fleet` |
+| No 8.14 mission displays | ✅ **Fixed** — regions, survivors, deliveries, progress; client builds |
+| One MJPEG video feed (8.14) | 🟡 **Built** — MediaMTX + 3 WebRTC panes; needs a real MediaMTX run |
 
-**SYS-20 and SYS-23 are no longer failing.** Both are now enforced mechanically
-rather than by discipline:
+**86 tests** (was 34), all passing. `SYS-20`, `SYS-23`, `SYS-25/26/27` resolved.
 
 ```bash
-cd server && python -m pytest mission_tests -q    # 34 tests, incl. test_sys20.py
-./scripts/check-no-network.sh                     # no outbound internet calls
+# in NIDAR-GSC (the smoke test needs the real app.py):
+cd server && python -m pytest mission_tests -q     # 86 tests
+./scripts/check-no-network.sh                      # rule 8.4 guard
+python scripts/sim_mission.py --speed 8            # 3 drones, no aircraft
 ```
 
-Both guards were verified to **fail** when the fault is deliberately
-reintroduced — a command route forced into the mission build fails three tests,
-and a restored ArcGIS URL fails the network check. A guard that cannot fail is
-not a guard.
+### The hole the smoke test found
 
-### What was built
+`test_app_smoke.py` checks the **live `app.py`**, not the isolated factory, and
+failed immediately. The `MISSION_MODE` split covered the new blueprint but the
+legacy `/uav` blueprint — which predates NIDAR — still exposed 31 routes
+including `/uav/commands/insert`, `/uav/commands/jump`, `/uav/arm` and
+`/uav/mode/set`. **The previous commit claimed a command-free mission build that
+did not exist.** Now every state-changing method on `/uav` and `/image` returns
+403 in mission mode, asserted against nine specific paths.
 
-| In NIDAR-GSC | Serves |
+### Three defects found in the inherited code
+
+| Defect | Impact |
 |---|---|
-| `server/mission_backend/kml.py` | SYS-38 — KML boundary, longitude-first handling, area check |
-| `server/mission_backend/fleet.py` | Rule 8.14 — multi-vehicle state, survivor dedup, delivery status, progress |
-| `server/mission_backend/api.py` | Read-only mission routes + abort/recall |
-| `server/mission_backend/dev_commands.py` | Flight-test commands, never imported in mission mode |
-| `client/src/components/VideoWall.js` | Rule 8.14 — three WebRTC panes |
-| `scripts/mediamtx.yml` | Video gateway, H.264, no STUN |
-| `scripts/check-no-network.sh` | Rule 8.4 regression guard |
-| `MISSION.md` | What must not be changed back |
+| `npm run build` lacked `--openssl-legacy-provider` that `start` had | **The client could not be built on any Node ≥ 17** — every current machine |
+| `sys.stdin.reconfigure()` unguarded in `app.py` | Crashed under pytest, gunicorn, or systemd without a tty, before Flask was constructed |
+| DroneKit is unmaintained and does `collections.MutableMapping` | **Cannot be imported on Python ≥ 3.10 at all.** The mission path uses pymavlink directly and sidesteps it |
+
+### Verified end-to-end, without hardware
+
+`sim_mission.py` flies three synthetic drones and deliberately includes the
+awkward cases — a drone dropping off the mesh, a survivor re-tagged with a better
+fix by a different drone, and a tag taken without RTK. Against a real `Fleet` and
+a real socket:
+
+```
+datagrams accepted : 5287      rejected : 0
+survivors found    : 6         kits delivered : 6
+survivor 3 fix     : RTK_FIXED (drone 3)   ← dedup preferred fix over recency
+warnings           : survivor 6 tagged without RTK (3D)
+```
 
 ### Still to do
 

@@ -157,6 +157,6 @@ Honest gaps, to be closed before the P0 gate can be called complete:
 | SYS-15 | **Datum confirmed as the survivor**, so geotag and dispersion compound as budgeted. Open: *which point* on the survivor — up to 0.85 m of ambiguity for a prone adult against a 1 m Zone A. See [`rulebook-compliance.md`](rulebook-compliance.md) §4.5. |
 | SYS-33 | The 0.50 m target-extent/centroid term is the second-largest in case C (31 % of variance) and is partly irreducible until the datum question above is answered. |
 | SYS-36 | Model Pre-Flight Inspection checklist is "to be released separately" (4.31) and is not yet available. |
-| SYS-20 | **Resolved.** `MISSION_MODE` module split in NIDAR-GSC `ab8c09d`: the command blueprint is never imported in a mission build. Enforced by `mission_tests/test_sys20.py` against the live URL map, verified to fail when a command route is reintroduced. |
+| SYS-20 | **Resolved.** `MISSION_MODE` split **plus** a 403 guard on the 31 legacy `/uav` routes — the split alone was insufficient, and `test_app_smoke.py` caught it. Enforced against the live app. |
 | SYS-23 | **Resolved for the GCS.** Poller removed in NIDAR-GSC `ab8c09d`; `scripts/check-no-network.sh` guards it. Still to verify: the aircraft side, and the whole system with interfaces physically down (P9). |
-| SYS-25/26/27 | **Backend done** (`mission_backend/fleet.py`, 34 tests). Outstanding: client map layers, mavlink-router wiring, mission-state UDP listener, end-to-end video. 100 binary points depend on these. |
+| SYS-25/26/27 | **Resolved.** MAVLink ingest (3 SYSIDs), mission-state UDP listener, and client map layers all built and tested — 86 tests. Outstanding: a real MediaMTX run for video, and flight validation. |
