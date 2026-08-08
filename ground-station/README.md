@@ -10,10 +10,11 @@ Requirements: **SYS-20, SYS-23, SYS-25, SYS-26, SYS-27** — see
 [`../docs/requirements/requirements-baseline.md`](../docs/requirements/requirements-baseline.md).
 
 ```bash
-cd server && python -m pytest mission_tests -q     # 107 tests
-python utils/slippy_map_getter.py --verify         # offline tiles intact
-./scripts/check-no-network.sh                      # rule 8.4 guard
-python scripts/sim_mission.py --speed 8            # 3 drones, no aircraft
+cd server && python -m pytest mission_tests -q      # 118 tests
+python utils/slippy_map_getter.py --verify          # offline tiles intact
+cd ../client && CI=true npx react-scripts test --watchAll=false   # 22 render tests
+cd .. && ./scripts/check-no-network.sh              # rule 8.4 guard
+node scripts/browser_check.js                       # the page, in real Chromium
 ```
 
 ---
@@ -22,15 +23,14 @@ python scripts/sim_mission.py --speed 8            # 3 drones, no aircraft
 
 | Requirement | State |
 |---|---|
-| No external network (SYS-23, rule 8.4) | ✅ Poller removed, CI-guarded, tile cache tooling fixed |
+| No external network (SYS-23, rule 8.4) | ✅ Poller removed, CI-guarded · tiles render offline |
 | No mission-altering commands (SYS-20, rule 8.16) | ✅ Legacy blueprint **not registered**; dev UI not rendered |
-| Single unified interface, 3 drones (SYS-25, rule 8.13) | ✅ MAVLink ingest, 3 SYSIDs → one `Fleet` |
-| All eight rule 8.14 displays (SYS-26) | ✅ Built, rendered, **render-tested** |
-| Three video feeds (SYS-27, rule 8.14) | ✅ Built · ⚠ MediaMTX never run |
-| Abort and recall (rule 8.19) | ✅ Transmitting · ⚠ **no radio attached** |
+| Single unified interface, 3 drones (SYS-25, rule 8.13) | ✅ Verified against **three real ArduCopter autopilots** |
+| All eight rule 8.14 displays (SYS-26) | ✅ Rendered and asserted in a real browser |
+| Three video feeds (SYS-27, rule 8.14) | ✅ **Live H.264 over WebRTC**, end to end |
+| Abort and recall (rule 8.19) | ✅ Acknowledged end to end · ⚠ **no 868 MHz radio yet** |
 
-**107 server tests · 16 component render tests · CI on all of it.** The mission
-server now **starts** — verified by running it, not by importing it.
+**118 server tests · 22 render tests · a browser check · CI on all of it.**
 
 ---
 
@@ -192,36 +192,116 @@ fail is not a guard.
 
 ---
 
-## What is left
+## It has now run as a system
 
-### Still never run as a system
+Client, backend, **three real ArduCopter autopilots**, the mission-state feed,
+the offline tile cache and MediaMTX, all at once, with a browser looking at the
+result. ArduPilot SITL built from source in WSL; the prebuilt Windows binaries
+are Cygwin builds that Defender blocks, and working around someone's antivirus
+is not the move.
 
-- **MediaMTX has never been started.** The video path is unproven — `VideoWall`
-  renders, but nothing has streamed through it.
-- **Never connected to a real autopilot, or even SITL.** `mavlink_ingest` is
-  tested against synthetic pymavlink messages.
-- **The safety radio is not connected**, which abort correctly reports as
-  `NO_RADIO` rather than pretending otherwise.
-- **No tiles are cached on any machine yet** — the tooling is fixed and tested
-  against the live server, but the venue coordinates are not known.
-- **No browser has loaded the full page.** The components render under jsdom and
-  the server runs; the two have not been put together with a human looking at
-  the result.
+![the ground station running against three SITL aircraft](gcs-running.png)
 
-### Needs hardware, versus does not
+Offline satellite imagery from the local cache, three drone markers at their
+distinct SITL positions, three H.264 feeds live over WebRTC, `DISARMED` correct
+in the header, abort honestly reporting no radio. Zero HTTP errors, zero console
+errors, zero failed requests.
 
-| Needs hardware | Does not |
+Doing it found **eight defects**, none of which any existing test could have
+caught.
+
+### The big one: we were receiving almost no telemetry
+
+ArduPilot streams at the rates set by the `SRx_*` parameters **for the channel
+the GCS is on**, and a channel that has never had a stream request sends almost
+nothing. Measured:
+
+| What the GCS does | What arrives |
 |---|---|
-| Safety radio bridge + aircraft receiver | ~~DroneKit out of the mission path~~ ✅ |
-| Real autopilot telemetry | ~~Tile cache tooling~~ ✅ · ~~dev-UI gating~~ ✅ |
-| Video end to end through MediaMTX | ~~Component render tests~~ ✅ · ~~CI~~ ✅ |
-| Field validation | SITL instead of synthetic MAVLink · a full-stack local run |
+| Listen passively — **what the code did** | `HEARTBEAT` only, 1 Hz |
+| + GCS heartbeat | still `HEARTBEAT` only |
+| + `SET_MESSAGE_INTERVAL` | everything, at the rates asked for |
 
-**The next step is a full-stack local run** — `MISSION_MODE=1 python app.py`,
-`npm start` and `sim_mission.py` together, with a browser open on the page. Both
-halves now work in isolation and neither has met the other. After that, SITL in
-place of the synthetic MAVLink messages. Both are free of aircraft; neither has
-been done.
+So the fleet populated with flight mode and armed state and **nothing else** —
+`lat`, `lon`, `alt`, `battery_pct`, `gnss_fix` all `null`. Rule 8.14 items 3 and
+4 blank for the whole mission, and the survivor fix quality unknown.
+
+The existing tests call `handle_message()` with constructed messages. That
+verifies the mapping and says nothing about whether the messages arrive.
+*"We decode `GLOBAL_POSITION_INT` correctly"* and *"we receive
+`GLOBAL_POSITION_INT`"* are different claims, and only a real autopilot can tell
+them apart.
+
+### The other seven
+
+**MediaMTX had never started.** `hlsDisable`/`rtmpDisable`/`srtDisable` is the
+pre-1.x spelling; MediaMTX rejects unknown fields and exits without opening a
+port. Running it also caught **MoQ** — new in v1.20, on by default — quietly
+opening a QUIC server and minting a TLS certificate.
+
+**The backend URL was hardcoded** to `172.29.93.93`, a machine on the previous
+team's network. Nothing could reach a backend anywhere else without editing
+source and rebuilding, which is much of why client and server had never met.
+
+**The arm badge said ARMED when nothing was armed.** `App.js` renders
+`<Header />` with no props, `Aarmed` defaulted to `""`, and
+`"".includes("DISARMED")` is `false` — so it showed a green ARMED with three
+disarmed aircraft, and with the backend switched off. Now `NO DATA` /
+`DISARMED` / `ARMED n/3`, and ARMED is no longer styled the same green as
+"healthy". Armed means the propellers can spin.
+
+**A missing route returned 500, not 404**, because the catch-all error handler
+swallowed werkzeug's `HTTPException`. A 500 says the ground station is broken.
+
+**`ref` on `MapContainer` does nothing in react-leaflet 3.2.5** — that version
+uses `whenCreated`. The existing `createRef()` was a dead ref.
+
+**The map never followed the aircraft.** It opened on a hardcoded Delhi
+coordinate and stayed there — which, with tiles cached for the operating area,
+renders as a grey rectangle with the boundary drawn on nothing: *the exact
+appearance of a broken tile cache, produced by a completely healthy one.*
+
+**The map polled a dev route on every mount** (`/uav/commands/export`), which is
+what produced the 500.
+
+### The abort path has now been exercised
+
+`sim_radio.py` binds the port the GCS transmits to and decodes each frame with
+the real `safety_link.protocol.Receiver` — the actual aircraft-side class, not a
+mock:
+
+| Scenario | Result |
+|---|---|
+| all three acknowledge | `ACKNOWLEDGED` in <1 s, 3 frames, then transmission stops |
+| `--deaf 2` | `acked=[1,3] missing=[2]` held visible, `TIMEOUT` at 10 s |
+| `--loss 0.5` | repeats still get all three through |
+
+The `--deaf` case is the one worth having — it is exactly what the panel exists
+to surface.
+
+---
+
+## What is still not done
+
+- **The safety radio itself.** `sim_radio.py` proves the framing, sequencing,
+  dedup, addressing and acknowledgement. It proves **nothing about 868 MHz** —
+  not range, airtime, the LoRa module, interference or the aerial.
+- **No tiles are cached for the venue.** The tooling is fixed and 681 tiles were
+  cached for the test area to prove the path, but the real coordinates are not
+  known and this must be run weeks ahead.
+- **No real aircraft.** SITL is a genuine ArduPilot autopilot, but it has no
+  radio link, no companion computer, no mesh and no wind.
+- **The measured video bitrate means nothing.** Synthetic test patterns are
+  nearly static and compress to almost nothing; the 0.9 Mbps per feed in the RF
+  budget is untested against real flood imagery.
+
+Everything on that list needs hardware or a venue. **Nothing is left that can be
+done at a desk** — which was not true this morning, when the list was DroneKit,
+tiles, dev-UI gating, render tests, CI, SITL, MediaMTX and a browser.
+
+The remaining ground-station work is P7–P9 field validation: attach the radio,
+fly the aircraft, cache the venue, and run the pre-competition checklist with
+the interfaces physically down.
 
 ---
 

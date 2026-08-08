@@ -32,9 +32,9 @@
 
 ## 1. Status
 
-**Phase 0/1.** The system is sized end to end, the requirements are baselined against the rulebook, and the ground-station display layer is built and tested.
+**Phase 0/1.** The system is sized end to end, the requirements are baselined against the rulebook, and **the ground station runs as a system** — verified against three real ArduCopter SITL autopilots with a browser on the page, live video, offline tiles and abort acknowledged end to end.
 
-**The aircraft, the autonomy, the perception and the failsafes do not exist yet.** `autonomy/`, `perception/`, `firmware/` and `communication/` contain zero source files. The abort button sets a flag that nothing reads. See the [implementation plan](docs/implementation-plan.md).
+**The aircraft and the perception stack do not exist.** `perception/` contains no source files. The coverage planner, the ArduPilot parameter sets and the safety-link protocol are written and tested; none has met hardware. See the [implementation plan](docs/implementation-plan.md).
 
 Everything after "start" is autonomous. The operator loads the mission file, presses start, and can abort or recall. Nothing else — anything more costs 50 points a time.
 
@@ -162,7 +162,7 @@ Reasoning and numbers in [configuration trade](docs/sizing/configuration-trade.m
 | **VRS on every delivery** | The 2.5 m/s descent sits at 0.48 v_i, on the vortex-ring onset boundary, and a nulled-groundspeed descent is exactly what triggers it | Fix in the flight profile, not the airframe |
 | **Wind cliff at 8 m/s** | Search groundspeed is 8 m/s, so at that windspeed the aircraft can't make headway at all. Organisers confirm wind is **natural and uncapped** — nothing protects us | Now a requirement: 10 m/s headway (SYS-37) |
 | **Business strategy** | 200 points, barely started — sponsorship evidence can't be produced in the final week | Start now |
-| **Ground station** | Complete for display and safety: all eight rule-8.14 displays rendered, abort/recall transmitting with per-aircraft acknowledgement, mavlink-router configured. ⚠ **Nothing has run as a system** — no browser has loaded the page, no autopilot has been attached, and the safety radio is not connected (abort reports `NO_RADIO`) | [Status](ground-station/README.md) |
+| **Ground station** | **Runs as a system.** Verified against three real ArduCopter SITL autopilots with a browser on the page: all eight rule-8.14 displays, three live H.264 feeds, offline tiles, abort acknowledged end to end. Eight defects found by running it — including that the ingest was receiving no telemetry at all. ⚠ Remaining: the 868 MHz radio, venue tiles, real aircraft | [Status](ground-station/README.md) |
 
 ---
 
