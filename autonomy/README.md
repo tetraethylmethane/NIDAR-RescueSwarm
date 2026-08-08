@@ -19,8 +19,22 @@ Runs on the GCS during the 5-minute setup window (SYS-38). Pure geometry, no I/O
 | `mission.py` | QGC WPL 110 ArduPilot missions, with a pre-upload validator |
 | `plan.py` | End-to-end: boundary → strips → transects → one mission per drone |
 
+### `mission_state/publisher.py` — the 5 Hz producer
+
+The document the ground station has consumed since `mission_ingest.py` was
+written, and which nothing produced until now. Runs on the companion.
+
+Telemetry stays on MAVLink; this carries what MAVLink has no message for —
+*"survivor 4 at 13.0001, 80.0002, confidence 0.91, confirmed over 7 frames,
+RTK-fixed"*. Detections **upsert** rather than append, or an 8-minute mission
+would grow the datagram without bound.
+
+Every method is non-blocking and the publish loop swallows every exception: a
+dropped mesh is counted, not raised. Losing the display costs the evidence for
+250 points; crashing the companion costs the aircraft.
+
 ```bash
-cd autonomy && python -m pytest tests -q      # 31 tests
+cd autonomy && python -m pytest tests -q      # 91 tests
 ```
 
 **10 ha, 3 drones, 40 m:** 3.33 ha each, 0.01 % imbalance, 3 lines each,
@@ -41,9 +55,18 @@ a third of the search area, for separation the strips already provide. Detection
 is 250 points. Search altitude is now uniform; **transit** altitude is staggered,
 since that is where aircraft leave their strips.
 
+## Elsewhere in this repo
+
+- [`../firmware/ardupilot-params/`](../firmware/ardupilot-params/) — **four of the
+  five failsafes, as parameters not code.** Per-drone `.parm` files with a
+  validator that rejects a disabled failsafe, and knows `RTL_ALT` is in
+  centimetres.
+- [`../communication/safety_link/`](../communication/safety_link/) — the abort and
+  recall wire format, built to the three constraints in the implementation plan
+  §4: off the mesh, acknowledged per aircraft, and secondary to an RC channel
+  that works with a dead companion.
+
 ## Not built
 
-`mission_state`, `swarm_state` (greedy claim-and-lock), `delivery` (the GUIDED
-excursion), `mission_publisher` (the 5 Hz feed the GCS already consumes), and the
-ArduPilot parameter file that provides four of the five failsafes. See the
-implementation plan, Part 2.
+`swarm_state` (greedy claim-and-lock) and `delivery` (the GUIDED excursion).
+See the implementation plan, Part 2.2.

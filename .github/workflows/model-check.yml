@@ -124,6 +124,9 @@ jobs:
           python-version: '3.12'
       - name: Install
         run: pip install pytest
-      - name: Coverage planner tests
+      - name: Autonomy, params and safety-link tests
         working-directory: autonomy
         run: python -m pytest tests -q
+      - name: ArduPilot parameter files regenerate and validate
+        working-directory: firmware/ardupilot-params
+        run: python params.py --out /tmp
