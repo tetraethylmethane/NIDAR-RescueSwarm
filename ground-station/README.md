@@ -265,6 +265,48 @@ ends with RTL as an **item** so the mode stays AUTO throughout.
 
 ---
 
+## Gazebo: the perception loop finally has pixels
+
+SITL gives real dynamics, a real EKF and real failsafe logic, but it **renders
+nothing** — so detection → geotag → mission-state → GCS had only ever been fed
+by `sim_mission.py`. Gazebo Harmonic plus `ardupilot_gazebo` closes that.
+
+Verified: headless Gazebo, ArduPilot plugin on UDP 9002, SITL **armed and
+climbing under Gazebo physics**, and **65 PNG frames at 640×480** written from
+the aircraft's own camera.
+
+![a frame from the drone's camera in Gazebo](gazebo-drone-camera.png)
+
+<sub>An actual rendered frame — the aircraft's rotors and its shadow on the
+ground. The gimbal ships pointing at the horizon, which is useless for finding
+someone in water; <a href="https://github.com/tetraethylmethane/NIDAR-GSC/blob/main/scripts/gz-flight.sh"><code>gz-flight.sh</code></a>
+commands it to nadir.</sub>
+
+**Three things cost real time, all now handled by the script:**
+
+1. **`gazebo-iris.parm`, not `copter.parm`.** With the generic defaults the JSON
+   physics link never completes — SITL logs *"No JSON sensor message received,
+   resending servos"* forever, the EKF never gets an IMU, and arming is refused
+   with *"Need Position Estimate"*. Swapping the defaults file fixed it outright.
+2. **Lockstep makes real-time factor meaningless as a health metric.** The
+   plugin sets `<lock_step>1</lock_step>`, so Gazebo advances only when SITL
+   sends servos. RTF ≈ 0.3 is *expected and harmless*. I initially blamed RTF
+   0.31 for the arming failure and was wrong — cause (1) was the real one.
+   Budget wall-clock waits at ~3×.
+3. **The gimbal looks at the horizon by default.** NIDAR searches nadir at 40 m.
+
+Worth stating once: use this for **plumbing** — does a detection become a
+geotag, does it reach the GCS, does the chain hold for eight minutes. **Not for
+recall.** Synthetic scenery flatters a detector and recall is worth 250 points;
+measure that on real flood imagery and real dummies.
+
+> GPU note: WSL exposes the GPU as `root:render`, and Ubuntu puts you in
+> `video` but not `render`. Without `usermod -aG render` Gazebo falls back to
+> software rendering. That is slow but, because of lockstep, **not** what stops
+> the aircraft arming.
+
+---
+
 ## It has now run as a system
 
 Client, backend, **three real ArduCopter autopilots**, the mission-state feed,
@@ -365,10 +407,10 @@ to surface.
 - **No real aircraft.** SITL is a genuine ArduPilot autopilot flying the real
   plan in simulated wind, but it has no radio link, no companion computer, no
   mesh, no camera and no airframe.
-- **No camera anywhere in the loop.** SITL renders nothing, so the
-  perception → geotag → mission-state → GCS chain has only ever been driven by
-  `sim_mission.py`. Closing that needs Gazebo, which is blocked on a `sudo`
-  password in WSL.
+- **The camera exists but nothing consumes it yet.** Gazebo now renders a
+  downward camera from a flying aircraft (see below), so the pixels are there —
+  but `perception/` is still empty, so nothing detects, geotags or publishes
+  from them.
 - **The measured video bitrate means nothing.** Synthetic test patterns are
   nearly static and compress to almost nothing; the 0.9 Mbps per feed in the RF
   budget is untested against real flood imagery.
