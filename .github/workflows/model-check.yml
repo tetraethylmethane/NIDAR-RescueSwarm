@@ -36,6 +36,7 @@ jobs:
           python tools/sizing-model/bom_reconcile.py           > /tmp/bom-reconcile-output.txt
           python tools/sizing-model/battery_failsafe.py        > /tmp/battery-failsafe-output.txt
           python tools/sizing-model/algorithm_trade.py         > /tmp/algorithm-trade-output.txt
+          python tools/sizing-model/cg_budget.py               > /tmp/cg-budget-output.txt
 
       # --strip-trailing-cr because the comparison is about the NUMBERS, not the
       # line terminators. The outputs were committed from Windows with CRLF and
@@ -49,7 +50,7 @@ jobs:
           fail=0
           for f in model-output config-trade-output delivery-accuracy-output \
                    mission-profile-output setup-budget-output bom-reconcile-output \
-                   battery-failsafe-output algorithm-trade-output; do
+                   battery-failsafe-output algorithm-trade-output cg-budget-output; do
             if diff -q --strip-trailing-cr "docs/sizing/$f.txt" "/tmp/$f.txt" > /dev/null; then
               echo "ok    $f.txt"
             else
