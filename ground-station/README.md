@@ -2,10 +2,14 @@
 
 Mission view, telemetry ingest, video, replay.
 
-**Implementation lives in [`tetraethylmethane/NIDAR-GSC`](https://github.com/tetraethylmethane/NIDAR-GSC)** —
-React client + Flask/DroneKit server, originally Team Sammpaati's AUVSI SUAS
-ground station. This directory holds the engineering record: what was wrong for
-NIDAR, what was changed, and what must not be changed back.
+**The Drikr NIDAR Ground Station lives in
+[`tetraethylmethane/NIDAR-GSC`](https://github.com/tetraethylmethane/NIDAR-GSC)** —
+React client + Flask server. This directory holds the engineering record: what
+was wrong for NIDAR, what was changed, and what must not be changed back.
+
+It began as a fork of Team Sammpaati's AUVSI SUAS ground station. It is no longer
+that: branding, AUVSI interop features and the AUVSI competition coordinates are
+gone, and the provenance is kept only as a record of what that lineage broke.
 
 Requirements this directory must satisfy: **SYS-20, SYS-23, SYS-25, SYS-26,
 SYS-27** — see
@@ -24,6 +28,7 @@ SYS-27** — see
 | Single-vehicle by construction (8.13) | ✅ **Fixed** — MAVLink ingest, three SYSIDs into one `Fleet` |
 | No 8.14 mission displays | ✅ **Fixed** — regions, survivors, deliveries, progress; client builds |
 | One MJPEG video feed (8.14) | 🟡 **Built** — MediaMTX + 3 WebRTC panes; needs a real MediaMTX run |
+| Live arm/disarm buttons in the nav bar | ✅ **Fixed** — status-only in mission mode, and the client defaults to the safe UI if it cannot reach the backend |
 
 **86 tests** (was 34), all passing. `SYS-20`, `SYS-23`, `SYS-25/26/27` resolved.
 
@@ -80,7 +85,7 @@ Client-side, and untestable without hardware:
 
 ---
 
-## Review of NIDAR-GSC at commit `5d0a687` — the state that prompted the work
+## Review of the inherited codebase at commit `5d0a687` — the state that prompted the work
 
 *Historical. Blockers 1 and 3 are fixed as of `ab8c09d`; blocker 2's backend is done.*
 
