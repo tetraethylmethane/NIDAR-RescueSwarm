@@ -171,6 +171,35 @@ they can be built while other decisions settle.
 
 ---
 
+## 6a. Check your work against the model
+
+```
+python tools/cad/cad_check.py path\to\your.SLDASM     # or the active document
+```
+
+Opens the document and asserts it against the sizing model. Exit code 1 if
+anything fails, so it can gate a design review.
+
+| check | fails when |
+|:--|:--|
+| parametric variables | a dimension in the part disagrees with the generated file |
+| mass vs budget | >10 % off (structure 1495 g, or MTOW 6360 g for an assembly) |
+| CG on the rotor centroid | lateral offset >25 mm; warns at 10 mm |
+| footprint | bounding box exceeds 1046 mm square |
+| launch box | 3 × footprint exceeds 3.66 m |
+| interference | any component interference in an assembly |
+| prop tip clearance | geometric, from the model — runs with no CAD at all |
+
+Verified against a 100 mm aluminium cube of known mass: it reads **2700 g** and
+a CoM of **(0, 50, 0) mm**, both correct to the gram and the millimetre.
+
+**Not automated yet:** the parachute cone versus the GNSS antennas. That needs
+a cone body in the assembly to interfere against. Model the deployment cone as
+a surface or dummy solid from the mount and the check becomes real instead of a
+reminder — it is the conflict in §4 most likely to be settled by eye.
+
+---
+
 ## 7. Why this document is so insistent about sources
 
 The battery bay entry in the constraints document specified a **12-cell 6S2P
