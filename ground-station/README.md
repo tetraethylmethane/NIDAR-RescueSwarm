@@ -214,6 +214,32 @@ variant deliberately: `MISSION_ITEM` uses float32 for latitude and quantises to
 
 Run it with [`scripts/sim-flight.sh`](https://github.com/tetraethylmethane/NIDAR-GSC/blob/main/scripts/sim-flight.sh).
 
+### The operator's screen, mid-flight
+
+![the ground station during the flight](gcs-in-flight.png)
+
+`ARMED 3/3` in red, all three in AUTO, RTK fixed, batteries drawing down
+59/60/62 %, three markers separated across their own search strips on offline
+imagery. Every number on that screen came from an autopilot.
+
+The whole mission is recorded in [`mission-flight.mp4`](mission-flight.mp4) —
+600 frames over five real-time minutes, captured by
+[`scripts/record_mission.js`](https://github.com/tetraethylmethane/NIDAR-GSC/blob/main/scripts/record_mission.js),
+which also writes a fleet data track alongside the frames so the clip can be
+read rather than squinted at:
+
+```
+t+  1s  alt 40/40/40   AUTO/AUTO/AUTO      cruise
+t+301s  alt 11/19/29   AUTO/AUTO/AUTO      recovering, staggered
+t+323s  alt  0/ 2/ 6
+t+338s  alt  0/ 0/ 0                       all three down
+```
+
+It is a test as well as a demo. Anything that only fails over time — a leaking
+poll, a marker that stops updating, a feed that drops after ninety seconds — is
+invisible to a screenshot and obvious in five minutes of frames. Three console
+errors across the whole run, all from the backend being shut down at the end.
+
 ### It took seven attempts, and one of them is worth reading
 
 Three runs were diagnosed from readings of *"alt 0.00 m, throttle 0 %, no RC"*.
