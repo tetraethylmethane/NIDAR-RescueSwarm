@@ -1,0 +1,91 @@
+==============================================================================
+BOM ROLL-UP  -  Indian sourcing
+==============================================================================
+  01 Air Vehicle BOM               49 lines  INR     281,400  (  2.81 L)
+  02 Payload & Kits                 9 lines  INR      40,880  (  0.41 L)
+  03 Ground Segment                22 lines  INR     506,300  (  5.06 L)
+  04 Test & Lab Equipment          21 lines  INR     444,900  (  4.45 L)
+  05 Spares & Consumables          16 lines  INR     429,600  (  4.30 L)
+  06 Software & Data               17 lines  INR     140,000  (  1.40 L)
+
+  air vehicle, PER AIRCRAFT          INR     281,400  (  2.81 L)
+  x3 for the fleet                   INR     844,200  (  8.44 L)
+  everything else, one-off           INR   1,561,680  ( 15.62 L)
+  SUBTOTAL                           INR   2,405,880  ( 24.06 L)
+==============================================================================
+PROGRAMME COST  -  what the build actually needs funding for
+==============================================================================
+  subtotal                          INR   2,405,880  ( 24.06 L)
+  indigenisation (value-weighted)    61.3% of the priced BOM
+  imported residual                 INR     931,680  (  9.32 L)
+  duty + freight @ 22% on that      INR     204,970  (  2.05 L)
+  GST @ 18%                          INR     469,953  (  4.70 L)
+  contingency @ 20%                 INR     616,161  (  6.16 L)
+  PROGRAMME TOTAL                   INR   3,696,963  ( 36.97 L)
+
+  This is the funding ask. It is a competition build, not a product:
+  it carries test equipment, spares, a possible fourth aircraft and a
+  field data campaign that a production unit would not.
+==============================================================================
+UNIT ECONOMICS  -  what an ADDITIONAL aircraft costs
+==============================================================================
+  The programme total is the wrong number to quote a customer, because
+  most of it is one-off. The marginal cost is what scales.
+
+  marginal aircraft, taxes included   INR     360,341  (  3.60 L)
+  a 3-aircraft operational fleet      INR   1,081,024  ( 10.81 L)
+  + ground segment (one per fleet)    INR     597,434  (  5.97 L)
+  DEPLOYABLE SYSTEM, cost basis      INR   1,678,458  ( 16.78 L)
+
+  Cost basis, not price. Margin, warranty, training, support and
+  certification are commercial decisions, not BOM arithmetic.
+==============================================================================
+RECURRING COST  -  what a deployment consumes
+==============================================================================
+  payload and kits, as bought         INR      40,880  (  0.41 L)
+
+  Per-mission consumption depends on three things this repo does not
+  know yet, and inventing them would be worse than leaving them open:
+
+    * kit refill cost -- the BOM buys competition kits, not relief kits
+    * battery cycle life -- 21700 packs at this C-rate, in Indian heat
+    * crew and transport per deployment
+
+  What IS known: the fleet carries 3 x 4 = 12 kits per sortie, hover
+  endurance is 15.3 min against a 7.7 min design mission, and the pack
+  is 292 Wh, so a sortie is a few rupees of electricity and a pack cycle.
+  The consumable that matters is kits, not energy.
+==============================================================================
+INDIGENISATION  -  a scored differentiator, not a slogan
+==============================================================================
+  Value-weighted Indian content across the priced BOM: 61.3%
+
+  programme as costed (61.3% Indian)    INR   3,696,963  ( 36.97 L)
+  the same BOM fully imported           INR   4,156,206  ( 41.56 L)
+  saved by sourcing in India            INR     459,243  (  4.59 L)   11%
+
+  This is worth stating precisely because the audience is MeitY and the
+  Drone Federation of India, and because it is measurable rather than
+  asserted -- every line in the BOM carries a declared Indian fraction.
+
+  It also buys schedule, which matters more than the money here: the
+  BOM's own note puts imports at 4-6 weeks against 2-3 weeks domestic,
+  inside a programme whose binding constraint is an 8-week flight window.
+==============================================================================
+WHAT THIS MODULE WILL NOT DO
+==============================================================================
+  These are the pitch's remaining numbers, and they need real sources.
+  Each is a question for the team, not a gap to be filled with a guess:
+
+    market size      how many flood-response units, at what refresh rate
+    willingness to   what NDRF/SDRF or a state disaster authority
+      pay            actually pays for comparable capability
+    alternative      cost per flight hour of the helicopter or boat
+      cost           search this displaces
+    adoption         DGCA category, BVLOS status, and what a state
+                     procurement cycle takes
+
+  A pitch that derives its cost from a real BOM and admits which
+  numbers are unsourced is stronger than one that is confident
+  throughout, because the first can be checked.
+==============================================================================
