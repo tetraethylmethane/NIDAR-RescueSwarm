@@ -1,0 +1,23 @@
+# Line endings.
+#
+# The reproduce job in .github/workflows/model-check.yml compares committed
+# model output against freshly generated output byte for byte. The outputs were
+# committed from Windows with CRLF; CI regenerates them on Linux with LF, so
+# every line differed and the job had never once passed. The check looked like
+# it was enforcing the repository's central rule -- every published number
+# traces to the model -- while enforcing nothing.
+#
+# Normalising here fixes the cause. The workflow also passes
+# --strip-trailing-cr so the comparison stays about the NUMBERS rather than the
+# line terminators, and so it gives the same answer run from Windows or Linux.
+docs/sizing/*.txt   text eol=lf
+
+# Shell scripts must be LF regardless of platform: CRLF makes the kernel look
+# for an interpreter called "/usr/bin/env bash\r", which fails obscurely.
+*.sh                text eol=lf
+
+# Never touch these.
+*.xlsx              binary
+*.png               binary
+*.pdf               binary
+*.ico               binary
