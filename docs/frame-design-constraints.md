@@ -68,8 +68,38 @@ datum, so the 0.10 m is a budget line rather than a guess.
 |---|---|---|
 | 9 | **Footprint** | ≤ 1046 mm square at 20 in props. Three aircraft must sit inside a 3.66 m box with **no part outside during launch or landing** (rule 8.10, MB §7) |
 | 10 | **Payload release** | Positive mechanical lock independent of servo power. A brownout must not drop a kit |
-| 11 | **Compute bay airflow** | Forced-air cooling active from power-on (SYS-53). The worst thermal case is the 3-minute ground idle during setup, props stopped, not flight |
+| 11 | **Compute bay airflow** | Fan on the **main bus, running at power-on** (SYS-53) — not gated on arming or flight mode. Inlet and outlet clear on the ground **and folded**. **Do not bolt the camera bracket to the compute bay.** Battery airflow separate |
 | 12 | **Setup handling** | Unpack-to-armed is the binding constraint. Every fastener, connector and folding joint on the outside of this airframe is spending the 15 s of margin. Prefer captive fasteners, keyed connectors and folds that cannot be assembled wrongly |
+
+**Why #11 says "at power-on"** ([`thermal_budget.py`](../tools/sizing-model/thermal_budget.py)):
+
+The instinct is to let propwash cool everything and save the fan. It fails in
+the one window that matters. During the 5-minute setup the avionics are powered,
+the companion is booting and working, and **the props are stopped**.
+
+A sealed 150 × 100 × 60 mm bay carrying 18 W reaches a **42.9 K** steady rise in
+still air. Its time constant is 429 s, so across a 285 s setup it gets ~49 % of
+the way there — about **56 °C of bay air on a 35 °C day, before the mission
+starts**. That is air; silicon sits above it. A companion that throttles during
+the search is a detection-rate problem that arrives late, under load, with
+nothing on the operator's screen to explain it.
+
+With a modest fan the rise is **10 K**. The flow needed is **3.3 CFM** — a 40 mm
+fan on a fraction of a watt. **The cooling is not hard; remembering to power it
+from the main bus at power-on is the whole requirement.**
+
+Two couplings worth knowing:
+
+- **Compute heat reaches the camera.** A sealed bay adds 0.068° of bracket
+  rotation — 0.07 m at 60 m. Honestly, that is *nearly nothing* against the
+  0.884 m geotag (it makes 0.887 m) and does not justify contorting the layout.
+  It earns its line because it is **systematic** and tracks **compute load**, so
+  it moves once the detector starts working. Calibrate cold, fly hot, and you
+  get an unexplained bias in P7. The ask is free: don't share structure.
+- **The battery is the opposite problem.** Pack I²R is **54 W in hover** — three
+  times the companion — and ~0 W on the ground. So compute is hot when
+  stationary, the battery when flying. A single "propwash cools everything"
+  layout satisfies the pack and fails the bay.
 
 ---
 

@@ -1,0 +1,92 @@
+==============================================================================
+THE SEALED BAY -- what happens if you trust propwash
+==============================================================================
+  Bay 150 x 100 x 60 mm, surface 0.060 m2, load 18 W (companion + camera)
+
+                   condition       h   steady dT   bay air
+           sealed, still air      7       42.9 K     77.9 C
+      forced air, modest fan     30       10.0 K     45.0 C
+
+  Time constant, sealed: 429 s. Over a 285 s setup the bay
+  reaches 49% of that steady rise = 21 K, so about 56 C of bay air
+  by launch -- BEFORE the mission starts, and before any propwash.
+
+  That is bay AIR. Silicon junction sits above it. A companion that
+  throttles during the search is a detection-rate problem, and throttling
+  is exactly what this produces: it arrives late, under load, with no
+  obvious cause on the ground station.
+==============================================================================
+THE FAN IS TRIVIALLY SMALL -- there is no reason not to fit it
+==============================================================================
+  Flow needed to carry the heat away at a given air temperature rise:
+
+     air dT    mass flow      volume     CFM
+        5 K       3.58 g/s      3.09 L/s    6.5
+       10 K       1.79 g/s      1.54 L/s    3.3
+       20 K       0.90 g/s      0.77 L/s    1.6
+
+  A 40 mm fan moves several CFM on a fraction of a watt. The cooling
+  requirement is not hard; REMEMBERING TO POWER IT FROM THE MAIN BUS AT
+  POWER-ON is the requirement. A fan gated on arming, or on flight mode,
+  is off for the entire window this analysis is about.
+==============================================================================
+THE COUPLING NOBODY MODELS -- compute heat moves the camera
+==============================================================================
+  boresight_budget.py budgets 0.153 deg (0.21 mm over an 80 mm spacing)
+  for boresight, and shows a 100 mm aluminium bracket growing 0.066 mm
+  over a 30 K swing -- a third of the allowance.
+
+  That analysis assumed AMBIENT swing, dawn to midday. If the camera
+  bracket is bolted to, or shares structure with, the compute bay, it
+  also sees the bay's rise:
+
+        sealed bay: +42.9 K at the bracket -> 0.094 mm -> 0.068 deg -> 0.07 m at 60 m
+    fan-cooled bay: +10.0 K at the bracket -> 0.022 mm -> 0.016 deg -> 0.02 m at 60 m
+
+  BE HONEST ABOUT THE SIZE OF THIS. 0.07 m added in quadrature to the
+  0.884 m case-C geotag gives 0.887 m. It is nearly nothing on its own,
+  and it does not justify contorting the layout.
+
+  Two reasons it is still worth a line on the drawing. It is SYSTEMATIC,
+  so it stacks with the boresight residual rather than averaging out
+  across frames. And unlike the ambient swing it tracks COMPUTE LOAD, so
+  it moves when the detector starts working -- during the search, while
+  geotagging. Calibrating on a cold aircraft and flying a hot one is the
+  kind of error that shows up as an unexplained bias in P7 and costs
+  days to find.
+
+  CAD consequence, and it is free at design time: do not bolt the camera
+  bracket to the compute bay. That is the whole ask -- not a heat pipe,
+  not an isolator, just do not share the structure.
+==============================================================================
+THE BATTERY IS THE OPPOSITE PROBLEM
+==============================================================================
+  battery_failsafe.py puts pack I2R at 54 W in hover -- three times the
+  companion -- and an adiabatic 19.7 K over the 7.7 min mission.
+
+  But on the ground at 55 W avionics draw the pack contributes almost
+  nothing, and in flight it has full propwash over it.
+
+  So the two heat sources need opposite things:
+     compute  hot on the GROUND, needs a fan, props stopped
+     battery  hot in FLIGHT, has propwash, needs a path through it
+
+  A single 'propwash cools everything' layout satisfies the battery and
+  fails the compute bay in the one window where the aircraft is powered
+  and stationary.
+==============================================================================
+WHAT CAD HAS TO DELIVER
+==============================================================================
+  1. Fan powered from the main bus AT POWER-ON. Not on arming, not on
+     mode. SYS-53, and the reason is the setup window.
+  2. Inlet and outlet that stay clear when the aircraft is on the ground
+     and -- if arms fold -- when it is folded. A blocked duct fails in
+     the configuration it spends the setup window in.
+  3. Camera bracket thermally isolated from the compute bay.
+  4. Battery airflow path through propwash, separate from the compute
+     bay so a hot pack does not preheat the companion.
+  5. Filtration is a real trade in a flood zone: a filter that halves
+     the flow doubles the rise. Decide it deliberately rather than
+     discovering it -- and note that ingress protection is a real
+     requirement in standing water, not an optional nicety.
+==============================================================================
