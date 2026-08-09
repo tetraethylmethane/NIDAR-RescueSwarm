@@ -136,6 +136,40 @@ An earlier claim of 21.17 m here was from a 15x run whose coarser sampling
 missed the closest approach. The finer run is the one to trust, and it also
 moved the tightest point of the whole flight into recovery — see §4.1.
 
+### 4.2b `mission_backend` exists twice, and the copies have drifted
+
+`ground-station/mission_backend/` in this repo and `server/mission_backend/` in
+NIDAR-GSC are the same package, maintained in two places. Five files are
+byte-identical. Three are not:
+
+| file | here | NIDAR-GSC |
+|---|--:|--:|
+| `mavlink_ingest.py` | 186 lines, **0** `SET_MESSAGE_INTERVAL` | 304 lines, **7** |
+| `api.py` | 117 lines | 156 lines |
+| `__init__.py` | — | 6 lines differ |
+
+The gap in `mavlink_ingest.py` is the stream-request fix: ArduPilot sends a
+passive listener nothing but heartbeats unless it asks, so every reading sits
+at its initialised 0.0. That was fixed in the GSC copy and never came back
+here. **The GSC copy is what flies; this copy is what CI tests** — 67 green
+tests against code that is not deployed, including the SYS-20 evidence.
+
+Both copies still enforce SYS-20, so the requirement is not unmet. But it is
+being verified against the wrong artifact, which is this project's most
+frequent defect wearing a different hat.
+
+Three ways out, and it is a structural choice rather than a fix:
+
+1. **Vendor one way.** Make NIDAR-GSC import the systems-repo copy (git
+   submodule or a package), so there is one source and CI tests the deployed
+   code. Cleanest, most plumbing.
+2. **Move it wholly to NIDAR-GSC** and keep only the evidence here. Loses the
+   systems repo's CI gate on SYS-20 unless that job learns to check out both.
+3. **Keep both and add a drift check** that fails CI when the two diverge.
+   Cheapest, and does not fix the split — only makes it loud.
+
+Until one is chosen, sync the copies before trusting either test suite.
+
 ### 4.3 Organiser questions are drafted and unsent
 
 `docs/requirements/organiser-questions.md`. Several downstream numbers depend

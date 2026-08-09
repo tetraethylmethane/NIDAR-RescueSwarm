@@ -171,9 +171,14 @@ autonomy/coverage_planner/  boundary in, one AUTO mission per drone out
 perception/geotagging/      pixel to lat/lon, and a Monte Carlo of its error
 firmware/ardupilot-params/  the five failsafes, as parameters not code
 simulations/                SITL harness, committed telemetry, figures
+ground-station/             mission_backend + the GCS engineering record
 ```
 
-The ground station lives in [NIDAR-GSC](https://github.com/tetraethylmethane/NIDAR-GSC) with the SITL launch scripts. `communication/` is still planned.
+The **running** ground station — Flask server, React client, SITL launch scripts — is in [NIDAR-GSC](https://github.com/tetraethylmethane/NIDAR-GSC). What lives here is `ground-station/mission_backend/` (fleet model, KML parser, MAVLink ingest, and the SYS-20 module split that makes a retask route structurally unreachable), plus the requirement evidence: [PLAN.md](ground-station/PLAN.md), the flight screenshots and [mission-flight.mp4](ground-station/mission-flight.mp4).
+
+> ⚠ **The two copies of `mission_backend` have drifted.** `mavlink_ingest.py` is 186 lines here against 304 in NIDAR-GSC, and only the GSC copy calls `SET_MESSAGE_INTERVAL` — without which a passive listener receives nothing but heartbeats. The GSC copy is the one that flies; this one is what CI tests. See [HANDOFF.md](HANDOFF.md) §4.
+
+`communication/` is still planned.
 
 ```bash
 pip install -r tools/sizing-model/requirements.txt
