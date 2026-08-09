@@ -265,9 +265,13 @@ def test_search_altitude_is_uniform_so_gsd_is_uniform():
 
 def test_transit_altitude_is_stratified():
     """Separation is applied where aircraft actually leave their strips."""
-    p = plan_mission(TEN_HA, HOME, 3, transit_alt_m=25.0, alt_stagger_m=5.0)
+    # 20/25/30 under the 40 m deck. This used to assert 25/30/35, which left
+    # the top band 5 m under aircraft that were still searching -- plan_mission
+    # now refuses that outright, so asserting it here would be asserting the
+    # defect.
+    p = plan_mission(TEN_HA, HOME, 3, transit_alt_m=20.0, alt_stagger_m=5.0)
     transits = [d.transit_alt_m for d in p.drones]
-    assert transits == [25.0, 30.0, 35.0]
+    assert transits == [20.0, 25.0, 30.0]
     assert len(set(transits)) == 3
     # takeoff climbs to the drone's own transit altitude
     for d in p.drones:

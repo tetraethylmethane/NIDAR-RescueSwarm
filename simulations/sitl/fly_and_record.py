@@ -54,8 +54,11 @@ SIM_BATT_CAP_AH = 1.35
 
 def build_missions():
     frame = Frame.from_points(BOUNDARY)
+    # Take the shipped defaults rather than restating them. Pinning
+    # transit_alt_m=25 here is what this harness used to do, and plan_mission
+    # now rejects it: 25/30/35 leaves the top band 5 m under the search deck.
     plan = plan_mission(BOUNDARY, PAD, n_drones=N, altitude_m=40.0,
-                        speed_ms=8.0, transit_alt_m=25.0, alt_stagger_m=5.0)
+                        speed_ms=8.0)
     slots = pad_slots(PAD, N, frame)
     return plan, slots, frame
 

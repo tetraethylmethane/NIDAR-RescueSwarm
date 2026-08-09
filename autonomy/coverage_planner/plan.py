@@ -59,6 +59,19 @@ from .partition import report, split
 PAD_SIDE_M = 3.66               # 12 ft, rule 8.10
 AIRFRAME_FOOTPRINT_M = 1.046    # motor-to-motor across, model STEP 11
 
+# How far the highest transit band must sit below the common search deck.
+#
+# This is the constraint that makes the stratification mean anything, and it
+# was implicit and violated. With transit at 25/30/35 under a 40 m deck, the
+# top band had 5 m of clearance -- and once sweeps were re-ordered to finish
+# near the pad, the longer ingress legs put a transiting aircraft directly
+# under a searching one at exactly that 5 m. Measured, not hypothesised.
+#
+# 10 m is about 10x the altitude-hold error of a barometric multirotor, and
+# costs nothing: the band is set by obstacle clearance at the bottom, not by
+# the deck at the top.
+DECK_CLEARANCE_M = 10.0
+
 
 def pad_slots(home: tuple[float, float], n: int, frame: Frame,
               bearing_deg: float = 90.0,
@@ -138,8 +151,11 @@ def plan_mission(boundary: list[tuple[float, float]], home: tuple[float, float],
                  n_drones: int = 3, altitude_m: float = 40.0,
                  hfov_deg: float = 63.3, sidelap: float = 0.30,
                  speed_ms: float = 8.0, alt_stagger_m: float = 5.0,
-                 transit_alt_m: float = 25.0,
+                 # 20/25/30 under a 40 m deck. Was 25/30/35, which left the top
+                 # band 5 m below aircraft that were still searching.
+                 transit_alt_m: float = 20.0,
                  pad_bearing_deg: float = 90.0,
+                 takeoff_stagger_s: float = 15.0,
                  turn_s: float = 6.0) -> MissionPlan:
     """Plan the whole mission. Deterministic: same input, same output, always.
 
@@ -150,6 +166,19 @@ def plan_mission(boundary: list[tuple[float, float]], home: tuple[float, float],
     frame = Frame.from_points(boundary)
     strips = split(boundary, n_drones, frame=frame)
     bal = report(boundary, strips, frame=frame)
+
+    # Refuse a plan whose own stratification does not separate anything. The
+    # top transit band under the search deck is the whole basis for saying
+    # aircraft cannot conflict while transiting, and it is easy to erode by
+    # nudging an altitude default.
+    top_transit = transit_alt_m + (n_drones - 1) * alt_stagger_m
+    if altitude_m - top_transit < DECK_CLEARANCE_M:
+        raise ValueError(
+            f"transit band tops out at {top_transit:.0f} m under a "
+            f"{altitude_m:.0f} m search deck — {altitude_m - top_transit:.0f} m "
+            f"of clearance, against the {DECK_CLEARANCE_M:.0f} m minimum. A "
+            f"transiting aircraft would cross directly under a searching one. "
+            f"Lower transit_alt_m, reduce alt_stagger_m, or raise altitude_m.")
 
     # One slot per drone across the shared pad, so RTL does not send all three
     # to the same point. Drone i+1 gets slot i, and must be ARMED there.
@@ -163,10 +192,46 @@ def plan_mission(boundary: list[tuple[float, float]], home: tuple[float, float],
         # TRANSIT altitude is staggered, because that is where aircraft leave
         # their strips and could actually conflict.
         transit = transit_alt_m + i * alt_stagger_m
-        lines = bou.transects(strip, alt, hfov_deg, sidelap, frame=frame,
-                              start_far_side=bool(i % 2))
+
+        # FINISH THE SWEEP NEAREST HOME.
+        #
+        # A sweep ends at the opposite end of the strip from where it started
+        # when the transect count is odd, and the same end when it is even. So
+        # which end you start at decides where the aircraft is standing when the
+        # sweep completes -- which is the moment it has the least battery left.
+        #
+        # This used to be `start_far_side=bool(i % 2)`, keyed on the drone
+        # index. That is arbitrary: it made drone 2 finish 115 m from the pad
+        # and drones 1 and 3 finish 514 m and 540 m away, on the lowest state of
+        # charge of the flight. Two out of three aircraft were as far from home
+        # as they would ever be at exactly the wrong moment.
+        #
+        # `start_far_side` alone cannot do this. It reverses which COLUMN the
+        # sweep begins at, not which END of the strip: with an odd transect
+        # count the aircraft finishes at the same end either way. The other
+        # degree of freedom is the along-track direction, and reversing every
+        # segment flips both ends while preserving boustrophedon continuity --
+        # each line still starts where the previous one finished.
+        #
+        # Four combinations, pick the one that ends nearest the pad. Enumerating
+        # beats reasoning about parity, which is what got this wrong before.
+        slot_xy = frame.to_xy(*slots[i])
+        best = None
+        for far in (False, True):
+            base = bou.transects(strip, alt, hfov_deg, sidelap, frame=frame,
+                                 start_far_side=far)
+            if not base:
+                continue
+            for flip in (False, True):
+                cand = [[b, a] for a, b in base] if flip else base
+                d_end = math.dist(slot_xy, frame.to_xy(*cand[-1][1]))
+                if best is None or d_end < best[0]:
+                    best = (d_end, cand)
+        lines = best[1] if best else []
+
         items = mis.build(slots[i], lines, alt, speed_ms=speed_ms,
-                          takeoff_alt_m=transit, transit_alt_m=transit)
+                          takeoff_alt_m=transit, transit_alt_m=transit,
+                          takeoff_delay_s=i * takeoff_stagger_s)
         drones.append(DronePlan(
             drone_id=i + 1,
             pad_slot=slots[i],

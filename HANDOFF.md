@@ -41,7 +41,7 @@ how this project has lost most of its time.
 | mavlink-router carries three SYSIDs to one GCS port | **Measured** — three SITL, all three arrive | `NIDAR-GSC/scripts/test-mavlink-router.sh` |
 | Geotag projection is self-consistent | **Measured** — two independent formulations agree to 7.8e-10 m | `perception/geotagging/accuracy.py` §1 |
 | Geotag CEP50 | **Modelled** — Monte Carlo whose *inputs* are budget assumptions. Reconciles with the analytic budget to +1 % | `docs/sizing/geotag-accuracy-output.txt` |
-| Aircraft separation in flight | **Measured in sim** — 6.77 m worst airborne pair | `simulations/recordings/` |
+| Aircraft separation in flight | **Measured in sim** — 21.17 m worst airborne pair, up from 1.31 m | `simulations/recordings/` |
 | Three aircraft land safely on one pad | **FALSE.** Measured 0.82 m between 1.046 m airframes | §4.1 |
 | Endurance, hover power, mass budget | **Modelled** — no aircraft has flown | `docs/sizing/model-output.txt` |
 | Detection recall, boresight, RTK accuracy | **Assumed** — no real imagery, no calibration, no hardware | — |
@@ -65,7 +65,7 @@ python perception/geotagging/accuracy.py
 
 # Tests. NOTE the working directory -- CI runs them from inside each package,
 # and running from the repo root hides import errors that CI then catches.
-cd autonomy   && python -m pytest tests -q     # 119
+cd autonomy   && python -m pytest tests -q     # 125
 cd perception && python -m pytest tests -q     #  17
 
 # Firmware parameters, regenerated and validated
@@ -100,6 +100,8 @@ The one that matters. Rule 8.10 gives a single 3.66 m pad, and
 "3 per row". That is true for **parking** them by hand and false for
 **landing** them:
 
+Measured on the battery-failsafe run, where all three come home at once:
+
 | phase | min separation | |
 |---|---|---|
 | both airborne | 6.77 m | fine — the `RTL_ALT` stagger works |
@@ -111,6 +113,12 @@ geometry allows 0.17 m of error and the aircraft need about three times that.
 Sequencing the descents (`RTL_LOIT_TIME` 0/20/40 s) does not help: this is
 static geometry, not timing.
 
+Note this is the one place the fixes made something *worse* before better —
+re-ordering the sweeps to finish near the pad lengthened the ingress legs and
+dropped the transit-vs-search clearance to 5.0 m, so `DECK_CLEARANCE_M` is now
+enforced and the transit band moved from 25/30/35 to **20/25/30** under the
+40 m deck.
+
 Options, none of which I should pick for you:
 
 1. **Precision landing** — IR-LOCK beacon or RTK precision loiter. Buys the
@@ -121,11 +129,13 @@ Options, none of which I should pick for you:
 
 Until this is decided, treat the pad as a launch surface only.
 
-### 4.2 Takeoff is not sequenced
+### 4.2 Takeoff sequencing — done
 
-Cheap and unambiguous, just not done: all three launch together, and the
-mission run measured 1.3 m between aircraft at 2–3 m altitude. A staggered
-`NAV_DELAY` as the first mission item fixes it deterministically. Say the word.
+Was: all three launched together and the mission run measured 1.3 m between
+aircraft at 2–3 m altitude. Now a staggered `NAV_DELAY` (0/15/30 s) sits before
+each `NAV_TAKEOFF`, so the spacing lives in the mission file rather than in an
+operator's timing. Re-flown: **minimum separation with both aircraft airborne
+went 1.31 m to 21.17 m.** Both telemetry sets are in `simulations/recordings/`.
 
 ### 4.3 Organiser questions are drafted and unsent
 
@@ -157,6 +167,12 @@ most expensive class of defect on this project:
   test.
 - `plan.py`'s transit-altitude stagger — applied to `NAV_TAKEOFF` only, so the
   documented deconfliction was never flown.
+- `plan.py`'s sweep direction — `start_far_side=bool(i % 2)`, keyed on the drone
+  index rather than on anything physical, left two of three aircraft finishing
+  their sweep 516 m and 540 m from the pad on the lowest state of charge of the
+  flight. `plan_mission` now enumerates the four start/direction combinations
+  and keeps the one that ends nearest home; all three now finish inside 130 m,
+  at identical path length.
 
 Each reviewed clean and had passing tests around it. The only thing that
 catches this class is running the real artifact end to end and **reading the

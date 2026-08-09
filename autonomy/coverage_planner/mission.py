@@ -27,6 +27,7 @@ from dataclasses import dataclass
 # MAVLink command IDs
 NAV_WAYPOINT = 16
 NAV_LOITER_TIME = 19
+NAV_DELAY = 93                  # MAV_CMD_NAV_DELAY, p1 = seconds
 NAV_RETURN_TO_LAUNCH = 20
 NAV_TAKEOFF = 22
 DO_CHANGE_SPEED = 178
@@ -60,7 +61,8 @@ class Item:
 
 def build(home: tuple[float, float], lines, altitude_m: float,
           speed_ms: float | None = None, takeoff_alt_m: float | None = None,
-          rtl: bool = True, transit_alt_m: float | None = None) -> list[Item]:
+          rtl: bool = True, transit_alt_m: float | None = None,
+          takeoff_delay_s: float = 0.0) -> list[Item]:
     """Assemble a full AUTO mission for one drone.
 
     home         (lat, lon) of this drone's PAD SLOT — item 0, as ArduPilot
@@ -107,6 +109,24 @@ def build(home: tuple[float, float], lines, altitude_m: float,
     items.append(Item(seq, NAV_WAYPOINT, lat=home[0], lon=home[1], alt=0.0,
                       current=1))
     seq += 1
+
+    # SEQUENCE THE LAUNCHES.
+    #
+    # RTL_LOIT_TIME sequences the arrivals; nothing sequenced the departures.
+    # Three aircraft leaving slots 1.22 m apart at the same instant were
+    # measured 1.3 m from each other at 2-3 m altitude in SITL -- inside the
+    # 1.046 m airframe plus its own rotor wash.
+    #
+    # NAV_DELAY before the takeoff, staggered per drone, is deterministic and
+    # lives in the mission file, so it does not depend on an operator pressing
+    # three buttons at the right spacing during a five-minute setup window.
+    #
+    # p1 = seconds to wait; -1 in the hh/mm/ss fields means "relative delay",
+    # not "wait until this time of day".
+    if takeoff_delay_s > 0:
+        items.append(Item(seq, NAV_DELAY, frame=FRAME_MISSION,
+                          p1=takeoff_delay_s, p2=-1, p3=-1, p4=-1))
+        seq += 1
 
     items.append(Item(seq, NAV_TAKEOFF, lat=0.0, lon=0.0,
                       alt=takeoff_alt_m if takeoff_alt_m else altitude_m))
