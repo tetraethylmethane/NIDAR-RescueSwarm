@@ -9,14 +9,20 @@ first symptom worse, so these are tested together.
 """
 from __future__ import annotations
 
-import math
+import os
+import sys
 
 import pytest
 
-from autonomy.coverage_planner import mission as mis
-from autonomy.coverage_planner import separation as sep
-from autonomy.coverage_planner.geo import Frame
-from autonomy.coverage_planner.plan import (
+# Match the other tests in this directory: CI runs pytest with
+# working-directory: autonomy, so the repo root is NOT on the path and
+# `from autonomy.coverage_planner import ...` does not resolve there.
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+from coverage_planner import mission as mis  # noqa: E402
+from coverage_planner import separation as sep  # noqa: E402
+from coverage_planner.geo import Frame  # noqa: E402
+from coverage_planner.plan import (  # noqa: E402
     AIRFRAME_FOOTPRINT_M, PAD_SIDE_M, pad_slots, plan_mission,
 )
 
