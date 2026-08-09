@@ -302,8 +302,17 @@ def dropped(assign, n_tasks):
 
 # ====================================================================== main
 rule("COVERAGE PARTITION  -  static equal-area strips vs DARP")
+# passes=1 EXPLICITLY. This compares two PARTITIONING strategies, and the pass
+# count is orthogonal to that question -- but it is not orthogonal to this
+# arithmetic. plan_mission's default moved to two passes for the geotag, which
+# doubled the static side while the DARP path below is computed independently
+# and did not double. The trade then reported DARP winning by 52.6 % instead of
+# 3.6 %, from a change that has nothing to do with partitioning.
+#
+# Whatever pass count the fleet actually flies applies to BOTH strategies, so
+# pinning it here is what keeps the comparison honest. CI caught this.
 mp = plan_mission(BOUNDARY, HOME, n_drones=N_DRONES, altitude_m=40.0,
-                  speed_ms=SPEED)
+                  speed_ms=SPEED, passes=1)
 static_sweeps = [d.sweep_s for d in mp.drones]
 static_lines = [len(d.lines) for d in mp.drones]
 print("  static equal-area strips  (autonomy/coverage_planner/partition.py)")
