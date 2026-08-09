@@ -12,341 +12,191 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/phase-P0%20requirements-blue" alt="phase">
-  <img src="https://img.shields.io/badge/fleet-3%20aircraft-informational" alt="fleet">
   <img src="https://img.shields.io/badge/mass-19.1%20%2F%2025%20kg-success" alt="mass">
   <img src="https://img.shields.io/badge/mission-7.7%20%2F%2030%20min-success" alt="mission">
   <img src="https://img.shields.io/badge/finals-Jan%202027-critical" alt="finals">
-</p>
-
-<p align="center">
-  <a href="#1-status">Status</a> ·
-  <a href="#2-design-point">Design point</a> ·
-  <a href="#3-scoring">Scoring</a> ·
-  <a href="#4-decisions">Decisions</a> ·
-  <a href="#5-open-risks">Risks</a> ·
-  <a href="#6-open-questions">Questions</a> ·
-  <a href="#7-repository">Repo</a>
 </p>
 
 ---
 
 ## 1. Status
 
-**Phase 0/1.** The system is sized end to end, the requirements are baselined against the rulebook, and **the ground station runs as a system** — verified against three real ArduCopter SITL autopilots with a browser on the page, live video, offline tiles and abort acknowledged end to end.
+**Phase 0/1.** Sized end to end, requirements baselined against the rulebook, and the ground station runs as a system against three real ArduCopter SITL autopilots.
+
+**What exists:** coverage planner, geotag geometry and its error model, ArduPilot parameter sets, safety-link protocol, ground station. All tested — 129 + 17 + 67 tests, 13 committed model outputs.
+
+**What does not:** the aircraft, and the detector. There is **no camera anywhere in the loop**; survivors have only ever come from a simulator. Nothing has flown on hardware.
 
 <p align="center">
-  <img src="ground-station/gcs-in-flight.png" alt="The Drikr NIDAR Ground Station mid-mission: three drones in AUTO at 40 m over offline satellite imagery" width="100%">
+  <img src="ground-station/gcs-in-flight.png" alt="Ground station mid-mission: three drones in AUTO at 40 m over offline satellite imagery" width="100%">
   <br>
-  <sub>
-    <b>The operator's screen, mid-mission.</b> Three real ArduCopter autopilots flying the coverage planner's own output in AUTO,
-    in 6 m/s of wind — <code>ARMED 3/3</code>, RTK fixed, batteries drawing down 59/60/62 %, each aircraft in its own search strip
-    over locally cached imagery. Every number came from an autopilot; nothing here is a mock-up.
-    <br>
-    ▶ <b><a href="ground-station/mission-flight.mp4">mission-flight.mp4</a></b> — the whole flight, five real-time minutes
-    (download to play; GitHub does not preview repo-hosted video).
-    Details in <a href="ground-station/README.md">ground-station/README.md</a>.
-  </sub>
+  <sub>Three real autopilots flying the coverage planner's output in AUTO, in 6 m/s wind, over locally cached imagery. Every number came from an autopilot.<br>
+  ▶ <a href="ground-station/mission-flight.mp4">mission-flight.mp4</a> · <a href="ground-station/README.md">ground-station/README.md</a></sub>
 </p>
 
-All three aircraft reached waypoint 9/9, peaked at 40.1–40.2 m and landed on their pads. The staggered recovery visible in the clip — 11/19/29 m — is the per-drone `RTL_ALT` of 25/30/35 m in [`firmware/ardupilot-params/`](firmware/ardupilot-params/) working, observed rather than asserted.
+### Next actions
 
-That clip is also where the trouble started. Watching it, a reviewer asked why the aircraft passed so close and why none of them came home on a low battery. Both turned out to be real: the battery failsafe had never been loaded into any simulation, and the three aircraft were landing on top of each other. **§7.4 is the honest account** — four defects, each found by running the real artifact rather than reviewing it.
-
-**The aircraft does not exist, and neither does the detector.** `perception/` now holds the geotag geometry and a Monte Carlo of its error budget, both tested — but no detector and **no camera anywhere in the loop**, so survivors and deliveries have only ever come from a simulator. The coverage planner, the ArduPilot parameter sets and the safety-link protocol are written and tested; none has met hardware. See the [implementation plan](docs/implementation-plan.md).
-
-Everything after "start" is autonomous. The operator loads the mission file, presses start, and can abort or recall. Nothing else — anything more costs 50 points a time.
-
-### 1.1 Immediate actions
-
-| # | Action | Deadline | Why it's first |
+| # | Action | When | Why first |
 |:--|:--|:--|:--|
-| ✅ | ~~Register the team~~ | — | **Done.** |
-| 2 | [Send the organiser questions](docs/requirements/organiser-questions.md) — **drafted, ready to go** | This week | They have external latency; nothing else on this list does. |
-| 3 | Start collecting recall data | P1 | The long pole, worth 250 points, with irreducible calendar cost. |
-| 4 | Bench the cold-boot timing | P1 | The only constraint under 20 % margin — and still modelled, not measured. |
+| 1 | [Send the organiser questions](docs/requirements/organiser-questions.md) — drafted | This week | External latency; nothing else here has any |
+| 2 | Start collecting recall data | P1 | The long pole. 250 points, irreducible calendar cost |
+| 3 | Bench the cold-boot timing | P1 | The only constraint under 20 % margin, still modelled |
 
-### 1.2 Calendar
-
-| Milestone | When | Notes |
-|:--|:--|:--|
-| Registration deadline | 2nd week Aug 2026 | INR 5,000 · approval letter · ID proofs |
-| Progress Review 1 | 2nd week Oct 2026 | Attendance mandatory |
-| Progress Review 2 | 2nd week Dec 2026 | Attendance mandatory |
-| **Finals** | **January 2027** | Design review · business strategy · pre-flight · mission |
-
-About 21 weeks. But the real constraint is narrower: monsoon closes flying until late September and exams land in December, so the **flight-test window is about eight weeks**. See the [development plan](docs/development-plan.md).
+Registration Aug 2026 · reviews Oct and Dec · **finals Jan 2027**. About 21 weeks, but monsoon and exams cut the **flight-test window to ~8 weeks**. See the [development plan](docs/development-plan.md).
 
 ---
 
 ## 2. Design point
 
-Not targets. These are outputs of a closed model in [`tools/sizing-model/`](tools/sizing-model/).
+Outputs of a closed model in [`tools/sizing-model/`](tools/sizing-model/), reconciled with the BOM to ~2 %.
 
-> **Provenance.** Model and BOM are reconciled: the model carries the BOM's real prop mass, pack and parachute, and the two agree to ~2 % (6.36 vs 6.23 kg — the model's structural growth factor runs slightly ahead of the bottom-up count).
+| Aircraft | | Mission | |
+|:--|:--|:--|:--|
+| Configuration | Quadrotor · 18 in CF folding props | Design mission | **7.7 min** of 30 |
+| Battery | 6S3P 21700 · 18 cells · 292 Wh | Search | 60 m AGL at 8 m/s |
+| MTOW | 6.36 kg *(model)* · 6.23 kg *(BOM)* | Sweep | 93 s/drone, 10 ha over 3 |
+| **Fleet** | **19.1 kg** of 25 kg — 24 % margin | GSD | 1.82 cm/px — a person is ~93 px |
+| Hover | 913 W · 9.7 kg/m² disk loading | Link | ≥13 dB at 600 m · 2.5 Mbps |
+| Endurance | 15.3 min — **≈2.0× the mission** ⚠ | Geotag target | CEP50 ≤ 0.75 m with RTK |
+| Thrust-to-weight | 2.0 static · hover at 50 % | Delivery target | ≥60 % within 2 m, ≥30 % within 1 m |
+
+> ⚠ **The reserve is spent.** The 300 g parachute (SYS-41) takes endurance to ≈2.0× against a self-imposed ≥2.0× policy. Any further mass growth breaks it. See [`bom_reconcile.py`](tools/sizing-model/bom_reconcile.py).
 >
-> ⚠ **The reserve is now spent.** The 300 g recovery parachute takes hover endurance to **≈2.0×** the mission against a self-imposed **≥2.0×** policy — 2.05× on the BOM's bottom-up mass, 1.99× on the model's. It still clears the 25 kg rule with 24 % margin, but **any further mass growth breaks the reserve policy**, and the next 200 g has to come out of something else. See [bom_reconcile.py](tools/sizing-model/bom_reconcile.py).
-
-### 2.1 Aircraft
-
-<sub>Per aircraft unless the row says fleet. The fleet is three identical airframes.</sub>
-
-| Parameter | Value |
-|:--|:--|
-| Configuration | Quadrotor · 18 in CF folding props |
-| Battery | 6S3P 21700 Li-ion — 18 cells · 1449 g · 292 Wh · 13.5 Ah · 21.6 V |
-| MTOW | 6.36 kg *(model)* · 6.23 kg *(BOM bottom-up)* |
-| **Fleet** all-up weight | **19.1 kg** against a 25 kg cap — 24 % margin |
-| Hover power | 913 W · disk loading 9.7 kg/m² |
-| Hover endurance | 15.3 min at 80 % DoD — **≈2.0× the mission** ⚠ *at the reserve limit* |
-| Thrust-to-weight | 2.0 static · hover at 50 % of max thrust |
-| Recovery parachute | 300 g per aircraft (SYS-41) |
-
-### 2.2 Mission
-
-| Parameter | Value |
-|:--|:--|
-| Design mission | **7.7 min** of a 30 min allowance |
-| Search altitude / speed | 60 m AGL at 8 m/s groundspeed |
-| Sweep time | 93 s per drone, 10 ha across 3 drones |
-| Ground sample distance | 1.82 cm/px — a person is ~93 px long |
-| Link margin | ≥ 13 dB at 600 m · 2.5 Mbps offered load |
-
-> **Under review.** 40 m is recommended over 60 m — 140 px on a person instead of 93, for 2.5 min of a 15 min allowance. Pending recall measurement in P7. See [configuration trade](docs/sizing/configuration-trade.md) §5.3.
-
-### 2.3 Accuracy
-
-| Parameter | Target | Derived from |
-|:--|:--|:--|
-| Geotag | CEP50 ≤ 0.75 m with RTK | Scoring — see §3 |
-| Delivery | ≥ 60 % within 2 m, ≥ 30 % within 1 m of the survivor | Scoring — see §3 |
+> **Under review:** 40 m beats 60 m — 140 px on a person instead of 93, for 2.5 min of a 15 min allowance. Pending recall measurement in P7.
 
 ---
 
-## 3. Scoring
+## 3. Proof
 
-**1000 points total:** 600 flight · 200 design review · 200 business strategy. Reading the scoring properly moved the design more than any engineering analysis did.
+Three ArduCopter SITL instances, the real `rescueswarm-drone{1,2,3}.parm`, the real planned missions. Every number below came off MAVLink. Telemetry is committed in [`simulations/recordings/`](simulations/recordings/); the figures redraw from it.
 
-### 3.1 Flight — 600 points
+### 3.1 The battery failsafe brings them home
 
-| Criterion | Points | Detail |
-|:--|--:|:--|
-| Survivor detection + geotagging | **250** | 25 each, max 10 survivors |
-| Kit delivery accuracy | **200** | ≤1 m: 20/drop · ≤2 m: 14 · ≤3 m: 8 |
-| Multi-drone collaboration | 50 | Binary |
-| Single GCS interface | 50 | Binary |
-| Finish inside 15 min | 50 | Binary |
+`BATT_FS_LOW_ACT = 2` had been reviewed and unit-tested for weeks, and **no simulation ever loaded the file** — every SITL script used stock defaults, where the value is `0` and a low battery does nothing at all. Now proven end to end: RTL fires at **10 809 mAh of a 10 800 mAh trip**, on all three aircraft, within two seconds of each other.
 
-| Penalty | Cost |
-|:--|--:|
-| Manual input or reset | −50 each |
-| Crash | −50 each |
-| Geofence breach | −20 each |
-| Landing outside the box | −10 per drone |
+![Battery failsafe](simulations/recordings/proof-3-battery.png)
 
-<sub>Penalties capped at 150, except safety-critical violations.</sub>
+### 3.2 They no longer collide
 
-### 3.2 What that changed
+Three defects, none visible in review, all found by running the real artifact:
 
-| Finding | Consequence |
-|:--|:--|
-| **Geolocation gates 450 of 600 points**, not 250 | Kits are scored from the survivor, so a drop is never better than the tag it aimed at. Geotag error is 75–83 % of the delivery budget. RTK alone is worth 82 delivery points. |
-| **We were designing to the worst zone** | The old ≤3 m target scored 8 of 20 per drop. The old requirement — "90 % within 5 m" — sat outside every zone and would have scored nothing. |
-| **Speed is worth 50 points and is already won** | The bonus needs 15 min; we fly 7.7. Time is the one surplus resource, so spend it on recall — fly lower, take more looks — rather than saving it. |
+- **Launches were simultaneous.** Three aircraft leaving slots 1.22 m apart measured 1.3 m from each other at 2–3 m altitude. Now `NAV_DELAY` 0/15/30 s in the mission file.
+- **Two of three swept the wrong way round**, finishing 516 m and 540 m from the pad on the lowest state of charge of the flight, because sweep direction keyed on drone index. Now all three finish inside 130 m, same path length.
+- **They landed on top of each other.** See §4.
 
-Full breakdown in [rulebook compliance](docs/requirements/rulebook-compliance.md).
+![Launch sequencing](simulations/recordings/proof-1-launch.png)
+
+| Separation, three aircraft | Before | After |
+|:--|--:|--:|
+| Launch, closest pair | 1.31 m | **64.80 m** |
+| Whole flight, both airborne | 3.99 m | **5.51 m** |
+| Closest horizontal, any time | 0.83 m — *overlap* | **1.89 m** |
+| Recovery run, closest at any time | 0.83 m — *overlap* | **2.27 m** |
+
+### 3.3 The search pattern
+
+Each strip is swept twice, the second pass on the reverse heading, and every sweep finishes near the pad.
+
+![Sweep pattern](simulations/recordings/proof-2-sweep.png)
+
+### 3.4 The pad
+
+![Pad layout](simulations/recordings/proof-4-pad.png)
+
+> **"Measured" means measured in simulation.** That rules out whole classes of error and none of the physical ones. [HANDOFF.md](HANDOFF.md) §2 keeps measured, modelled and assumed apart.
 
 ---
 
 ## 4. Decisions
 
-| Decision | Outcome | Reasoning |
+| Decision | Outcome | Why |
 |:--|:--|:--|
-| Coaxial X8? | **Rejected** | Sized properly it costs +59–119 % hover power and +34–50 % fleet mass — cutting the 29 % mass margin to 2 % — buys no footprint back (stacking rotors doesn't shorten arms), and has the worst attitude bandwidth of anything tested. |
-| Rotor count | **Build the quad** | Hex 6×18″ is out on flight dynamics. Hex 6×16″ and octo 8×14″ genuinely match or beat the quad on physics — but a hex is 50 % more propulsion integration across three aircraft and an octo is double, on a 21-week calendar with no flight code written. Decided on schedule risk, not physics. Reopens only if organisers say motor-out tolerance is required. |
-| Prop diameter | **18 in — adopted** | Matches the BOM, so no re-quote. Also better than 20 in on the dynamics that matter: descent sits at 0.42 v_i instead of 0.47, and gust sensitivity is 0.168 against 0.187. Arms still designed for 16–20 in so P5 can revisit. |
-| Thrust-to-weight | **Keep 2.0** | Tilt only reaches 12° at 15 m/s — attitude authority is never the wind limit. |
-| Recovery chute | **Fit one** | Permitted, ballistic deployment included. It can't meet the "land on the pad" condition — from 60 m in a 3 m/s breeze a canopy drifts 36 m against a 3.66 m pad — but −10 for landing outside beats −50 for a crash, so deploying is worth ~40 points anyway. |
-| Motor-out redundancy | **Still open** | Chute and extra rotors aren't substitutes. Only rotors keep the aircraft *flying and scoring*, and only rotors work during the 6 m delivery hover where a canopy can't inflate. Ties back to the rotor-count question above. |
-| Pad layout | **Corners, not a row** | Compliance had argued three airframes fit the 12 ft pad "3 per row". They do — until they land. In SITL they came to rest **0.83 m** apart, an overlap of 1.046 m airframes. Centres must stay half an airframe inside the edge, so they live in a 2.61 m square; a row across it gives 1.31 m, its corners give the full **2.61 m**. Measured closest approach went 0.83 m → **2.27 m**. |
-| Search pattern | **Two passes, second reversed** | Not for coverage — one pass already covers with 30 % sidelap and no gaps. Boresight bias is *systematic*, so more frames from one heading can't average it out. Flown the other way its along-track component flips sign and the two passes cancel it. Costs a whole second sweep, which will not fit one battery over the full area. |
-| Launch and recovery | **Sequenced in the mission file** | `NAV_DELAY` 0/15/30 s before each takeoff and `RTL_LOIT_TIME` 0/20/40 s before each descent — parameters and mission items, not companion code, because the battery-failsafe RTL is a mode change inside the flight controller. Closest pair at launch went **1.31 m → 64.80 m**. |
+| Coaxial X8? | **Rejected** | +59–119 % hover power, +34–50 % fleet mass, cuts the margin to 2 %, buys no footprint back, worst attitude bandwidth tested |
+| Rotor count | **Quad** | Hex/octo match or beat it on physics, but cost 1.5–2× the propulsion integration on a 21-week calendar. Decided on schedule risk, not physics |
+| Prop diameter | **18 in** | Matches the BOM, and better than 20 in on descent (0.42 v_i) and gust sensitivity (0.168) |
+| Thrust-to-weight | **2.0** | Tilt only reaches 12° at 15 m/s — attitude authority is never the wind limit |
+| Recovery chute | **Fit one** | Cannot meet the "land on the pad" condition, but −10 beats −50, so it is worth ~40 points anyway |
+| Pad layout | **Corners, not a row** | A row is the worst packing on a square. Compliance said "3 per row"; they landed **0.83 m** apart — an overlap. Corners give 2.61 m instead of 1.22 m. Measured closest approach **0.83 → 2.27 m** |
+| Search pattern | **Two passes, second reversed** | Not for coverage — one pass has no gaps. Boresight bias is *systematic*, so flying the reverse heading cancels it where more frames cannot. Costs a full second sweep |
+| Launch and recovery | **Sequenced in the mission file** | `NAV_DELAY` 0/15/30 s and `RTL_LOIT_TIME` 0/20/40 s — parameters, not companion code, because the failsafe RTL is a mode change inside the flight controller |
+| Motor-out redundancy | **Open** | Only rotors keep the aircraft *flying and scoring*, and only rotors work in the 6 m delivery hover. Ties to rotor count |
 
-Reasoning and numbers in [configuration trade](docs/sizing/configuration-trade.md); the separation figures are measured, see §7.4.
+Numbers in [configuration trade](docs/sizing/configuration-trade.md).
 
 ---
 
-## 5. Open risks
+## 5. Scoring, and what reading it properly changed
+
+**1000 points:** 600 flight · 200 design review · 200 business strategy.
+
+| Flight — 600 | Points | | Penalty | Cost |
+|:--|--:|:--|:--|--:|
+| Detection + geotagging | **250** | 25 each, max 10 | Manual input or reset | −50 |
+| Kit delivery accuracy | **200** | ≤1 m: 20 · ≤2 m: 14 · ≤3 m: 8 | Crash | −50 |
+| Multi-drone collaboration | 50 | binary | Geofence breach | −20 |
+| Single GCS interface | 50 | binary | Landing outside the box | −10/drone |
+| Finish inside 15 min | 50 | binary | <sub>capped at 150</sub> | |
+
+Three findings that moved the design more than any engineering analysis did:
+
+- **Geolocation gates 450 of 600 points**, not 250. Kits are scored from the survivor, so a drop is never better than the tag it aimed at. RTK alone is worth 82 delivery points.
+- **We were designing to the worst zone.** The old ≤3 m target scored 8 of 20 per drop; the old "90 % within 5 m" requirement sat outside every zone and would have scored nothing.
+- **Speed is worth 50 points and is already won.** The bonus needs 15 min; we fly 7.7. Spend the surplus on recall — fly lower, take more looks.
+
+Full breakdown in [rulebook compliance](docs/requirements/rulebook-compliance.md).
+
+---
+
+## 6. Open
 
 | Risk | Detail | Status |
 |:--|:--|:--|
-| **Setup margin** | 15 seconds against a 5-minute rule — modelled, not measured. The RTK base must now be set up *inside* the window too, which the literal approach blows by 175 s | Recovered by SYS-42/43; bench test in P1 |
-| **VRS on every delivery** | The 2.5 m/s descent sits at 0.48 v_i, on the vortex-ring onset boundary, and a nulled-groundspeed descent is exactly what triggers it | Fix in the flight profile, not the airframe |
-| **Wind cliff at 8 m/s** | Search groundspeed is 8 m/s, so at that windspeed the aircraft can't make headway at all. Organisers confirm wind is **natural and uncapped** — nothing protects us | Now a requirement: 10 m/s headway (SYS-37) |
-| **Business strategy** | 200 points, barely started — sponsorship evidence can't be produced in the final week | Start now |
-| **Ground station** | **Runs as a system.** Verified against three real ArduCopter SITL autopilots with a browser on the page: all eight rule-8.14 displays, three live H.264 feeds, offline tiles, abort acknowledged end to end. Eight defects found by running it — including that the ingest was receiving no telemetry at all. ⚠ Remaining: the 868 MHz radio, venue tiles, real aircraft | [Status](ground-station/README.md) |
+| **Setup margin** | 15 s against a 5-minute rule — modelled, not measured | Recovered by SYS-42/43; bench in P1 |
+| **VRS on every delivery** | 2.5 m/s descent sits at 0.48 v_i, on the vortex-ring boundary | Fix in the flight profile, not the airframe |
+| **Wind cliff at 8 m/s** | Search groundspeed is 8 m/s, so at that windspeed we make no headway. Wind is natural and uncapped | Requirement: 10 m/s headway (SYS-37) |
+| **Business strategy** | 200 points, barely started; sponsorship evidence cannot be produced in the final week | Start now |
 
----
-
-## 6. Open questions
-
-### 6.1 Answered
-
-| Question | Answer | What it changed |
-|:--|:--|:--|
-| Maximum wind? | **None — natural, not induced** | The 8 m/s cliff is now a real risk with no rule protecting us. 10 m/s headway becomes a requirement (SYS-37). |
-| Delivery datum? | **Measured from the survivor; land on it ideally** | Aim at the torso centroid. Errors compound as budgeted. |
-| Local RTK base? | **Permitted** | Worth 82 delivery points. Now a committed BOM item. |
-| Aircraft recovery chute? | **Allowed, ballistic/CO₂ included — but must land on the pad** | Fit one anyway: the pad condition is unmeetable under canopy, and −10 beats −50. |
-| Parachuting the *kit*? | **Would drift badly in wind** | Correct, and not our design — free fall from 6 m drifts 0.34 m where a canopy would drift 4 m+. |
-| Boundary format? | **KML file** | Parser requirement (SYS-38). Watch the `lon,lat` ordering. |
-| Survivors? | **Human-looking dummies** | Fine-tune on dummies, not people — HERIDAL/SARD are real humans (SYS-39). |
-| Pre-boot onboard computers? | **No** | Budget already assumed this, so 285 s stands — but a mitigation is gone. |
-| Start the RTK base before the window? | **No** | The hardest answer yet — it lands on the only constraint with no margin. Recovered by not surveying-in and letting RTK converge in flight (SYS-42/43). |
-| Video feeds? | **One per drone** (rule 8.14) | Free — three 480p15 feeds cost what one 720p30 did. |
-
-### 6.2 Still open
-
-Drafted ready to send: [organiser-questions.md](docs/requirements/organiser-questions.md)
-
-| # | Question | Why it matters |
-|:--|:--|:--|
-| 1 | How is **"correctly geotagged" verified** — displayed coordinates against surveyed truth, and to what tolerance? | Decides whether the base's ~1–2 m absolute error costs anything against 250 points. It cancels for delivery; it may not cancel here. |
-| 2 | Is a **recovery-canopy descent** scored as an emergency landing (−10, or exempt) or as a **crash** (−50)? | Worth 40 points per incident. A canopy descent is arguably not "uncontrolled ground impact". |
-| 3 | Is **motor-out tolerance** separately required? | Ties to the rotor-count decision. |
-| 4 | Is **prior site access** available to survey the launch pad? | Only matters if the answer to (1) makes absolute accuracy count. |
+Four questions are [drafted and unsent](docs/requirements/organiser-questions.md) — how "correctly geotagged" is verified, whether a canopy descent scores −10 or −50, whether motor-out tolerance is required, and whether the pad can be surveyed beforehand. The first decides whether ~1–2 m of absolute base error costs anything against 250 points. Answers already received are recorded in the same file.
 
 ---
 
 ## 7. Repository
 
-### 7.1 Layout
-
 ```text
 HANDOFF.md                  read this first if you are picking the project up
-docs/
-  system-overview.md        how the system actually works
-  requirements/             requirements baseline + rulebook compliance
-  business/                 phase 4B strategy + cost sheet
-  sizing/                   calculations, trades, committed model outputs
+docs/                       requirements, sizing, business, system overview
 tools/sizing-model/         the model everything traces back to
-hardware/bom/               Indian BOM + indigenisation scorecard + CHANGELOG
+hardware/bom/               Indian BOM + indigenisation scorecard
 autonomy/coverage_planner/  boundary in, one AUTO mission per drone out
 perception/geotagging/      pixel to lat/lon, and a Monte Carlo of its error
 firmware/ardupilot-params/  the five failsafes, as parameters not code
-simulations/sitl/           three-aircraft SITL harness and figure generator
-simulations/recordings/     committed telemetry + the figures drawn from it
+simulations/                SITL harness, committed telemetry, figures
 ```
 
-`communication/` and `ground-station/` are still mostly planned. The ground
-station itself lives in a separate repo,
-[NIDAR-GSC](https://github.com/tetraethylmethane/NIDAR-GSC), together with the
-SITL launch scripts.
-
-### 7.2 Running the model
+The ground station lives in [NIDAR-GSC](https://github.com/tetraethylmethane/NIDAR-GSC) with the SITL launch scripts. `communication/` is still planned.
 
 ```bash
 pip install -r tools/sizing-model/requirements.txt
-
 python3 tools/sizing-model/rescueswarm_sizing_model.py   # the design point
-python3 tools/sizing-model/config_trade.py               # quad vs hex vs coaxial
-python3 tools/sizing-model/delivery_accuracy.py          # sets geotag + drop targets
-python3 tools/sizing-model/mission_profile.py            # altitude, geotag error, downlink
-python3 tools/sizing-model/setup_budget.py               # the 5-minute window, 2 crew
-python3 tools/sizing-model/bom_reconcile.py              # BOM vs design point — read this before ordering
+python3 tools/sizing-model/bom_reconcile.py              # read before ordering
+
+export NIDAR_SYS=$PWD
+../NIDAR-GSC/scripts/test-battery-failsafe.sh            # low battery brings it home
+python3 simulations/sitl/fly_and_record.py               # three aircraft fly the plan
+python3 simulations/sitl/proof_figures.py                # redraw §3 from telemetry
 ```
 
-Outputs are committed beside each script in [`docs/sizing/`](docs/sizing/).
+`NIDAR_SPEEDUP=3` slows the sim enough to see the launch stagger. Do **not** use `NIDAR-GSC/scripts/run-sim.sh` — it launches a fixed wing with no project parameters.
 
-> **Change the model, re-run it, and commit the new output in the same commit.** Every number in this README traces back to those files.
-
-### 7.3 Flying it in simulation
-
-Three ArduCopter SITL instances, the real `rescueswarm-drone{1,2,3}.parm`, the
-real planned missions. Every number in §7.4 comes off MAVLink from these runs.
-
-```bash
-export NIDAR_SYS=$PWD                     # and NIDAR_GSC for the GCS repo
-
-../NIDAR-GSC/scripts/test-battery-failsafe.sh   # low battery must bring it home
-python3 simulations/sitl/fly_and_record.py      # three aircraft fly the plan
-python3 simulations/sitl/fly_endurance.py       # hold until the packs run out
-python3 simulations/sitl/proof_figures.py       # redraw §7.4 from the telemetry
-```
-
-`NIDAR_SPEEDUP=3` slows the sim down enough to see the launch stagger; at the
-default 15× a 15 s delay compresses to one second of wall clock.
-
-> Do **not** use `NIDAR-GSC/scripts/run-sim.sh`. It launches ArduPlane — a fixed
-> wing — with no project parameters. It now refuses to run without an override.
-
-### 7.4 What the simulation actually showed
-
-Four things were wrong, and none of them were visible in review. Each was found
-by running the real artifact and reading values back off the running aircraft.
-
-![Launch sequencing](simulations/recordings/proof-1-launch.png)
-
-**The battery failsafe was never loaded.** `BATT_FS_LOW_ACT = 2` had been
-reviewed and unit-tested for weeks, and no simulation ever read the file — every
-SITL script used stock defaults, where the value is `0` and low battery does
-nothing at all. Now proven end to end: RTL fires at **10 809 mAh of a 10 800 mAh
-trip**, on all three aircraft, within two seconds of each other.
-
-![Battery failsafe](simulations/recordings/proof-3-battery.png)
-
-**`BATT_RESISTANCE` does not exist in ArduPilot.** It is a PX4 name; `.parm`
-drops unknown keys in silence, so the line read as configured while doing
-nothing. ArduPilot estimates internal resistance itself. `validate()` now
-rejects a table of known-phantom names.
-
-**Two of three aircraft finished their sweep at maximum range** — 516 m and
-540 m from the pad, on the lowest state of charge of the flight — because the
-sweep direction keyed on the drone index rather than on anything physical. Now
-all three finish inside 130 m, at identical path length.
-
-![Sweep pattern](simulations/recordings/proof-2-sweep.png)
-
-**Three aircraft landed on top of each other.** The measured overlap, and the
-corner layout that fixes it, are in §4.
-
-![Pad layout](simulations/recordings/proof-4-pad.png)
-
-Measured separation, three aircraft, before and after:
-
-| Phase | Before | After |
-|:--|--:|--:|
-| Launch, closest pair | 1.31 m | **64.80 m** |
-| Whole flight, both airborne | 3.99 m | **5.51 m** |
-| Closest horizontal at any time | 0.83 m — *overlap* | **1.89 m** |
-| Recovery run, closest at any time | 0.83 m — *overlap* | **2.27 m** |
-
-Telemetry for every figure is committed in
-[`simulations/recordings/`](simulations/recordings/). The GIFs are gitignored
-and regenerate from it.
-
-> **Nothing here has flown on real hardware.** "Measured" means measured in
-> simulation, which rules out whole classes of error and none of the physical
-> ones. [HANDOFF.md](HANDOFF.md) §2 separates what is measured from what is
-> modelled from what is assumed.
-
-### 7.5 Further reading
+> **Change the model, re-run it, commit the new output in the same commit.** Every number in this README traces to [`docs/sizing/`](docs/sizing/), and CI fails if one drifts.
 
 | Document | What's in it |
 |:--|:--|
-| [Handoff](HANDOFF.md) | **Start here.** What state the work is in, what is proven, what is waiting on a human, and the traps that have already cost days |
-| [System overview](docs/system-overview.md) | Mission flow, architecture, methods, perception, indigenisation, failsafes |
-| [Frame design constraints](docs/frame-design-constraints.md) | What CAD needs before the first part is cut |
+| [Handoff](HANDOFF.md) | **Start here.** What is proven, what waits on a human, and the traps that have cost days |
+| [System overview](docs/system-overview.md) | Mission flow, architecture, perception, indigenisation, failsafes |
+| [Sizing calculations](docs/sizing/sizing-calculations.md) | Why every number is what it is |
 | [Requirements baseline](docs/requirements/requirements-baseline.md) | Every SYS-xx requirement, traced to a rule and a verification method |
-| [Organiser questions](docs/requirements/organiser-questions.md) | The four still open, drafted ready to send, plus every answer received |
-| [Rulebook compliance](docs/requirements/rulebook-compliance.md) | Rule-by-rule matrix, scoring structure, conflicts |
-| [Development plan](docs/development-plan.md) | Phase-to-phase schedule, critical path, risk and de-scope order |
-| [Implementation plan](docs/implementation-plan.md) | What to build for autonomy, perception and failsafes — and how much of it can be skipped |
-| [Sizing calculations](docs/sizing/sizing-calculations.md) | The full engineering derivation |
-| [Configuration trade](docs/sizing/configuration-trade.md) | Quad vs hex vs coaxial, flight dynamics, constraint review |
-| [Business strategy](docs/business/README.md) | Phase 4B structure and cost sheet |
-
----
-
-<p align="center">
-  <sub>Built for NIDAR 2026–27 · MeitY · Drone Federation of India</sub>
-</p>
+| [Rulebook compliance](docs/requirements/rulebook-compliance.md) | Rule-by-rule matrix, scoring, conflicts |
+| [Development plan](docs/development-plan.md) | Schedule, critical path, risk and de-scope order |
+| [Implementation plan](docs/implementation-plan.md) | What to build for autonomy, perception and failsafes — and what can be skipped |
+| [Frame design constraints](docs/frame-design-constraints.md) | What CAD needs before the first part is cut |
