@@ -3,3 +3,5 @@
 # They are 5-8 MB each and would bloat the history for no gain. The telemetry
 # JSON they are rendered from IS committed, because that is the evidence.
 *.gif
+# PNGs ARE committed: they are small, and they are the readable evidence.
+!*.png

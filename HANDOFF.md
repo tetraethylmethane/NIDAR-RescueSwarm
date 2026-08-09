@@ -41,7 +41,9 @@ how this project has lost most of its time.
 | mavlink-router carries three SYSIDs to one GCS port | **Measured** — three SITL, all three arrive | `NIDAR-GSC/scripts/test-mavlink-router.sh` |
 | Geotag projection is self-consistent | **Measured** — two independent formulations agree to 7.8e-10 m | `perception/geotagging/accuracy.py` §1 |
 | Geotag CEP50 | **Modelled** — Monte Carlo whose *inputs* are budget assumptions. Reconciles with the analytic budget to +1 % | `docs/sizing/geotag-accuracy-output.txt` |
-| Aircraft separation in flight | **Measured in sim** — 21.17 m worst airborne pair, up from 1.31 m | `simulations/recordings/` |
+| Separation at launch | **Measured in sim** — 92.12 m, up from 1.31 m | `proof-1-launch.png` |
+| Separation en route | **Measured in sim** — 34.00 m worst pair | `proof-2-sweep.png` |
+| Separation during recovery | **3.99 m — BELOW the 5 m minimum**, see §4.1 | `proof-4-pad.png` |
 | Three aircraft land safely on one pad | **FALSE.** Measured 0.82 m between 1.046 m airframes | §4.1 |
 | Endurance, hover power, mass budget | **Modelled** — no aircraft has flown | `docs/sizing/model-output.txt` |
 | Detection recall, boresight, RTK accuracy | **Assumed** — no real imagery, no calibration, no hardware | — |
@@ -100,13 +102,19 @@ The one that matters. Rule 8.10 gives a single 3.66 m pad, and
 "3 per row". That is true for **parking** them by hand and false for
 **landing** them:
 
-Measured on the battery-failsafe run, where all three come home at once:
+Measured across two runs. Recovery is now the tightest phase of the flight in
+the air as well as on the ground:
 
 | phase | min separation | |
 |---|---|---|
-| both airborne | 6.77 m | fine — the `RTL_ALT` stagger works |
+| stacked over the pad, both airborne | **3.99 m** | `RTL_ALT` staggers by only 5 m, and altitude hold eats the rest |
 | one landing, one parked | 1.83 m | thin |
 | both parked after landing | **0.82 m** | airframes overlap |
+
+The 3.99 m is drones 2 and 3 holding at 31.4 m and 35.2 m above the pad. Three
+`RTL_ALT` bands 10 m apart would need 30 m of headroom under a 40 m search
+deck, which puts the lowest at 10 m — too low for obstacles. There is no
+altitude assignment that fixes this on its own.
 
 Slots are 1.22 m apart and touchdown dispersion is roughly ±0.5 m, so the
 geometry allows 0.17 m of error and the aircraft need about three times that.
@@ -134,8 +142,13 @@ Until this is decided, treat the pad as a launch surface only.
 Was: all three launched together and the mission run measured 1.3 m between
 aircraft at 2–3 m altitude. Now a staggered `NAV_DELAY` (0/15/30 s) sits before
 each `NAV_TAKEOFF`, so the spacing lives in the mission file rather than in an
-operator's timing. Re-flown: **minimum separation with both aircraft airborne
-went 1.31 m to 21.17 m.** Both telemetry sets are in `simulations/recordings/`.
+operator's timing. Re-flown at SIM_SPEEDUP 3 so the stagger is legible:
+**closest pair during launch went 1.31 m to 92.12 m.** Both telemetry sets and
+the figure are in `simulations/recordings/`.
+
+An earlier claim of 21.17 m here was from a 15x run whose coarser sampling
+missed the closest approach. The finer run is the one to trust, and it also
+moved the tightest point of the whole flight into recovery — see §4.1.
 
 ### 4.3 Organiser questions are drafted and unsent
 

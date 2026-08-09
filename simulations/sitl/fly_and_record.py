@@ -30,7 +30,9 @@ from pymavlink import mavutil                                # noqa: E402
 AP = os.path.expanduser("~/ardupilot")
 BIN = f"{AP}/build/sitl/bin/arducopter"
 RUN = os.path.expanduser("~/swarm-run")
-SPEEDUP = 15
+# Low speedup makes the NAV_DELAY stagger legible in a recording: at 15x a
+# 15 s delay compresses to 1 s of wall clock and looks like no delay at all.
+SPEEDUP = float(os.environ.get("NIDAR_SPEEDUP", 15))
 N = 3
 OUT = os.environ.get("NIDAR_OUT", os.path.join(SYS, "simulations", "recordings"))
 
@@ -221,9 +223,16 @@ def main():
                 seen_rtl.add(i)
                 print(f"  t+{now:5.0f}s  drone {i} -> {state[i]['mode']} "
                       f"({state[i]['volt']:.1f} V, {state[i]['mah']:.0f} mAh)")
+        # DISARMED IS THE END CONDITION, on its own.
+        #
+        # This used to also require every aircraft to have entered RTL *mode*,
+        # which never happens: the mission ends with NAV_RETURN_TO_LAUNCH as an
+        # ITEM, so the flight mode stays AUTO the whole way home. The run
+        # therefore always sat until the 900 s timeout -- fifteen minutes of
+        # wall clock per recording, long after all three were on the ground.
         landed = sum(1 for i in range(1, N + 1)
                      if not state[i].get("armed", True))
-        if len(seen_rtl) == N and landed == N:
+        if landed == N and now > 5:
             done_at = now
             print(f"  t+{now:5.0f}s  all three disarmed on the pad")
             break
