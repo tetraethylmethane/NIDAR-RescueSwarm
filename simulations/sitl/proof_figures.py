@@ -91,8 +91,7 @@ def fig_launch(before, after, out):
     fig.text(0.02, 0.895,
              "Recorded from three ArduCopter SITL. Left: every aircraft leaves "
              "the pad at once. Right: the mission file staggers them.\n"
-             "First 60 simulated seconds. The tightest point of the whole "
-             "flight is now in recovery, not launch — see figure 4.",
+             "First 60 simulated seconds.",
              fontsize=9, color="#444")
 
     for col, (d, label) in enumerate(((before, "BEFORE"), (after, "AFTER"))):
@@ -146,8 +145,8 @@ def fig_launch(before, after, out):
 
 # ---------------------------------------------------------------- figure B
 def fig_sweep(after, out):
-    """Where each sweep ENDS — the moment of lowest battery."""
-    fig, ax = plt.subplots(figsize=(7.4, 7.8), facecolor="white")
+    """Where each sweep ENDS, and the double pass."""
+    fig, ax = plt.subplots(figsize=(8.0, 8.4), facecolor="white")
     d = after
     tr = d["tracks"]
     pads = d["pad_xy"]
@@ -191,20 +190,28 @@ def fig_sweep(after, out):
                 zorder=7)
         ax.annotate(f"d{i} sweep ends\n{dist:.0f} m from pad",
                     (e["x"], e["y"]), textcoords="offset points",
-                    xytext=(12, -4 - 14 * (i - 1)), fontsize=8,
+                    xytext=(14, -18 - 26 * (i - 1)), fontsize=8,
                     bbox=dict(fc="white", ec=COL[i], alpha=0.92, pad=2))
 
     ax.set_aspect("equal")
-    style(ax, "Sweeps now finish near the pad, not at maximum range",
+    npass = 2 if d.get("passes", 2) >= 2 else 1
+    style(ax, f"Two passes per strip, finishing near the pad "
+              f"({'double coverage' if npass == 2 else 'single'})",
           "east (m)", "north (m)")
     ax.legend(fontsize=8, loc="upper center", ncol=4,
               bbox_to_anchor=(0.5, -0.07), frameon=False)
     fig.text(0.02, 0.015,
-             "Before: drones 1 and 3 finished 516 m and 540 m from the pad on "
-             "the lowest state of charge of the flight.\nAfter: all three "
-             "inside 130 m, at identical path length (1267 m).",
+             "Each strip is swept TWICE — the second pass retraces the same "
+             "ground on the reverse heading, so the two overlay here. The "
+             "evidence is the mission:\n18/19/19 items against 12/13/13 for a "
+             "single pass, and 2535 m of path against 1267 m. It is for the "
+             "GEOTAG, not coverage: boresight bias is\nsystematic and only "
+             "cancels when the same ground is seen from the opposite "
+             "direction. The cost is a second sweep, 347 s against 170 s.\n"
+             "Sweeps also finish near the pad now — 116-123 m, against 516 m "
+             "and 540 m for two of three aircraft before.",
              fontsize=8.5, color="#444")
-    fig.tight_layout(rect=[0, 0.055, 1, 1])
+    fig.tight_layout(rect=[0, 0.085, 1, 1])
     fig.savefig(out, dpi=130)
     plt.close(fig)
     print("wrote", out)
@@ -277,8 +284,15 @@ def fig_pad(end, out):
 
     final = {}
     for i in tr:
-        onground = [s for s in tr[i] if s["alt"] < 0.4]
+        onground = [s for s in tr[i] if s["alt"] < 0.6]
         final[i] = onground[-1] if onground else tr[i][-1]
+
+    # Worst horizontal approach at ANY point in the recording, not just at rest.
+    # "They parked safely" is not the requirement; "they never overlapped" is.
+    worst_any = min(
+        (math.dist((tr[a][k]["x"], tr[a][k]["y"]), (tr[b][k]["x"], tr[b][k]["y"])),
+         a, b)
+        for k in range(len(tr[1])) for a, b in PAIRS)
 
     for i in tr:
         ax.plot(pads[i - 1][0], pads[i - 1][1], marker="s", ms=7,
@@ -304,27 +318,36 @@ def fig_pad(end, out):
     d, a, b = worst
     ax.plot([final[a]["x"], final[b]["x"]], [final[a]["y"], final[b]["y"]],
             color="k", lw=1.6)
-    ax.annotate(f"{d:.2f} m centre-to-centre\nairframes are 1.046 m wide "
-                f"→ OVERLAP",
+    clear = d - FOOTPRINT
+    good = clear > 0
+    ax.annotate(f"closest parked pair {d:.2f} m centre-to-centre\n"
+                f"{'clear of' if good else 'OVERLAPS'} a {FOOTPRINT:.3f} m "
+                f"airframe by {abs(clear):.2f} m",
                 ((final[a]["x"] + final[b]["x"]) / 2,
                  (final[a]["y"] + final[b]["y"]) / 2),
-                textcoords="offset points", xytext=(14, -34), fontsize=9.5,
-                fontweight="bold", color="#c00",
-                bbox=dict(fc="#fff4f4", ec="#c00", pad=4),
-                arrowprops=dict(arrowstyle="->", color="#c00"))
+                textcoords="offset points", xytext=(-150, -30), fontsize=9,
+                fontweight="bold", color="#1a7f37" if good else "#c00",
+                bbox=dict(fc="#f2fbf4" if good else "#fff4f4",
+                          ec="#1a7f37" if good else "#c00", pad=4),
+                arrowprops=dict(arrowstyle="->",
+                                color="#1a7f37" if good else "#c00"))
 
-    ax.set_xlim(cx - 3.4, cx + 3.4)
-    ax.set_ylim(cy - 2.6, cy + 3.0)
+    ax.set_xlim(cx - 3.2, cx + 3.2)
+    ax.set_ylim(cy - 2.8, cy + 3.2)
     ax.set_aspect("equal")
-    style(ax, "STILL OPEN: where the three aircraft actually came to rest",
+    style(ax, f"RESOLVED: corner slots — closest approach at any time "
+              f"{worst_any[0]:.2f} m",
           "east (m)", "north (m)")
     fig.text(0.02, 0.015,
-             "Slots are 1.22 m apart; touchdown dispersion is about ±0.5 m, so "
-             "the geometry allows 0.17 m of error.\nSequencing the descents "
-             "does not help — this is static geometry, not timing.\n"
-             "Recovery is also the tightest point in the AIR: drones 2 and 3 "
-             "stacked over the pad at 31.4 m and 35.2 m — 3.99 m apart, "
-             "because RTL_ALT is staggered by only 5 m.",
+             "A ROW of three gave 1.22 m spacing and they landed 0.83 m apart "
+             "— an overlap of 1.046 m airframes.\n"
+             "Centres must stay half an airframe inside the pad edge, so they "
+             "live in a 2.61 m square; its CORNERS are 2.61 m apart — twice a "
+             "row, on the same pad.\n"
+             "Worst case with ±0.5 m touchdown dispersion on each aircraft: "
+             "1.61 m, still clear. Holding over points 2.6 m apart instead of "
+             "1.2 m also lifted\nthe stacked-over-the-pad separation from "
+             "3.99 m to 6.52 m.",
              fontsize=8.5, color="#444")
     fig.tight_layout(rect=[0, 0.10, 1, 1])
     fig.savefig(out, dpi=130)

@@ -145,8 +145,8 @@ requires **domain diversity** — see §3 on team composition.
 | 8.9 / brief 2 | Combined AUW ≤ 25 kg | **OK** — 17.65 kg, 29 % margin | model-output |
 | 8.2 / brief 2 | **No COTS ready-to-fly airframes**; components OK | **OK by intent** — custom frame | needs explicit design evidence for 4A |
 | brief 2 | Payload exactly **200 g, 200×100×50 mm rectangular box** | **OK** | sizing §payload |
-| 8.10 / brief 7 | Take off and land within 12 ft × 12 ft | **OK** — 1046 mm footprint, 3/row | model STEP 11 |
-| brief 7 | **No part of any drone outside the box** during launch/landing | **OK** but tight with 3 airframes — verify staging geometry | — |
+| 8.10 / brief 7 | Take off and land within 12 ft × 12 ft | **OK — at the CORNERS, not in a row.** 1046 mm footprint, slots 2.61 m apart, measured 2.27 m minimum in SITL | `simulations/recordings/proof-4-pad.png` |
+| brief 7 | **No part of any drone outside the box** during launch/landing | **OK** — slot centres sit half an airframe inside the edge by construction | `autonomy/coverage_planner/plan.py` `pad_slots()` |
 | 8.11 | Autonomously detect and geotag up to 10 survivors, display on GCS | Designed | perception/ |
 | 8.12 | Autonomous kit delivery, 200 g, 20×10×5 cm | Designed | payload |
 | 8.13 | Single GCS, unified operator interface | Designed | ground-station/ |

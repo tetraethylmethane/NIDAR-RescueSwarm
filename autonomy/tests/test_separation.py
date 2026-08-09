@@ -9,6 +9,8 @@ first symptom worse, so these are tested together.
 """
 from __future__ import annotations
 
+import itertools
+import math
 import os
 import sys
 
@@ -23,7 +25,8 @@ from coverage_planner import mission as mis  # noqa: E402
 from coverage_planner import separation as sep  # noqa: E402
 from coverage_planner.geo import Frame  # noqa: E402
 from coverage_planner.plan import (  # noqa: E402
-    AIRFRAME_FOOTPRINT_M, DECK_CLEARANCE_M, PAD_SIDE_M, pad_slots, plan_mission,
+    AIRFRAME_FOOTPRINT_M, DECK_CLEARANCE_M, PAD_SIDE_M,
+    TOUCHDOWN_DISPERSION_M, pad_slots, plan_mission,
 )
 
 BOUNDARY = [(13.0000, 80.0000), (13.0000, 80.00553),
@@ -59,9 +62,48 @@ def test_pad_slots_fit_inside_the_pad(frame):
 
 
 def test_pad_slots_refuse_to_overlap_airframes(frame):
-    """Four 1046 mm aircraft do not fit in a row on 3.66 m. Say so, loudly."""
-    with pytest.raises(ValueError, match="do not fit"):
-        pad_slots(HOME, 4, frame)
+    """Five do not fit on one pad with useful separation. Say so, loudly.
+
+    Four DO fit -- at the four corners, 2.61 m apart. This test used to assert
+    that four was impossible, which was true only of the row layout it was
+    written against.
+    """
+    with pytest.raises(ValueError, match="cannot be placed"):
+        pad_slots(HOME, 5, frame)
+
+
+def test_slots_survive_touchdown_dispersion(frame):
+    """The hard requirement: airframes must not overlap in ANY condition.
+
+    Measured failure this replaces -- three aircraft aiming at slots 1.22 m
+    apart came to rest 0.83 m apart, an overlap of 1.046 m airframes. Slots
+    must therefore be separated by a whole airframe PLUS twice the touchdown
+    dispersion, because both aircraft can drift toward each other.
+    """
+    import itertools
+    for n in (2, 3, 4):
+        xy = [frame.to_xy(*s) for s in pad_slots(HOME, n, frame)]
+        worst = min(math.dist(a, b) for a, b in itertools.combinations(xy, 2))
+        margin = worst - 2 * TOUCHDOWN_DISPERSION_M
+        assert margin > AIRFRAME_FOOTPRINT_M, (
+            f"{n} slots: {worst:.2f} m apart, {margin:.2f} m after dispersion, "
+            f"against a {AIRFRAME_FOOTPRINT_M:.3f} m airframe — they can touch "
+            f"down overlapping")
+
+
+def test_a_row_layout_would_be_rejected(frame):
+    """Falsify the check: the arrangement that actually failed must fail here.
+
+    Without this, the dispersion test above could pass for a layout that is
+    merely different rather than better.
+    """
+    import itertools
+    half = (PAD_SIDE_M - AIRFRAME_FOOTPRINT_M) / 2
+    row = [(-half, 0.0), (0.0, 0.0), (half, 0.0)]
+    worst = min(math.dist(a, b) for a, b in itertools.combinations(row, 2))
+    assert worst - 2 * TOUCHDOWN_DISPERSION_M < AIRFRAME_FOOTPRINT_M, (
+        "a row of three across the pad should NOT clear dispersion; if it "
+        "does, the constants have changed and the corner layout may be moot")
 
 
 def test_each_drone_gets_its_own_slot_as_home(plan):

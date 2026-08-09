@@ -143,6 +143,7 @@ def main():
             t, s = msg.get_type(), state[i]
             if t == "GLOBAL_POSITION_INT":
                 s["x"], s["y"] = frame.to_xy(msg.lat / 1e7, msg.lon / 1e7)
+                s["got"] = True
                 s["alt"] = msg.relative_alt / 1000.0
             elif t == "HEARTBEAT":
                 s["mode"] = MODES.get(msg.custom_mode, str(msg.custom_mode))
@@ -158,6 +159,23 @@ def main():
     for th in [threading.Thread(target=pump, args=(i, m), daemon=True)
                for i, m in enumerate(links, start=1)]:
         th.start()
+
+
+    # Do not record until every aircraft has actually reported a position.
+    # The state dict starts at x=y=alt=0, and sampling before the first
+    # GLOBAL_POSITION_INT writes those zeros into the track as if they were
+    # measurements -- which put one drone's "final resting position" at the
+    # frame origin, 313 m from the pad, in an earlier analysis. Absent data is
+    # not zero data; that lesson has now cost this project three times.
+    t_wait = time.time()
+    while time.time() - t_wait < 30 and not all(
+            state[i].get("got") for i in range(1, N + 1)):
+        time.sleep(0.2)
+    missing = [i for i in range(1, N + 1) if not state[i].get("got")]
+    if missing:
+        print(f"no position from drone(s) {missing} -- refusing to record zeros")
+        stop.set()
+        return 1
 
     seen = {}
     t0 = time.time()

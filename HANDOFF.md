@@ -43,8 +43,8 @@ how this project has lost most of its time.
 | Geotag CEP50 | **Modelled** — Monte Carlo whose *inputs* are budget assumptions. Reconciles with the analytic budget to +1 % | `docs/sizing/geotag-accuracy-output.txt` |
 | Separation at launch | **Measured in sim** — 92.12 m, up from 1.31 m | `proof-1-launch.png` |
 | Separation en route | **Measured in sim** — 34.00 m worst pair | `proof-2-sweep.png` |
-| Separation during recovery | **3.99 m — BELOW the 5 m minimum**, see §4.1 | `proof-4-pad.png` |
-| Three aircraft land safely on one pad | **FALSE.** Measured 0.82 m between 1.046 m airframes | §4.1 |
+| Separation during recovery | **6.52 m**, up from 3.99 m | `proof-4-pad.png` |
+| Three aircraft land safely on one pad | **Measured 2.27 m minimum, clear by 1.22 m** — corner slots, not a row | `proof-4-pad.png` |
 | Endurance, hover power, mass budget | **Modelled** — no aircraft has flown | `docs/sizing/model-output.txt` |
 | Detection recall, boresight, RTK accuracy | **Assumed** — no real imagery, no calibration, no hardware | — |
 
@@ -95,47 +95,33 @@ it. It now refuses to run without an explicit override.
 
 These are not blocked on work. They are blocked on someone choosing.
 
-### 4.1 Three aircraft cannot land on one 12 ft pad
+### 4.1 Pad recovery — RESOLVED by moving the slots to the corners
 
-The one that matters. Rule 8.10 gives a single 3.66 m pad, and
-`docs/requirements/rulebook-compliance.md` argues three 1.046 m airframes fit
-"3 per row". That is true for **parking** them by hand and false for
-**landing** them:
+Was: three aircraft aiming at slots 1.22 m apart came to rest **0.83 m** apart,
+an overlap of 1.046 m airframes, and stacked **3.99 m** apart in the air over
+the pad. `rulebook-compliance.md` had argued three airframes fit the 12 ft pad
+"3 per row", and `pad_slots()` implemented exactly that.
 
-Measured across two runs. Recovery is now the tightest phase of the flight in
-the air as well as on the ground:
+A row is the worst possible packing on a square. Centres must stay half an
+airframe inside the pad edge, so they live in a 2.61 m square; a row across it
+gives 1.31 m at best, its **corners** give the full 2.61 m — twice the
+separation, same pad, no cost.
 
-| phase | min separation | |
+| | row of 3 | 3 corners |
 |---|---|---|
-| stacked over the pad, both airborne | **3.99 m** | `RTL_ALT` staggers by only 5 m, and altitude hold eats the rest |
-| one landing, one parked | 1.83 m | thin |
-| both parked after landing | **0.82 m** | airframes overlap |
+| slot spacing | 1.22 m | **2.61 m** |
+| worst case, ±0.5 m dispersion each | −0.13 m (overlap) | **1.61 m** |
+| measured, closest at any time | 0.83 m (overlap) | **2.27 m** |
+| measured, stacked over the pad | 3.99 m | **6.52 m** |
 
-The 3.99 m is drones 2 and 3 holding at 31.4 m and 35.2 m above the pad. Three
-`RTL_ALT` bands 10 m apart would need 30 m of headroom under a 40 m search
-deck, which puts the lowest at 10 m — too low for obstacles. There is no
-altitude assignment that fixes this on its own.
+Four aircraft also fit, at the four corners. Five do not, and `pad_slots()`
+raises rather than returning something that overlaps.
 
-Slots are 1.22 m apart and touchdown dispersion is roughly ±0.5 m, so the
-geometry allows 0.17 m of error and the aircraft need about three times that.
-Sequencing the descents (`RTL_LOIT_TIME` 0/20/40 s) does not help: this is
-static geometry, not timing.
-
-Note this is the one place the fixes made something *worse* before better —
-re-ordering the sweeps to finish near the pad lengthened the ingress legs and
-dropped the transit-vs-search clearance to 5.0 m, so `DECK_CLEARANCE_M` is now
-enforced and the transit band moved from 25/30/35 to **20/25/30** under the
-40 m deck.
-
-Options, none of which I should pick for you:
-
-1. **Precision landing** — IR-LOCK beacon or RTK precision loiter. Buys the
-   accuracy directly, costs money and integration time.
-2. **Recover one at a time**, with ground crew clearing each aircraft before
-   the next descends. Free, needs a rule check that it is permitted.
-3. **Land off-pad** and accept −10 per aircraft.
-
-Until this is decided, treat the pad as a launch surface only.
+**Still worth confirming with the organisers:** the aircraft now sit at the pad
+corners rather than in a line, and brief 7 requires no part of any drone
+outside the box during launch and landing. Slot centres are half an airframe
+inside the edge by construction, so this is satisfied geometrically — but the
+staging photo will look different from what a marshal might expect.
 
 ### 4.2 Takeoff sequencing — done
 

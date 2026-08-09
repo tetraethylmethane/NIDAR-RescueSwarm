@@ -73,37 +73,119 @@ AIRFRAME_FOOTPRINT_M = 1.046    # motor-to-motor across, model STEP 11
 DECK_CLEARANCE_M = 10.0
 
 
+# Touchdown dispersion, one sigma-ish, per aircraft. Two aircraft can each
+# drift this far TOWARD each other, so the slot spacing has to absorb twice it.
+# Measured: aircraft aiming at slots 1.22 m apart came to rest 0.83 m apart.
+TOUCHDOWN_DISPERSION_M = 0.5
+
+
 def pad_slots(home: tuple[float, float], n: int, frame: Frame,
               bearing_deg: float = 90.0,
-              pad_side_m: float = PAD_SIDE_M) -> list[tuple[float, float]]:
-    """N landing points in a row across the shared pad, centred on `home`.
+              pad_side_m: float = PAD_SIDE_M,
+              dispersion_m: float = TOUCHDOWN_DISPERSION_M
+              ) -> list[tuple[float, float]]:
+    """N landing points on the shared pad, placed as far apart as it allows.
 
     Returned in drone order, so drone 1 gets slot 0. The aircraft must be placed
     on -- and armed on -- its own slot, because ArduPilot takes HOME from the
     arming position and RTL returns there regardless of what item 0 says.
 
-    Spacing is the pad divided by N, which for the 3-drone case is 1.22 m
-    against a 1046 mm airframe: about 17 cm of rotor clearance. That is enough
-    to park on and nowhere near enough to land on simultaneously, which is why
-    the descents are sequenced rather than merely separated.
+    A ROW IS THE WORST POSSIBLE PACKING, AND THAT IS WHAT THIS USED TO DO
+    --------------------------------------------------------------------
+    rulebook-compliance.md argues three 1046 mm airframes fit the 12 ft pad
+    "3 per row", and this function implemented exactly that: 1.22 m spacing,
+    0.17 m of clearance. It does not survive contact with a real landing. In
+    SITL, three aircraft aiming at those slots came to rest 0.83 m apart --
+    an overlap, because the geometry allowed 0.17 m of error and touchdown
+    dispersion is around half a metre.
+
+    Centres must stay half an airframe inside the pad edge, so they live in a
+    square of side (pad - footprint) = 2.614 m. Putting three of them in a ROW
+    across that square gives 1.31 m at best. Putting them at its CORNERS gives
+    the full 2.614 m -- twice the separation, on the same pad, for free:
+
+        row of 3, full width      1.307 m   ->  overlaps under dispersion
+        3 corners                 2.614 m   ->  1.61 m apart at worst case
+
+    The corners also help in the air: the aircraft hold and descend over points
+    2.6 m apart instead of 1.2 m, which is what lifts the stacked-over-the-pad
+    separation back above the 5 m minimum when combined with the RTL_ALT band.
     """
     if n < 1:
         raise ValueError("need at least one drone")
-    spacing = pad_side_m / n
-    if n > 1 and spacing < AIRFRAME_FOOTPRINT_M:
+    if n > 4:
         raise ValueError(
-            f"{n} aircraft at {spacing:.2f} m spacing do not fit on a "
-            f"{pad_side_m:.2f} m pad with a {AIRFRAME_FOOTPRINT_M:.3f} m "
-            f"airframe -- rule 8.10 needs take-off and landing inside the pad")
+            f"{n} aircraft cannot be placed on one {pad_side_m:.2f} m pad with "
+            f"useful separation; four corners is the limit")
 
-    # Frame is x=east, y=north, so a bearing offset is (sin, cos) in that order.
-    b = math.radians(bearing_deg)
+    half = (pad_side_m - AIRFRAME_FOOTPRINT_M) / 2.0
+    if half <= 0:
+        raise ValueError(
+            f"a {AIRFRAME_FOOTPRINT_M:.3f} m airframe does not fit inside a "
+            f"{pad_side_m:.2f} m pad at all")
+
+    # Corner-first, because the corners of the usable square are the furthest
+    # apart any set of points on it can be.
+    layouts = {
+        1: [(0.0, 0.0)],
+        2: [(-half, -half), (half, half)],
+        3: [(-half, -half), (half, -half), (0.0, half)],
+        4: [(-half, -half), (half, -half), (half, half), (-half, half)],
+    }
+    local = layouts[n]
+
+    if n > 1:
+        worst = min(math.dist(a, b)
+                    for i, a in enumerate(local) for b in local[i + 1:])
+        need = AIRFRAME_FOOTPRINT_M + 2 * dispersion_m
+        if worst < need:
+            raise ValueError(
+                f"{n} aircraft on a {pad_side_m:.2f} m pad give {worst:.2f} m "
+                f"between slots. A {AIRFRAME_FOOTPRINT_M:.3f} m airframe with "
+                f"{dispersion_m:.2f} m touchdown dispersion each needs "
+                f"{need:.2f} m, or they can touch down overlapping. Rule 8.10 "
+                f"requires landing inside the pad -- this needs a decision "
+                f"(precision landing, one at a time, or land off-pad), not a "
+                f"tighter number.")
+
+    # Frame is x=east, y=north; rotate the layout to the pad's orientation.
+    b = math.radians(bearing_deg - 90.0)
+    cb, sb = math.cos(b), math.sin(b)
     hx, hy = frame.to_xy(home[0], home[1])
-    out = []
-    for i in range(n):
-        off = (i - (n - 1) / 2.0) * spacing
-        out.append(frame.to_latlon(hx + off * math.sin(b),
-                                   hy + off * math.cos(b)))
+    return [frame.to_latlon(hx + (lx * cb - ly * sb), hy + (lx * sb + ly * cb))
+            for lx, ly in local]
+
+
+def _repeat(lines, passes: int):
+    """Fly the strip `passes` times, reversing direction each time.
+
+    WHY A SECOND PASS, AND WHY REVERSED
+    Not for coverage -- one pass already covers the strip with 30 % sidelap and
+    no gaps. It is for the geotag.
+
+    Boresight misalignment is SYSTEMATIC: it puts the survivor in the same wrong
+    place, in the aircraft's own frame, on every frame of a pass. Averaging more
+    frames from one heading cannot remove it, which is why the error budget
+    carries it at 0.16 m after fusion. Fly the same ground on the OPPOSITE
+    heading and the along-track component of that bias flips sign, so averaging
+    the two passes cancels it instead of accumulating it.
+
+    A second pass also doubles the frames on every survivor and gives the
+    detector a second look from a different sun angle and background.
+
+    It is not free: it doubles the sweep. plan_mission reports the sweep time so
+    the endurance reserve can be checked against it -- for the full competition
+    area two passes will not fit one battery, and that is a real constraint, not
+    a rounding error.
+
+    The reversal keeps the path continuous: pass 1 ends at the far end of the
+    last transect, and pass 2 begins there.
+    """
+    if passes < 1:
+        raise ValueError("passes must be >= 1")
+    out = list(lines)
+    for p in range(1, passes):
+        out += [[b, a] for a, b in reversed(out[-len(lines):])]
     return out
 
 
@@ -156,6 +238,7 @@ def plan_mission(boundary: list[tuple[float, float]], home: tuple[float, float],
                  transit_alt_m: float = 20.0,
                  pad_bearing_deg: float = 90.0,
                  takeoff_stagger_s: float = 15.0,
+                 passes: int = 2,
                  turn_s: float = 6.0) -> MissionPlan:
     """Plan the whole mission. Deterministic: same input, same output, always.
 
@@ -224,6 +307,7 @@ def plan_mission(boundary: list[tuple[float, float]], home: tuple[float, float],
                 continue
             for flip in (False, True):
                 cand = [[b, a] for a, b in base] if flip else base
+                cand = _repeat(cand, passes)
                 d_end = math.dist(slot_xy, frame.to_xy(*cand[-1][1]))
                 if best is None or d_end < best[0]:
                     best = (d_end, cand)

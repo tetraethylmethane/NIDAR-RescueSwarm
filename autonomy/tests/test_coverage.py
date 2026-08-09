@@ -189,10 +189,38 @@ def test_alternating_directions_avoid_ferry_legs():
 
 
 def test_sweep_time_is_in_the_expected_range():
-    p = plan_mission(TEN_HA, HOME, 3, altitude_m=40.0)
-    # mission_profile.py puts a 40 m sweep at ~149 s per drone; strips round the
-    # line count up per drone, so expect somewhat more, not less.
+    # ONE pass. mission_profile.py puts a 40 m sweep at ~149 s per drone; strips
+    # round the line count up per drone, so expect somewhat more, not less.
+    p = plan_mission(TEN_HA, HOME, 3, altitude_m=40.0, passes=1)
     assert 120 < p.longest_sweep_s < 260, f"{p.longest_sweep_s:.0f} s"
+
+
+def test_a_second_pass_costs_a_second_sweep():
+    """The geotag benefit of the reverse pass is not free, and the cost is the
+    whole sweep again. Anyone raising `passes` needs to see that in the number,
+    because for the full competition area two passes do not fit one battery."""
+    one = plan_mission(TEN_HA, HOME, 3, altitude_m=40.0, passes=1)
+    two = plan_mission(TEN_HA, HOME, 3, altitude_m=40.0, passes=2)
+    assert two.longest_sweep_s > 1.9 * one.longest_sweep_s
+    for a, b in zip(one.drones, two.drones):
+        assert len(b.lines) == 2 * len(a.lines)
+        assert b.path_m == pytest.approx(2 * a.path_m, rel=0.02)
+
+
+def test_the_second_pass_is_flown_in_reverse():
+    """Opposite heading is the entire point: it flips the sign of the
+    along-track boresight bias so the two passes cancel it rather than
+    accumulate it. A second pass in the SAME direction would double the frames
+    and keep the bias, which is the mistake this guards against."""
+    p = plan_mission(TEN_HA, HOME, 3, altitude_m=40.0, passes=2)
+    for d in p.drones:
+        half = len(d.lines) // 2
+        fwd, rev = d.lines[:half], d.lines[half:]
+        # last line of pass 1 and first of pass 2 are the same ground, opposite
+        assert rev[0][0] == pytest.approx(fwd[-1][1])
+        assert rev[0][1] == pytest.approx(fwd[-1][0])
+        # and the whole double pass returns to where pass 1 began
+        assert rev[-1][1] == pytest.approx(fwd[0][0])
 
 
 # -------------------------------------------------------- ArduPilot mission
