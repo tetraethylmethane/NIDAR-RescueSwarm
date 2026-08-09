@@ -154,3 +154,20 @@ jobs:
       - name: ArduPilot parameter files regenerate and validate
         working-directory: firmware/ardupilot-params
         run: python params.py --out /tmp
+
+  perception:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install
+        run: pip install pytest
+      # Geotag gates 450 of the 600 flight points, and a projection bug does
+      # not crash -- it puts the survivor somewhere plausible and wrong. These
+      # tests were falsified against three injected bugs (swapped camera axes,
+      # flipped east sign, yaw ignored) and caught all three.
+      - name: Geotag geometry
+        working-directory: perception
+        run: python -m pytest tests -q
