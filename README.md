@@ -198,6 +198,7 @@ python3 simulations/sitl/proof_figures.py                # redraw §3 from telem
 | Document | What's in it |
 |:--|:--|
 | [Handoff](HANDOFF.md) | **Start here.** What is proven, what waits on a human, and the traps that have cost days |
+| [Competition day](docs/checklists/competition-day.md) | How the GCS is actually operated on the day — draft, never rehearsed |
 | [System overview](docs/system-overview.md) | Mission flow, architecture, perception, indigenisation, failsafes |
 | [Sizing calculations](docs/sizing/sizing-calculations.md) | Why every number is what it is |
 | [Requirements baseline](docs/requirements/requirements-baseline.md) | Every SYS-xx requirement, traced to a rule and a verification method |
