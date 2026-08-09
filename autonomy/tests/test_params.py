@@ -34,6 +34,32 @@ def test_rtl_altitudes_are_staggered():
     assert len(set(alts)) == 3, "three aircraft returning at once, coplanar"
 
 
+def test_rtl_descents_are_sequenced_not_just_separated():
+    """RTL_ALT separates the cruise home; it does nothing at the pad.
+
+    All three aircraft share a pack design and fly missions of near-equal
+    length, so they reach BATT_LOW_MAH within seconds of each other and turn
+    for home together. The pad is 3.66 m and the slots are 1.22 m apart, which
+    is a parking arrangement, not a landing one. RTL_LOIT_TIME holds each
+    aircraft at RTL_ALT so only one descends at a time.
+    """
+    loiters = [for_drone(i)["RTL_LOIT_TIME"] for i in (1, 2, 3)]
+    assert loiters == [0, 20000, 40000]                  # milliseconds
+    assert len(set(loiters)) == 3, "coincident descents onto a 3.66 m pad"
+    assert loiters[0] == 0, "the first aircraft home should not wait"
+
+
+def test_the_loiter_stagger_is_affordable_from_the_reserve():
+    """A sequencing fix that eats the reserve would trade one failure for another."""
+    HOVER_W, PACK_WH = 913.0, 292.0
+    worst_wait_s = max(for_drone(i)["RTL_LOIT_TIME"] for i in (1, 2, 3)) / 1000.0
+    spent_wh = HOVER_W * worst_wait_s / 3600.0
+    reserve_wh = PACK_WH * (BASE["BATT_LOW_MAH"] / PACK_MAH)
+    assert spent_wh < reserve_wh / 3, (
+        f"last aircraft waits {worst_wait_s:.0f} s = {spent_wh:.1f} Wh against "
+        f"a {reserve_wh:.1f} Wh reserve — too much of the margin goes to queuing")
+
+
 def test_rtl_alt_is_centimetres_and_the_validator_knows():
     """RTL_ALT is in cm. Writing 25 means 25 cm and the aircraft returns home
     at ankle height. This is the classic ArduPilot unit trap."""

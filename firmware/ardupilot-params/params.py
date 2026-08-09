@@ -31,29 +31,28 @@ PACK_MAH = 13500
 LOW_V_PER_CELL = 3.40          # ~20 % SoC resting for 21700 NMC
 CRT_V_PER_CELL = 3.20          # ~10 %; below this the cells are being damaged
 
-# Pack internal resistance, ohms. BATT_FS_VOLTSRC = 1 below asks ArduPilot to
-# reconstruct RESTING voltage as `measured + current * BATT_RESISTANCE`, which
-# is the only way the per-cell thresholds above mean what they say -- they were
-# read off a resting discharge curve.
+# THERE IS NO BATT_RESISTANCE PARAMETER IN ARDUPILOT.
 #
-# THIS WAS UNSET, AND UNSET MEANS ZERO. The sag compensation therefore did
-# nothing, and the failsafe compared a LOADED voltage against a RESTING
-# threshold. tools/sizing-model/battery_failsafe.py puts the consequence at
+# This file used to set BATT_RESISTANCE = 0.040, with a long comment arguing
+# that BATT_FS_VOLTSRC = 1 is inert without it and that the failsafe would
+# therefore fire at ~53 % SoC instead of 20 %. That argument was wrong, and the
+# parameter does not exist: `BAT*_R_INTERNAL` is PX4. The complete BATT_ table
+# in ArduCopter 4.5.7 is
 #
-#     BATT_LOW_VOLT (RTL)             fired at ~53 % SoC, not 20 %
-#     BATT_CRT_VOLT (land immediately) fired at ~30 % SoC, not 10 %
+#   CAPACITY SERIAL_NUM LOW_TIMER FS_VOLTSRC LOW_VOLT LOW_MAH CRT_VOLT
+#   CRT_MAH FS_LOW_ACT FS_CRT_ACT ARM_VOLT ARM_MAH OPTIONS ESC_INDEX
 #
-# An RTL at 53 % aborts the search mid-mission and destroys the 2.0x endurance
-# reserve the entire pack sizing rests on.
+# ArduPilot ESTIMATES internal resistance itself, continuously, from the
+# observed current and voltage steps -- AP_BattMonitor_Backend
+# ::update_resistance_estimate(). BATT_FS_VOLTSRC = 1 then compensates sag
+# using that live estimate, which is better than any number written here
+# because it tracks temperature and cell ageing.
 #
-# 0.040 ohm = 6 x (15 mOhm cell / 3 parallel) + 10 mOhm wiring, connectors and
-# BMS shunt, at 50 % SoC and 25 C.
-#
-# ⚠ PREDICTED, NOT MEASURED. Bench-discharge the real pack with a current step
-# and compute R = dV/dI before first flight; that measurement beats the model
-# outright and takes an afternoon. This value exists because the alternative
-# sitting in the firmware was 0, which is not a better estimate.
-BATT_RESISTANCE = 0.040
+# Unknown names in a .parm file are dropped silently, so the line did nothing
+# and read as a fix for weeks. Confirmed by reading the parameter back off a
+# running SITL: it comes back absent. See NIDAR-GSC scripts/test-battery-
+# failsafe.sh, which now reads every failsafe parameter off the aircraft
+# rather than trusting that the file was applied.
 
 # Base parameters, identical on every aircraft.
 BASE: dict[str, float] = {
@@ -70,7 +69,7 @@ BASE: dict[str, float] = {
     "BATT_FS_LOW_ACT": 2,                    # RTL
     "BATT_FS_CRT_ACT": 1,                    # Land immediately
     "BATT_FS_VOLTSRC": 1,                    # sag-compensated voltage
-    "BATT_RESISTANCE": BATT_RESISTANCE,      # without this, VOLTSRC=1 is inert
+    # (no BATT_RESISTANCE -- see the note above; ArduPilot estimates it)
     # Explicit rather than relying on the 10 s default: a delivery manoeuvre
     # pulls ~115 A for a second or two, and a transient must not be able to end
     # the mission on its own.
@@ -99,7 +98,8 @@ BASE: dict[str, float] = {
     # --- RTH (SYS-11) ---------------------------------------------------
     "RTL_SPEED": 800,                        # cm/s
     "RTL_ALT_FINAL": 0,                      # land, do not hover
-    "RTL_LOIT_TIME": 0,
+    # RTL_LOIT_TIME is set per drone in for_drone() -- see the note there. It is
+    # deliberately NOT 0 for every aircraft any more.
 
     # --- ABORT AND RECALL, constraint 3: survive a dead companion --------
     # The 868 MHz safety receiver drives these channels directly into the
@@ -126,6 +126,19 @@ BASE: dict[str, float] = {
     "WP_YAW_BEHAVIOR": 0,                    # hold heading: the camera is fixed
 }
 
+# Names that look like ArduPilot parameters and are not. A .parm file drops
+# unknown names without a word, so these read as configured for as long as
+# nobody checks a running aircraft. Verified absent on ArduCopter 4.5.7 by
+# reading them back over MAVLink.
+NOT_AN_ARDUPILOT_PARAM = {
+    "BATT_RESISTANCE": "PX4 calls this BAT*_R_INTERNAL; ArduPilot estimates "
+                       "internal resistance itself",
+    "BATT_R_INTERNAL": "PX4",
+    "BAT_R_INTERNAL": "PX4",
+    "BATT_V_EMPTY": "PX4",
+    "BATT_N_CELLS": "PX4; ArduPilot infers cell count from the thresholds",
+}
+
 REQUIRED_FAILSAFES = (
     "BATT_FS_LOW_ACT", "BATT_FS_CRT_ACT",
     "FENCE_ENABLE", "FENCE_ACTION",
@@ -135,7 +148,8 @@ REQUIRED_FAILSAFES = (
 
 
 def for_drone(drone_id: int, rtl_alt_m: float = 25.0,
-              rtl_stagger_m: float = 5.0) -> dict[str, float]:
+              rtl_stagger_m: float = 5.0,
+              rtl_loiter_stagger_s: float = 20.0) -> dict[str, float]:
     """Full parameter set for one aircraft."""
     if not 1 <= drone_id <= 250:
         raise ValueError("drone_id must be a valid MAVLink system id")
@@ -144,6 +158,31 @@ def for_drone(drone_id: int, rtl_alt_m: float = 25.0,
     # RTL_ALT is in CENTIMETRES. Setting 25 here means 25 cm, not 25 m, and the
     # aircraft would return home at ankle height.
     p["RTL_ALT"] = (rtl_alt_m + (drone_id - 1) * rtl_stagger_m) * 100
+
+    # SEQUENCE THE DESCENTS, not just the cruise.
+    #
+    # RTL_ALT staggers the transit home (25/30/35 m), and the pad slots in
+    # autonomy/coverage_planner/plan.py separate the touchdown points. Neither
+    # helps at the moment that matters: three aircraft on ONE pack design, flying
+    # ONE mission of roughly equal length, reach BATT_LOW_MAH within seconds of
+    # each other and all turn for home together. They then descend simultaneously
+    # onto slots 1.22 m apart on a 3.66 m pad.
+    #
+    # RTL_LOIT_TIME holds the aircraft at RTL_ALT above home before it descends.
+    # Staggering it by drone (0 / 20 / 40 s) means only one is in the descent at
+    # a time. It is a PARAMETER because the battery failsafe RTL is a mode change
+    # inside the flight controller: mission items do not run, and any companion
+    # sequencing would be trusting the computer whose failure is one of the
+    # reasons to come home in the first place.
+    #
+    # Cost, for the last aircraft in the queue: 40 s of hover at the 913 W
+    # design hover power = 10.1 Wh, 3.5 % of the 292 Wh pack. BATT_LOW_MAH fires
+    # at 20 % SoC = 58.4 Wh, so the reserve absorbs it roughly six times over.
+    # test_params.py asserts that relationship rather than the bare number, so
+    # raising the stagger past what the reserve can pay for fails the tests.
+    #
+    # RTL_LOIT_TIME is in MILLISECONDS, unlike RTL_ALT above it in centimetres.
+    p["RTL_LOIT_TIME"] = (drone_id - 1) * rtl_loiter_stagger_s * 1000
     return p
 
 
@@ -187,35 +226,30 @@ def validate(params: dict[str, float]) -> list[str]:
             f"FENCE_ALT_MAX={fence_alt:g} m is at or below the search altitude"
         )
 
-    # Sag compensation without a resistance is not sag compensation.
+    # Reject parameters ArduPilot does not have.
     #
-    # BATT_FS_VOLTSRC=1 asks ArduPilot to reconstruct resting voltage from
-    # `measured + current * BATT_RESISTANCE`. With the resistance at its 0
-    # default the reconstruction is a no-op, and BATT_LOW_VOLT -- picked off a
-    # RESTING discharge curve -- gets compared against a LOADED voltage. It
-    # fired at ~53 % SoC instead of 20 %, which is an RTL in the middle of the
-    # search. This shipped, and only turned up when someone read the params
-    # against the pack model.
-    if params.get("BATT_FS_VOLTSRC", 0) == 1 and not params.get("BATT_RESISTANCE", 0):
-        problems.append(
-            "BATT_FS_VOLTSRC=1 (sag-compensated) with BATT_RESISTANCE unset or "
-            "zero — the compensation does nothing, so BATT_LOW_VOLT is compared "
-            "against loaded voltage and fires roughly 30 points of SoC early. "
-            "Set BATT_RESISTANCE, or set BATT_FS_VOLTSRC=0 and move the "
-            "thresholds onto the loaded curve. See "
-            "tools/sizing-model/battery_failsafe.py."
-        )
+    # This is the check that would have caught BATT_RESISTANCE, which sat in
+    # this file for weeks doing nothing because the name is PX4's. A .parm file
+    # drops unknown names in silence, so a typo or a cross-autopilot import
+    # reviews clean and never fires. Any name added here must exist in the
+    # firmware; verify against a running aircraft, not from memory.
+    for name in params:
+        if name in NOT_AN_ARDUPILOT_PARAM:
+            problems.append(
+                f"{name} is not an ArduPilot parameter ({NOT_AN_ARDUPILOT_PARAM[name]}). "
+                f"It would be dropped silently and read as configured."
+            )
 
-    # The two corrections are alternatives; applying both pushes the failsafe
-    # dangerously late, which is the worse mistake.
-    if params.get("BATT_RESISTANCE", 0) and params.get("BATT_FS_VOLTSRC", 0) == 1:
+    # BATT_FS_VOLTSRC=1 is sag-compensated, and needs nothing else set: the
+    # resistance it compensates with is estimated live by the firmware. The
+    # thresholds above are therefore correctly on the RESTING curve.
+    if params.get("BATT_FS_VOLTSRC", 0) == 1:
         low_v = params.get("BATT_LOW_VOLT", 0)
         if low_v and low_v < 3.30 * CELLS:
             problems.append(
-                f"BATT_LOW_VOLT={low_v:g} is on the LOADED curve while "
-                f"BATT_RESISTANCE is set and VOLTSRC=1, which already corrects "
-                f"for sag. The correction is applied twice and the failsafe "
-                f"fires far too late."
+                f"BATT_LOW_VOLT={low_v:g} looks like a LOADED-curve threshold "
+                f"while VOLTSRC=1 already compensates for sag. The correction "
+                f"would be applied twice and the failsafe would fire late."
             )
 
     # Coulomb counting is the one failsafe that is independent of resistance,

@@ -101,11 +101,42 @@ def test_validator_catches_a_weakened_capacity_backstop():
 
 
 @pytest.mark.parametrize("key,expected", [
-    ("BATT_RESISTANCE", 0.040),
     ("BATT_LOW_TIMER", 10),
     ("BATT_FS_VOLTSRC", 1),
-    ("BATT_LOW_VOLT", 20.4),      # unchanged: correct once compensation works
+    ("BATT_LOW_VOLT", 20.4),      # correct: VOLTSRC=1 compensates sag itself
     ("BATT_CRT_VOLT", 19.2),
 ])
 def test_option_a_is_what_shipped(key, expected):
     assert P.BASE[key] == pytest.approx(expected)
+
+
+def test_no_phantom_parameters_in_the_shipped_set():
+    """BATT_RESISTANCE is PX4's name. ArduPilot has no such parameter.
+
+    It shipped in this file for weeks with a long comment explaining why it was
+    essential. ArduPilot estimates internal resistance itself, and a .parm file
+    drops unknown names in silence, so the line did nothing and reviewed clean.
+    Caught by reading the parameter back off a running SITL, where it came back
+    absent -- not by any amount of staring at the file.
+    """
+    for name in P.NOT_AN_ARDUPILOT_PARAM:
+        assert name not in P.BASE, f"{name} does not exist in ArduPilot"
+
+
+def test_validator_rejects_a_phantom_parameter():
+    bad = dict(P.BASE)
+    bad["BATT_RESISTANCE"] = 0.040
+    problems = P.validate(bad)
+    assert any("not an ArduPilot parameter" in x for x in problems), problems
+
+
+def test_voltage_thresholds_are_on_the_resting_curve():
+    """VOLTSRC=1 compensates sag, so the thresholds must NOT be pre-sagged.
+
+    Applying the correction twice would push the failsafe dangerously late,
+    which is the worse of the two mistakes.
+    """
+    bad = dict(P.BASE)
+    bad["BATT_LOW_VOLT"] = 3.10 * P.CELLS      # a loaded-curve number
+    problems = P.validate(bad)
+    assert any("applied twice" in x for x in problems), problems

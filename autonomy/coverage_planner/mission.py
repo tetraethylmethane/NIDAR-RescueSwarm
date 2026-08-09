@@ -60,18 +60,44 @@ class Item:
 
 def build(home: tuple[float, float], lines, altitude_m: float,
           speed_ms: float | None = None, takeoff_alt_m: float | None = None,
-          rtl: bool = True) -> list[Item]:
+          rtl: bool = True, transit_alt_m: float | None = None) -> list[Item]:
     """Assemble a full AUTO mission for one drone.
 
-    home         (lat, lon) of the launch pad — item 0, as ArduPilot expects
+    home         (lat, lon) of this drone's PAD SLOT — item 0, as ArduPilot
+                 expects. Not the shared pad centre: see plan.pad_slots().
     lines        transect segments from boustrophedon.transects()
     altitude_m   search altitude AGL
     speed_ms     optional DO_CHANGE_SPEED; the sizing model holds constant
                  GROUNDSPEED during the sweep, which is what makes sweep time
                  wind-independent (sizing §9.2)
+    transit_alt_m  the drone's staggered ingress/egress altitude. Flown as real
+                 waypoints — see below.
+
+    THE TRANSIT CORRIDOR IS FLOWN, NOT JUST TAKEN OFF TO
+    -----------------------------------------------------
+    plan.py stratifies transit altitude per drone (25/30/35 m) and keeps search
+    common at 40 m, on the argument that aircraft only conflict where they leave
+    their strips. That argument was sound and the mission did not implement it:
+    `takeoff_alt_m` set the NAV_TAKEOFF altitude and the very next item was the
+    first transect at `altitude_m`, so the aircraft climbed to 25 m and then
+    flew straight at the search deck, crossing other drones' strips somewhere on
+    a diagonal between the two. The stagger existed in the docstring and the
+    plan summary, and nowhere in the flight path.
+
+    So ingress is now: takeoff -> fly to above the first transect AT TRANSIT
+    ALTITUDE -> climb vertically, inside its own strip, to the search deck. And
+    egress is the reverse: descend in place to transit altitude before RTL. Every
+    metre flown outside the drone's own strip is now flown in its own altitude
+    band, which is what the stagger was for.
     """
     if not lines:
         raise ValueError("no transects — nothing to fly")
+
+    # Falling back to the search altitude would silently put every drone in the
+    # same band during transit -- the exact defect this parameter exists to fix.
+    transit = transit_alt_m if transit_alt_m else takeoff_alt_m
+    if not transit:
+        transit = altitude_m
 
     items: list[Item] = []
     seq = 0
@@ -92,11 +118,23 @@ def build(home: tuple[float, float], lines, altitude_m: float,
                           p1=1, p2=speed_ms, p3=-1))
         seq += 1
 
+    # INGRESS at the staggered altitude, to a point above the sweep start.
+    first = lines[0][0]
+    items.append(Item(seq, NAV_WAYPOINT, lat=first[0], lon=first[1],
+                      alt=transit))
+    seq += 1
+
     for a, b in lines:
         items.append(Item(seq, NAV_WAYPOINT, lat=a[0], lon=a[1], alt=altitude_m))
         seq += 1
         items.append(Item(seq, NAV_WAYPOINT, lat=b[0], lon=b[1], alt=altitude_m))
         seq += 1
+
+    # EGRESS: drop back into the transit band before going anywhere, so the
+    # aircraft leaves its strip at its own altitude rather than the search deck.
+    last = lines[-1][1]
+    items.append(Item(seq, NAV_WAYPOINT, lat=last[0], lon=last[1], alt=transit))
+    seq += 1
 
     if rtl:
         items.append(Item(seq, NAV_RETURN_TO_LAUNCH, frame=FRAME_MISSION))
