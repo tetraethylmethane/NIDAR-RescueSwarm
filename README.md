@@ -50,7 +50,9 @@
 
 All three aircraft reached waypoint 9/9, peaked at 40.1–40.2 m and landed on their pads. The staggered recovery visible in the clip — 11/19/29 m — is the per-drone `RTL_ALT` of 25/30/35 m in [`firmware/ardupilot-params/`](firmware/ardupilot-params/) working, observed rather than asserted.
 
-**The aircraft and the perception stack do not exist.** `perception/` contains no source files, so there is **no camera anywhere in the loop** — survivors and deliveries have only ever come from a simulator. The coverage planner, the ArduPilot parameter sets and the safety-link protocol are written and tested; none has met hardware. See the [implementation plan](docs/implementation-plan.md).
+That clip is also where the trouble started. Watching it, a reviewer asked why the aircraft passed so close and why none of them came home on a low battery. Both turned out to be real: the battery failsafe had never been loaded into any simulation, and the three aircraft were landing on top of each other. **§7.4 is the honest account** — four defects, each found by running the real artifact rather than reviewing it.
+
+**The aircraft does not exist, and neither does the detector.** `perception/` now holds the geotag geometry and a Monte Carlo of its error budget, both tested — but no detector and **no camera anywhere in the loop**, so survivors and deliveries have only ever come from a simulator. The coverage planner, the ArduPilot parameter sets and the safety-link protocol are written and tested; none has met hardware. See the [implementation plan](docs/implementation-plan.md).
 
 Everything after "start" is autonomous. The operator loads the mission file, presses start, and can abort or recall. Nothing else — anything more costs 50 points a time.
 
@@ -165,8 +167,11 @@ Full breakdown in [rulebook compliance](docs/requirements/rulebook-compliance.md
 | Thrust-to-weight | **Keep 2.0** | Tilt only reaches 12° at 15 m/s — attitude authority is never the wind limit. |
 | Recovery chute | **Fit one** | Permitted, ballistic deployment included. It can't meet the "land on the pad" condition — from 60 m in a 3 m/s breeze a canopy drifts 36 m against a 3.66 m pad — but −10 for landing outside beats −50 for a crash, so deploying is worth ~40 points anyway. |
 | Motor-out redundancy | **Still open** | Chute and extra rotors aren't substitutes. Only rotors keep the aircraft *flying and scoring*, and only rotors work during the 6 m delivery hover where a canopy can't inflate. Ties back to the rotor-count question above. |
+| Pad layout | **Corners, not a row** | Compliance had argued three airframes fit the 12 ft pad "3 per row". They do — until they land. In SITL they came to rest **0.83 m** apart, an overlap of 1.046 m airframes. Centres must stay half an airframe inside the edge, so they live in a 2.61 m square; a row across it gives 1.31 m, its corners give the full **2.61 m**. Measured closest approach went 0.83 m → **2.27 m**. |
+| Search pattern | **Two passes, second reversed** | Not for coverage — one pass already covers with 30 % sidelap and no gaps. Boresight bias is *systematic*, so more frames from one heading can't average it out. Flown the other way its along-track component flips sign and the two passes cancel it. Costs a whole second sweep, which will not fit one battery over the full area. |
+| Launch and recovery | **Sequenced in the mission file** | `NAV_DELAY` 0/15/30 s before each takeoff and `RTL_LOIT_TIME` 0/20/40 s before each descent — parameters and mission items, not companion code, because the battery-failsafe RTL is a mode change inside the flight controller. Closest pair at launch went **1.31 m → 64.80 m**. |
 
-Reasoning and numbers in [configuration trade](docs/sizing/configuration-trade.md).
+Reasoning and numbers in [configuration trade](docs/sizing/configuration-trade.md); the separation figures are measured, see §7.4.
 
 ---
 
@@ -217,6 +222,7 @@ Drafted ready to send: [organiser-questions.md](docs/requirements/organiser-ques
 ### 7.1 Layout
 
 ```text
+HANDOFF.md                  read this first if you are picking the project up
 docs/
   system-overview.md        how the system actually works
   requirements/             requirements baseline + rulebook compliance
@@ -224,9 +230,17 @@ docs/
   sizing/                   calculations, trades, committed model outputs
 tools/sizing-model/         the model everything traces back to
 hardware/bom/               Indian BOM + indigenisation scorecard + CHANGELOG
+autonomy/coverage_planner/  boundary in, one AUTO mission per drone out
+perception/geotagging/      pixel to lat/lon, and a Monte Carlo of its error
+firmware/ardupilot-params/  the five failsafes, as parameters not code
+simulations/sitl/           three-aircraft SITL harness and figure generator
+simulations/recordings/     committed telemetry + the figures drawn from it
 ```
 
-Everything else in the tree — `firmware/`, `autonomy/`, `perception/`, `communication/`, `ground-station/`, `simulations/` — is planned, not written.
+`communication/` and `ground-station/` are still mostly planned. The ground
+station itself lives in a separate repo,
+[NIDAR-GSC](https://github.com/tetraethylmethane/NIDAR-GSC), together with the
+SITL launch scripts.
 
 ### 7.2 Running the model
 
@@ -245,10 +259,81 @@ Outputs are committed beside each script in [`docs/sizing/`](docs/sizing/).
 
 > **Change the model, re-run it, and commit the new output in the same commit.** Every number in this README traces back to those files.
 
-### 7.3 Further reading
+### 7.3 Flying it in simulation
+
+Three ArduCopter SITL instances, the real `rescueswarm-drone{1,2,3}.parm`, the
+real planned missions. Every number in §7.4 comes off MAVLink from these runs.
+
+```bash
+export NIDAR_SYS=$PWD                     # and NIDAR_GSC for the GCS repo
+
+../NIDAR-GSC/scripts/test-battery-failsafe.sh   # low battery must bring it home
+python3 simulations/sitl/fly_and_record.py      # three aircraft fly the plan
+python3 simulations/sitl/fly_endurance.py       # hold until the packs run out
+python3 simulations/sitl/proof_figures.py       # redraw §7.4 from the telemetry
+```
+
+`NIDAR_SPEEDUP=3` slows the sim down enough to see the launch stagger; at the
+default 15× a 15 s delay compresses to one second of wall clock.
+
+> Do **not** use `NIDAR-GSC/scripts/run-sim.sh`. It launches ArduPlane — a fixed
+> wing — with no project parameters. It now refuses to run without an override.
+
+### 7.4 What the simulation actually showed
+
+Four things were wrong, and none of them were visible in review. Each was found
+by running the real artifact and reading values back off the running aircraft.
+
+![Launch sequencing](simulations/recordings/proof-1-launch.png)
+
+**The battery failsafe was never loaded.** `BATT_FS_LOW_ACT = 2` had been
+reviewed and unit-tested for weeks, and no simulation ever read the file — every
+SITL script used stock defaults, where the value is `0` and low battery does
+nothing at all. Now proven end to end: RTL fires at **10 809 mAh of a 10 800 mAh
+trip**, on all three aircraft, within two seconds of each other.
+
+![Battery failsafe](simulations/recordings/proof-3-battery.png)
+
+**`BATT_RESISTANCE` does not exist in ArduPilot.** It is a PX4 name; `.parm`
+drops unknown keys in silence, so the line read as configured while doing
+nothing. ArduPilot estimates internal resistance itself. `validate()` now
+rejects a table of known-phantom names.
+
+**Two of three aircraft finished their sweep at maximum range** — 516 m and
+540 m from the pad, on the lowest state of charge of the flight — because the
+sweep direction keyed on the drone index rather than on anything physical. Now
+all three finish inside 130 m, at identical path length.
+
+![Sweep pattern](simulations/recordings/proof-2-sweep.png)
+
+**Three aircraft landed on top of each other.** The measured overlap, and the
+corner layout that fixes it, are in §4.
+
+![Pad layout](simulations/recordings/proof-4-pad.png)
+
+Measured separation, three aircraft, before and after:
+
+| Phase | Before | After |
+|:--|--:|--:|
+| Launch, closest pair | 1.31 m | **64.80 m** |
+| Whole flight, both airborne | 3.99 m | **5.51 m** |
+| Closest horizontal at any time | 0.83 m — *overlap* | **1.89 m** |
+| Recovery run, closest at any time | 0.83 m — *overlap* | **2.27 m** |
+
+Telemetry for every figure is committed in
+[`simulations/recordings/`](simulations/recordings/). The GIFs are gitignored
+and regenerate from it.
+
+> **Nothing here has flown on real hardware.** "Measured" means measured in
+> simulation, which rules out whole classes of error and none of the physical
+> ones. [HANDOFF.md](HANDOFF.md) §2 separates what is measured from what is
+> modelled from what is assumed.
+
+### 7.5 Further reading
 
 | Document | What's in it |
 |:--|:--|
+| [Handoff](HANDOFF.md) | **Start here.** What state the work is in, what is proven, what is waiting on a human, and the traps that have already cost days |
 | [System overview](docs/system-overview.md) | Mission flow, architecture, methods, perception, indigenisation, failsafes |
 | [Frame design constraints](docs/frame-design-constraints.md) | What CAD needs before the first part is cut |
 | [Requirements baseline](docs/requirements/requirements-baseline.md) | Every SYS-xx requirement, traced to a rule and a verification method |
