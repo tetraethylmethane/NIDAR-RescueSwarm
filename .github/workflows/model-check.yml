@@ -44,6 +44,13 @@ jobs:
           # the failure mode that put a 12-cell bay in a 18-cell design.
           python tools/sizing-model/cad_equations.py            > /tmp/cad-equations-output.txt
           python tools/sizing-model/cost_model.py               > /tmp/cost-model-output.txt
+          # Not a sizing model -- a Monte Carlo through the real projection code
+          # in perception/. It cross-checks section 11 of sizing-calculations.md
+          # against an independently written forward model, and exits non-zero if
+          # the two disagree. It is here because its output is committed and must
+          # not drift, and because it seeds from crc32 rather than hash() so it
+          # reproduces byte for byte regardless of PYTHONHASHSEED.
+          python perception/geotagging/accuracy.py              > /tmp/geotag-accuracy-output.txt
 
       # --strip-trailing-cr because the comparison is about the NUMBERS, not the
       # line terminators. The outputs were committed from Windows with CRLF and
@@ -58,7 +65,8 @@ jobs:
           for f in model-output config-trade-output delivery-accuracy-output \
                    mission-profile-output setup-budget-output bom-reconcile-output \
                    battery-failsafe-output algorithm-trade-output cg-budget-output \
-                   boresight-budget-output thermal-budget-output cost-model-output; do
+                   boresight-budget-output thermal-budget-output cost-model-output \
+                   geotag-accuracy-output; do
             if diff -q --strip-trailing-cr "docs/sizing/$f.txt" "/tmp/$f.txt" > /dev/null; then
               echo "ok    $f.txt"
             else

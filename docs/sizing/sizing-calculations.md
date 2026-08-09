@@ -383,6 +383,10 @@ Ray–ground intersection at 60 m AGL, detection at the frame edge (worst case, 
 2. **Systematic error does not average out.** Twenty frames reduce GNSS noise by 4.5×, but boresight misalignment, target-extent bias and terrain assumption survive untouched. **Calibrate first, then fuse** — the reverse order wastes the fusion.
 3. **RTK converts a 3 m problem into a 1.3 m problem.** This is the strongest single argument for the local base station — and it is why clarification question 1 in the development plan matters. Note the base is ground equipment on a team-owned local link, not an external network, but get it confirmed.
 
+**Cross-checked by simulation.** `perception/geotagging/accuracy.py` pushes these same error sources through the real projection code in `perception/geotagging/geotag.py` — a Monte Carlo, not an RSS — and reconciles against this table term by term. The terms it models come out within 2–16 % of the analytic subset (the simulation being the harsher of the two, since it draws attitude at 0.30° where this table allocates the case-C equivalent of 0.07 m); adding back the terms it cannot model — ground height, lever arm, EKF lag and the unmodelled allowance — reproduces all three column totals to **+1 %**. Two routes sharing no code, so an arithmetic slip here or a projection error there now shows up as a disagreement. Output: [`geotag-accuracy-output.txt`](geotag-accuracy-output.txt).
+
+That is a check on this table's arithmetic, **not** evidence about the aircraft — every input distribution is still an assumption taken from this table. Real numbers need surveyed markers in P7.
+
 **Design targets to state in the requirements:** geotag CEP50 ≤ 2.0 m with RTK, ≤ 3.5 m without. Published monocular UAV geolocation results sit at a few metres, dominated by GNSS and attitude, consistent with case B. **Do not promise sub-metre performance until you have measured it against surveyed markers.**
 
 ---

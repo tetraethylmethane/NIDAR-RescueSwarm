@@ -1,0 +1,95 @@
+==============================================================================
+1. FORWARD AND INVERSE AGREE?  -  before any accuracy claim
+==============================================================================
+  3903 random poses, altitudes 30-80 m, attitudes +/-8 deg
+  worst round-trip residual: 7.76e-10 m
+  the two independent formulations agree to machine precision
+==============================================================================
+2. SINGLE-FRAME GEOTAG ERROR  -  Monte Carlo through the real code
+==============================================================================
+  Errors injected: GNSS by fix, attitude, boresight bias, exposure
+  timestamp against 8 m/s groundspeed, centroid noise, target extent.
+
+         fix  attitude    CEP50     RSS   P<=1m   P<=2m
+   RTK_FIXED      good    0.60m   0.72m     85%    100%
+   RTK_FIXED   typical    0.80m   0.95m     67%     99%
+   RTK_FLOAT      good    0.76m   0.92m     69%     99%
+   RTK_FLOAT   typical    0.92m   1.10m     56%     96%
+          3D      good    2.97m   3.57m      7%     27%
+          3D   typical    3.08m   3.67m      8%     25%
+        NONE      good    9.56m  11.53m      1%      3%
+        NONE   typical    9.48m  11.30m      1%      3%
+==============================================================================
+3. MULTI-FRAME FUSION  -  the case B to case C step
+==============================================================================
+    frames    CEP50     RSS   P<=1m   RTK_FIXED, typical attitude
+         1    0.80m   0.95m     67%
+         3    0.59m   0.70m     87%
+         5    0.55m   0.65m     91%
+        10    0.50m   0.61m     93%
+        20    0.49m   0.59m     95%
+
+  It flattens out, and that is the point. Fusion divides the RANDOM
+  terms by sqrt(n) and leaves boresight and target extent untouched.
+  Twenty frames is not twice as good as five.
+==============================================================================
+4. ALTITUDE AND OFF-NADIR
+==============================================================================
+     AGL    CEP50     RSS   RTK_FIXED, typical attitude, 5 frames
+     30m    0.46m   0.54m
+     40m    0.46m   0.56m
+     60m    0.55m   0.65m
+     80m    0.62m   0.75m
+
+  Angular error scales with height, so flying lower is worth accuracy
+  as well as pixels-on-target -- the 40 m versus 60 m decision has two
+  reasons behind it, not one.
+==============================================================================
+5. DOES THIS AGREE WITH THE ANALYTIC BUDGET?
+==============================================================================
+  Section 11 derives the geotag analytically by RSS. This derives it by
+  simulation through the real projection code -- independent routes to
+  the same quantity, so they are worth setting against each other.
+
+  But the simulation assumes a known flat ground plane and cannot
+  contain an 'unmodelled' allowance, so it reproduces only some of the
+  budget's terms. Compare that subset first, then add the rest back:
+
+  case        simulated  budget sub  delta  |   + rest    total  delta
+  B               0.98m       0.85m   +16%  |    2.94m    3.10m    +1%
+  C               0.56m       0.55m    +2%  |    1.18m    1.31m    +1%
+  C-strict        0.56m       0.53m    +5%  |    0.74m    0.92m    +1%
+
+  Two methods sharing no code, agreeing on the total. An arithmetic
+  slip in section 11, or a projection error in geotag.py, would now
+  show up here as a disagreement rather than going unnoticed.
+
+  Where the subset differs, the SIMULATION is the harsher of the two:
+  it draws attitude at 0.30 deg where the budget allocates the case-C
+  equivalent of 0.07 m, so it is not flattering the design.
+
+  C and C-strict simulate to the same figure, and that is not a bug:
+  the only thing separating them in section 11 is the ground-height
+  term, which this model does not have. Surveying the ground plane is
+  worth 0.4 m of the budget and NOTHING that this simulation can see.
+
+  SYS-12 asks CEP50 <= 0.75 m on the geotag.
+  simulated terms only, C-strict:  CEP50 0.46 m
+  section 11, all terms:           CEP50 0.75 m
+  Neither is a pass. The first excludes the ground plane and the
+  unmodelled allowance; the second sits exactly ON the limit with no
+  margin. SYS-12 is reachable and not yet demonstrated, and the thing
+  standing between the two numbers is mostly terrain knowledge.
+==============================================================================
+WHAT WOULD MAKE THIS A REAL MEASUREMENT
+==============================================================================
+  Every input distribution above is an assumption from the error
+  budget, so this checks the pipeline and the budget against each
+  other. It is not evidence about the aircraft.
+
+  Next: Gazebo knows the true position of every object, so the same
+  comparison can be run against rendered frames with no assumed
+  distributions at all -- see NIDAR-GSC scripts/gz-flight.sh.
+  After that: surveyed markers in P7, which is what SYS-12 is verified
+  against.
+==============================================================================
