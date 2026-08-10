@@ -7,6 +7,60 @@ programmatic edit, run the recalculation check before trusting a number.
 
 ---
 
+## 2026-08-11 — `RescueSwarm_Cost_Study_revB.xlsx`: the BOM is at or below market
+
+Rev B replaces yesterday's `RescueSwarm_BOM_Budget.xlsx` (rev A), which was built
+on estimates. **Every alternative in rev B carries a manufacturer part number, a
+supplier, a source URL and a dated price**, on tab `02 Market Evidence` — 20 live
+links. Rev A should be deleted; it was superseded before anyone acted on it.
+
+**Rev A's central claim was wrong.** It reported a ₹76,500 per-aircraft saving.
+Pricing the same substitutions against live Indian listings gives ₹29,922 of
+verified saving and **₹20,251 of verified *under*-pricing**, for a net movement of
+**₹9,671** against a ₹2,64,400 aircraft — 3.7 %.
+
+| Line | BOM ₹ | Market ₹ | Δ ext | |
+|---|--:|--:|--:|---|
+| 33 AI compute | 38,000 | ~20,000 | **+18,000** | Pi 5 + AI HAT+ **26 TOPS** — meets the ≥20 TOPS spec, unlike the 13 TOPS 8L rev A proposed |
+| 35 Camera | 14,000 | 9,600 | +4,400 | Arducam IMX477 |
+| 26 Flight controller | 26,000 | 22,600 | +3,400 | Pixhawk 6C Mini — **recommend rejecting** |
+| 17 Li-ion cell | 700 | 560 | +2,520 | Molicel P45B |
+| 15 Propeller | 2,200 | 1,399 | +1,602 | Tarot TL2848 — **not folding**, no CSIR-NAL |
+| 13 Motor | 7,000 | 9,099 | **−8,396** | Nearest listed equivalents are ₹9,099 (Indian RD MI-5008) and ₹9,499 (T-Motor MN5008) |
+| 41 Safety radio | 7,500 | ~19,355 | **−11,855** | India-compliant part is the RFD 868ux-IND; RFD868x bundles list at ₹38,709 for an air+ground pair |
+
+**The safety radio is the significant find.** ₹7,500 does not buy a compliant
+865–867 MHz link. This is a budget increase that was sitting undiscovered, and it
+is larger than any saving on the sheet except the compute module.
+
+**The motor line is the second.** The BOM carries ₹7,000 against a market of
+₹9,099–9,499 — so the current BOM is *cheaper than what is actually purchasable*,
+not padded. That reframes the whole exercise.
+
+### Two engineering errors in rev A, corrected
+
+- **4-in-1 ESC.** Rev A substituted a 60 A 4-in-1 board. Those are 30×30 mm FPV
+  racing stacks — unsuitable for 18 in props on a 6.36 kg airframe, and one board
+  failure stops all four motors on a quad with no motor-out capability. Withdrawn.
+- **13 TOPS accelerator.** Rev A proposed the Hailo-8L against a ≥20 TOPS spec.
+  The 26 TOPS Hailo-8 variant exists at similar cost and meets it. Corrected.
+
+### Four lines in the *current* BOM have no public price at all
+
+The flight controller, motor, cells and camera — **four of the six largest lines
+in the aircraft**. They are quote-required, not estimated. Until they are quoted,
+₹2,64,400 is itself an estimate, and the motor line is already known to sit below
+market. This is decision D6 on tab 04.
+
+### Conclusion recorded on the cover
+
+A cost-reduction pass on this BOM does not produce a cheaper aircraft. It produces
+a more accurate estimate of the same one. The ₹40,000 target remains unreachable —
+propulsion and power alone are ₹73,050, and both are sized by the mission rather
+than by supplier choice.
+
+---
+
 ## 2026-08-10 — added `RescueSwarm_BOM_Budget.xlsx`, a cost-reduction study
 
 **A study, not a build standard.** It is not read by `cost_model.py`, not
