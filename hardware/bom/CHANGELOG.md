@@ -7,6 +7,63 @@ programmatic edit, run the recalculation check before trusting a number.
 
 ---
 
+## 2026-08-11 — the Verified BOM is authoritative, and the aircraft costs ₹26,146 more
+
+**`RescueSwarm_BOM_India_Verified.xlsx` is now tracked.** It had been sitting
+untracked in this folder — one `rm` from gone — while being the best artifact in
+it. Its own README states the difference: *"The previous BOM named suppliers.
+This one names PARTS."* 41 lines, exact model numbers, 28 live product links, a
+per-line status flag, and thrust validated against Reflex Drive's published bench
+data.
+
+**It disagrees with `RescueSwarm_BOM_India.xlsx` by ₹26,146 per aircraft, and it
+is right.**
+
+| Line | India BOM | Verified | Δ | Which is right |
+|---|--:|--:|--:|---|
+| Flight controller | 26,000 | **42,000** | +16,000 | Verified. The Agam V6X-RT **Full Set** is ₹42,000 incl. 5 % GST and bundles the Digital Power Module, IMU board, carrier, SD and cables — confirmed on the manufacturer's product page |
+| Power module | 2,800 | **0** | −2,800 | Verified. It is inside the Full Set; buying it separately double-counts |
+| Motor | 7,000 | **9,099** | +2,099 | Verified. ₹9,099 is listed on Reflex Drive's own product page, with measured thrust published. ₹7,000 was never sourced |
+| ESC | 3,000 | **3,400** | +400 | Verified. Requirement is 60 A; the India BOM's supplier advertises 30–45 A |
+| Propeller | 4,400 | **5,600** | +1,200 | Verified on sourcing — **but see the design conflict below** |
+| AI compute | 38,000 | 55,000 | +17,000 | **Neither.** Both are placeholders; a ₹20,000 part meets the spec |
+| **Total** | **2,64,400** | **2,90,546** | **+26,146** | |
+
+An independent market search run before this file was opened found the RD MI-5008
+at **₹9,099** — the identical figure. The Verified prices are real.
+
+### Unresolved: it is a 17 in aircraft
+
+The Verified BOM uses RD 1760 props (17 × 6.0 in), not 18 in, and its README says
+the design point was *"revised to fit real Indian parts."* Bottom-up mass drops
+6,236 g → 5,780 g. `docs/sizing/`, `cost_model.py` and `bom_reconcile.py` all
+still describe the 18 in aircraft. **Adopting the Verified BOM means re-running
+the sizing model, not editing a price.** This is decision D5.
+
+### Cost study rev D — reconciliation plus three costed options
+
+`RescueSwarm_Cost_Study.xlsx` rewritten around the reconciliation:
+
+| Option | ₹/aircraft | Fleet ×3 | What it gives up |
+|---|--:|--:|---|
+| **A** all-Indian, as verified | 2,90,546 | 8,71,638 | nothing |
+| **B** RECOMMENDED | **2,59,001** | **7,77,003** | nothing that scores |
+| **C** lowest cost | 2,07,295 | 6,21,885 | ~125 geotag points, the Indian autopilot, the Indian cells |
+
+**Option B saves ₹31,545 per aircraft (10.9 %) with no loss of scored
+capability.** Its largest component is the AI compute substitution — Raspberry Pi
+5 + AI HAT+ **26 TOPS**, which meets the ≥20 TOPS spec — worth ₹35,000 and
+conditional on a benchmark.
+
+**Every option repricing the safety radio upward by ₹11,855.** ₹7,500 does not
+buy a compliant 865–867 MHz link in either BOM; the India-legal part is the
+RFD 868ux-IND.
+
+₹40,000 remains unreachable: propulsion and power alone are **₹81,896**, more
+than twice the target, before any frame, avionics, camera, radio or parachute.
+
+---
+
 ## 2026-08-11 — `RescueSwarm_Cost_Study.xlsx`: the BOM is at or below market
 
 Supersedes and deletes `RescueSwarm_BOM_Budget.xlsx` (rev A), which was built on
