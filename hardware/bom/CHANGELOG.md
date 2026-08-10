@@ -7,6 +7,69 @@ programmatic edit, run the recalculation check before trusting a number.
 
 ---
 
+## 2026-08-10 — added `RescueSwarm_BOM_Budget.xlsx`, a cost-reduction study
+
+**A study, not a build standard.** It is not read by `cost_model.py`, not
+reproduced in CI, and feeds no published number. The India BOM stays
+authoritative. Recorded here so it does not become an orphan workbook.
+
+Target that prompted it: **~₹40,000 per aircraft.** It is not reachable, and the
+sheet says so on its front tab rather than burying it.
+
+| | ₹/aircraft |
+|---|--:|
+| As-costed (India BOM tab 01) | 2,64,400 |
+| **Budget variant, every available cut taken** | **1,87,900** |
+| Reduction | −76,500, **−28.9 %** |
+| Target | 40,000 |
+| Budget variant as a multiple of target | **4.7×** |
+
+**Propulsion and power alone are ₹73,050 — 1.8× the whole target** — before any
+frame, FC, GNSS, camera, radio, parachute or release mechanism. Both groups are
+sized by the mission (4 × 200 g kits, 15 min hover, 600 m, T/W 2.0 at 6.36 kg),
+so they do not respond to shopping harder. Reaching ₹40,000 needs a different
+aircraft, which tab 02 specifies along with the eight requirements it fails.
+
+**No price in the budget column is a supplier quote.** Each line is marked
+`LISTED` (a dated Indian retail listing) or `EST` (my estimate). The as-costed
+column has the same weakness in places — Bharath publishes no motor price, GODI
+no cell price — so the comparison is directional until quotes land.
+
+### Three lines that do not respond to cost pressure
+
+- **GNSS pair, ₹35,000** — no cheaper RTK-capable equivalent exists. Non-RTK M10
+  is ~₹3,000 but drops geotag to ~3.1 m, forfeiting ~125 of 200 points. A
+  scoring decision wearing a cost decision's clothes.
+- **Parachute, ₹12,000** — SYS-41, supplier still TBD, nearest match already one
+  size undersized. Needs solving, not cheapening.
+- **Flight controller** — the imported Pixhawk 6C Mini **lists at ₹22,600 in
+  India** against the Agam V6X-RT at ₹26,000. **A ₹3,400 saving to forfeit the
+  indigenisation story. Recommend not swapping.** An earlier estimate of ~₹9,000
+  for this substitution was wrong: Indian-market prices on imported avionics
+  carry heavy import margin, and the generic-is-cheaper intuition does not hold.
+
+### The largest cut is also the largest risk
+
+Line 33, AI compute, ₹38,000 → ~₹18,000 (RPi 5 + Hailo-8L). That is **13 TOPS
+against a ≥20 TOPS spec**, where §8.2 sized 24 inferences/s at 640×640 on an
+Orin Nano at 24–41 FPS. If it misses 2 Hz, detection recall falls and the geotag
+points go with it. **Benchmark before committing** — do not buy on the datasheet.
+
+### Tab 02 — what ₹40,000 actually buys, and the useful version of the idea
+
+A ~1.3 kg quad at **₹35,400**, specified in full. It fails eight requirements
+including SYS-41, SYS-14, SYS-04 and rule 8.14, and cannot carry 800 g of kits.
+
+It is worthless as a competition entry and genuinely useful as a **development
+mule**. The binding constraint is an 8-week flight-test window currently
+budgeted entirely on a ₹2.64 L aircraft that does not exist yet and cannot be
+risked once it does. Three mules cost about one AI compute module and would
+absorb GCS integration, the multi-SYSID radio path, the SYS-21 setup drill that
+is still *modelled rather than measured*, failsafe behaviour on real hardware,
+and crash-and-rebuild practice — the work that does not need the real airframe.
+
+---
+
 ## 2026-08-10 — supplier links on tab 01, and four lines that do not source
 
 **India BOM only.** Tab 01 gains two columns, **P `Source link`** and **Q
