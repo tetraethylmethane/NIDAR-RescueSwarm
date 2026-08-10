@@ -7,6 +7,64 @@ programmatic edit, run the recalculation check before trusting a number.
 
 ---
 
+## 2026-08-10 — supplier links on tab 01, and four lines that do not source
+
+**India BOM only.** Tab 01 gains two columns, **P `Source link`** and **Q
+`Sourcing note (verified 2026-08-10)`**, covering all 49 priced lines: 23 carry a
+product or supplier URL, 26 are marked in-house or local supply because no
+catalogue part exists for them.
+
+**No row was inserted and the columns sit beyond the last used column (O), so
+nothing shifted.** All **499** formulas survive, `01!I61/K61/L61` still sum to
+row 60, and the cross-sheet references from tabs 07/08/09 are unchanged.
+`cost_model.py` regenerates `docs/sizing/cost-model-output.txt` **byte for
+byte**, so the `reproduce` job is unaffected.
+
+### Four lines whose supplier does not confirm the specification
+
+Looking for the links is what found these. Each was a named supplier in column D
+that nobody had opened.
+
+| Line | ₹/aircraft | What the supplier actually offers |
+|---|--:|---|
+| **39 Mesh node** | 9,000 | FxUAV's mesh module is **928 MHz**; FxLink is 2.4 GHz point-to-point telemetry. This line specifies 802.11s at 2.4/5.8 GHz. **No FxUAV product satisfies it.** |
+| **41 Sub-GHz safety radio** | 7,500 | Same supplier, same 928 MHz part. This line specifies **865–867 MHz**, the Indian delicensed SRD band. 928 MHz is outside it. |
+| **48 Recovery parachute** | 12,000 | Column D says TBD and it **stays TBD** — no Indian supplier found. Nearest match is imported: Fruity Chutes Harrier, spring-launched (so it clears the no-blast ruling) but **rated to 6.2 kg against a 6.36 kg MTOW**, one size undersized. |
+| **28/29 GNSS** | 35,000 | AeroNav-1 confirms NavIC L1+L5 and a BMM350 magnetometer. It **does not claim RTK or moving-baseline** anywhere on the product page. This was already the open action in column O; it is now evidence rather than a worry, and it gates geotag case C. |
+
+That is **₹63,500 per aircraft — 24 % of the air vehicle** — resting on parts
+whose suppliers do not advertise them. Three lesser ones are in column Q too:
+the ESC catalogue advertises 30–45 A against a 60 A line, the 18 in folding
+propeller is not in S R Aerospace's listing, and e-con's 12 MP module is not
+confirmed as S-mount — which would void line 36, the ₹2,600 lens bought for it.
+
+**No price is changed by this entry.** These are open procurement actions, not
+repricings; deciding them is a human's call and several move the design.
+
+### An arithmetic inconsistency in `cost_model.py`, found by the same pass
+
+Not fixed here, because fixing it moves the published funding ask and that
+should be a decision rather than a side effect.
+
+`indig_frac` is computed with tab 01 counted **once**
+([`cost_model.py:119-121`](../../tools/sizing-model/cost_model.py#L119-L121)),
+but `subtotal` counts tab 01 **three times** (line 107). The same fraction is
+then applied to that subtotal to derive the dutiable residual (line 126).
+
+| Weighting | Indigenisation | Dutiable residual | Duty |
+|---|--:|--:|--:|
+| As published — tab 01 counted once | 67.9 % | ₹6.09 L | ₹1.34 L |
+| Programme-weighted — tab 01 × 3 | **65.5 %** | ₹6.55 L | ₹1.44 L |
+
+Both are defensible as *statements* — the published one is literally "across the
+priced BOM", which is what it says. The inconsistency is applying a BOM-weighted
+fraction to a programme-weighted subtotal. Carried through GST and contingency it
+moves the programme total by roughly **₹0.14 L**, so the funding ask is not
+materially wrong — but 67.9 % is the headline indigenisation claim and the
+programme-weighted number is 65.5 %.
+
+---
+
 ## 2026-08-10 — cost pass: subtotal −21 %, indigenisation 61.3 % → 67.9 %
 
 **India BOM only.** The generic BOM is unchanged and now differs from the India
