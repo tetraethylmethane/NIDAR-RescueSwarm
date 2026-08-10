@@ -40,6 +40,32 @@ the design point was *"revised to fit real Indian parts."* Bottom-up mass drops
 still describe the 18 in aircraft. **Adopting the Verified BOM means re-running
 the sizing model, not editing a price.** This is decision D5.
 
+### Tab 06 — a buildable sub-₹50,000 aircraft, fully sourced
+
+"Can we get a drone under ₹50,000" has two answers, and tab 06 now settles the
+second one properly. **A real, orderable aircraft at ₹37,309** — S500 frame,
+A2212 1000 KV × 4, SimonK 30 A ESCs, 1045 props, **Pixhawk 2.4.8**, NEO-M8N,
+2 × 3S 5200 mAh, ELRS, telemetry, Pi Zero 2 W + Camera Module 3, release servo
+and a spares set. 14 product links; **78 % of the cost is dated Indian listings**,
+22 % estimated and flagged.
+
+The flight controller is Pixhawk 2.4.8 **chosen for fidelity, not price** — it is
+Pixhawk-standard, so it runs the same ArduPilot build and the same MAVLink as the
+real aircraft, which is the entire point. Matek F405-TE at ~₹6,634 is noted as the
+cheaper alternative.
+
+**Band caution recorded on the sheet:** 433 MHz telemetry kits are sold widely in
+India, but the delicensed SRD band is 865–867 MHz. Either confirm before flying or
+carry telemetry over the ELRS link and delete the line.
+
+It fails eight NIDAR requirements — payload, endurance, parachute, per-drone
+video, onboard detection, geotag accuracy, loaded thrust-to-weight and link
+margin — and the tab lists each with the reason. **It is flight-test
+infrastructure, not a cheaper competition aircraft**, and the recommendation is to
+fund it from contingency rather than the airframe budget.
+
+Three mules cost ₹1,11,927 — roughly half of one AI compute module under Option A.
+
 ### Cost study rev D — reconciliation plus three costed options
 
 `RescueSwarm_Cost_Study.xlsx` rewritten around the reconciliation:
