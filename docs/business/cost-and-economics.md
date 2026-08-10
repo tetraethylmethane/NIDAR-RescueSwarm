@@ -17,19 +17,46 @@ where it has to come from.
 
 | | INR |
 |:--|--:|
-| Air vehicle, **per aircraft** | 2.81 L |
-| × 3 for the fleet | 8.44 L |
-| Payload, ground segment, test equipment, spares, software | 15.62 L |
-| **Subtotal** | **24.06 L** |
-| Duty + freight, 22 % on the imported residual only | 2.05 L |
-| GST, 18 % | 4.70 L |
-| Contingency, 20 % | 6.16 L |
-| **PROGRAMME TOTAL** | **36.97 L** |
+| Air vehicle, **per aircraft** | 2.64 L |
+| × 3 for the fleet | 7.93 L |
+| Payload, ground segment, test equipment, spares, software | 11.02 L |
+| **Subtotal** | **18.96 L** |
+| Duty + freight, 22 % on the imported residual only | 1.34 L |
+| GST, 18 % | 3.65 L |
+| Contingency, 20 % | 4.79 L |
+| **PROGRAMME TOTAL** | **28.74 L** |
 
-**₹36.97 lakh is the funding ask.** Say plainly that it is a *competition build,
+**₹28.74 lakh is the funding ask.** Say plainly that it is a *competition build,
 not a product*: it carries test and calibration equipment, a full spares set
-including a possible fourth aircraft, and a field data campaign that a
+including a spare airframe structure, and a field data campaign that a
 production unit would not.
+
+### Where it came down from ₹36.97 L
+
+A cost pass on 2026-08-10 cut the subtotal 21 %. Worth being able to walk a
+panel through, because "we took a fifth out and the aircraft did not change" is
+a stronger answer than a low number on its own:
+
+| Cut | INR | Why it was not a capability |
+|:--|--:|:--|
+| Dev workstation / GPU | 1.65 L | Duplicated the Indian GPU cloud line, which is cheaper **and** more indigenous (I1 0.9 vs I3 0.2). Cloud raised 0.40 → 0.75 L; net 1.30 L |
+| Complete fourth aircraft → spare structure set | 1.40 L | Spares already held motors, ESCs, props, arms, FC, GNSS, compute, camera and three packs — ₹2.1 L. The fourth airframe bought most of it twice; what was missing was the structure |
+| AI compute module, ×3 + spare | 0.68 L | Priced for an integrated edge-AI box; §8.2 sizes the mission on an Orin Nano-class module |
+| GCS + backup laptop | 0.50 L | The load is 3 × H.264 decode and a Python GCS. With training on cloud, neither machine needs a discrete GPU |
+| Power station 2 → 1.2 kWh | 0.25 L | 3 × 292 Wh at ~85 % efficiency is 1.03 kWh. The extra was reserve nothing asked for |
+| Equipment cases, chargers, PSU, spot welder, solar panel, duplicate instruments | 0.62 L | Optional by the BOM's own note, or specified above the requirement, or bought in twos |
+| **Total** | **5.10 L** | |
+
+**No flight mass changed** — tab 01 bottom-up stays at 6,236 g, so MTOW,
+endurance and the 25 kg margin are untouched. Nothing on the flight-critical
+path was cut, and tab 08's DO-NOT-CUT list (safety equipment, the calibrated
+scale, the spares that protect the flight window) is intact.
+
+Cut lines sit at Qty 0 with their price still in the cell, so reinstating one is
+a single-cell edit. **The one accepted risk is the fourth aircraft:** rebuilding
+a crashed airframe now consumes the spares, so a second failure in the same week
+is uncovered. Rule C1 needs only two aircraft flying. If funding arrives, this
+is the first ₹1.65 L to spend.
 
 ## 2. What an additional system costs
 
@@ -38,10 +65,10 @@ is one-off. What scales is the marginal cost.
 
 | | INR |
 |:--|--:|
-| Marginal aircraft, taxes in | 3.60 L |
-| Three-aircraft fleet | 10.81 L |
-| Ground segment, one per fleet | 5.97 L |
-| **Deployable system, cost basis** | **16.78 L** |
+| Marginal aircraft, taxes in | 3.34 L |
+| Three-aircraft fleet | 10.02 L |
+| Ground segment, one per fleet | 4.58 L |
+| **Deployable system, cost basis** | **14.60 L** |
 
 **Cost basis, not price.** Margin, warranty, training, support and
 certification are commercial decisions and are not BOM arithmetic. Do not let
@@ -49,14 +76,17 @@ the deck blur the two — a panel will ask.
 
 ## 3. Indigenisation, quantified
 
-**61.3 % Indian content, value-weighted across the priced BOM.** Not a slogan —
+**67.9 % Indian content, value-weighted across the priced BOM** — up from 61.3 %,
+because the cost pass cut two of the least-indigenous lines in the programme (an
+assembled RTX workstation at I3 0.2, a second full-price laptop at I3 0.25) and
+moved the work they were doing onto Indian GPU cloud at I1 0.9. Not a slogan —
 every line carries a declared Indian fraction, so the number is auditable.
 
 | | INR |
 |:--|--:|
-| Programme as costed | 36.97 L |
-| The same BOM fully imported | 41.56 L |
-| **Saved by sourcing in India** | **4.59 L — 11 %** |
+| Programme as costed | 28.74 L |
+| The same BOM fully imported | 32.75 L |
+| **Saved by sourcing in India** | **4.01 L — 12 %** |
 
 The saving is real but it is the smaller half of the argument. **The bigger half
 is schedule:** the BOM's own note puts imports at 4–6 weeks against 2–3 weeks
@@ -100,7 +130,7 @@ can be checked.** Panels test confidence; they reward traceability.
 
 ---
 
-## 6. Two defects found while building this
+## 6. Defects found while building this
 
 Recorded because they are the same failure mode the rest of this repository is
 organised against, and because both produced *plausible* answers.
@@ -116,6 +146,18 @@ point is **6.36 kg / 19.08 kg**. It is descriptive text rather than a formula,
 so nothing computed from it is wrong — but it is the third instance of a number
 transcribed into prose and then left behind, and it is in the document that will
 be handed to suppliers.
+
+**Three more of the same, found by the cost pass moving the numbers.**
+`cost_model.py` printed the label `programme as costed (61.3% Indian)` as a
+string literal, next to the derived figure it was supposed to echo — so it kept
+saying 61.3 % after the real number moved to 67.9 %. It now formats from
+`indig_frac`. Tab 00 stated "about 60% of PROGRAMME VALUE"; tab 09's
+presentation note told the team to say **"84% of system value is Indian"**, a
+figure that tab is arithmetically incapable of producing and never has. Both
+were prose beside a formula that computed the truth. All three are corrected,
+and this is now four instances of the same failure — the pattern is not
+carelessness about any one number, it is that **prose next to a formula is never
+recomputed**, so the fix has to be to derive it or to delete it.
 
 ---
 

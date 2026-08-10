@@ -18,7 +18,7 @@ Items marked ⏳ have **lead time** and cannot be produced in the final week.
 | 1 | Problem Understanding & Real-World Relevance | 30 | Strong — see §1 |
 | 2 | Target Users, Customers & Beneficiaries | 20 | To draft |
 | 3 | Market Sizing & Deployment Potential | 30 | To research — sources named in [cost-and-economics.md](cost-and-economics.md) §5 |
-| 4 | Business Model & Revenue Approach | 30 | Cost basis ready (16.78 L/system); pricing needs §5 inputs |
+| 4 | Business Model & Revenue Approach | 30 | Cost basis ready (14.60 L/system); pricing needs §5 inputs |
 | 5 | Expenditure Breakdown & Resource Planning | 20 | ✅ **Done** — [cost-and-economics.md](cost-and-economics.md), generated from the BOM |
 | 6 | Funds Raised, Sponsorships & Resource Mobilisation | 20 | ⏳ **Lead time** |
 | 7 | Competitive Advantage & Differentiation | 20 | Strong — see §7 |

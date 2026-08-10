@@ -138,8 +138,9 @@ print(f"  contingency @ {CONTINGENCY:.0%}                 {inr(conting)}")
 print(f"  {'PROGRAMME TOTAL':<34}{inr(programme)}")
 print()
 print("  This is the funding ask. It is a competition build, not a product:")
-print("  it carries test equipment, spares, a possible fourth aircraft and a")
-print("  field data campaign that a production unit would not.")
+print("  it carries test equipment, a full spares set including a spare")
+print("  airframe structure, and a field data campaign that a production")
+print("  unit would not.")
 
 rule("UNIT ECONOMICS  -  what an ADDITIONAL aircraft costs")
 print("  The programme total is the wrong number to quote a customer, because")
@@ -179,7 +180,11 @@ print()
 duty_full = subtotal * DUTY_FREIGHT
 gst_full = (subtotal + duty_full) * GST
 prog_full = (subtotal + duty_full + gst_full) * (1 + CONTINGENCY)
-print(f"  {'programme as costed (61.3% Indian)':<38}{inr(programme)}")
+# Derived, not transcribed. This label read "61.3% Indian" as a literal until
+# a cost-reduction pass moved the fraction and left the prose behind -- the
+# same defect this repository is organised against, in the module that exists
+# to prevent it.
+print(f"  {f'programme as costed ({indig_frac:.1%} Indian)':<38}{inr(programme)}")
 print(f"  {'the same BOM fully imported':<38}{inr(prog_full)}")
 print(f"  {'saved by sourcing in India':<38}{inr(prog_full - programme)}"
       f"   {(prog_full - programme) / prog_full:.0%}")

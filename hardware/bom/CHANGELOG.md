@@ -7,6 +7,93 @@ programmatic edit, run the recalculation check before trusting a number.
 
 ---
 
+## 2026-08-10 — cost pass: subtotal −21 %, indigenisation 61.3 % → 67.9 %
+
+**India BOM only.** The generic BOM is unchanged and now differs from the India
+BOM by more than sourcing.
+
+| | Before | After |
+|---|---|---|
+| Air vehicle, per aircraft | ₹2,81,400 | **₹2,64,400** |
+| Subtotal | ₹24.06 L | **₹18.96 L** |
+| Programme total | ₹36.97 L | **₹28.74 L** |
+| Indigenisation, value-weighted | 61.3 % | **67.9 %** |
+| Deployable system, cost basis | ₹16.78 L | **₹14.60 L** |
+
+**No row was inserted or deleted, so no formula moved and none needed repair** —
+all 499 survive, verified after saving. Only cell values in the Qty, Unit Price,
+description and note columns changed. **Lines that were cut are set to Qty 0 with
+their unit price left in the cell**, so the decision stays visible in the sheet
+and reinstating one is a single-cell edit.
+
+**Tab 01 bottom-up mass is unchanged at 6,236 g.** MTOW, hover endurance, the
+2.0× reserve and the 25 kg margin are all untouched — every cut is on tabs 03–06
+or is a reprice, never a mass change. `bom_reconcile.py` reads tab 07's group
+masses as constants and reproduces byte-for-byte.
+
+### What was cut, and why it was not a capability
+
+| Tab | Line | Change | ₹ | Basis |
+|---|---|---|--:|---|
+| 04 | 20 Dev workstation / GPU | Qty 1 → **0** | −1,65,000 | Duplicates tab 06 line 13 (Indian GPU cloud), which is cheaper **and** scores I1 0.9 against this line's I3 0.2. Annotation and SITL run on the two GCS laptops |
+| 06 | 13 Training compute | ₹40,000 → **₹75,000** | +35,000 | Absorbs the above. Net −1.30 L, and it moves ₹75,000 of spend from I3 0.2 to I1 0.9 |
+| 05 | 10 Complete spare aircraft → **spare airframe structure set** | ₹1,65,000 → **₹25,000** | −1,40,000 | Lines 1–9 already held motors, ESCs, props, arms, FC, GNSS, compute, camera and three packs — ₹2.1 L, everything a fourth airframe needs *except the structure*. The old line bought most of it twice |
+| 01 | 33 AI compute module | ₹55,000 → **₹38,000** | −51,000 (×3) | Priced for an integrated e-con Darsi-class box. Sizing §8.2 sizes tiled inference at 2 Hz on an **Orin Nano**, and §14's thermal case is 18 W. Buy the module the model assumes, on an Indian carrier |
+| 05 | 7 Spare compute module | ₹55,000 → **₹38,000** | −17,000 | Tracks tab 01 |
+| 03 | 1–2 GCS + backup laptop | ₹1,05,000 → ₹85,000; ₹85,000 → ₹55,000 | −50,000 | The load is 3 × 720p H.264 WebRTC decode plus a Python GCS. With training on cloud, neither needs a discrete GPU. The backup must run the same software, not match the same benchmark |
+| 03 | 11 Portable power station | 2 kWh → **1.2 kWh** | −25,000 | 3 × 292 Wh at ~85 % charge efficiency is 1.03 kWh, plus GCS. The rest was reserve nothing asked for |
+| 03 | 16 Equipment cases | ₹16,000 → **₹11,000** ea | −20,000 | Foam layout is what the 5-minute setup depends on, not the shell |
+| 03 | 12 Solar panel | Qty 1 → **0** | −15,000 | The BOM's own note called it optional. 200 W folding PV needs ~7 h of ideal sun to refill 1.2 kWh |
+| 04 | 3 Battery charger | ₹26,000 → **₹14,000** ea | −24,000 | 292 Wh at 1C is ~300 W. The 1000 W class bought headroom above 1C the cells should not see |
+| 04 | 6 Spot welder | Qty 1 → **0** | −15,000 | Tab 01 line 18 already buys pack assembly as a service from an Indian pack house, which spot-welds |
+| 04 | 4 Charger PSU | Qty 2 → **1** | −8,000 | Two 600 W chargers at 1C draw ~600 W combined; one 960 W supply carries both |
+| 03 | 3 Sun hood + monitor | ₹20,000 → **₹12,000** | −8,000 | Locally fabricated hood, commodity portable panel |
+| 04 | 2, 9 Power analyser, calipers | Qty 2 → **1** each | −7,200 | Bench measurements, not two parallel stations |
+
+Total **−₹5,10,200** on the subtotal.
+
+**Not cut, and deliberately so.** Tab 08's DO-NOT-CUT list is intact: safety
+equipment, the calibrated scales that decide the rule C2 weigh-in, and the
+flight spares that protect the 8-week window. The **GNSS secondary** (₹17,000 ×3)
+stays — moving-baseline yaw is load-bearing for the 450 geotag points, since a
+magnetometer sitting near a 98 A bus is not a heading source. The **recovery
+parachute** (₹13,500 ×3) stays — the changelog entry below bought it on a points
+argument, not a cost one, and reversing that is a design decision rather than a
+cost cut. The **flight controller** (₹26,000) stays: a cheaper Indian FC may
+exist, but no quote does, and repricing it would be inventing a number.
+
+### Prices repriced on requirement, not on quotation
+
+The AI compute, laptop, power-station, charger and case lines were repriced
+against what the sizing model or the rule actually asks for. They are still
+**indicative budgetary estimates, like every price in this workbook** — tab 08
+row 2 has always said so. Lines carrying the largest uncertainty are marked
+`QUOTE REQUIRED` in the note column. Send RFQs before any of this is quoted to a
+panel.
+
+### The accepted risk, stated plainly
+
+Rebuilding a crashed airframe now consumes the spares set, so **a second failure
+in the same week is uncovered**. Rule C1 needs only 2 aircraft flying and the
+design flies 3. If funding arrives, the first ₹1,65,000 to spend is reinstating
+the complete fourth aircraft (tab 05 line 10).
+
+### Prose corrections in the same pass
+
+Three cells stated a number as text beside a formula that computed it, so none
+of them updated when the mix changed. All are prose — nothing computed from them
+was wrong, which is why they survived:
+
+| Where | Was | Now |
+|---|---|---|
+| `cost_model.py` | label literal `programme as costed (61.3% Indian)` | formatted from `indig_frac` |
+| `00!C7` | "about 60% of PROGRAMME VALUE ... about 57% of flight-hardware value" | 68 % / 59 %, plus an instruction to re-read tab 09 |
+| `09!B31` | *"84% of system value is Indian"* — a figure tab 09 has never computed | 68 %, plus a note to read it off row 11 |
+
+`08!B25` records the pass where a procurement reader will meet it.
+
+---
+
 ## 2026-08-08 — recovery parachute, RTK confirmed, simplified autonomy
 
 ### Added: recovery parachute (SYS-41)
