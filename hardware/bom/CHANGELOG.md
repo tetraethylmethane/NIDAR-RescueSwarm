@@ -7,12 +7,27 @@ programmatic edit, run the recalculation check before trusting a number.
 
 ---
 
-## 2026-08-11 — `RescueSwarm_Cost_Study_revB.xlsx`: the BOM is at or below market
+## 2026-08-11 — `RescueSwarm_Cost_Study.xlsx`: the BOM is at or below market
 
-Rev B replaces yesterday's `RescueSwarm_BOM_Budget.xlsx` (rev A), which was built
-on estimates. **Every alternative in rev B carries a manufacturer part number, a
-supplier, a source URL and a dated price**, on tab `02 Market Evidence` — 20 live
-links. Rev A should be deleted; it was superseded before anyone acted on it.
+Supersedes and deletes `RescueSwarm_BOM_Budget.xlsx` (rev A), which was built on
+estimates. **Every alternative now carries a manufacturer part number, a supplier,
+a source URL and a dated price**, on tab `04 Market Evidence` — 20 live links.
+
+**Document, rev C.** Seven tabs, ordered so the conclusion comes first:
+
+| Tab | Purpose |
+|---|---|
+| `00 Summary` | One printable page: question, answer, headline table, five recommendations, how to read the rest, approval block |
+| `01 Findings` | Five findings, each as *evidence → what it means → action* |
+| `02 Cost Summary` | The roll-up, savings and under-pricing separated |
+| `03 Air Vehicle BOM` | All 49 lines with a per-line status: KEEP / SUBSTITUTE / REPRICE / SOURCE |
+| `04 Market Evidence` | Every part considered, with source URLs |
+| `05 Decisions` | Seven decisions, with columns to record the call and sign |
+| `06 What ₹40k Buys` | A real ₹35,400 aircraft and the eight requirements it fails |
+
+Print setup on every sheet (fit-to-width, repeating headers, page numbers), one
+colour legend used consistently, and no table wider than eleven columns.
+Tab 03 reconciles to **₹2,64,400 and 6,236 g**, matching the build standard exactly.
 
 **Rev A's central claim was wrong.** It reported a ₹76,500 per-aircraft saving.
 Pricing the same substitutions against live Indian listings gives ₹29,922 of
