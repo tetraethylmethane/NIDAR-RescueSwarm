@@ -1,5 +1,15 @@
-build/
+# LaTeX build intermediates
 *.aux
 *.log
 *.out
-*.pdf
+*.toc
+*.lof
+*.lot
+*.bbl
+*.blg
+*.synctex.gz
+
+# The compiled proposal IS tracked -- it is the deliverable a sponsor receives,
+# not a build intermediate. Regenerate with:
+#   pdflatex rescueswarm-proposal.tex   (twice, for cross-references)
+!rescueswarm-proposal.pdf
