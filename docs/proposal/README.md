@@ -1,6 +1,22 @@
 # Funding proposal
 
-`rescueswarm-proposal.tex` — IEEEtran conference format, 7 pages.
+`rescueswarm-proposal.tex` — IEEEtran conference format, **9 pages, 6 figures**.
+
+## Figures
+
+| Fig. | Content | Source |
+|---|---|---|
+| 1 | System architecture | TikZ, drawn in the document |
+| 2 | Autonomous mission sequence | TikZ, drawn in the document |
+| 3 | Launch deconfliction, before/after | [`proof-1-launch.png`](../../simulations/recordings/) |
+| 4 | Recovery pad slot geometry | [`proof-4-pad.png`](../../simulations/recordings/) |
+| 5 | Coverage decomposition and return geometry | [`proof-2-sweep.png`](../../simulations/recordings/) |
+| 6 | Ground control station | [`gcs-running.png`](../../ground-station/) |
+
+Figures 3–6 are committed simulation output, referenced in place via
+`\graphicspath` rather than duplicated into this directory. Figure 6 is used
+**uncropped**, including the panel showing that abort/recall is not yet wired to
+a safety radio; the proposal states this in §VI-C rather than hiding it.
 
 ## Building
 
@@ -29,6 +45,31 @@ Two `TODO` markers are live in the source:
 |---|---|
 | `\author{...}` | Names, department, institution, city, emails |
 | `\section*{Acknowledgment}` | Institutional support, mentors, suppliers who provided evaluation hardware |
+
+## Separation numbers: HANDOFF.md is stale
+
+Writing the figure captions meant recomputing the separation results from
+[`mission-telemetry.json`](../../simulations/recordings/). **Three numbers in
+`HANDOFF.md` §2 do not reproduce**, and one of them is definitively wrong:
+
+| Claim | HANDOFF.md | Reproduced from telemetry | Also says |
+|---|--:|--:|---|
+| Separation at launch | 92.12 m | **64.80 m** | `README.md` and the figure itself both say 64.80 m |
+| Separation en route | 34.00 m | 29.19 m | definition-sensitive |
+| Stacked over the pad | 6.52 m | 5.51 m | hardcoded as a caption string in `proof_figures.py:350` |
+
+The launch figure is not a definition question: `README.md`, `proof-1-launch.png`
+and the raw telemetry all agree on **64.80 m**, and only `HANDOFF.md` says
+92.12 m. That one has been corrected in place.
+
+The other two depend on how the phase boundary is drawn — my "en route" excludes
+a 60 m radius around the pad — so they are **left alone pending a decision on the
+definition**, not silently overwritten. The recovery figure is worth attention
+because `proof_figures.py` carries it as a hardcoded string in a caption rather
+than computing it, which is the failure mode this repository is organised
+against.
+
+The proposal uses only the reproducible figures.
 
 ## Open issues a reader should know about
 

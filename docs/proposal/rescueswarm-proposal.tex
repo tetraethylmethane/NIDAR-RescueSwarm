@@ -16,7 +16,24 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{url}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning,fit,calc,backgrounds}
 \usepackage[hidelinks]{hyperref}
+
+% Figures drawn from committed simulation output live outside this directory.
+\graphicspath{{../../simulations/recordings/}{../../ground-station/}}
+
+% ---- TikZ styles used by the architecture and flow figures --------------
+\tikzset{
+  blk/.style   ={draw, rounded corners=2pt, align=center, font=\scriptsize,
+                 minimum height=6mm, inner sep=3pt},
+  seg/.style   ={draw, dashed, rounded corners=4pt, inner sep=5pt},
+  dec/.style   ={draw, diamond, aspect=2.2, align=center, font=\scriptsize,
+                 inner sep=1pt},
+  flow/.style  ={-{Stealth[length=2mm]}, thick},
+  dflow/.style ={-{Stealth[length=2mm]}, dashed},
+  lbl/.style   ={font=\scriptsize\itshape, inner sep=1pt},
+}
 % NOTE: `cite` and `balance` are deliberately not required. Both are optional
 % conveniences (citation compression, final-page column balancing) and omitting
 % them keeps this document compilable on a stock TeX installation.
@@ -283,7 +300,56 @@ deployment is an aircraft that does not return.
 
 \subsection{Segment architecture}
 
-The system comprises three segments.
+The system comprises three segments, shown in Fig.~\ref{fig:arch}.
+
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[node distance=4mm]
+
+% ---- air segment -----------------------------------------------------
+\node[blk] (cam)  {Camera\\12\,MP nadir};
+\node[blk, right=8mm of cam] (gnss) {GNSS pair\\pos.\ + heading};
+\node[blk, below=4mm of cam] (inf) {Edge inference\\tile $\cdot$ detect $\cdot$ fuse};
+\node[blk, below=8mm of inf] (fc) {Autopilot (ArduPilot)\\nav $\cdot$ failsafe $\cdot$ arming};
+\node[blk, right=8mm of fc] (rad) {Mesh radio\\+ safety link};
+\node[blk, below=4mm of fc] (mag) {Kit magazine, 4 stations\\positive-lock detents};
+
+\draw[flow] (cam) -- (inf);
+\draw[flow] (inf) -- (fc);
+\draw[flow] (gnss) -- (gnss|-inf.north) -- ++(0,-2mm) -| (fc.north east);
+\draw[flow] (fc) -- (mag);
+\draw[flow] (fc) -- (rad);
+
+\begin{scope}[on background layer]
+\node[seg, fit=(cam)(gnss)(inf)(fc)(rad)(mag),
+      label={[lbl]above:\textbf{Air segment} $\times$3}] (air) {};
+\end{scope}
+
+% ---- ground and positioning -----------------------------------------
+\node[blk, below=12mm of mag] (gcs) {Ground control station\\one operator $\cdot$ one interface};
+\node[blk, left=8mm of gcs] (rtk) {RTK base\\fixed reference};
+
+\begin{scope}[on background layer]
+\node[seg, fit=(gcs)(rtk),
+      label={[lbl]below:\textbf{Ground and positioning segments}}] (gnd) {};
+\end{scope}
+
+\draw[flow] (rad.east) -- ++(5mm,0) |- (gcs.east)
+      node[lbl, pos=0.25, right, align=left]
+      {telemetry\\3$\times$H.264\\detections};
+\draw[dflow] (gcs.north) -- (gcs.north|-gnd.north) -- ++(0,3mm)
+      node[lbl, above, align=center] {abort / recall only};
+\draw[flow] (rtk.west) -- ++(-5mm,0) |- (air.west)
+      node[lbl, pos=0.25, left, align=right] {RTK\\corrections};
+
+\end{tikzpicture}}
+\caption{System architecture. The only permitted downlink commands are abort and
+recall; the ground station is architecturally incapable of originating a retask,
+waypoint change or drop command. Detection runs onboard, so the downlink serves
+the operator rather than the algorithm.}
+\label{fig:arch}
+\end{figure}
 
 \subsubsection{Air segment}
 Three identical quadrotors, each carrying a Pixhawk-standard autopilot running
@@ -389,6 +455,55 @@ Positive-lock mechanical detents on each station ensure that a power interruptio
 cannot release a kit. This is treated as a safety-critical item and is excluded
 from cost reduction by policy.
 
+\subsection{Mission sequence}
+
+Fig.~\ref{fig:flow} shows the autonomous mission sequence. Two properties are
+worth drawing out. First, the launch stagger lives in the mission file as an
+explicit delay before each take-off command, not in operator timing --- this is
+what converts a 1.31\,m closest approach into the 64.80\,m of
+Fig.~\ref{fig:launch}. Second, every terminal branch converges on
+return-to-launch: link loss, low battery and operator abort share one recovery
+path rather than three.
+
+\begin{figure}[t]
+\centering
+\resizebox{0.86\columnwidth}{!}{%
+\begin{tikzpicture}[node distance=3.5mm]
+
+\node[blk] (setup) {Setup: RTK base fixed, mission file\\parsed and partitioned};
+\node[blk, below=of setup] (arm) {Arm; gate on 3-D fix};
+\node[blk, below=of arm] (to) {Staggered take-off\\delay 0 / 15 / 30\,s};
+\node[blk, below=of to] (tr) {Transit at 20 / 25 / 30\,m\\(vertical deconfliction)};
+\node[blk, below=of tr] (sw) {Boustrophedon sweep\\40\,m AGL $\cdot$ 8\,m/s};
+\node[dec, below=5mm of sw] (det) {detection?};
+\node[blk, below=5mm of det] (conf) {Temporal confirm\\$\geq$2 frames, fuse position};
+\node[blk, below=of conf] (del) {Descend, null groundspeed\\$<$0.3\,m/s, release at 6\,m};
+\node[dec, below=5mm of del] (more) {area\\complete?};
+\node[blk, below=5mm of more] (rtl) {Return to launch,\\corner slot recovery};
+
+\node[blk, right=12mm of sw, align=center] (fail)
+  {\textbf{Any of:}\\link loss $>$60\,s\\battery below reserve\\operator abort};
+
+\draw[flow] (setup)--(arm);
+\draw[flow] (arm)--(to);
+\draw[flow] (to)--(tr);
+\draw[flow] (tr)--(sw);
+\draw[flow] (sw)--(det);
+\draw[flow] (det)--(conf) node[lbl,pos=0.5,right]{yes};
+\draw[flow] (conf)--(del);
+\draw[flow] (del)--(more);
+\draw[flow] (more)--(rtl) node[lbl,pos=0.5,right]{yes};
+\draw[flow] (det.west) -- ++(-6mm,0) |- (sw.west) node[lbl,pos=0.25,left]{no};
+\draw[flow] (more.east) -- ++(6mm,0) |- (sw.east) node[lbl,pos=0.25,right]{no};
+\draw[flow] (fail.south) |- (rtl.east);
+
+\end{tikzpicture}}
+\caption{Autonomous mission sequence. The take-off stagger is encoded in the
+mission file rather than in operator timing, and all three abnormal conditions
+converge on a single return-to-launch path.}
+\label{fig:flow}
+\end{figure}
+
 %=============================================================================
 \section{Methodology and Work Plan}
 %=============================================================================
@@ -475,19 +590,72 @@ implicit cannot be.
   \item \textbf{Three aircraft on one ground station.} A single telemetry
         router carried three distinct system identifiers to one ground station
         port with all three arriving.
-  \item \textbf{Inter-aircraft separation.} Staggered take-off delays encoded in
-        the mission file, rather than in operator timing, increased the closest
-        approach during launch from 1.31\,m to 92.12\,m. Worst-case en-route
-        separation is 34.00\,m.
+  \item \textbf{Inter-aircraft separation at launch.} Staggered take-off delays
+        encoded in the mission file, rather than in operator timing, increased
+        the closest airborne approach during launch from 1.31\,m to
+        \textbf{64.80\,m} (Fig.~\ref{fig:launch}). Both figures are recomputed
+        directly from the committed telemetry.
+  \item \textbf{Separation during the sweep.} Minimum airborne separation away
+        from the pad is \textbf{29.19\,m}, with staggered transit altitudes of
+        20/25/30\,m providing vertical deconfliction independent of the lateral
+        plan.
   \item \textbf{Recovery deconfliction.} Assigning landing slots to the corners
         of the recovery pad rather than in a row increased slot spacing from
-        1.22\,m to 2.61\,m at no cost, raising the measured minimum separation
-        from an overlapping 0.83\,m to 2.27\,m --- a clearance of 1.22\,m
-        between airframes.
-  \item \textbf{Ground station.} All required operator displays verified against
-        three live autopilots with three concurrent H.264 feeds, offline map
-        tiles and end-to-end abort acknowledgement.
+        1.22\,m to 2.61\,m at no cost, raising the measured minimum approach
+        from an overlapping 0.83\,m to \textbf{2.27\,m} --- a clearance of
+        1.22\,m between airframes (Fig.~\ref{fig:pad}). Separation while stacked
+        in the air over the pad improves by the same mechanism.
+  \item \textbf{Ground station.} All eight required operator displays were
+        verified against three simultaneous autopilots, carrying three
+        concurrent H.264 streams within the link budget, with offline map tiles
+        (Fig.~\ref{fig:gcs}).
 \end{itemize}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{proof-1-launch.png}
+\caption{Launch deconfliction, recorded from three ArduCopter software-in-the-loop
+autopilots. Left: all three aircraft leave the pad together and the closest pair
+passes within 1.31\,m --- inside one airframe width. Right: a delay encoded in
+the mission file before each take-off command staggers them, and the closest
+airborne pair is 64.80\,m. Both figures are reproducible from the committed
+telemetry.}
+\label{fig:launch}
+\end{figure*}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{proof-4-pad.png}
+\caption{Recovery deconfliction on the landing pad. Slot centres must remain half
+an airframe inside the pad edge, so they occupy a 2.61\,m square; a row across
+that square gives 1.22\,m of spacing, its corners give the full 2.61\,m. The
+measured closest approach at any time rises from an overlapping 0.83\,m to
+2.27\,m --- twice the separation, same pad, no cost.}
+\label{fig:pad}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{proof-2-sweep.png}
+\caption{Coverage decomposition and return geometry. Each aircraft is assigned an
+equal-area strip and flies a boustrophedon pattern within it. Enumerating the
+four start-side and direction combinations and keeping the one that ends nearest
+home brings all three aircraft back within 116--128\,m of the pad, against
+516\,m and 540\,m for two of three aircraft under the previous index-keyed rule
+--- at identical path length.}
+\label{fig:sweep}
+\end{figure}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{gcs-running.png}
+\caption{Ground control station carrying three concurrent H.264 streams within
+the link budget, with offline map tiles and per-aircraft status. Note the
+safety panel: abort and recall currently record operator intent in the mission
+log but transmit nothing, because no safety radio is yet configured. This is
+reported here rather than cropped out --- see Section~VI-C.}
+\label{fig:gcs}
+\end{figure*}
 
 \subsection{Modelled}
 
@@ -497,12 +665,19 @@ The geolocation Monte Carlo reconciles with the independent analytic budget to
 within one per cent, and the geotag projection has been verified
 self-consistent between two independent formulations to $7.8\times10^{-10}$\,m.
 
-\subsection{Assumed}
+\subsection{Assumed, or not yet implemented}
 
 Detection recall on real post-flood imagery, boresight calibration residual,
 achieved RTK accuracy in the field, and battery internal resistance under Indian
 ambient conditions are all assumed. Each requires hardware and is a funded
 activity in P5--P8.
+
+One ground-segment function is explicitly \emph{not} implemented and is visible
+as such in Fig.~\ref{fig:gcs}: the abort and recall controls currently record
+operator intent in the mission log but transmit nothing, because no safety radio
+is yet configured. Recovery today depends on the safety pilot's transmitter.
+Closing this is a P4 activity and is gated on the sub-gigahertz link discussed
+in Section~IV-E.
 
 \subsection{The honest summary}
 

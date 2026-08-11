@@ -41,7 +41,7 @@ how this project has lost most of its time.
 | mavlink-router carries three SYSIDs to one GCS port | **Measured** — three SITL, all three arrive | `NIDAR-GSC/scripts/test-mavlink-router.sh` |
 | Geotag projection is self-consistent | **Measured** — two independent formulations agree to 7.8e-10 m | `perception/geotagging/accuracy.py` §1 |
 | Geotag CEP50 | **Modelled** — Monte Carlo whose *inputs* are budget assumptions. Reconciles with the analytic budget to +1 % | `docs/sizing/geotag-accuracy-output.txt` |
-| Separation at launch | **Measured in sim** — 92.12 m, up from 1.31 m | `proof-1-launch.png` |
+| Separation at launch | **Measured in sim** — 64.80 m, up from 1.31 m | `proof-1-launch.png` |
 | Separation en route | **Measured in sim** — 34.00 m worst pair | `proof-2-sweep.png` |
 | Separation during recovery | **6.52 m**, up from 3.99 m | `proof-4-pad.png` |
 | Three aircraft land safely on one pad | **Measured 2.27 m minimum, clear by 1.22 m** — corner slots, not a row | `proof-4-pad.png` |
@@ -129,7 +129,7 @@ Was: all three launched together and the mission run measured 1.3 m between
 aircraft at 2–3 m altitude. Now a staggered `NAV_DELAY` (0/15/30 s) sits before
 each `NAV_TAKEOFF`, so the spacing lives in the mission file rather than in an
 operator's timing. Re-flown at SIM_SPEEDUP 3 so the stagger is legible:
-**closest pair during launch went 1.31 m to 92.12 m.** Both telemetry sets and
+**closest pair during launch went 1.31 m to 64.80 m.** Both telemetry sets and
 the figure are in `simulations/recordings/`.
 
 An earlier claim of 21.17 m here was from a 15x run whose coarser sampling
