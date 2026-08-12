@@ -85,8 +85,7 @@ market-verified cost basis, and a phased work plan. I am explicit throughout
 about which figures are measured, which are modelled, and which remain assumed;
 no aircraft has yet flown, and the proposal is structured so that a reviewer can
 distinguish demonstrated capability from projected capability without reading
-the source material. The requested funding is \lakh{28.74} over an eight-month
-programme.
+the source material. The requested funding is \lakh{21.58} over an eight-month build.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -909,37 +908,73 @@ evidence of that floor rather than as a plan. Option~E is a reduced training
 platform that cannot carry the payload and is discussed in
 Section~\ref{sec:mule}.
 
-\subsection{Programme cost}
+\subsection{What is actually being requested}
+\label{sec:ask}
+
+An earlier version of this budget costed a development \emph{programme} at
+\lakh{28.74}. That figure bought laboratory equipment, a complete spares set and
+a purchased field-data campaign. On review, none of those are what a competition
+entry needs, and much of the equipment is already held by the host department.
+The ask has been recosted accordingly and is now \textbf{\lakh{21.58}}, a
+reduction of 25\,\%. Table~\ref{tab:programme} gives the breakdown.
 
 \begin{table}[t]
-\caption{Programme cost breakdown}
+\caption{Competition build cost}
 \label{tab:programme}
 \centering
 \small
-\begin{tabular}{@{}lr@{}}
+\begin{tabular}{@{}lrr@{}}
 \toprule
-\textbf{Element} & \textbf{INR} \\
+\textbf{Element} & \textbf{Was} & \textbf{Ask} \\
 \midrule
-Air vehicles (3)                      & 7.93\,L \\
-Payload, ground segment, test equipment, & \\
-\quad spares and software             & 11.02\,L \\
+Air vehicles (3), payload, parachutes  & 8.31\,L & 8.67\,L \\
+Ground segment                         & 3.88\,L & 2.62\,L \\
+Test equipment                         & 2.26\,L & 0.63\,L \\
+Spares and consumables                 & 2.73\,L & 1.56\,L \\
+Software, data and regulatory          & 1.75\,L & 0.80\,L \\
+Training airframe                      & ---     & 0.37\,L \\
 \midrule
-Subtotal                              & 18.96\,L \\
-Duty and freight, on imported residual & 1.34\,L \\
-Goods and services tax                 & 3.65\,L \\
-Contingency                            & 4.79\,L \\
+Subtotal                               & 18.93\,L & 14.65\,L \\
+Duty and freight, imported residual     &          & 1.26\,L \\
+Goods and services tax                  &          & 2.86\,L \\
+Contingency, 15\,\%                     &          & 2.81\,L \\
 \midrule
-\textbf{Total requested}               & \textbf{28.74\,L} \\
+\textbf{Total requested}                &          & \textbf{21.58\,L} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-I state plainly that this is a development programme rather than a product
-build. It carries calibration and test equipment, a full spares set including a
-spare airframe structure, and a field data campaign that a production unit would
-not. The marginal cost of an additional deployable system is substantially
-lower than the programme total and is the appropriate figure for any discussion
-of scaled procurement.
+Four principles were applied, and each is visible in the table.
+
+\emph{If the department already owns it, it is not in the ask.} A 3D printer,
+soldering station, bench supply, rotary tool and multimeters --- \inr{84\,000}
+of equipment --- are available in the Department of Electronics and
+Communication Engineering. They are recorded as an \textbf{institutional
+contribution} rather than deleted, because that is what they are: co-funding in
+kind, and the reason test equipment falls from \lakh{2.26} to \lakh{0.63}.
+
+\emph{If it can be built, it is costed as built.} The thrust stand falls from
+\inr{45\,000} to \inr{8\,000} --- a load cell, an amplifier and a printed
+fixture. Motor thrust verification is a flagged risk in
+Table~\ref{tab:risk}; building and calibrating the instrument is a better answer
+to that risk than a purchase order for one.
+
+\emph{Spares cover what crashes, not what fails rarely.} Propellers, motors,
+arms, plate stock and packs are retained. Spare autopilot, GNSS and camera
+--- \inr{60\,600} together --- are removed. \textbf{This is an accepted risk and
+I state it as one:} a failure of any of those three during the flight-test
+window costs schedule, and the mitigation is procurement lead time rather than
+inventory.
+
+\emph{Two things were added, not cut.} Recovery parachutes were never in the
+priced lines and SYS-41 requires them (\inr{36\,000}). One training airframe is
+added at \inr{37\,309}, for the reason given in Section~\ref{sec:mule}: it flies
+from week one so that the competition aircraft is not the only article
+exercising the ground station, the radio path and the failsafes.
+
+The contingency is held at 15\,\% rather than 20\,\%, which the phased
+disbursement in Section~\ref{sec:tranches} makes defensible: unreleased tranches
+are themselves a reserve, and holding both is asking for the same margin twice.
 
 \subsection{Phased disbursement}
 \label{sec:tranches}
@@ -959,15 +994,15 @@ give the schedule.
 \toprule
 \textbf{T} & \textbf{Months / phases} & \textbf{INR} & \textbf{Release condition} \\
 \midrule
-1 & 1--2 \quad P1--P4  & 8.50\,L & On award. Design point frozen; models regenerate \\
+1 & 1--2 \quad P1--P4  & 7.50\,L & On award. Design point frozen; models regenerate \\
 \addlinespace
-2 & 3--4 \quad P5      & 9.50\,L & Ground segment demonstrated against three simulated aircraft \\
+2 & 3--4 \quad P5      & 6.50\,L & Ground segment demonstrated against three simulated aircraft \\
 \addlinespace
-3 & 5--6 \quad P6--P8  & 6.50\,L & Three airframes weighed; first hover complete \\
+3 & 5--6 \quad P6--P8  & 4.50\,L & Three airframes weighed; first hover complete \\
 \addlinespace
-4 & 7--8 \quad P9--P10 & 4.24\,L & Perception and delivery trials reported with measured figures \\
+4 & 7--8 \quad P9--P10 & 3.08\,L & Perception and delivery trials reported with measured figures \\
 \midrule
-  & \textbf{Total}     & \textbf{28.74\,L} & \\
+  & \textbf{Total}     & \textbf{21.58\,L} & \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1118,6 +1153,7 @@ the programme for precisely this reason.
 
 %=============================================================================
 \section{Expected Outcomes and Deliverables}
+\label{sec:deliverables}
 %=============================================================================
 
 \begin{enumerate}
@@ -1144,6 +1180,52 @@ published elsewhere, including the specific and narrow point at which it
 currently fails.
 
 %=============================================================================
+\section{Future Work}
+\label{sec:future}
+%=============================================================================
+
+This proposal deliberately asks for a competition build and nothing more. The
+work has a longer arc, and I set it out here so that the scope of the present
+request is unambiguous by contrast.
+
+\subsection{From a competition entry to a deployable system}
+
+The entry is not a product. Reaching one requires, in rough order: night and
+all-weather capability through thermal imaging, which is the single
+highest-value sensing extension and is excluded here only because it doubles the
+perception budget; beyond-visual-line-of-sight approval, which is a regulatory
+programme rather than an engineering one; ingress protection and thermal
+qualification for monsoon conditions; and endurance beyond the present 15.3
+minutes, which at this payload means a different airframe class rather than a
+better battery.
+
+\subsection{Cost at production volume}
+
+Every figure in Section~\ref{sec:budget} is single-unit retail for a build of
+three. The marginal cost of an additional aircraft is already substantially
+below the per-aircraft figure quoted here, because the ground segment, test
+equipment and spares are one-off. At production volume the relevant questions
+are different ones --- tooling amortisation, negotiated component pricing, and
+assembly labour --- and none of them can be answered honestly from a
+three-aircraft bill of materials. I decline to extrapolate them.
+
+\subsection{A route to commercialisation}
+
+The natural customers are state disaster management authorities and the national
+and state disaster response forces. Establishing whether that is a viable
+business requires three things this programme does not attempt: the size and
+refresh rate of the addressable fleet, what a comparable capability is currently
+procured for, and the operating cost per flight hour of the boat or helicopter
+search it would displace. Those are questions for published tender data and
+operator interviews, not for a bill of materials, and I would rather name them
+as open than fill them with plausible figures.
+
+What this programme does produce toward that end is the seventh deliverable in
+Section~\ref{sec:deliverables}: a component-level map of where Indian UAV supply
+chain capability exists and where it does not. That artefact outlives the
+competition regardless of what follows it.
+
+%=============================================================================
 \section{Conclusion}
 %=============================================================================
 
@@ -1159,7 +1241,7 @@ remains is the part that requires funding: to build the aircraft, fly them, and
 replace the modelled and assumed quantities in Section~\ref{sec:evidence} with
 measured ones.
 
-I am asking for \lakh{28.74} to do that, and I have tried throughout this
+I am asking for \lakh{21.58} to do that, and I have tried throughout this
 document to make every number in it checkable.
 
 %=============================================================================
