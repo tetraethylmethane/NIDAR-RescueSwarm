@@ -209,7 +209,7 @@ def fig_funding():
                 "T3\nmonths 5–6", "T4\nmonths 7–8"]
     # Competition build, not the development programme.
     # Source: figures/competition_budget.py
-    amounts = np.array([6.70, 5.70, 4.00, 2.74])       # INR lakh
+    amounts = np.array([5.50, 4.70, 3.30, 2.18])       # INR lakh
     phases = ["P1–P4\nanalysis, ground segment,\nautonomy, long-lead order",
               "P5\nairframe build,\nground segment",
               "P6–P8\nfirst flight, perception\nand delivery trials",
@@ -225,7 +225,7 @@ def fig_funding():
         ax.text(xi, 0.35, p, ha="center", va="bottom", fontsize=6.0, color=tc)
     ax.set_xticks(x); ax.set_xticklabels(tranches)
     ax.set_ylabel("Tranche (INR lakh)")
-    ax.set_ylim(0, 9.0)
+    ax.set_ylim(0, 7.4)
     ax.grid(axis="x", alpha=0)
 
     ax2 = ax.twinx()
@@ -239,7 +239,7 @@ def fig_funding():
                      ha="right", weight="bold")
     ax2.set_ylabel("Cumulative disbursement (INR lakh)", color=RED)
     ax2.tick_params(axis="y", colors=RED)
-    ax2.set_ylim(0, 23)
+    ax2.set_ylim(0, 19)
     ax2.grid(False)
     ax2.spines["right"].set_visible(True)
     ax2.spines["right"].set_color(RED)

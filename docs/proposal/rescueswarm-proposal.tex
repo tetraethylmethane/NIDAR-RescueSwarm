@@ -85,7 +85,7 @@ market-verified cost basis, and a phased work plan. I am explicit throughout
 about which figures are measured, which are modelled, and which remain assumed;
 no aircraft has yet flown, and the proposal is structured so that a reviewer can
 distinguish demonstrated capability from projected capability without reading
-the source material. The requested funding is \lakh{19.14} over an eight-month build.
+the source material. The requested funding is \lakh{15.68} over an eight-month build.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -915,8 +915,8 @@ An earlier version of this budget costed a development \emph{programme} at
 \lakh{28.74}. That figure bought laboratory equipment, computing and a purchased
 field-data campaign. On review, none of those are what a competition entry
 needs, and most of the equipment is already held by the host institution. The
-ask has been recosted accordingly and is now \textbf{\lakh{19.14}}, a reduction
-of 33\,\%. Table~\ref{tab:programme} gives the breakdown.
+ask has been recosted accordingly and is now \textbf{\lakh{15.68}}, a reduction
+of 45\,\%. Table~\ref{tab:programme} gives the breakdown.
 
 \begin{table}[t]
 \caption{Competition build cost}
@@ -927,22 +927,73 @@ of 33\,\%. Table~\ref{tab:programme} gives the breakdown.
 \toprule
 \textbf{Element} & \textbf{Was} & \textbf{Ask} \\
 \midrule
-Air vehicles (3), payload, parachutes  & 8.31\,L & 8.51\,L \\
-Ground segment                         & 3.88\,L & 1.37\,L \\
+Air vehicles (3) and payload           & 8.31\,L & 8.15\,L \\
+Ground segment                         & 3.88\,L & 1.22\,L \\
 Test equipment                         & 2.26\,L & 0.63\,L \\
-Spares and consumables                 & 2.73\,L & 1.56\,L \\
-Software, data and regulatory          & 1.75\,L & 0.55\,L \\
-Training airframe                      & ---     & 0.37\,L \\
+Spares and consumables                 & 2.73\,L & 0.59\,L \\
+Regulatory                             & 1.75\,L & 0.05\,L \\
 \midrule
-Subtotal                               & 18.93\,L & 12.99\,L \\
-Duty and freight, imported residual     &          & 1.11\,L \\
-Goods and services tax                  &          & 2.54\,L \\
-Contingency, 15\,\%                     &          & 2.50\,L \\
+Subtotal                               & 18.93\,L & 10.64\,L \\
+Duty and freight, imported residual     &          & 0.91\,L \\
+Goods and services tax                  &          & 2.08\,L \\
+Contingency, 15\,\%                     &          & 2.05\,L \\
 \midrule
-\textbf{Total requested}                &          & \textbf{19.14\,L} \\
+\textbf{Total requested}                &          & \textbf{15.68\,L} \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\subsection{What is deferred, and what it would cost to reinstate}
+\label{sec:deferred}
+
+The ask above is the minimum that flies the scored mission. Several items were
+deliberately deferred rather than judged unnecessary, and
+Table~\ref{tab:deferred} lists them in the order I would reinstate them against
+additional funding. Stating them is not padding: a reviewer should be able to
+see what the lowest-cost configuration gives up.
+
+\begin{table}[t]
+\caption{Deferred items, in reinstatement priority}
+\label{tab:deferred}
+\centering
+\small
+\begin{tabular}{@{}clrp{2.3cm}@{}}
+\toprule
+\textbf{\#} & \textbf{Item} & \textbf{INR} & \textbf{What it buys back} \\
+\midrule
+1 & Flight insurance      & 25\,000 & \textbf{Must be confirmed} --- see below \\
+2 & Recovery parachutes (3) & 36\,000 & $\sim$40 points per crash avoided \\
+3 & Training airframe     & 37\,309 & Protects the fleet in week 1 \\
+4 & Spare packs and motors & 74\,396 & Survives a crash mid-campaign \\
+5 & Field data campaign   & 15\,000 & Detection recall measured, not modelled \\
+6 & Spare compute module  & 20\,000 & Removes a single point of failure \\
+\midrule
+  & \textbf{Total deferred} & \textbf{2.08\,L} & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two of these deserve comment rather than a table row.
+
+\emph{Insurance is deferred at the team's direction and I flag it as the one
+item that may not be optional.} Third-party cover is commonly mandatory for
+unmanned operations in India. It must be confirmed against the rulebook and the
+prevailing DGCA rules \textbf{before any flight}, and if it is required it
+ceases to be a budget decision.
+
+\emph{The recovery parachute is permitted, not required.} An earlier draft of
+this proposal stated that a requirement mandated it; that was wrong. The
+organisers permit ballistic recovery, and the case for fitting one is a points
+argument rather than a compliance one --- a crash is scored at $-50$ against
+$-10$ for landing outside the recovery zone, so deployment is worth roughly 40
+points before the value of the airframe is counted. Deferring it is an accepted
+risk, taken knowingly.
+
+\emph{No spectrum licence is required and none is budgeted.} Every link in the
+system operates in a delicensed band: 2.4\,GHz and 5.8\,GHz ISM for the mesh and
+control links, and 865--867\,MHz for the independent safety link. Equipment type
+approval is a supplier obligation, discharged by purchasing approved radios from
+Indian vendors, so only DGCA aircraft registration remains as a regulatory line.
 
 Four principles were applied, and each is visible in the table.
 
@@ -974,11 +1025,10 @@ I state it as one:} a failure of any of those three during the flight-test
 window costs schedule, and the mitigation is procurement lead time rather than
 inventory.
 
-\emph{Two things were added, not cut.} Recovery parachutes were never in the
-priced lines and SYS-41 requires them (\inr{36\,000}). One training airframe is
-added at \inr{37\,309}, for the reason given in Section~\ref{sec:mule}: it flies
-from week one so that the competition aircraft is not the only article
-exercising the ground station, the radio path and the failsafes.
+\emph{What is deferred is listed, not hidden.} Section~\ref{sec:deferred} sets
+out every item removed to reach this figure, in the order I would reinstate it
+against additional funding. The lowest-cost configuration is a deliberate
+choice, and a reviewer should be able to see exactly what it gives up.
 
 The contingency is held at 15\,\% rather than 20\,\%, which the phased
 disbursement in Section~\ref{sec:tranches} makes defensible: unreleased tranches
@@ -1002,15 +1052,15 @@ give the schedule.
 \toprule
 \textbf{T} & \textbf{Months / phases} & \textbf{INR} & \textbf{Release condition} \\
 \midrule
-1 & 1--2 \quad P1--P4  & 6.70\,L & On award. Design point frozen; models regenerate \\
+1 & 1--2 \quad P1--P4  & 5.50\,L & On award. Design point frozen; models regenerate \\
 \addlinespace
-2 & 3--4 \quad P5      & 5.70\,L & Ground segment demonstrated against three simulated aircraft \\
+2 & 3--4 \quad P5      & 4.70\,L & Ground segment demonstrated against three simulated aircraft \\
 \addlinespace
-3 & 5--6 \quad P6--P8  & 4.00\,L & Three airframes weighed; first hover complete \\
+3 & 5--6 \quad P6--P8  & 3.30\,L & Three airframes weighed; first hover complete \\
 \addlinespace
-4 & 7--8 \quad P9--P10 & 2.74\,L & Perception and delivery trials reported with measured figures \\
+4 & 7--8 \quad P9--P10 & 2.18\,L & Perception and delivery trials reported with measured figures \\
 \midrule
-  & \textbf{Total}     & \textbf{19.14\,L} & \\
+  & \textbf{Total}     & \textbf{15.68\,L} & \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1249,7 +1299,7 @@ remains is the part that requires funding: to build the aircraft, fly them, and
 replace the modelled and assumed quantities in Section~\ref{sec:evidence} with
 measured ones.
 
-I am asking for \lakh{19.14} to do that, and I have tried throughout this
+I am asking for \lakh{15.68} to do that, and I have tried throughout this
 document to make every number in it checkable.
 
 %=============================================================================
