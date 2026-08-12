@@ -46,6 +46,45 @@ Two `TODO` markers are live in the source:
 | `\author{...}` | Names, department, institution, city, emails |
 | `\section*{Acknowledgment}` | Institutional support, mentors, suppliers who provided evaluation hardware |
 
+## Cost options: corrected on review, 2026-08-12
+
+The first cost pass was reviewed and **four errors were found**. They are
+recorded here, and in §VII-C of the proposal itself, because a corrections
+record is worth more than a clean-looking table.
+
+| | First pass | Corrected |
+|---|--:|--:|
+| B — efficiency only | 2,59,001 | **2,63,401** |
+| C — + indigenisation trade | 2,07,295 | **2,37,081** |
+| D — floor | 1,29,632 | **1,83,640** |
+
+**1. Option C was labelled with the wrong penalty.** It was marked as losing
+~125 geolocation points. It does not: C keeps RTK and only deletes the
+*moving-baseline heading* receiver. Substituting the magnetometer-class attitude
+allocation from `sizing-calculations.md` §11 into the case-C budget moves the
+total from **1.304 m to 1.322 m** — an 18 mm degradation. The 125-point penalty
+belongs to Option D, which deletes RTK itself.
+
+**2. The motor saving was circular.** It booked ₹8,396 by pricing the motor at
+₹7,000 — a figure the same study argues is *below the lowest listing found*
+(₹9,099). Withdrawn; the motor is now 9,099 in every column.
+
+**3. The ESC saving was a specification failure.** ₹1,600 was booked against a
+part whose catalogue advertises 30–45 A for a 60 A requirement. Withdrawn.
+
+**4. Compliance was treated as optional.** The sub-GHz radio was priced at
+₹1,560 (a 433 MHz kit) in the lowest option while the same document argued that
+figure does not buy a compliant 865–867 MHz link. The compliant ₹19,355 is now
+carried in **every** column — a legal band is not an option-level choice.
+
+Net effect: the floor moved **up** by ₹54,008. That strengthens the conclusion
+rather than weakening it — an aircraft that flies this mission is further from
+₹1,00,000 than the first estimate suggested.
+
+**One finding survived and improved.** Option B raises indigenous content from
+58 % to 61 %, because the line it shrinks is the imported accelerator. Cost
+reduction and indigenisation are usually opposed; on this one step they are not.
+
 ## Separation numbers: HANDOFF.md is stale
 
 Writing the figure captions meant recomputing the separation results from

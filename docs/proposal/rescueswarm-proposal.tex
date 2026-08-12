@@ -807,10 +807,11 @@ recommended saving is actually taken.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{fig-options.pdf}
-\caption{Costed configurations. A through D are the same aircraft at different
-prices; E is a different and much smaller airframe that cannot carry the
-payload, included to show where the cost floor genuinely lies rather than as a
-proposal.}
+\caption{Costed configurations, ordered by what each trades away. A through D are
+the same aircraft; E is a different and much smaller airframe that cannot carry
+the payload, included to show where the cost floor genuinely lies rather than as
+a proposal. Option~B gives up nothing --- and is the only step that also raises
+indigenous content.}
 \label{fig:options}
 \end{figure}
 
@@ -829,40 +830,83 @@ because the carried figure does not buy a compliant radio.}
 \label{tab:options}
 \centering
 \small
-\begin{tabular}{@{}clrp{2.5cm}@{}}
+\begin{tabular}{@{}clrrp{1.75cm}@{}}
 \toprule
-\textbf{Opt.} & \textbf{Description} & \textbf{INR} & \textbf{Capability impact} \\
+\textbf{Opt.} & \textbf{What it trades} & \textbf{INR} & \textbf{Indian} & \textbf{Cost} \\
 \midrule
-A & As verified          & 2\,90\,546 & Baseline \\
-B & \textbf{Recommended} & \textbf{2\,59\,001} & None \\
-C & Low cost             & 2\,07\,295 & Loses heading reference \\
-D & Floor                & 1\,29\,632 & Loses RTK and inference spec \\
-E & Reduced platform     & 37\,309    & Cannot fly the mission \\
+A & Verified baseline        & 2\,90\,546 & 58\,\% & --- \\
+B & \textbf{Efficiency only} & \textbf{2\,63\,401} & \textbf{61\,\%} & nothing \\
+C & + indigenisation         & 2\,37\,081 & 53\,\% & Indian content \\
+D & + capability             & 1\,83\,640 & 52\,\% & RTK, inference spec \\
+E & Different aircraft       & 37\,309    & ---    & the mission \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Option~B is the recommended basis. It realises a saving of \inr{31\,545} per
-aircraft --- \inr{94\,635} across the fleet --- without sacrificing any
-capability on which the system is assessed. Its principal component is the
-substitution of the edge inference module for a single-board computer with a
-26-TOPS accelerator, which meets the throughput specification at materially lower
-cost and is conditional on the benchmark described earlier.
+The options are ordered by \emph{what they trade}, not by descending price,
+because the interesting question is not how cheap the aircraft can be made but
+what each rupee costs in capability or sovereignty.
 
-Two findings from the study are worth reporting because they run counter to the
-usual direction of such exercises. First, the bill of materials was found to be
-\emph{at or below market} on its largest propulsion line: the carried price was
-below the lowest listed price for any comparable part, indigenous or imported.
-Second, the sub-gigahertz safety link was found to be materially under-priced;
-the carried figure does not purchase a compliant radio for the Indian delicensed
-band, and the line requires an increase of approximately \inr{11\,855}. Both
-corrections are incorporated in the figures presented here.
+\textbf{Option~B is the recommended basis.} It saves \inr{27\,145} per aircraft
+--- \inr{81\,435} across the fleet --- and gives up neither scored capability nor
+Indian content. Its principal component is the substitution of the edge
+inference module for a single-board computer with a 26-TOPS accelerator, which
+meets the throughput specification and is conditional on the benchmark described
+earlier.
 
-Options~D and E are reported for completeness and are not proposed. Option~D
-represents the arithmetic floor for an aircraft that can still fly the mission
-and is presented as evidence of that floor rather than as a plan; it already
-sacrifices RTK positioning and the inference specification. Option~E is a
-reduced training platform that cannot carry the payload and is discussed in
+Option~B has a property I did not anticipate and think is worth stating:
+\emph{it raises indigenous content}, from 58\,\% to 61\,\%. The line it shrinks
+is the imported accelerator, so reducing it reduces the imported share of the
+whole. Cost reduction and indigenisation are usually opposed; here, once, they
+are not.
+
+\subsubsection{Corrections made to this analysis on review}
+
+A first pass at this study reported a floor of \inr{1\,29\,632} and attributed a
+125-point geolocation penalty to Option~C. Both were wrong, and the errors are
+recorded here rather than quietly fixed, because a reviewer who cannot see the
+corrections cannot judge the method.
+
+\emph{Option~C does not lose RTK, and its geolocation penalty is negligible.}
+The saving in question deletes the second GNSS receiver, which supplies
+moving-baseline heading. Substituting the magnetometer-class attitude allocation
+of Table~\ref{tab:geotag} into the case-C budget moves the total from 1.304\,m to
+1.322\,m --- an 18\,mm degradation, not a scoring event. The 125-point penalty
+belongs to Option~D, which deletes RTK itself.
+
+\emph{Three savings were withdrawn as unsound.} A motor substitution booked
+\inr{8\,396} at a price below the lowest listing found for any comparable part,
+which is circular given that the same study argues the carried price is
+optimistic. An ESC substitution booked \inr{1\,600} against a part whose
+catalogue advertises 30--45\,A for a 60\,A requirement, which is not a
+substitution but a specification failure. A sub-gigahertz radio was priced at
+\inr{1\,560} in the lowest option while the same document argued that figure does
+not buy a compliant 865--867\,MHz link. Compliance is not an option-level
+choice, so the compliant price is now carried in every column.
+
+\emph{The floor moved upward by \inr{54\,008}} as a result --- from
+\inr{1\,29\,632} to \inr{1\,83\,640}. The conclusion this strengthens rather than
+weakens: an aircraft that flies this mission cannot be built for
+\inr{1\,00\,000}, and the corrected figure is further from that target than the
+first estimate was.
+
+\subsubsection{Why the second GNSS receiver survives anyway}
+
+Given that its budgeted contribution is 18\,mm, the honest case for the second
+receiver is not the error budget --- it is insurance against a risk the budget
+does not model. The budget allocates a small attitude term on the assumption of
+good heading. A magnetometer mounted near a 98\,A power bus may not deliver that:
+at the frame edge, 37\,m off nadir, a heading error of 5$^\circ$ displaces a
+detection by 3.22\,m, which would consume the entire delivery allowance on its
+own. The receiver buys immunity from an unmeasured failure mode, and I would
+rather state that plainly than defend it with an error-budget line it does not
+earn. It is the first item I would revisit if the magnetometer's achieved
+heading accuracy were measured in P6 and found adequate.
+
+Options~D and E are reported for completeness and are not proposed. Option~D is
+the arithmetic floor for an aircraft that can still fly the mission, presented as
+evidence of that floor rather than as a plan. Option~E is a reduced training
+platform that cannot carry the payload and is discussed in
 Section~\ref{sec:mule}.
 
 \subsection{Programme cost}

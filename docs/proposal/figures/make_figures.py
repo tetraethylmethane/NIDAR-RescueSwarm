@@ -140,9 +140,13 @@ def fig_mass():
 # ===========================================================================
 def fig_options():
     fig, ax = plt.subplots(figsize=(COL, 2.6))
-    opts = ["A\nas verified", "B\nrecommended", "C\nlow cost",
-            "D\nfloor", "E\nreduced"]
-    cost = [290546, 259001, 207295, 129632, 37309]
+    # Revised after review. Options are now ordered by WHAT THEY TRADE, and
+    # three savings claimed in the first pass were withdrawn as unsound:
+    # a motor price below the lowest listing, a non-compliant ESC, and a
+    # sub-GHz radio outside the Indian band. See docs/proposal/README.md.
+    opts = ["A\nverified", "B\nefficiency", "C\n+indig.\ntrade",
+            "D\n+capability\ntrade", "E\ndifferent\naircraft"]
+    cost = [290546, 263401, 237081, 183640, 37309]
     colours = [GREY, GREEN, BLUE, ORANGE, RED]
     x = np.arange(len(opts))
     bars = ax.bar(x, cost, color=colours, width=0.62)
@@ -150,7 +154,7 @@ def fig_options():
 
     # Notes sit BELOW the axis, not inside the bars: at column width a bar is
     # narrower than the text, and text inside it gets clipped.
-    notes = ["baseline", "no loss", "$-$125 pts", "$-$RTK", "cannot fly"]
+    notes = ["baseline", "nothing lost", "$-$Indian", "$-$RTK", "cannot fly"]
     for xi, v, nt in zip(x, cost, notes):
         ax.text(xi, v + 9000, f"{v/1e5:.2f}L", ha="center", fontsize=7, weight="bold")
         ax.annotate(nt, xy=(xi, 0), xytext=(0, -30), textcoords="offset points",
@@ -173,7 +177,7 @@ def fig_subsystem():
     subs = ["Avionics", "Compute &\nperception", "Propulsion", "Power",
             "Structure", "Comms", "Payload"]
     a = [85400, 79500, 57396, 24500, 20550, 17800, 5400]
-    b = [83000, 38500, 57396, 24500, 20550, 29655, 5400]
+    b = [83000, 42900, 57396, 24500, 20550, 29655, 5400]
     y = np.arange(len(subs))[::-1]
     h = 0.36
     ax.barh(y + h/2, a, h, label="A (as verified)", color=LIGHT, edgecolor=GREY, lw=0.5)
