@@ -21,9 +21,10 @@ from __future__ import annotations
 
 # (label, old INR, new INR, note)
 AIR = [
-    ("Air vehicles, 3 x Option B", 790_203, 774_303,
-     "Option B substitutions, less in-house fabrication of the CNC-cut plates, "
-     "machined arm clamps and motor mounts. CONFIRMED: institute machine shop."),
+    ("Air vehicles, 3 x Option B", 790_203, 652_038,
+     "Option B, less in-house fabrication (machine shop confirmed), less the "
+     "third safety radio, the moving-baseline GNSS receiver, and with a "
+     "Pi-compatible camera. 2,17,346 per aircraft."),
     ("Recovery parachutes, 3", 0, 0,
      "DEFERRED. PERMITTED, not required -- rulebook-compliance 6.2. Accepted risk: "
      "a crash costs -50 against -10 for landing outside the zone, so this is a "
@@ -39,10 +40,11 @@ GROUND = [
      "still required -- it just does not have to be bought."),
     ("Portable power station", 55_000, 0,
      "R1: institute field power confirmed. 3 x 292 Wh at ~85% is 1.03 kWh."),
-    ("Equipment cases", 44_000, 24_000, "Foam layout is what setup time depends on, not the shell."),
+    ("Equipment cases", 44_000, 15_000,
+     "Three, not four: aircraft, ground segment, spares and tools."),
     ("RTK base receiver", 38_000, 38_000, "KEEP. Governs the whole geolocation budget."),
     ("Safety-pilot transmitter", 16_000, 8_000, "A basic ELRS transmitter is sufficient."),
-    ("Sun hood + observer monitor", 12_000, 6_000, "Hood fabricated in-house."),
+    ("Sun hood + observer monitor", 12_000, 1_500, "Hood fabricated in-house, as described."),
     ("Fire extinguisher, sand", 11_000, 11_000, "KEEP. Safety equipment, do not cut."),
     ("Survey tripod + tribrach", 9_500, 9_500, "KEEP. The RTK base needs it."),
     ("Remaining ground items", 62_800, 25_000,
@@ -55,14 +57,17 @@ TEST = [
      "R2: load cell + HX711 + printed fixture. Building and calibrating it is a "
      "better answer to the motor-thrust risk than buying it."),
     ("Battery chargers", 28_000, 14_000, "One charger, not two."),
-    ("Cell tester", 13_000, 13_000, "KEEP. Capacity and IR matching is a real failure mode."),
+    ("Cell tester", 13_000, 0,
+     "Most 1C-class chargers measure per-cell internal resistance. CONFIRM on the "
+     "chosen charger before deleting this."),
     ("Soldering station", 9_000, 0, "R1: department facility."),
     ("Rotary tool + CF extraction", 8_500, 0, "R1: department facility."),
     ("Bench power supply", 8_500, 0, "R1: department facility."),
     ("Multimeters", 8_000, 0, "R1: department facility."),
-    ("Charger PSU", 8_000, 8_000, "Needed to drive the charger at 1C."),
-    ("Calibrated scale + remaining", 47_700, 20_000,
-     "KEEP the calibrated scale: it decides the rule C2 weigh-in."),
+    ("Charger PSU", 8_000, 1_500, "Used 12 V server supply. Standard practice."),
+    ("Calibrated scale + remaining", 47_700, 12_000,
+     "KEEP the calibrated scale -- it decides the rule C2 weigh-in. Bulk "
+     "remainder trimmed."),
 ]
 
 SPARES = [

@@ -85,7 +85,7 @@ market-verified cost basis, and a phased work plan. I am explicit throughout
 about which figures are measured, which are modelled, and which remain assumed;
 no aircraft has yet flown, and the proposal is structured so that a reviewer can
 distinguish demonstrated capability from projected capability without reading
-the source material. The requested funding is \lakh{15.68} over an eight-month build.
+the source material. The requested funding is \lakh{13.27} over an eight-month build.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -853,6 +853,18 @@ inference module for a single-board computer with a 26-TOPS accelerator, which
 meets the throughput specification and is conditional on the benchmark described
 earlier.
 
+That substitution carries an integration consequence I did not see at first and
+record here because it enlarges the benchmark rather than the bill. The
+displaced module has a \emph{hardware} H.264 encoder; the single-board computer
+that replaces it has none --- its GPU dropped every encode block, so all video
+encoding is done in software on the same CPU that feeds the accelerator. Each
+aircraft encodes only its own stream, so this is one 720p encode per board and
+is achievable, but it is not free. 	extbf{The P5 benchmark is therefore not
+merely whether the accelerator reaches 24 inferences per second; it is whether
+the board sustains that rate and a 720p H.264 encode simultaneously without
+thermal throttling.} That gate governs \inr{35\,000} of the saving, and the
+cooling line has been left untouched for the same reason.
+
 Option~B has a property I did not anticipate and think is worth stating:
 \emph{it raises indigenous content}, from 58\,\% to 61\,\%. The line it shrinks
 is the imported accelerator, so reducing it reduces the imported share of the
@@ -915,8 +927,8 @@ An earlier version of this budget costed a development \emph{programme} at
 \lakh{28.74}. That figure bought laboratory equipment, computing and a purchased
 field-data campaign. On review, none of those are what a competition entry
 needs, and most of the equipment is already held by the host institution. The
-ask has been recosted accordingly and is now \textbf{\lakh{15.68}}, a reduction
-of 45\,\%. Table~\ref{tab:programme} gives the breakdown.
+ask has been recosted accordingly and is now \textbf{\lakh{13.27}}, a reduction
+of 54\,\%. Table~\ref{tab:programme} gives the breakdown.
 
 \begin{table}[t]
 \caption{Competition build cost}
@@ -927,18 +939,18 @@ of 45\,\%. Table~\ref{tab:programme} gives the breakdown.
 \toprule
 \textbf{Element} & \textbf{Was} & \textbf{Ask} \\
 \midrule
-Air vehicles (3) and payload           & 8.31\,L & 8.15\,L \\
-Ground segment                         & 3.88\,L & 1.22\,L \\
-Test equipment                         & 2.26\,L & 0.63\,L \\
+Air vehicles (3) and payload           & 8.31\,L & 6.93\,L \\
+Ground segment                         & 3.88\,L & 1.08\,L \\
+Test equipment                         & 2.26\,L & 0.36\,L \\
 Spares and consumables                 & 2.73\,L & 0.59\,L \\
 Regulatory                             & 1.75\,L & 0.05\,L \\
 \midrule
-Subtotal                               & 18.93\,L & 10.64\,L \\
-Duty and freight, imported residual     &          & 0.91\,L \\
-Goods and services tax                  &          & 2.08\,L \\
-Contingency, 15\,\%                     &          & 2.05\,L \\
+Subtotal                               & 18.93\,L & 9.01\,L \\
+Duty and freight, imported residual     &          & 0.77\,L \\
+Goods and services tax                  &          & 1.76\,L \\
+Contingency, 15\,\%                     &          & 1.73\,L \\
 \midrule
-\textbf{Total requested}                &          & \textbf{15.68\,L} \\
+\textbf{Total requested}                &          & \textbf{13.27\,L} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -957,23 +969,45 @@ see what the lowest-cost configuration gives up.
 \label{tab:deferred}
 \centering
 \small
-\begin{tabular}{@{}clrp{2.3cm}@{}}
+\begin{tabular}{@{}clrp{2.2cm}@{}}
 \toprule
 \textbf{\#} & \textbf{Item} & \textbf{INR} & \textbf{What it buys back} \\
 \midrule
-1 & Flight insurance      & 25\,000 & \textbf{Must be confirmed} --- see below \\
-2 & Recovery parachutes (3) & 36\,000 & $\sim$40 points per crash avoided \\
-3 & Training airframe     & 37\,309 & Protects the fleet in week 1 \\
-4 & Spare packs and motors & 74\,396 & Survives a crash mid-campaign \\
-5 & Field data campaign   & 15\,000 & Detection recall measured, not modelled \\
-6 & Spare compute module  & 20\,000 & Removes a single point of failure \\
+1 & Flight insurance        & 25\,000 & \textbf{Must be confirmed} --- see below \\
+2 & Second GNSS receiver (3) & 51\,000 & \textbf{Conditional on a measurement}, not on funding \\
+3 & Recovery parachutes (3)  & 36\,000 & $\sim$40 points per crash avoided \\
+4 & Training airframe        & 37\,309 & Protects the fleet in week 1 \\
+5 & Sub-GHz safety radio (3) & 58\,065 & A third independent link \\
+6 & Spare packs and motors   & 74\,396 & Survives a crash mid-campaign \\
+7 & Field data campaign      & 15\,000 & Detection recall measured, not modelled \\
+8 & Spare compute module     & 20\,000 & Removes a single point of failure \\
 \midrule
-  & \textbf{Total deferred} & \textbf{2.08\,L} & \\
+  & \textbf{Total deferred}  & \textbf{3.17\,L} & \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Two of these deserve comment rather than a table row.
+Four of these deserve comment rather than a table row.
+
+\emph{The second GNSS receiver is deferred to a measurement, not to funding.} It
+supplies moving-baseline heading, and Section~\ref{sec:geotag} shows that
+substituting a magnetometer-class attitude allocation into the case-C budget
+costs \textbf{18\,mm}. The honest case for it was never the error budget --- it
+was insurance against a magnetometer sitting near a 98\,A bus, which the budget
+does not model. That is an unmeasured risk, and \inr{51\,000} is a great deal to
+pay to avoid a measurement I intend to make anyway. \textbf{P6 characterises
+achieved heading accuracy on the built aircraft; if it exceeds roughly
+1$^\circ$, the receiver is reinstated} and the money is well spent. If it does
+not, it was never needed.
+
+\emph{The sub-gigahertz safety link is deferred on an architectural argument.}
+The ExpressLRS link at 2.4\,GHz carries safety-pilot control and abort
+independently of the autonomy stack, and the mesh at 5.8\,GHz carries video,
+telemetry and coordination. Those are already two independent bands across a
+600\,m geofence, and the ExpressLRS link covers that range with substantial
+margin. The 865--867\,MHz set is a \emph{third} path. It is the correct thing to
+add when funding allows, and it is not the thing to buy before the aircraft
+flies.
 
 \emph{Insurance is deferred at the team's direction and I flag it as the one
 item that may not be optional.} Third-party cover is commonly mandatory for
@@ -1052,15 +1086,15 @@ give the schedule.
 \toprule
 \textbf{T} & \textbf{Months / phases} & \textbf{INR} & \textbf{Release condition} \\
 \midrule
-1 & 1--2 \quad P1--P4  & 5.50\,L & On award. Design point frozen; models regenerate \\
+1 & 1--2 \quad P1--P4  & 4.65\,L & On award. Design point frozen; models regenerate \\
 \addlinespace
-2 & 3--4 \quad P5      & 4.70\,L & Ground segment demonstrated against three simulated aircraft \\
+2 & 3--4 \quad P5      & 4.00\,L & Ground segment demonstrated against three simulated aircraft \\
 \addlinespace
-3 & 5--6 \quad P6--P8  & 3.30\,L & Three airframes weighed; first hover complete \\
+3 & 5--6 \quad P6--P8  & 2.80\,L & Three airframes weighed; first hover complete \\
 \addlinespace
-4 & 7--8 \quad P9--P10 & 2.18\,L & Perception and delivery trials reported with measured figures \\
+4 & 7--8 \quad P9--P10 & 1.82\,L & Perception and delivery trials reported with measured figures \\
 \midrule
-  & \textbf{Total}     & \textbf{15.68\,L} & \\
+  & \textbf{Total}     & \textbf{13.27\,L} & \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1183,8 +1217,8 @@ than as an accelerator.
 Detection recall below target on real imagery
 & High & Field data campaign funded in P7; tiling and fusion parameters tunable without hardware change \\
 \addlinespace
-Inference throughput below 2\,Hz on selected hardware
-& High & Benchmark before design freeze; fallback to reduced tile count on a centre crop \\
+Inference and software video encode contend on one board
+& High & The replacement compute has no hardware H.264 encoder. Benchmark both loads together before design freeze; fallback is a reduced tile count on a centre crop \\
 \addlinespace
 RTK capability unconfirmed on selected receiver
 & High & Supplier confirmation is a gating procurement action; degraded mode already specified and flagged to the operator \\
@@ -1299,7 +1333,7 @@ remains is the part that requires funding: to build the aircraft, fly them, and
 replace the modelled and assumed quantities in Section~\ref{sec:evidence} with
 measured ones.
 
-I am asking for \lakh{15.68} to do that, and I have tried throughout this
+I am asking for \lakh{13.27} to do that, and I have tried throughout this
 document to make every number in it checkable.
 
 %=============================================================================
