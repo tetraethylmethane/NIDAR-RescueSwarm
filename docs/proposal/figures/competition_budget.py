@@ -21,19 +21,22 @@ from __future__ import annotations
 
 # (label, old INR, new INR, note)
 AIR = [
-    ("Air vehicles, 3 x Option B", 790_203, 790_203,
-     "Option B: efficiency substitutions only. No capability or Indian content lost."),
+    ("Air vehicles, 3 x Option B", 790_203, 774_303,
+     "Option B substitutions, less in-house fabrication of the CNC-cut plates, "
+     "machined arm clamps and motor mounts. CONFIRMED: institute machine shop."),
     ("Recovery parachutes, 3", 0, 36_000,
      "ADDED. SYS-41 requires one per aircraft; it was never in the priced lines."),
     ("Payload and relief kits", 40_880, 40_880, "Unchanged."),
 ]
 
 GROUND = [
-    ("GCS laptop", 85_000, 55_000, "Load is three H.264 decodes and a Python GCS."),
-    ("Backup GCS laptop", 55_000, 35_000,
-     "Must run the same software, not match the same benchmark. Kept: a GCS "
-     "failure on competition day scores zero."),
-    ("Portable power station", 55_000, 35_000, "3 x 292 Wh at ~85% is 1.03 kWh."),
+    ("GCS laptop", 85_000, 0,
+     "R1: team-supplied. Load is three H.264 decodes and a Python GCS."),
+    ("Backup GCS laptop", 55_000, 0,
+     "R1: team-supplied. A GCS failure on the day scores zero, so a standby is "
+     "still required -- it just does not have to be bought."),
+    ("Portable power station", 55_000, 0,
+     "R1: institute field power confirmed. 3 x 292 Wh at ~85% is 1.03 kWh."),
     ("Equipment cases", 44_000, 24_000, "Foam layout is what setup time depends on, not the shell."),
     ("RTK base receiver", 38_000, 38_000, "KEEP. Governs the whole geolocation budget."),
     ("Safety-pilot transmitter", 16_000, 8_000, "A basic ELRS transmitter is sufficient."),
@@ -73,8 +76,8 @@ SPARES = [
 ]
 
 SOFT = [
-    ("Training compute", 75_000, 25_000,
-     "Free tiers for iteration, paid cloud only for final training runs."),
+    ("Training compute", 75_000, 0,
+     "R1: institute GPUs confirmed available for model training."),
     ("Indian SAR field dataset", 60_000, 15_000,
      "Collected in-house using the training airframe rather than purchased."),
     ("Insurance", 25_000, 25_000, "KEEP. Third-party cover for flight operations."),

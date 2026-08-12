@@ -85,7 +85,7 @@ market-verified cost basis, and a phased work plan. I am explicit throughout
 about which figures are measured, which are modelled, and which remain assumed;
 no aircraft has yet flown, and the proposal is structured so that a reviewer can
 distinguish demonstrated capability from projected capability without reading
-the source material. The requested funding is \lakh{21.58} over an eight-month build.
+the source material. The requested funding is \lakh{19.14} over an eight-month build.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -912,11 +912,11 @@ Section~\ref{sec:mule}.
 \label{sec:ask}
 
 An earlier version of this budget costed a development \emph{programme} at
-\lakh{28.74}. That figure bought laboratory equipment, a complete spares set and
-a purchased field-data campaign. On review, none of those are what a competition
-entry needs, and much of the equipment is already held by the host department.
-The ask has been recosted accordingly and is now \textbf{\lakh{21.58}}, a
-reduction of 25\,\%. Table~\ref{tab:programme} gives the breakdown.
+\lakh{28.74}. That figure bought laboratory equipment, computing and a purchased
+field-data campaign. On review, none of those are what a competition entry
+needs, and most of the equipment is already held by the host institution. The
+ask has been recosted accordingly and is now \textbf{\lakh{19.14}}, a reduction
+of 33\,\%. Table~\ref{tab:programme} gives the breakdown.
 
 \begin{table}[t]
 \caption{Competition build cost}
@@ -927,31 +927,39 @@ reduction of 25\,\%. Table~\ref{tab:programme} gives the breakdown.
 \toprule
 \textbf{Element} & \textbf{Was} & \textbf{Ask} \\
 \midrule
-Air vehicles (3), payload, parachutes  & 8.31\,L & 8.67\,L \\
-Ground segment                         & 3.88\,L & 2.62\,L \\
+Air vehicles (3), payload, parachutes  & 8.31\,L & 8.51\,L \\
+Ground segment                         & 3.88\,L & 1.37\,L \\
 Test equipment                         & 2.26\,L & 0.63\,L \\
 Spares and consumables                 & 2.73\,L & 1.56\,L \\
-Software, data and regulatory          & 1.75\,L & 0.80\,L \\
+Software, data and regulatory          & 1.75\,L & 0.55\,L \\
 Training airframe                      & ---     & 0.37\,L \\
 \midrule
-Subtotal                               & 18.93\,L & 14.65\,L \\
-Duty and freight, imported residual     &          & 1.26\,L \\
-Goods and services tax                  &          & 2.86\,L \\
-Contingency, 15\,\%                     &          & 2.81\,L \\
+Subtotal                               & 18.93\,L & 12.99\,L \\
+Duty and freight, imported residual     &          & 1.11\,L \\
+Goods and services tax                  &          & 2.54\,L \\
+Contingency, 15\,\%                     &          & 2.50\,L \\
 \midrule
-\textbf{Total requested}                &          & \textbf{21.58\,L} \\
+\textbf{Total requested}                &          & \textbf{19.14\,L} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 Four principles were applied, and each is visible in the table.
 
-\emph{If the department already owns it, it is not in the ask.} A 3D printer,
-soldering station, bench supply, rotary tool and multimeters --- \inr{84\,000}
-of equipment --- are available in the Department of Electronics and
-Communication Engineering. They are recorded as an \textbf{institutional
-contribution} rather than deleted, because that is what they are: co-funding in
-kind, and the reason test equipment falls from \lakh{2.26} to \lakh{0.63}.
+\emph{If the institution already owns it, it is not in the ask.}
+\textbf{\inr{3.54\,L} of equipment} is available and has been removed: the
+electronics laboratory and 3D printing (\inr{84\,000}), GPU compute for model
+training (\inr{75\,000}), field power (\inr{55\,000}), and the machine shop and
+composite fabrication that produce the CNC-cut plates, machined arm clamps and
+motor mounts. Both ground-station laptops (\inr{1{,}40{,}000}) are supplied by
+the team. None of this is deleted --- it is recorded as an \textbf{institutional
+contribution}, because that is what it is: co-funding in kind, and the reason
+the ground segment falls from \lakh{3.88} to \lakh{1.37}.
+
+The remaining ground-segment spend is dominated by one item that could
+\emph{not} be borrowed: the RTK base receiver and its survey tripod
+(\inr{47\,500}). Section~\ref{sec:geotag} explains why it is not a candidate for
+deletion --- it governs the entire geolocation budget.
 
 \emph{If it can be built, it is costed as built.} The thrust stand falls from
 \inr{45\,000} to \inr{8\,000} --- a load cell, an amplifier and a printed
@@ -994,15 +1002,15 @@ give the schedule.
 \toprule
 \textbf{T} & \textbf{Months / phases} & \textbf{INR} & \textbf{Release condition} \\
 \midrule
-1 & 1--2 \quad P1--P4  & 7.50\,L & On award. Design point frozen; models regenerate \\
+1 & 1--2 \quad P1--P4  & 6.70\,L & On award. Design point frozen; models regenerate \\
 \addlinespace
-2 & 3--4 \quad P5      & 6.50\,L & Ground segment demonstrated against three simulated aircraft \\
+2 & 3--4 \quad P5      & 5.70\,L & Ground segment demonstrated against three simulated aircraft \\
 \addlinespace
-3 & 5--6 \quad P6--P8  & 4.50\,L & Three airframes weighed; first hover complete \\
+3 & 5--6 \quad P6--P8  & 4.00\,L & Three airframes weighed; first hover complete \\
 \addlinespace
-4 & 7--8 \quad P9--P10 & 3.08\,L & Perception and delivery trials reported with measured figures \\
+4 & 7--8 \quad P9--P10 & 2.74\,L & Perception and delivery trials reported with measured figures \\
 \midrule
-  & \textbf{Total}     & \textbf{21.58\,L} & \\
+  & \textbf{Total}     & \textbf{19.14\,L} & \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1241,7 +1249,7 @@ remains is the part that requires funding: to build the aircraft, fly them, and
 replace the modelled and assumed quantities in Section~\ref{sec:evidence} with
 measured ones.
 
-I am asking for \lakh{21.58} to do that, and I have tried throughout this
+I am asking for \lakh{19.14} to do that, and I have tried throughout this
 document to make every number in it checkable.
 
 %=============================================================================
