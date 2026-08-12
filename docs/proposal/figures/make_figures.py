@@ -146,15 +146,15 @@ def fig_options():
     # sub-GHz radio outside the Indian band. See docs/proposal/README.md.
     opts = ["A\nverified", "B\nefficiency", "C\n+indig.\ntrade",
             "D\n+capability\ntrade", "E\ndifferent\naircraft"]
-    cost = [290546, 263401, 237081, 183640, 37309]
+    cost = [290546, 263401, 237081, 157800, 37309]
     colours = [GREY, GREEN, BLUE, ORANGE, RED]
     x = np.arange(len(opts))
     bars = ax.bar(x, cost, color=colours, width=0.62)
-    bars[1].set_edgecolor("black"); bars[1].set_linewidth(1.1)
+    bars[3].set_edgecolor("black"); bars[3].set_linewidth(1.1)
 
     # Notes sit BELOW the axis, not inside the bars: at column width a bar is
     # narrower than the text, and text inside it gets clipped.
-    notes = ["baseline", "nothing lost", "$-$Indian", "$-$RTK", "cannot fly"]
+    notes = ["baseline", "nothing lost", "$-$Indian", "$-$margin", "cannot fly"]
     for xi, v, nt in zip(x, cost, notes):
         ax.text(xi, v + 9000, f"{v/1e5:.2f}L", ha="center", fontsize=7, weight="bold")
         ax.annotate(nt, xy=(xi, 0), xytext=(0, -30), textcoords="offset points",
@@ -209,7 +209,7 @@ def fig_funding():
                 "T3\nmonths 5–6", "T4\nmonths 7–8"]
     # Competition build, not the development programme.
     # Source: figures/competition_budget.py
-    amounts = np.array([4.65, 4.00, 2.80, 1.82])       # INR lakh
+    amounts = np.array([3.50, 2.95, 2.10, 1.39])       # INR lakh
     phases = ["P1–P4\nanalysis, ground segment,\nautonomy, long-lead order",
               "P5\nairframe build,\nground segment",
               "P6–P8\nfirst flight, perception\nand delivery trials",
@@ -225,7 +225,7 @@ def fig_funding():
         ax.text(xi, 0.35, p, ha="center", va="bottom", fontsize=6.0, color=tc)
     ax.set_xticks(x); ax.set_xticklabels(tranches)
     ax.set_ylabel("Tranche (INR lakh)")
-    ax.set_ylim(0, 6.3)
+    ax.set_ylim(0, 4.8)
     ax.grid(axis="x", alpha=0)
 
     ax2 = ax.twinx()
@@ -239,7 +239,7 @@ def fig_funding():
                      ha="right", weight="bold")
     ax2.set_ylabel("Cumulative disbursement (INR lakh)", color=RED)
     ax2.tick_params(axis="y", colors=RED)
-    ax2.set_ylim(0, 16)
+    ax2.set_ylim(0, 12)
     ax2.grid(False)
     ax2.spines["right"].set_visible(True)
     ax2.spines["right"].set_color(RED)

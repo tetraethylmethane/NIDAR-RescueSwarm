@@ -85,7 +85,7 @@ market-verified cost basis, and a phased work plan. I am explicit throughout
 about which figures are measured, which are modelled, and which remain assumed;
 no aircraft has yet flown, and the proposal is structured so that a reviewer can
 distinguish demonstrated capability from projected capability without reading
-the source material. The requested funding is \lakh{13.27} over an eight-month build.
+the source material. The requested funding is \lakh{9.94} over an eight-month build.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -834,9 +834,9 @@ because the carried figure does not buy a compliant radio.}
 \textbf{Opt.} & \textbf{What it trades} & \textbf{INR} & \textbf{Indian} & \textbf{Cost} \\
 \midrule
 A & Verified baseline        & 2\,90\,546 & 58\,\% & --- \\
-B & \textbf{Efficiency only} & \textbf{2\,63\,401} & \textbf{61\,\%} & nothing \\
+B & Efficiency only          & 2\,63\,401 & 61\,\% & nothing \\
 C & + indigenisation         & 2\,37\,081 & 53\,\% & Indian content \\
-D & + capability             & 1\,83\,640 & 52\,\% & RTK, inference spec \\
+D & \textbf{ADOPTED}         & \textbf{1\,57\,800} & \textbf{45\,\%} & margin, not capability \\
 E & Different aircraft       & 37\,309    & ---    & the mission \\
 \bottomrule
 \end{tabular}
@@ -927,8 +927,8 @@ An earlier version of this budget costed a development \emph{programme} at
 \lakh{28.74}. That figure bought laboratory equipment, computing and a purchased
 field-data campaign. On review, none of those are what a competition entry
 needs, and most of the equipment is already held by the host institution. The
-ask has been recosted accordingly and is now \textbf{\lakh{13.27}}, a reduction
-of 54\,\%. Table~\ref{tab:programme} gives the breakdown.
+ask has been recosted accordingly and is now \textbf{\lakh{9.94}}, a reduction
+of 65\,\%. Table~\ref{tab:programme} gives the breakdown.
 
 \begin{table}[t]
 \caption{Competition build cost}
@@ -939,18 +939,18 @@ of 54\,\%. Table~\ref{tab:programme} gives the breakdown.
 \toprule
 \textbf{Element} & \textbf{Was} & \textbf{Ask} \\
 \midrule
-Air vehicles (3) and payload           & 8.31\,L & 6.93\,L \\
-Ground segment                         & 3.88\,L & 1.08\,L \\
+Air vehicles (3) and payload           & 8.31\,L & 4.83\,L \\
+Ground segment                         & 3.88\,L & 0.74\,L \\
 Test equipment                         & 2.26\,L & 0.36\,L \\
 Spares and consumables                 & 2.73\,L & 0.59\,L \\
 Regulatory                             & 1.75\,L & 0.05\,L \\
 \midrule
-Subtotal                               & 18.93\,L & 9.01\,L \\
-Duty and freight, imported residual     &          & 0.77\,L \\
-Goods and services tax                  &          & 1.76\,L \\
-Contingency, 15\,\%                     &          & 1.73\,L \\
+Subtotal                               & 18.93\,L & 6.53\,L \\
+Duty and freight, imported residual     &          & 0.79\,L \\
+Goods and services tax                  &          & 1.32\,L \\
+Contingency, 15\,\%                     &          & 1.30\,L \\
 \midrule
-\textbf{Total requested}                &          & \textbf{13.27\,L} \\
+\textbf{Total requested}                &          & \textbf{9.94\,L} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -987,7 +987,24 @@ see what the lowest-cost configuration gives up.
 \end{tabular}
 \end{table}
 
-Four of these deserve comment rather than a table row.
+\emph{Ground-truth apparatus is fabricated rather than bought}, taking that line
+from \inr{35\,280} to \inr{4\,860}. Survivor targets are clothed forms of the
+correct size and outline; at 60\,m and 2\,cm/px a person subtends about fifty
+pixels, and what the detector responds to is silhouette, scale and contrast
+against terrain, not anatomy. Two of these items are \emph{better} fabricated:
+dummy kits can be made to exactly the 200\,g that rule C6 fixes, and donated
+clothing gives wider colour and contrast variety than matched bought sets, which
+is precisely what detection robustness requires.
+
+\textbf{One caveat follows from this and is recorded rather than glossed.} The
+calibration markers are surveyed using the programme's own RTK rover. That is
+standard practice and adequate for this purpose, but it means the ground truth
+against which geolocation accuracy is measured is \emph{itself RTK-derived}. The
+two error sources are therefore correlated, and the measured geotag figure
+reported in P7--P8 will be slightly optimistic against an independently surveyed
+datum. Any accuracy claim arising from those phases will state this.
+
+Four further items deserve comment rather than a table row.
 
 \emph{The second GNSS receiver is deferred to a measurement, not to funding.} It
 supplies moving-baseline heading, and Section~\ref{sec:geotag} shows that
@@ -1086,15 +1103,15 @@ give the schedule.
 \toprule
 \textbf{T} & \textbf{Months / phases} & \textbf{INR} & \textbf{Release condition} \\
 \midrule
-1 & 1--2 \quad P1--P4  & 4.65\,L & On award. Design point frozen; models regenerate \\
+1 & 1--2 \quad P1--P4  & 3.50\,L & On award. Design point frozen; models regenerate \\
 \addlinespace
-2 & 3--4 \quad P5      & 4.00\,L & Ground segment demonstrated against three simulated aircraft \\
+2 & 3--4 \quad P5      & 2.95\,L & Ground segment demonstrated against three simulated aircraft \\
 \addlinespace
-3 & 5--6 \quad P6--P8  & 2.80\,L & Three airframes weighed; first hover complete \\
+3 & 5--6 \quad P6--P8  & 2.10\,L & Three airframes weighed; first hover complete \\
 \addlinespace
-4 & 7--8 \quad P9--P10 & 1.82\,L & Perception and delivery trials reported with measured figures \\
+4 & 7--8 \quad P9--P10 & 1.39\,L & Perception and delivery trials reported with measured figures \\
 \midrule
-  & \textbf{Total}     & \textbf{13.27\,L} & \\
+  & \textbf{Total}     & \textbf{9.94\,L} & \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1333,7 +1350,7 @@ remains is the part that requires funding: to build the aircraft, fly them, and
 replace the modelled and assumed quantities in Section~\ref{sec:evidence} with
 measured ones.
 
-I am asking for \lakh{13.27} to do that, and I have tried throughout this
+I am asking for \lakh{9.94} to do that, and I have tried throughout this
 document to make every number in it checkable.
 
 %=============================================================================
