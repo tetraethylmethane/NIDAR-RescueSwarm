@@ -136,7 +136,10 @@ GROUPS = [("Air vehicle and payload", AIR), ("Ground segment", GROUND),
           ("Software, data and regulatory", SOFT)]
 
 DUTY, GST, CONTINGENCY = 0.22, 0.18, 0.15
-INDIG = 0.45          # falls from 0.61: imported autopilot and generic propulsion
+INDIG = 0.355         # COMPUTED, not estimated, from the per-line Indian
+                      # fractions of the adopted configuration. Falls from 0.58
+                      # in the fully specified aircraft: the imported autopilot
+                      # and generic propulsion are what make it affordable.
 ORIGINAL = 2_873_880
 
 

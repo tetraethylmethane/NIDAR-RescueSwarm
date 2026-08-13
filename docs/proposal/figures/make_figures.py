@@ -118,10 +118,14 @@ def fig_geotag():
 # ===========================================================================
 def fig_mass():
     fig, ax = plt.subplots(figsize=(COL, 2.35))
+    # The model's own mass statement lists 6,061 g against a 6,360 g MTOW.
+    # The 299 g residual is shown rather than left for a reader to find by
+    # adding the bars up.
     items = ["Structure", "Battery pack", "Avionics\n+ harness",
-             "Survivor kits", "Motors", "Propellers", "Magazine\n+ release", "ESCs"]
-    g = [1495, 1449, 925, 800, 640, 288, 240, 224]
-    colours = [GREY, BLUE, PURPLE, GREEN, ORANGE, ORANGE, GREEN, ORANGE]
+             "Survivor kits", "Motors", "Unallocated\nresidual",
+             "Propellers", "Magazine\n+ release", "ESCs"]
+    g = [1495, 1449, 925, 800, 640, 299, 288, 240, 224]
+    colours = [GREY, BLUE, PURPLE, GREEN, ORANGE, RED, ORANGE, GREEN, ORANGE]
     y = np.arange(len(items))[::-1]
     ax.barh(y, g, color=colours, height=0.68)
     for yi, v in zip(y, g):
@@ -176,12 +180,13 @@ def fig_subsystem():
     fig, ax = plt.subplots(figsize=(COL, 2.5))
     subs = ["Avionics", "Compute &\nperception", "Propulsion", "Power",
             "Structure", "Comms", "Payload"]
+    # A (fully specified) against D (adopted), from competition_budget.py.
     a = [85400, 79500, 57396, 24500, 20550, 17800, 5400]
-    b = [83000, 42900, 57396, 24500, 20550, 29655, 5400]
+    b = [49100, 31100, 30600, 23500, 13000,  6000, 4500]
     y = np.arange(len(subs))[::-1]
     h = 0.36
     ax.barh(y + h/2, a, h, label="A (as verified)", color=LIGHT, edgecolor=GREY, lw=0.5)
-    ax.barh(y - h/2, b, h, label="B (recommended)", color=GREEN)
+    ax.barh(y - h/2, b, h, label="D (adopted)", color=GREEN)
     for yi, va, vb in zip(y, a, b):
         d = vb - va
         if d:
@@ -194,7 +199,7 @@ def fig_subsystem():
     ax.xaxis.set_major_formatter(FuncFormatter(inr))
     ax.set_xlim(0, 108000)
     ax.legend(frameon=False, loc="lower right")
-    ax.set_title("Where the recommended saving comes from")
+    ax.set_title("Where the saving comes from")
     ax.grid(axis="y", alpha=0)
     fig.tight_layout()
     save(fig, "fig-subsystem.pdf")
@@ -209,7 +214,7 @@ def fig_funding():
                 "T3\nmonths 5–6", "T4\nmonths 7–8"]
     # Competition build, not the development programme.
     # Source: figures/competition_budget.py
-    amounts = np.array([3.50, 2.95, 2.10, 1.39])       # INR lakh
+    amounts = np.array([3.55, 3.00, 2.15, 1.42])       # INR lakh
     phases = ["P1–P4\nanalysis, ground segment,\nautonomy, long-lead order",
               "P5\nairframe build,\nground segment",
               "P6–P8\nfirst flight, perception\nand delivery trials",
@@ -255,27 +260,30 @@ def fig_funding():
 # ===========================================================================
 def fig_indig():
     fig, ax = plt.subplots(figsize=(COL, 2.4))
-    subs = ["Propulsion", "Structure", "Payload", "Avionics",
-            "Power", "Comms", "Compute &\nperception"]
-    frac = [88.6, 79.2, 61.1, 59.8, 58.2, 41.5, 33.3]
-    val = [57396, 20550, 5400, 85400, 24500, 17800, 79500]
+    # ADOPTED configuration. Propulsion falls 89% -> 21% and avionics
+    # 60% -> 32%: the generic motors and imported autopilot are exactly
+    # what make this configuration affordable.
+    subs = ["Payload", "Structure", "Power", "Avionics",
+            "Comms", "Propulsion", "Compute &\nperception"]
+    frac = [90.0, 85.0, 60.0, 32.0, 30.0, 21.0, 10.0]
+    val = [4500, 13000, 23500, 49100, 6000, 30600, 31100]
     y = np.arange(len(subs))[::-1]
     cols = [GREEN if f >= 70 else (ORANGE if f >= 50 else RED) for f in frac]
     ax.barh(y, frac, color=cols, height=0.66)
     for yi, f, v in zip(y, frac, val):
         ax.text(f + 1.5, yi, f"{f:.0f}%", va="center", fontsize=6.8)
         ax.text(2, yi, f"{v/1000:.0f}k", va="center", fontsize=6.0, color="white")
-    ax.axvline(58.4, color="black", ls="--", lw=1)
+    ax.axvline(35.5, color="black", ls="--", lw=1)
     # Above the plot area, not rotated across the bars -- a vertical label here
     # sits on top of the Power and Comms rows and becomes unreadable.
-    ax.annotate("air-vehicle mean 58%", xy=(58.4, len(subs) - 0.45),
+    ax.annotate("adopted mean 36%", xy=(35.5, len(subs) - 0.45),
                 xytext=(4, 0), textcoords="offset points",
                 fontsize=6.3, ha="left", va="center")
     ax.set_yticks(y); ax.set_yticklabels(subs)
     ax.set_xlabel("Indian content, value-weighted (%)")
     ax.set_xlim(0, 108)
     ax.set_ylim(-0.7, len(subs) - 0.05)
-    ax.set_title("Indigenous content by subsystem")
+    ax.set_title("Indigenous content by subsystem, as adopted")
     ax.grid(axis="y", alpha=0)
     fig.tight_layout()
     save(fig, "fig-indig.pdf")
