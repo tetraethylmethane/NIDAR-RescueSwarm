@@ -151,12 +151,23 @@ eight-week flight-test window, that difference is not a procurement detail --- i
 is the difference between two test campaigns and one. Indigenisation, in this
 programme, buys flying days.
 
+\textbf{That argument cuts against a decision taken later in this document, and
+I would rather confront it than let a reviewer find it.} Section~\ref{sec:ask}
+defers the Indian autopilot and Indian propulsion on cost, and the imported
+parts replacing them carry the longer lead time this section has just described
+as decisive. The mitigation is structural rather than rhetorical: every
+long-lead item is ordered in tranche~1, in month one, before the software work
+that would normally precede procurement is finished. Cost was traded against
+schedule margin knowingly, and the schedule risk it creates is carried
+explicitly in Table~\ref{tab:risk} rather than assumed away.
+
 \subsection{Contributions of the proposed work}
 
 \begin{enumerate}
   \item A three-aircraft autonomous survey-and-delivery system operable by a
-        single operator with no network dependency, sized and costed against
-        market-verified Indian components.
+        single operator with no network dependency, sized and costed
+        line-by-line against market-verified components with dated Indian
+        supplier prices.
   \item A geolocation error budget that treats survivor coordinate accuracy as
         the primary system output, and an architecture that meets it using a
         team-owned RTK base rather than any external correction service.
@@ -187,7 +198,9 @@ programme, buys flying days.
   \item[\textbf{O5}] Operate with no cellular, internet or cloud dependency at
         any point in the mission.
   \item[\textbf{O6}] Maximise value-weighted indigenous content across the
-        priced bill of materials without compromising O1--O5.
+        priced bill of materials subject to the funding available, without
+        compromising O1--O5, and state explicitly which Indian lines were
+        deferred to meet the budget and what restoring them costs.
 \end{itemize}
 
 \subsection{Explicit non-objectives}
@@ -247,8 +260,10 @@ running detection on overlapping crops rather than a downsampled full
 frame~\cite{akyon2022sahi}. Purpose-built aerial person datasets such as
 SARD~\cite{sambolek2021sard} and the broader VisDrone
 benchmark~\cite{zhu2021visdrone} provide the transfer-learning base; neither
-contains post-flood Indian terrain, which is why a field data campaign is a
-funded line in this programme rather than an assumption.
+contains post-flood Indian terrain. A field data campaign is therefore the
+right answer and was costed; it is \emph{deferred} in the present ask
+(Section~\ref{sec:deferred}), which is why detection recall remains a modelled
+quantity and the leading entry in the risk register.
 
 \subsection{Airborne payload delivery}
 
@@ -721,10 +736,11 @@ home brings all three aircraft back within 116--128\,m of the pad, against
 \centering
 \includegraphics[width=0.92\textwidth]{gcs-running.png}
 \caption{Ground control station carrying three concurrent H.264 streams within
-the link budget, with offline map tiles and per-aircraft status. Note the
-safety panel: abort and recall currently record operator intent in the mission
-log but transmit nothing, because no safety radio is yet configured. This is
-reported here rather than cropped out --- see Section~VI-C.}
+the link budget, with offline map tiles and per-aircraft status. The safety panel
+is shown uncropped: abort and recall presently record operator intent in the
+mission log and transmit nothing, because no downlink command path is yet wired.
+Closing that is scheduled work, not a design gap --- see
+Section~\ref{sec:notimpl}.}
 \label{fig:gcs}
 \end{figure*}
 
@@ -737,18 +753,22 @@ within one per cent, and the geotag projection has been verified
 self-consistent between two independent formulations to $7.8\times10^{-10}$\,m.
 
 \subsection{Assumed, or not yet implemented}
+\label{sec:notimpl}
 
-Detection recall on real post-flood imagery, boresight calibration residual,
-achieved RTK accuracy in the field, and battery internal resistance under Indian
-ambient conditions are all assumed. Each requires hardware and is a funded
-activity in P5--P8.
+Boresight calibration residual, achieved RTK accuracy in the field, and battery
+internal resistance under Indian ambient conditions are all assumed, and each is
+a funded activity in P5--P8. \textbf{Detection recall on real post-flood imagery
+is also assumed, and its field campaign is deferred rather than funded}
+(Section~\ref{sec:deferred}); it is therefore the one assumption this programme
+does not currently plan to retire, and it leads the risk register accordingly.
 
 One ground-segment function is explicitly \emph{not} implemented and is visible
-as such in Fig.~\ref{fig:gcs}: the abort and recall controls currently record
-operator intent in the mission log but transmit nothing, because no safety radio
-is yet configured. Recovery today depends on the safety pilot's transmitter.
-Closing this is a P4 activity and is gated on the sub-gigahertz link discussed
-in Section~IV-E.
+as such in Fig.~\ref{fig:gcs}: the abort and recall controls record operator
+intent in the mission log but transmit nothing, because no downlink command path
+is yet wired. Recovery today depends on the safety pilot's transmitter. Closing
+this is a P4 activity, and it now runs over the 2.4\,GHz ExpressLRS link rather
+than the deferred sub-gigahertz radio --- which is what makes that link
+load-bearing for safety and not merely a control convenience.
 
 \subsection{The honest summary}
 
@@ -894,10 +914,16 @@ reason.
 
 \emph{The generic motors move an existing risk rather than creating one.} The
 selected parts carry no published thrust curve, where the displaced ones did.
-That does not change the physics --- it changes who measures it. The thrust
-stand in Table~\ref{tab:programme} is therefore no longer a convenience: it is
-the instrument that determines whether the aircraft hovers at the design point,
-and it is scheduled before design freeze rather than after.
+That does not change the physics --- it changes who measures it, and when. The
+thrust stand in Table~\ref{tab:programme} is therefore no longer a convenience
+but the instrument that decides whether the aircraft hovers at the design point.
+
+It cannot precede procurement, because it needs the motors it is characterising.
+Thrust is therefore measured in P5 as the motors arrive, and \textbf{a shortfall
+against the datasheet at that point forces a propulsion change with the
+flight-test window already open.} That is the honest shape of the risk, it is
+why the entry in Table~\ref{tab:risk} is rated High, and it is a direct cost of
+choosing parts that publish no measured thrust.
 
 \subsubsection{Corrections made to this analysis on review}
 
@@ -1138,7 +1164,7 @@ give the schedule.
 \midrule
 1 & 1--2 \quad P1--P4  & 3.50\,L & On award. Design point frozen; models regenerate \\
 \addlinespace
-2 & 3--4 \quad P5      & 2.95\,L & Ground segment demonstrated against three simulated aircraft \\
+2 & 3--4 \quad P5      & 2.95\,L & P1--P4 complete: ground segment demonstrated, and link-loss and low-battery behaviour verified by fault injection \\
 \addlinespace
 3 & 5--6 \quad P6--P8  & 2.10\,L & Three airframes weighed; first hover complete \\
 \addlinespace
@@ -1402,7 +1428,8 @@ requested budget permits, and engineered under a verification discipline that
 distinguishes what has been demonstrated from what has merely been designed.
 Where an Indian part was deferred it was deferred on cost, not on capability ---
 domestic industry can supply the autopilot and the propulsion, and
-Section~ef{sec:indig} states what restoring them costs.
+Section~
+ef{sec:indig} states what restoring them costs.
 
 The system's design point, error budgets and cost basis are established and
 reproducible. Its coordination and failsafe behaviour have been demonstrated in
