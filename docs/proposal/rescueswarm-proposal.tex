@@ -76,10 +76,12 @@ RescueSwarm, a three-aircraft autonomous unmanned aerial system that surveys a
 designated area, detects and geolocates survivors, and delivers a standardised
 relief kit to each, under a single operator and without any reliance on cellular
 or internet infrastructure. The system is designed around a deliberate
-constraint: maximal indigenous sourcing, both because supply-chain sovereignty is
-a national priority and because domestic lead times are roughly half those of
-imports, which directly buys flight-test days inside a schedule-limited
-programme. I present the system architecture, the sizing and error models that
+constraint: indigenous sourcing wherever the budget permits it, both because
+supply-chain sovereignty is a national priority and because domestic lead times
+are roughly half those of imports, which directly buys flight-test days inside a
+schedule-limited programme. The configuration costed here reaches approximately
+45\,\% Indian content, and I state which lines were deferred to reach the
+requested figure and what restoring them would cost. I present the system architecture, the sizing and error models that
 fix its design point, the simulation evidence obtained to date, a
 market-verified cost basis, and a phased work plan. I am explicit throughout
 about which figures are measured, which are modelled, and which remain assumed;
@@ -319,16 +321,18 @@ maximum take-off mass, which is why airframe mass fraction and pack chemistry
 are the two sensitivities carried in the risk register rather than, say, avionics
 choice. The survivor kits are 800\,g --- 12.6\,\% of MTOW and fixed by the
 mission at four kits of exactly 200\,g --- so payload is an input to the sizing
-loop, not an output of it. This is the reason the cost floor in
-Section~\ref{sec:budget} cannot be lowered by component substitution: propulsion
-and energy are sized by a payload that is not negotiable.
+loop, not an output of it. This is why propulsion and energy resist cost
+reduction in Section~\ref{sec:budget} in a way that avionics does not: they are
+sized by a payload that is not negotiable, so cheaper parts of the same class
+are available but a smaller aircraft is not.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{fig-mass.pdf}
 \caption{Mass budget per aircraft. Generated from
-\texttt{docs/sizing/model-output.txt}; the fleet figure of 19\,081\,g leaves
-26\,\% build-overweight tolerance against the 25\,kg regulatory cap.}
+\texttt{docs/sizing/model-output.txt}. The fleet figure of 19\,081\,g carries
+4\,919\,g of growth allowance against a 24\,kg internal target --- 26\,\% build
+overweight tolerated --- inside the 25\,kg regulatory cap.}
 \label{fig:mass}
 \end{figure}
 
@@ -343,10 +347,10 @@ The system comprises three segments, shown in Fig.~\ref{fig:arch}.
 
 % ---- air segment -----------------------------------------------------
 \node[blk] (cam)  {Camera\\12\,MP nadir};
-\node[blk, right=8mm of cam] (gnss) {GNSS pair\\pos.\ + heading};
+\node[blk, right=8mm of cam] (gnss) {GNSS receiver\\RTK position};
 \node[blk, below=4mm of cam] (inf) {Edge inference\\tile $\cdot$ detect $\cdot$ fuse};
 \node[blk, below=8mm of inf] (fc) {Autopilot (ArduPilot)\\nav $\cdot$ failsafe $\cdot$ arming};
-\node[blk, right=8mm of fc] (rad) {Mesh radio\\+ safety link};
+\node[blk, right=8mm of fc] (rad) {Mesh radio 5.8\,GHz\\+ ELRS 2.4\,GHz};
 \node[blk, below=4mm of fc] (mag) {Kit magazine, 4 stations\\positive-lock detents};
 
 \draw[flow] (cam) -- (inf);
@@ -387,10 +391,11 @@ the operator rather than the algorithm.}
 
 \subsubsection{Air segment}
 Three identical quadrotors, each carrying a Pixhawk-standard autopilot running
-ArduPilot~\cite{ardupilot}, a dual-band NavIC/GNSS receiver pair for position and moving-baseline
-heading, a nadir-mounted 12\,MP camera, an edge inference module, a four-station
-kit magazine with positive-lock detents, a mesh radio for telemetry and video,
-and an independent sub-gigahertz safety link.
+ArduPilot~\cite{ardupilot}, a dual-band NavIC/GNSS receiver providing RTK
+position, a nadir-mounted 12\,MP camera, an edge inference module, a four-station
+kit magazine with positive-lock detents, a 5.8\,GHz mesh radio for telemetry and
+video, and a 2.4\,GHz ExpressLRS link carrying safety-pilot control and abort
+independently of the autonomy stack.
 
 \subsubsection{Ground segment}
 A single ground control station presenting one unified operator interface. The
@@ -418,8 +423,11 @@ error, terrain-model error and timing skew.
 
 Table~\ref{tab:geotag} shows the dominant conclusion: positioning quality, not
 optics, governs. This is what makes RTK a scoring requirement rather than an
-optimisation, and it is why the two GNSS receivers survive every cost-reduction
-pass in Section~\ref{sec:budget}.
+optimisation, and it is why the RTK receiver and its base station survive every
+cost-reduction pass in Section~\ref{sec:budget} while a great deal else does
+not. The \emph{second} receiver, which supplies moving-baseline heading, is a
+different case and is deferred to a measurement --- see
+Section~\ref{sec:budget}.
 
 \begin{table}[t]
 \caption{Geolocation error by configuration}
@@ -475,7 +483,8 @@ would require 48 tiles per frame and is far beyond the thermal and compute
 envelope of any module in this mass class. A two-times downsample with 20\,\%
 tile overlap requires 12 tiles per frame; at a 2\,Hz inference rate this is 24
 inferences per second at $640\times640$, which is within the demonstrated
-throughput of a 20-TOPS-class edge module.
+throughput of the 26-TOPS-class accelerator selected in
+Section~\ref{sec:budget}.
 
 This is the single most benchmark-sensitive figure in the design. Published
 throughput for comparable models on comparable hardware spans roughly 24 to 41
@@ -493,9 +502,14 @@ WebRTC streams in approximately 2.7\,Mbps, with per-feed rate reduction under
 congestion rather than feed switching. Detection runs onboard; the downlink
 serves the operator, not the algorithm.
 
-An independent sub-gigahertz link in the 865--867\,MHz Indian delicensed
-short-range-device band provides a command and safety path that does not share a
-failure mode with the primary mesh.
+Band diversity is provided without a third radio. The 5.8\,GHz mesh carries
+video, telemetry and coordination; a 2.4\,GHz ExpressLRS link carries
+safety-pilot control and abort, and is independent of the autonomy stack. Both
+operate in delicensed bands and both comfortably cover the 600\,m geofence. A
+further link in the 865--867\,MHz short-range-device band would add a third
+independent path and is the correct extension when funding allows; it is
+deferred rather than fitted, and Section~\ref{sec:deferred} records the
+reasoning.
 
 \subsection{Payload delivery}
 \label{sec:delivery}
@@ -531,7 +545,7 @@ path rather than three.
 \node[blk, below=of setup] (arm) {Arm; gate on 3-D fix};
 \node[blk, below=of arm] (to) {Staggered take-off\\delay 0 / 15 / 30\,s};
 \node[blk, below=of to] (tr) {Transit at 20 / 25 / 30\,m\\(vertical deconfliction)};
-\node[blk, below=of tr] (sw) {Boustrophedon sweep\\40\,m AGL $\cdot$ 8\,m/s};
+\node[blk, below=of tr] (sw) {Boustrophedon sweep\\60\,m AGL $\cdot$ 8\,m/s};
 \node[dec, below=5mm of sw] (det) {detection?};
 \node[blk, below=5mm of det] (conf) {Temporal confirm\\$\geq$2 frames, fuse position};
 \node[blk, below=of conf] (del) {Descend, null groundspeed\\$<$0.3\,m/s, release at 6\,m};
@@ -586,7 +600,7 @@ P3  & Autonomy               & Deterministic plan generation; deconfliction veri
 P4  & Fault handling         & Link-loss and low-battery behaviour verified by fault injection \\
 P5  & Procurement and build  & Three airframes assembled and weighed; thrust stand complete \\
 P6  & First flight           & Hover, trim, vibration and thermal characterisation \\
-P7  & Perception field trials & Detection recall measured on real imagery with surveyed ground truth \\
+P7  & Perception field trials & Detection recall measured on real imagery against fabricated targets on RTK-surveyed ground \\
 P8  & Delivery trials        & Delivery CEP measured against a surveyed target mat \\
 P9  & Full mission rehearsal & End-to-end mission with all three aircraft, no operator intervention \\
 P10 & Setup and contingency  & Setup drill timed over repeated runs; margin recovered \\
@@ -1171,11 +1185,17 @@ fails eight system requirements and cannot fly the mission; it is emphatically
 not a low-cost variant of the proposed system. Its value is different: the
 programme's binding constraint is an eight-week flight-test window currently
 budgeted entirely on aircraft that do not yet exist and cannot be risked once
-they do. Two or three training airframes, at roughly the cost of one inference
-module, would fly from the first week of that window and absorb ground-station
+they do. A training airframe, at roughly twice the cost of one inference module,
+would fly from the first week of that window and absorb ground-station
 integration, radio-path validation, setup-drill timing, failsafe verification on
-real hardware, and crash-and-rebuild practice. I identify this as the highest
-return-on-investment discretionary item in the budget.
+real hardware, and crash-and-rebuild practice.
+
+	extbf{It is deferred in the present ask} and sits at position~4 in
+Table~
+ef{tab:deferred}. I record it as the highest return-on-investment
+discretionary item in the budget rather than quietly dropping it: with the spares
+set also reduced, it is the mitigation the flight-test window most obviously
+lacks.
 
 %=============================================================================
 \section{Indigenisation Strategy}
@@ -1230,8 +1250,8 @@ Autopilot        & \emph{Deferred:} Indian Pixhawk-standard board, domestically 
 Propulsion       & \emph{Deferred:} Indian motors and ESCs with published thrust data \\
 Airframe         & Indian composite fabrication \\
 Cells            & Indian, BIS-certified 21700 NMC \\
-Camera           & Indian embedded-vision supplier \\
-GNSS             & Indian receiver with NavIC L1+L5 support \\
+Camera           & \emph{Deferred:} Indian embedded-vision supplier \\
+GNSS             & Indian receiver, NavIC L1+L5. \emph{Retained} \\
 Co-processor     & Indian RISC-V development kit \\
 Inference module & \textbf{No Indian equivalent exists at this class} \\
 \bottomrule
@@ -1240,8 +1260,8 @@ Inference module & \textbf{No Indian equivalent exists at this class} \\
 
 The inference accelerator is the one genuinely irreducible import, and I
 declare it plainly rather than obscuring it. Mitigation is confined to what is
-honest: an Indian carrier board, Indian enclosure and thermal design, an Indian
-camera, and a model trained on Indian field data. I regard an explicit gap
+honest: an Indian carrier board, and Indian enclosure and thermal design. I
+regard an explicit gap
 analysis as more credible than a uniformly confident claim, and I note that the
 domestic RISC-V development kit carried on the aircraft is a genuine
 demonstration of Indian silicon in flight, albeit in a monitoring role rather
@@ -1261,7 +1281,7 @@ than as an accelerator.
 \textbf{Risk} & \textbf{Sev.} & \textbf{Mitigation} \\
 \midrule
 Detection recall below target on real imagery
-& High & Field data campaign funded in P7; tiling and fusion parameters tunable without hardware change \\
+& High & \textbf{Raised by deferral of the field data campaign.} Public aerial-person datasets carry the model; tiling and fusion parameters remain tunable without hardware change \\
 \addlinespace
 Inference and software video encode contend on one board
 & High & The replacement compute has no hardware H.264 encoder. Benchmark both loads together before design freeze; fallback is a reduced tile count on a centre crop \\
@@ -1270,7 +1290,7 @@ RTK capability unconfirmed on selected receiver
 & High & Supplier confirmation is a gating procurement action; degraded mode already specified and flagged to the operator \\
 \addlinespace
 Flight-test window compressed by procurement delay
-& High & Domestic sourcing halves lead times; training airframes decouple integration from airframe availability \\
+& High & \textbf{Raised by deferral of the training airframe and of spares.} Lead time is now the only mitigation, so long-lead items are ordered in tranche~1 \\
 \addlinespace
 Recovery parachute sizing and supply
 & Medium & No domestic supplier identified; import lead time and correct mass rating are open procurement actions \\
@@ -1278,8 +1298,14 @@ Recovery parachute sizing and supply
 Setup time exceeds allowance
 & Medium & Currently modelled, not measured; timed drills are the highest-priority early test \\
 \addlinespace
+Motor thrust below the datasheet claim
+& High & Selected motors publish no thrust curve. The thrust stand is built in P5 and characterises them before design freeze \\
+\addlinespace
 Airframe loss during test
-& Medium & Spares set sized for one rebuild; training airframes absorb early-campaign risk \\
+& High & \textbf{Raised by deferral of spares.} Structure set and consumables retained; a second loss in the same week is uncovered \\
+\addlinespace
+Flight insurance may be mandatory
+& Medium & Deferred at team direction. To be confirmed against the rulebook and DGCA rules before any flight \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1295,12 +1321,15 @@ the programme for precisely this reason.
 %=============================================================================
 
 \begin{enumerate}
-  \item Three flight-qualified aircraft with a documented, market-verified and
-        predominantly indigenous bill of materials.
+  \item Three flight-qualified aircraft with a documented, market-verified bill
+        of materials at approximately 45\,\% Indian content, and a costed route
+        to restoring the deferred Indian autopilot and propulsion.
   \item A single-operator ground control station demonstrated end to end against
         real aircraft, with no network dependency.
-  \item A measured detection recall figure on real imagery with surveyed ground
-        truth, replacing the current assumption.
+  \item A measured detection recall figure against fabricated survivor targets
+        on surveyed ground, replacing the current assumption. Ground truth is
+        RTK-derived rather than independently surveyed, and the resulting figure
+        will state that.
   \item A measured delivery circular error probable against a surveyed target,
         replacing the current model.
   \item A measured setup-to-launch time distribution over repeated drills.
@@ -1368,9 +1397,12 @@ competition regardless of what follows it.
 %=============================================================================
 
 I propose an autonomous three-aircraft system that addresses the localisation
-bottleneck in post-flood search and rescue, sourced as far as domestic industry
-presently permits, and engineered under a verification discipline that
+bottleneck in post-flood search and rescue, sourced domestically wherever the
+requested budget permits, and engineered under a verification discipline that
 distinguishes what has been demonstrated from what has merely been designed.
+Where an Indian part was deferred it was deferred on cost, not on capability ---
+domestic industry can supply the autopilot and the propulsion, and
+Section~ef{sec:indig} states what restoring them costs.
 
 The system's design point, error budgets and cost basis are established and
 reproducible. Its coordination and failsafe behaviour have been demonstrated in
