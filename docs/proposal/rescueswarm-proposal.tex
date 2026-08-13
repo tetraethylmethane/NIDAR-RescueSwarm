@@ -800,8 +800,8 @@ Section~\ref{sec:indig}: no Indian accelerator exists in this class.
 A structured cost-reduction study was performed against the verified bill of
 materials, producing four costed configurations of the same aircraft plus one
 reduced-capability alternative. Table~\ref{tab:options} and
-Fig.~\ref{fig:options} summarise them; Fig.~\ref{fig:subsystem} shows where the
-recommended saving is actually taken.
+Fig.~\ref{fig:options} summarise them; Fig.~\ref{fig:subsystem} shows, for the
+intermediate step, where a saving of this kind is actually taken.
 
 \begin{figure}[t]
 \centering
@@ -809,18 +809,19 @@ recommended saving is actually taken.
 \caption{Costed configurations, ordered by what each trades away. A through D are
 the same aircraft; E is a different and much smaller airframe that cannot carry
 the payload, included to show where the cost floor genuinely lies rather than as
-a proposal. Option~B gives up nothing --- and is the only step that also raises
-indigenous content.}
+a proposal. Option~D is adopted: it gives up margin and indigenous content, but
+no scored capability.}
 \label{fig:options}
 \end{figure}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{fig-subsystem.pdf}
-\caption{Subsystem cost, Option~A against Option~B. Almost the whole saving is
-one substitution in compute and perception. Communications moves the other way:
-the sub-gigahertz safety link is corrected \emph{upward} by \inr{11\,855},
-because the carried figure does not buy a compliant radio.}
+\caption{Subsystem cost, Option~A against the intermediate Option~B, shown
+because it isolates one effect cleanly: almost the whole saving at that step is a
+single substitution in compute and perception. Communications moves the other
+way, the sub-gigahertz link being corrected \emph{upward} before it was later
+deferred entirely.}
 \label{fig:subsystem}
 \end{figure}
 
@@ -846,30 +847,43 @@ The options are ordered by \emph{what they trade}, not by descending price,
 because the interesting question is not how cheap the aircraft can be made but
 what each rupee costs in capability or sovereignty.
 
-\textbf{Option~B is the recommended basis.} It saves \inr{27\,145} per aircraft
---- \inr{81\,435} across the fleet --- and gives up neither scored capability nor
-Indian content. Its principal component is the substitution of the edge
-inference module for a single-board computer with a 26-TOPS accelerator, which
-meets the throughput specification and is conditional on the benchmark described
-earlier.
+\textbf{Option~D is adopted}, at \inr{1\,57\,800} per aircraft. The governing
+principle is not "buy cheaper" but \emph{hobby-grade where the failure mode is
+visible and the specification is easy to verify; professional where it is not}.
 
-That substitution carries an integration consequence I did not see at first and
-record here because it enlarges the benchmark rather than the bill. The
-displaced module has a \emph{hardware} H.264 encoder; the single-board computer
-that replaces it has none --- its GPU dropped every encode block, so all video
-encoding is done in software on the same CPU that feeds the accelerator. Each
-aircraft encodes only its own stream, so this is one 720p encode per board and
-is achievable, but it is not free. 	extbf{The P5 benchmark is therefore not
+Motors, electronic speed controllers, propellers, adapters, pack hardware, the
+mesh node and mounts are commodity parts whose ratings can be checked on a bench
+before they fly. Six lines are held at professional grade on purpose, and the
+reason is recorded against each: the autopilot (dual IMU, Pixhawk standard), the
+RTK receiver (no cheaper part exists, and it governs 125 of 200 geolocation
+points), the accelerator (26 TOPS is the specification floor rather than a
+preference), the camera (ground sample distance drives detection), the cells
+(capacity- and IR-matched, because one weak cell defines the whole pack), and
+the airframe structure.
+
+\emph{This is bought with margin, not with capability.} Every scored function
+survives: RTK geolocation, onboard detection at rate, three concurrent video
+feeds, four-station delivery. What is given up is reserve --- published thrust
+data, supplier support, spares depth and indigenous content.
+
+The accelerator substitution carries an integration consequence I did not see at
+first and record here because it enlarges the benchmark rather than the bill.
+The displaced module has a \emph{hardware} H.264 encoder; the single-board
+computer that replaces it has none --- its GPU dropped every encode block, so all
+video encoding is done in software on the same CPU that feeds the accelerator.
+Each aircraft encodes only its own stream, so this is one 720p encode per board
+and is achievable, but it is not free. \textbf{The P5 benchmark is therefore not
 merely whether the accelerator reaches 24 inferences per second; it is whether
 the board sustains that rate and a 720p H.264 encode simultaneously without
-thermal throttling.} That gate governs \inr{35\,000} of the saving, and the
-cooling line has been left untouched for the same reason.
+thermal throttling.} The cooling line has been left untouched for the same
+reason.
 
-Option~B has a property I did not anticipate and think is worth stating:
-\emph{it raises indigenous content}, from 58\,\% to 61\,\%. The line it shrinks
-is the imported accelerator, so reducing it reduces the imported share of the
-whole. Cost reduction and indigenisation are usually opposed; here, once, they
-are not.
+\emph{The generic motors move an existing risk rather than creating one.} The
+selected parts carry no published thrust curve, where the displaced ones did.
+That does not change the physics --- it changes who measures it. The thrust
+stand in Table~\ref{tab:programme} is therefore no longer a convenience: it is
+the instrument that determines whether the aircraft hovers at the design point,
+and it is scheduled before design freeze rather than after.
 
 \subsubsection{Corrections made to this analysis on review}
 
@@ -901,24 +915,29 @@ weakens: an aircraft that flies this mission cannot be built for
 \inr{1\,00\,000}, and the corrected figure is further from that target than the
 first estimate was.
 
-\subsubsection{Why the second GNSS receiver survives anyway}
+\subsubsection{Why the second GNSS receiver is deferred to a measurement}
 
 Given that its budgeted contribution is 18\,mm, the honest case for the second
-receiver is not the error budget --- it is insurance against a risk the budget
+receiver was never the error budget --- it is insurance against a risk the budget
 does not model. The budget allocates a small attitude term on the assumption of
 good heading. A magnetometer mounted near a 98\,A power bus may not deliver that:
 at the frame edge, 37\,m off nadir, a heading error of 5$^\circ$ displaces a
 detection by 3.22\,m, which would consume the entire delivery allowance on its
-own. The receiver buys immunity from an unmeasured failure mode, and I would
-rather state that plainly than defend it with an error-budget line it does not
-earn. It is the first item I would revisit if the magnetometer's achieved
-heading accuracy were measured in P6 and found adequate.
+own.
 
-Options~D and E are reported for completeness and are not proposed. Option~D is
-the arithmetic floor for an aircraft that can still fly the mission, presented as
-evidence of that floor rather than as a plan. Option~E is a reduced training
-platform that cannot carry the payload and is discussed in
-Section~\ref{sec:mule}.
+That is a real risk, but it is an \emph{unmeasured} one, and \inr{51\,000} is a
+great deal to pay to avoid a measurement the programme will make regardless.
+\textbf{P6 characterises achieved heading accuracy on the built aircraft at no
+additional cost.} If it exceeds roughly 1$^\circ$ the receiver is reinstated and
+the money is well spent; if it does not, it was never needed. Deferring on
+evidence rather than on funding is the distinction the reinstatement table in
+Section~\ref{sec:deferred} draws, and this is the line that motivated it.
+
+Options~A to C are retained in Table~\ref{tab:options} as the reasoning that led
+to~D, not as live alternatives: each is a step in the argument, and a reviewer
+should be able to see the sequence rather than only its conclusion. Option~E is a
+reduced training platform that cannot carry the payload at all and is discussed
+in Section~\ref{sec:mule}.
 
 \subsection{What is actually being requested}
 \label{sec:ask}
@@ -1167,16 +1186,26 @@ Indigenous content is measured, not asserted. Every line in the bill of
 materials carries a declared Indian value fraction, and the aggregate is
 computed rather than estimated, which makes the claim auditable.
 
-Value-weighted Indian content across the priced bill of materials is
-approximately 68\,\%. I note for precision that weighting the same data by
-programme spend --- in which the air vehicle counts three times --- yields
-approximately 65\,\%, and I report both rather than the more flattering figure
-alone. Restricted to the air vehicle alone, the figure is 58\,\%.
+\textbf{The configuration adopted in Section~\ref{sec:ask} carries
+approximately 45\,\% Indian content, down from 58\,\% in the fully specified
+aircraft.} I report the figure that applies to what is actually being funded
+rather than the one that flatters the argument, and the fall is a direct
+consequence of the cost reduction: the imported autopilot and generic propulsion
+are what make the aircraft affordable, and they are also what make it less
+Indian.
 
-Fig.~\ref{fig:indig} decomposes that number, and the decomposition is more
-informative than the aggregate. Indigenous content is not spread evenly: it is
-high where Indian industry is genuinely strong (propulsion at 89\,\%, composite
-structure at 79\,\%) and low in exactly one place.
+Fig.~\ref{fig:indig} decomposes the fully specified aircraft, and the
+decomposition remains the more informative view. Indigenous content is not
+spread evenly: it is high where Indian industry is genuinely strong (propulsion
+at 89\,\%, composite structure at 79\,\%) and low in exactly one place.
+
+\textbf{This is the clearest cost of the budget decision, and it is reversible.}
+Two lines account for almost all of it --- the Indian autopilot
+(\inr{19\,400} per aircraft) and Indian propulsion (\inr{18\,396} per aircraft).
+Both are drop-in reinstatements requiring no redesign. Component sponsorship
+from the Indian suppliers surveyed for this bill of materials is the intended
+route, and it is the reason those suppliers are named throughout rather than
+described generically.
 
 \begin{figure}[t]
 \centering
@@ -1197,8 +1226,8 @@ rather than quoting alone.}
 \toprule
 \textbf{Subsystem} & \textbf{Status} \\
 \midrule
-Autopilot        & Indian, Pixhawk-standard, domestically manufactured \\
-Propulsion       & Indian motors, ESCs and propellers with published thrust data \\
+Autopilot        & \emph{Deferred:} Indian Pixhawk-standard board, domestically made \\
+Propulsion       & \emph{Deferred:} Indian motors and ESCs with published thrust data \\
 Airframe         & Indian composite fabrication \\
 Cells            & Indian, BIS-certified 21700 NMC \\
 Camera           & Indian embedded-vision supplier \\
