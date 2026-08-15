@@ -42,8 +42,8 @@ how this project has lost most of its time.
 | Geotag projection is self-consistent | **Measured** — two independent formulations agree to 7.8e-10 m | `perception/geotagging/accuracy.py` §1 |
 | Geotag CEP50 | **Modelled** — Monte Carlo whose *inputs* are budget assumptions. Reconciles with the analytic budget to +1 % | `docs/sizing/geotag-accuracy-output.txt` |
 | Separation at launch | **Measured in sim** — 64.80 m, up from 1.31 m | `proof-1-launch.png` |
-| Separation en route | **Measured in sim** — 34.00 m worst pair | `proof-2-sweep.png` |
-| Separation during recovery | **6.52 m**, up from 3.99 m | `proof-4-pad.png` |
+| Separation en route | **34.00 m claimed here; 29.19 m recomputed.** Definition-sensitive — see §2b | `proof-2-sweep.png` |
+| Separation during recovery | **6.52 m claimed here; 5.51 m recomputed.** Hardcoded in a caption string — see §2b | `proof-4-pad.png` |
 | Three aircraft land safely on one pad | **Measured 2.27 m minimum, clear by 1.22 m** — corner slots, not a row | `proof-4-pad.png` |
 | Endurance, hover power, mass budget | **Modelled** — no aircraft has flown | `docs/sizing/model-output.txt` |
 | Detection recall, boresight, RTK accuracy | **Assumed** — no real imagery, no calibration, no hardware | — |
@@ -51,6 +51,36 @@ how this project has lost most of its time.
 Nothing in this project has flown on real hardware. Every "measured" above
 means measured in simulation or in software, which rules out whole classes of
 error and rules out none of the physical ones.
+
+### 2b. Three numbers in this table did not reproduce
+
+Writing figure captions for the funding proposal meant recomputing the
+separation results from `simulations/recordings/mission-telemetry.json`. The
+launch figure was **wrong and is corrected**: this file said 92.12 m, while
+`README.md`, `proof-1-launch.png` and the raw telemetry all say **64.80 m**.
+
+The other two are **definition-sensitive and left alone deliberately** — my
+"en route" excludes a 60 m radius around the pad, which may not be the boundary
+the original used:
+
+| | claimed | recomputed |
+|---|--:|--:|
+| en route | 34.00 m | 29.19 m |
+| stacked over the pad | 6.52 m | 5.51 m |
+
+**Worth fixing at the source:** `simulations/sitl/proof_figures.py:350` carries
+the 6.52 m as a **hardcoded string inside a caption** rather than computing it.
+That is prose beside a formula — the same defect §5 is organised against, in the
+script that generates the evidence.
+
+### 2c. The mass statement does not close
+
+`docs/sizing/model-output.txt` lists **6,061 g of items against a 6,360 g
+MTOW** — a 299 g (4.7 %) unallocated residual, and its own percentages sum to
+95.3 %. Nothing downstream is wrong because structure is derived as
+`0.235 × MTOW` rather than summed, but a reader adding the bars up finds 299 g
+missing. The proposal now shows the residual as its own bar rather than hiding
+it. **Attributing it is a P1 action.**
 
 ---
 
@@ -182,6 +212,60 @@ Cells are unblocked: the design point is **6S3P, 18 cells per aircraft, 54 for
 the fleet**. See `docs/sizing/model-output.txt`, which is authoritative over any
 prose including this file.
 
+### 4.5 Which BOM is authoritative — RESOLVED, but with a consequence
+
+`hardware/bom/RescueSwarm_BOM_India_Verified.xlsx` **wins** and is now tracked.
+It had been sitting untracked — one `rm` from gone — while being the best
+artifact in the folder. Its own README says why: *"The previous BOM named
+suppliers. This one names PARTS."* 41 lines, exact model numbers, 28 live
+product links, per-line status, thrust validated against published bench data.
+
+It disagrees with `RescueSwarm_BOM_India.xlsx` by **₹26,146 per aircraft**, and
+the direction is upward:
+
+| | India BOM | Verified |
+|---|--:|--:|
+| Flight controller | 26,000 | **42,000** — the Agam Full Set incl. 5 % GST, and it bundles the power module |
+| Power module | 2,800 | **0** — inside the Full Set; buying it separately double-counts |
+| Motor | 7,000 | **9,099** — listed price with published thrust; 7,000 was never sourced |
+| **Per aircraft** | **2,64,400** | **2,90,546** |
+
+**The consequence nobody has signed off:** the Verified BOM is a **17 in**
+aircraft, not 18 in, and bottom-up mass drops 6,236 g → 5,780 g. `docs/sizing/`,
+`cost_model.py` and `bom_reconcile.py` all still describe the 18 in aircraft, as
+does the funding proposal. Adopting it means **re-running the sizing model, not
+editing a price.**
+
+### 4.6 The funding ask has moved a long way — and the workbook is now stale
+
+`docs/proposal/` holds an IEEEtran funding proposal (15 pages, 12 figures,
+committed as PDF). The ask went **₹28.74 L → ₹10.12 L (−65 %)** across several
+passes, driven by team decisions recorded in `docs/proposal/README.md`.
+
+The adopted configuration is **₹1,57,800 per aircraft**: hobby-grade where the
+failure mode is visible and the spec is easy to verify; professional for the
+autopilot, RTK receiver, accelerator, camera, matched cells and structure.
+
+> **⚠ `hardware/bom/RescueSwarm_Cost_Study.xlsx` is STALE.** It still carries the
+> pre-review option set (A 2,90,546 · B 2,63,401 · C 2,37,081 · D 1,83,640) and
+> claims a floor of ₹1.83 L at 52 % Indian content. The proposal supersedes it:
+> D is **₹1,57,800 at 36 %**. Regenerate it from the scratch scripts or delete
+> it — two artifacts disagreeing about the same number is exactly the trap this
+> document exists to prevent.
+
+**Three things gate the ask and are not decided:**
+
+1. **Insurance** was deferred at team direction. Third-party cover is commonly
+   mandatory for Indian UAV operations. **Confirm before any flight.**
+2. **Duty and GST may be double-counted.** The model adds 22 % duty and 18 % GST
+   on top of prices that are largely *Indian retail listings* — already duty- and
+   tax-paid. The Agam price is explicitly "₹42,000 **with 5 % GST**". Exposure is
+   roughly ₹2.3 L of the current ask. A per-line audit is the single largest
+   remaining correction and it is an accounting fix, not a capability cut.
+3. **Indigenous content is 36 %, not the 45 % first asserted.** Computed from
+   per-line fractions. This matters beyond presentation: duty is levied on the
+   imported residual, so the wrong figure understated the duty.
+
 ---
 
 ## 5. Traps that have already cost time
@@ -209,7 +293,25 @@ most expensive class of defect on this project:
 
 Each reviewed clean and had passing tests around it. The only thing that
 catches this class is running the real artifact end to end and **reading the
-values back off the running system**. `validate()` in `params.py` now rejects a
+values back off the running system**.
+
+**A second class, found by reviewing the funding proposal three times.** Where
+§5 is about artifacts that are not in the execution path, this one is about
+*numbers that agree with each other and with nothing else*:
+
+- The proposal asserted **45 % indigenous content** in four places. It agreed
+  with itself everywhere and was wrong everywhere — the computed figure is
+  **35.5 %**. Nobody had ever run the calculation.
+- It paired **2 cm/px with "roughly fifty pixels"**. At 2 cm/px a 1.7 m person
+  is 85 px; the 47 px figure belongs to the 2× downsampled image. Two correct
+  numbers from `sizing-calculations.md` §8, joined into a false statement.
+- `HANDOFF.md` itself carried **92.12 m** for launch separation while the
+  figure, `README.md` and the raw telemetry all said 64.80 m.
+
+The lesson is narrower than "check your numbers": **internal consistency is not
+evidence.** A figure repeated in four places is not corroborated, it is copied.
+Check each number against the thing that *generates* it — the model output, the
+telemetry, the arithmetic — and not against the other places it appears. `validate()` in `params.py` now rejects a
 table of known-phantom names, because `BATT_RESISTANCE` sat in the parameter
 files for weeks doing nothing — it is a PX4 name, ArduPilot estimates internal
 resistance itself, and `.parm` drops unknown names in silence.
@@ -269,4 +371,6 @@ pack internal resistance by bench discharge, and every flight-test line in
 | What the CAD designer needs | `hardware/cad/CAD-BRIEF.md` |
 | What the perception owner needs | `docs/perception-integration-plan.md` |
 | Cost and indigenisation | `docs/business/cost-and-economics.md` |
+| The funding proposal, and its correction record | `docs/proposal/` — read the README before the PDF |
+| What the aircraft is actually built from | `hardware/bom/RescueSwarm_BOM_India_Verified.xlsx` |
 | What was inherited in the GCS and what was wrong with it | `docs/gcs-inherited-review.md` |
