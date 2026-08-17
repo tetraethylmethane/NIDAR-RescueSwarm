@@ -85,6 +85,23 @@ rather than weakening it — an aircraft that flies this mission is further from
 58 % to 61 %, because the line it shrinks is the imported accelerator. Cost
 reduction and indigenisation are usually opposed; on this one step they are not.
 
+## The abort path now names its mechanism
+
+Deleting the sub-GHz safety radio rests entirely on the ExpressLRS link carrying
+**both** safety-pilot control and the abort path. The proposal asserted that and
+never said how, which left a load-bearing claim uncheckable.
+
+It now cites the mechanism: **ExpressLRS carries MAVLink natively from version
+3.5**, so the receiver that gives the safety pilot manual control also carries
+the autopilot's command stream. On the ArduPilot side it is a serial port set to
+MAVLink v2 and nothing more.
+
+**Worth knowing if you follow tutorials on this:** the older **AirPort**
+transparent-serial mode does the same job, and much of the material online still
+uses it — but ExpressLRS's own documentation says AirPort is *no longer
+recommended* for MAVLink now that native support exists. Build against the
+native mode.
+
 ## Two text defects visible in the ground-station screenshot
 
 The proposal now uses the restyled dashboard (`ground-station/gcs-dashboard.png`,

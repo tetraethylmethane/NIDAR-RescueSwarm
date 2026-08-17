@@ -543,7 +543,17 @@ serves the operator, not the algorithm.
 Band diversity is provided without a third radio. The 5.8\,GHz mesh carries
 video, telemetry and coordination; a 2.4\,GHz ExpressLRS link carries
 safety-pilot control and abort, and is independent of the autonomy stack. Both
-operate in delicensed bands and both comfortably cover the 600\,m geofence. A
+operate in delicensed bands and both comfortably cover the 600\,m geofence.
+
+\emph{The abort path is not an assumption about the link; it is a documented
+mode of it.} ExpressLRS carries MAVLink natively from version~3.5, so the same
+receiver that gives the safety pilot manual control also carries the autopilot's
+command and telemetry stream --- the ArduPilot side is a serial port set to
+MAVLink v2, nothing more~\cite{elrsmavlink}. The earlier AirPort mode achieves
+the same thing as a transparent serial bridge and is no longer the recommended
+route for MAVLink. Naming the mechanism matters here: deferring the
+sub-gigahertz radio (Section~\ref{sec:deferred}) rests entirely on this link
+being able to do both jobs. A
 further link in the 865--867\,MHz short-range-device band would add a third
 independent path and is the correct extension when funding allows; it is
 deferred rather than fitted, and Section~\ref{sec:deferred} records the
@@ -1597,6 +1607,11 @@ aerial vehicle,''
 Internal Displacement Monitoring Centre,
 \emph{Global Report on Internal Displacement 2025}, Geneva, 2025.
 [Online]. Available: \url{https://www.internal-displacement.org/countries/india/}
+
+\bibitem{elrsmavlink}
+ExpressLRS Project,
+``MAVLink,'' ExpressLRS documentation, 2026.
+[Online]. Available: \url{https://www.expresslrs.org/software/mavlink/}
 
 \bibitem{ardupilot}
 ArduPilot Development Team,
