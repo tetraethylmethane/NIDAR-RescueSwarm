@@ -395,55 +395,70 @@ def fig_launch():
 def fig_pad():
     before = _load("mission-telemetry-before-fixes.json")
     after = _load("mission-telemetry.json")
-    fig, ax = plt.subplots(figsize=(COL, 3.0))
+    fig, ax = plt.subplots(figsize=(COL, 3.15))
 
-    cx = sum(q[0] for q in after["pad_xy"]) / 3
-    cy = sum(q[1] for q in after["pad_xy"]) / 3
+    # Pad centre from the BOUNDING BOX of the slots, not their centroid: for
+    # three of four corners the centroid sits 0.436 m off. Cross-checked below
+    # against the row run, whose slots all lie on the pad centre line.
+    xs = [q[0] for q in after["pad_xy"]]
+    ys = [q[1] for q in after["pad_xy"]]
+    cx = (min(xs) + max(xs)) / 2
+    cy = (min(ys) + max(ys)) / 2
+    assert abs(cy - before["pad_xy"][0][1]) < 1e-6, "pad centre disagrees with the row run"
+
     h = PAD / 2
+    r = AIRFRAME / 2
     ax.add_patch(plt.Rectangle((cx - h, cy - h), PAD, PAD, fill=False,
-                               ec=RED, lw=1.4))
-    # Literal multiplication sign: an escape here is eaten by Python first.
-    ax.text(cx + h, cy + h + 0.12, "3.66 m × 3.66 m pad", color=RED,
+                               ec=RED, lw=1.5, zorder=4))
+    ax.text(cx + h, cy + h + 0.10, "3.66 m × 3.66 m pad", color=RED,
             fontsize=7, ha="right", va="bottom")
+
+    # The square slot centres must stay inside if no airframe is to overhang.
+    ax.add_patch(plt.Rectangle((cx - h + r, cy - h + r), PAD - 2 * r,
+                               PAD - 2 * r, fill=False, ec=GREY, ls=":",
+                               lw=1, zorder=4))
+    ax.text(cx - h + r + 0.06, cy - h + r + 0.06,
+            "slot centres must stay inside", fontsize=6.1, color=GREY)
 
     for pts, col, mk, lab in ((before["pad_xy"], GREY, "s", "row of three"),
                               (after["pad_xy"], GREEN, "o", "corner slots")):
-        xs = [q[0] for q in pts]
-        ys = [q[1] for q in pts]
-        ax.plot(xs, ys, mk, color=col, ms=6, ls="none", label=lab,
-                mfc="none" if col == GREY else col, mew=1.4)
+        ax.plot([q[0] for q in pts], [q[1] for q in pts], mk, color=col, ms=6,
+                ls="none", label=lab, mfc="none" if col == GREY else col,
+                mew=1.4, zorder=5)
         if col == GREEN:
             for x, y in pts:
-                ax.add_patch(plt.Circle((x, y), AIRFRAME / 2, color=col,
-                                        alpha=0.16, lw=0))
+                ax.add_patch(plt.Circle((x, y), r, color=col, alpha=0.18, lw=0))
 
     def closest(pts):
         return min(math.dist(pts[i], pts[j])
                    for i in range(len(pts)) for j in range(i + 1, len(pts)))
 
     cb, ca = closest(before["pad_xy"]), closest(after["pad_xy"])
-
-    # Annotate the tightest CORNER pair, and the tightest ROW pair, each on its
-    # own geometry so the two are directly comparable.
     a0, a1 = after["pad_xy"][1], after["pad_xy"][2]
     ax.annotate("", xy=a0, xytext=a1,
                 arrowprops=dict(arrowstyle="<->", color=GREEN, lw=1.3))
-    ax.text((a0[0] + a1[0]) / 2 + 0.12, (a0[1] + a1[1]) / 2,
-            f"{ca:.2f} m", color=GREEN, fontsize=8, weight="bold",
-            ha="left", va="center")
+    ax.text((a0[0] + a1[0]) / 2 + 0.10, (a0[1] + a1[1]) / 2, f"{ca:.2f} m",
+            color=GREEN, fontsize=8, weight="bold", ha="left", va="center")
 
     b0, b1 = before["pad_xy"][0], before["pad_xy"][1]
     ax.annotate("", xy=b0, xytext=b1,
                 arrowprops=dict(arrowstyle="<->", color=GREY, lw=1.1))
-    ax.text((b0[0] + b1[0]) / 2, b1[1] - 0.20, f"{cb:.2f} m", color=GREY,
-            fontsize=7.5, ha="center", va="top")
+    ax.text((b0[0] + b1[0]) / 2, b1[1] + 0.13, f"{cb:.2f} m", color=GREY,
+            fontsize=7.5, ha="center", va="bottom")
+
+    # Answer the question the figure exists to answer, numerically.
+    margin = min(min(h - abs(x - cx), h - abs(y - cy)) for x, y in after["pad_xy"])
+    ax.text(0.5, -0.285,
+            f"worst edge clearance {margin:.3f} m = exactly one airframe radius:\n"
+            f"no overhang at the nominal slot, and no margin beyond it",
+            transform=ax.transAxes, ha="center", fontsize=6.6)
 
     ax.set_xlabel("East (m)")
     ax.set_ylabel("North (m)")
     ax.set_title("Recovery slot geometry, same pad")
     ax.set_aspect("equal")
-    ax.set_xlim(cx - h - 0.8, cx + h + 0.8)
-    ax.set_ylim(cy - h - 0.8, cy + h + 0.9)
+    ax.set_xlim(cx - h - 0.75, cx + h + 0.75)
+    ax.set_ylim(cy - h - 0.75, cy + h + 0.85)
     ax.legend(frameon=False, loc="lower left", fontsize=6.8,
               handletextpad=0.4, borderaxespad=0.2)
     fig.tight_layout()

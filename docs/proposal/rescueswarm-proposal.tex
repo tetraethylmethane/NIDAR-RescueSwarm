@@ -715,6 +715,24 @@ implicit cannot be.
         (Fig.~\ref{fig:gcs}).
 \end{itemize}
 
+\subsubsection{Pad containment has exactly zero margin}
+
+Fig.~\ref{fig:pad} shows the corner slots sitting precisely on the inset square.
+Nominal edge clearance is 0.523\,m --- one airframe radius --- so no part of a
+stationary aircraft lies outside the box, and the geometric requirement is met
+by construction.
+
+\textbf{That is compliance with no margin, and it is worth stating plainly.} The
+rules admit no part of any aircraft outside the box during launch and landing.
+Touchdown dispersion of $\pm$0.5\,m, the figure this programme uses elsewhere
+for landing accuracy, would put up to half a metre of airframe over the edge.
+
+The two constraints pull against each other: moving the slots inward to buy edge
+margin costs inter-aircraft spacing, which is precisely why they were moved to
+the corners. Resolving it needs a \emph{measured} touchdown dispersion rather
+than an assumed one, and that is a P6 activity. It is recorded here because the
+geometry looks safe on the figure and is only safe on average.
+
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{fig-launch.pdf}
@@ -1377,6 +1395,9 @@ Recovery parachute sizing and supply
 \addlinespace
 Setup time exceeds allowance
 & Medium & Currently modelled, not measured; timed drills are the highest-priority early test \\
+\addlinespace
+Airframe overhangs the pad edge on touchdown
+& Medium & Nominal clearance is exactly one airframe radius, so dispersion has no margin. Measure touchdown dispersion in P6 before accepting the slot geometry \\
 \addlinespace
 Motor thrust below the datasheet claim
 & High & Selected motors publish no thrust curve, and the stand cannot precede the motors. Thrust is measured in P5 on arrival; a shortfall then forces a propulsion change with the flight-test window already open \\
