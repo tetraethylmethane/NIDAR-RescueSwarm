@@ -668,6 +668,13 @@ regenerates byte-for-byte from its model, so that changing a model without
 committing its regenerated output fails the build. Thirteen model outputs are
 currently under this gate.
 
+The same discipline now covers the cost basis. Every figure in this section is
+imported from a single module, which also generates the cost workbook and the
+budget charts; nothing is restated in two places. That was not true earlier in
+this programme --- the workbook and this document drifted until they disagreed
+about the headline figure --- and the fix was structural rather than editorial,
+because an inconsistency that can be reintroduced by hand eventually is.
+
 %=============================================================================
 \section{Preliminary Results}
 %=============================================================================
@@ -800,10 +807,31 @@ The cost basis is arithmetic over a bill of materials in which each line carries
 an exact manufacturer part number, an Indian supplier, and a source. Lines are
 classified by price provenance: \emph{listed} where a dated Indian retail price
 was obtained, and \emph{quote required} where no public price exists. I regard
-the distinction as material. Four of the six largest lines in the aircraft ---
-the autopilot, the motor, the cells and the camera --- have no public price and
-require supplier quotation, and the cost basis carries that uncertainty
-explicitly rather than concealing it in a rounded figure.
+the distinction as material, and four of the larger lines --- the accelerator,
+the GNSS receiver, the motors and the cells --- still fall in the second
+category. The autopilot and the camera are dated retail listings.
+
+\subsubsection{A disclosure that works against the size of this request}
+
+\textbf{The duty and tax treatment is probably double-counted, and I would
+rather say so than have a finance office discover it.} The model adds 22\,\%
+duty and freight on the imported residual and 18\,\% goods and services tax on
+top of the subtotal --- \inr{0.93\,L} and \inr{1.34\,L} respectively, or
+\inr{2.27\,L} of the \lakh{10.12} requested.
+
+That treatment was correct for the original bill of materials, whose prices were
+ex-works budgetary estimates. It is very likely wrong now. The market
+verification described above replaced most of those estimates with \emph{Indian
+retail listings}, which are already duty-paid and tax-paid; the autopilot price,
+for one, is quoted by its manufacturer as ``\inr{42\,000} with 5\,\% GST''
+included. Grossing up a figure that is already gross counts the same tax twice.
+
+I have not corrected it in this document because doing so honestly requires a
+per-line audit --- some Indian suppliers do quote ex-GST, and the two cases
+cannot be separated by inspection. \textbf{The consequence is that this request
+is stated conservatively: a correct audit can only move the figure downward, by
+up to \inr{2.27\,L}.} It is the first thing I would resolve with a sponsor's
+finance office, and any unspent balance is theirs rather than mine.
 
 \subsection{The bill of materials in detail}
 
@@ -926,8 +954,9 @@ reason.
 \emph{The generic motors move an existing risk rather than creating one.} The
 selected parts carry no published thrust curve, where the displaced ones did.
 That does not change the physics --- it changes who measures it, and when. The
-thrust stand in Table~\ref{tab:programme} is therefore no longer a convenience
-but the instrument that decides whether the aircraft hovers at the design point.
+thrust stand, carried at \inr{8\,000} in the test-equipment line, is therefore no
+longer a convenience but the instrument that decides whether the aircraft hovers
+at the design point.
 
 It cannot precede procurement, because it needs the motors it is characterising.
 Thrust is therefore measured in P5 as the motors arrive, and \textbf{a shortfall
@@ -1349,6 +1378,9 @@ Airframe loss during test
 \addlinespace
 Flight insurance may be mandatory
 & Medium & Deferred at team direction. To be confirmed against the rulebook and DGCA rules before any flight \\
+\addlinespace
+Duty and GST double-counted on tax-paid retail prices
+& Medium & Works in the sponsor's favour: a per-line audit can only reduce the request, by up to \inr{2.27\,L}. First action with a finance office \\
 \bottomrule
 \end{tabular}
 \end{table}
