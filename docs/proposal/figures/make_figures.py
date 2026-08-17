@@ -66,6 +66,22 @@ def save(fig, name):
     print(f"  wrote {name}")
 
 
+
+def save_exact(fig, name):
+    """Save at exactly figsize, so \includegraphics does not rescale.
+
+    bbox_inches="tight" crops to the axes, which for an aspect-locked plot is
+    narrower than the figure; LaTeX then scales the result up and every label
+    with it. These figures are laid out by hand instead.
+    """
+    path = os.path.join(OUT, name)
+    # bbox_inches=None falls back to rcParams["savefig.bbox"], which is
+    # "tight" here -- so the crop has to be disabled in a context instead.
+    with plt.rc_context({"savefig.bbox": None}):
+        fig.savefig(path)
+    plt.close(fig)
+    print(f"  wrote {name}  (exact size)")
+
 # ===========================================================================
 # 1. Geolocation error budget.  Source: docs/sizing/geotag-accuracy-output.txt
 # ===========================================================================
@@ -395,7 +411,8 @@ def fig_launch():
 def fig_pad():
     before = _load("mission-telemetry-before-fixes.json")
     after = _load("mission-telemetry.json")
-    fig, ax = plt.subplots(figsize=(COL, 3.15))
+    fig, ax = plt.subplots(figsize=(COL, 3.60))
+    fig.subplots_adjust(left=0.175, right=0.985, top=0.925, bottom=0.20)
 
     # Pad centre from the BOUNDING BOX of the slots, not their centroid: for
     # three of four corners the centroid sits 0.436 m off. Cross-checked below
@@ -461,8 +478,7 @@ def fig_pad():
     ax.set_ylim(cy - h - 0.75, cy + h + 0.85)
     ax.legend(frameon=False, loc="lower left", fontsize=6.8,
               handletextpad=0.4, borderaxespad=0.2)
-    fig.tight_layout()
-    save(fig, "fig-pad.pdf")
+    save_exact(fig, "fig-pad.pdf")
 
 
 # ===========================================================================
@@ -471,7 +487,8 @@ def fig_pad():
 # ===========================================================================
 def fig_sweep():
     d = _load("mission-telemetry.json")
-    fig, ax = plt.subplots(figsize=(COL, 3.1))
+    fig, ax = plt.subplots(figsize=(COL, 5.05))
+    fig.subplots_adjust(left=0.20, right=0.98, top=0.945, bottom=0.135)
 
     pad = d["pad_xy"]
     cx = sum(q[0] for q in pad) / 3
@@ -521,12 +538,12 @@ def fig_sweep():
     ax.set_ylabel("North (m)")
     ax.set_title("Coverage decomposition and return")
     ax.set_aspect("equal")
-    ax.set_ylim(-360, 300)
+    ax.set_xlim(-190, 190)
+    ax.set_ylim(-340, 220)
     ax.legend(frameon=False, fontsize=6.4, loc="upper center", ncol=2,
               handletextpad=0.4, borderaxespad=0.1,
               bbox_to_anchor=(0.5, 1.0))
-    fig.tight_layout()
-    save(fig, "fig-sweep.pdf")
+    save_exact(fig, "fig-sweep.pdf")
 
 
 if __name__ == "__main__":

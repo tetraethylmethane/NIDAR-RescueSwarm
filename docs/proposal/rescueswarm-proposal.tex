@@ -778,13 +778,16 @@ the lowest state of charge of the flight.}
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.92\textwidth]{gcs-running.png}
-\caption{Ground control station carrying three concurrent H.264 streams within
-the link budget, with offline map tiles and per-aircraft status. The safety panel
-is shown uncropped: abort and recall presently record operator intent in the
-mission log and transmit nothing, because no downlink command path is yet wired.
-Closing that is scheduled work, not a design gap --- see
-Section~\ref{sec:notimpl}.}
+\includegraphics[width=0.94\textwidth]{gcs-dashboard.png}
+\caption{Ground control station, captured from the running system. A single
+operator interface carries all eight displays the rules require: mission status,
+per-aircraft mode, RTK fix state and battery, the shared map, and three
+concurrent H.264 feeds within the 2.5\,Mbps link budget. Map tiles are served
+from a local cache, so nothing here depends on a network. The safety panel is
+shown \emph{uncropped}: abort and recall record operator intent in the mission
+log and transmit nothing, because no downlink command path is yet wired --- see
+Section~\ref{sec:notimpl}. The video panes carry test patterns; no camera has
+yet flown.}
 \label{fig:gcs}
 \end{figure*}
 

@@ -85,6 +85,33 @@ rather than weakening it — an aircraft that flies this mission is further from
 58 % to 61 %, because the line it shrinks is the imported accelerator. Cost
 reduction and indigenisation are usually opposed; on this one step they are not.
 
+## Two text defects visible in the ground-station screenshot
+
+The proposal now uses the restyled dashboard (`ground-station/gcs-dashboard.png`,
+copied from `frontend/public/Drikr NIDAR Dashboard.png` under a filename LaTeX
+can handle). It is a real capture of the running system — Leaflet attribution,
+live tiles, three decoded feeds — not a render, which is why it is usable as
+evidence at all.
+
+**Two strings in the UI need fixing in NIDAR-GSC before this goes to a sponsor.
+They are visible at full size in the figure.**
+
+| Shown | Should read |
+|---|---|
+| `NSSSION WINDOW` | `MISSION WINDOW` |
+| `MTI EMERGENCY: Bus safety route configured.` | something coherent — the previous build read `NOT IMPLEMENTED — no safety radio configured` |
+
+The second matters more than a typo. The old wording stated a real limitation
+clearly; the new one is garbled, and a reviewer reading "Bus safety route
+configured" next to a disabled ABORT button will not know what is being claimed.
+The rest of that panel is still correct and admirably blunt: *"These buttons
+record intent to the mission log but transmit nothing. Recover the aircraft with
+the safety pilot's RC."*
+
+**The frontend source is not in this repository.** `ground-station/frontend/`
+holds only `.gitkeep` and `public/`; the UI lives in NIDAR-GSC. These two fixes
+have to be made there.
+
 ## The take-off delays do not appear in the telemetry as commanded
 
 Re-rendering the launch figure from the raw recording surfaced this. The mission
