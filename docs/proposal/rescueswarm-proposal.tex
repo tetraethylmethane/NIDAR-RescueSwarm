@@ -873,38 +873,61 @@ action.
 
 \subsection{The bill of materials in detail}
 
-Table~\ref{tab:bom} gives the air-vehicle bill of materials at subsystem
-granularity, with the indigenous fraction each subsystem carries. The full
-line-level sheet holds 41 entries, each with a manufacturer part number, an
-Indian supplier and a source link; it is summarised here rather than reproduced.
+Table~\ref{tab:bom} gives the air vehicle at subsystem granularity. The
+\emph{Ref.} column is the fully specified aircraft --- every line at
+professional grade, drawn from the verified bill of materials whose 41 entries
+each carry a manufacturer part number, an Indian supplier and a source link. The
+\emph{Adopted} columns are what this proposal asks to fund.
 
 \begin{table}[t]
-\caption{Air vehicle BOM by subsystem, Option~A (per aircraft)}
+\caption{Air vehicle by subsystem, per aircraft: what is funded, against the
+fully specified reference}
 \label{tab:bom}
 \centering
 \small
-\begin{tabular}{@{}l r r @{\hspace{4pt}} l@{}}
+\begin{tabular}{@{}l r r r @{\hspace{3pt}} l@{}}
 \toprule
-\textbf{Subsystem} & \textbf{INR} & \textbf{Ind.} & \textbf{Governing driver} \\
+ & \textbf{Ref.} & \multicolumn{2}{c}{\textbf{Adopted}} & \\
+\cmidrule(lr){3-4}
+\textbf{Subsystem} & \textbf{INR} & \textbf{INR} & \textbf{Ind.} & \textbf{Driver} \\
 \midrule
-Avionics            & 85\,400 & 60\,\% & Autopilot, RTK pair \\
-Compute, perception & 79\,500 & 33\,\% & Inference throughput \\
-Propulsion          & 57\,396 & 89\,\% & Thrust at MTOW \\
-Power               & 24\,500 & 58\,\% & 292\,Wh reserve \\
-Structure           & 20\,550 & 79\,\% & Arm root moment \\
-Communications      & 17\,800 & 42\,\% & Three-feed budget \\
-Payload system      &  5\,400 & 61\,\% & Four stations \\
+Avionics            & 85\,400 & 49\,100 & 32\,\% & Autopilot, RTK \\
+Compute, percep.\ & 79\,500 & 31\,100 & 10\,\% & Inference rate \\
+Propulsion          & 57\,396 & 30\,600 & 21\,\% & Thrust at MTOW \\
+Power               & 24\,500 & 23\,500 & 60\,\% & 292\,Wh reserve \\
+Structure           & 20\,550 & 13\,000 & 85\,\% & Arm root moment \\
+Communications  & 17\,800 &  6\,000 & 30\,\% & Three feeds \\
+Payload system      &  5\,400 &  4\,500 & 90\,\% & Four stations \\
 \midrule
-\textbf{Total}      & \textbf{2\,90\,546} & \textbf{58\,\%} & \\
+\textbf{Total} & \textbf{2\,90\,546} & \textbf{1\,57\,800} & \textbf{36\,\%} & \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Two subsystems dominate and they pull in opposite directions. Avionics is the
-largest line and is also comparatively indigenous, because a Pixhawk-standard
-autopilot is manufactured domestically. Compute and perception is the second
-largest and the least indigenous, at 33\,\%, for the single reason developed in
-Section~\ref{sec:indig}: no Indian accelerator exists in this class.
+Three things in that comparison are worth drawing out.
+
+\emph{The order of the subsystems does not change; the reasons do.} Avionics is
+the largest line in both columns and compute the second. What changes is why: in
+the reference aircraft avionics is expensive \emph{and} comparatively
+indigenous, because a Pixhawk-standard autopilot is manufactured domestically.
+In the adopted aircraft that autopilot is imported, and the same subsystem falls
+to 32\,\% Indian.
+
+\emph{The two largest savings are also the two largest losses of Indian
+content.} Compute falls \inr{48\,400} and propulsion \inr{26\,796} --- between
+them 57\,\% of the total reduction. Propulsion drops from 89\,\% Indian to
+21\,\%, the sharpest fall in the table, because generic motors and speed
+controllers replace parts that publish measured thrust.
+
+\emph{What the team fabricates itself becomes more Indian, not less.} Structure
+rises from 79\,\% to 85\,\% and the payload system from 61\,\% to 90\,\%,
+because in-house machining and printing displace bought assemblies. Power holds
+at 60\,\%: the cells stay Indian and BIS-certified, and that was a deliberate
+retention rather than a residue of the cost pass.
+
+Compute remains the least indigenous subsystem in both columns, for the single
+reason developed in Section~\ref{sec:indig}: no Indian accelerator exists in
+this class.
 
 \subsection{Cost reduction study}
 
@@ -940,16 +963,16 @@ deferred entirely.}
 \caption{Costed configuration options (per aircraft)}
 \label{tab:options}
 \centering
-\small
-\begin{tabular}{@{}clrrp{1.75cm}@{}}
+\footnotesize
+\begin{tabular}{@{}c l r r l@{}}
 \toprule
-\textbf{Opt.} & \textbf{What it trades} & \textbf{INR} & \textbf{Indian} & \textbf{Cost} \\
+\textbf{Opt.} & \textbf{Configuration} & \textbf{INR} & \textbf{Ind.} & \textbf{Costs} \\
 \midrule
-A & Verified baseline        & 2\,90\,546 & 58\,\% & --- \\
-B & Efficiency only          & 2\,63\,401 & 61\,\% & nothing \\
-C & + indigenisation         & 2\,37\,081 & 53\,\% & Indian content \\
-D & \textbf{ADOPTED}         & \textbf{1\,57\,800} & \textbf{36\,\%} & margin and Indian content \\
-E & Different aircraft       & 37\,309    & ---    & the mission \\
+A & Verified baseline  & 2\,90\,546 & 58\,\% & --- \\
+B & Efficiency only    & 2\,63\,401 & 61\,\% & nothing \\
+C & + indigenisation   & 2\,37\,081 & 53\,\% & Indian content \\
+D & \textbf{ADOPTED}   & \textbf{1\,57\,800} & \textbf{36\,\%} & \textbf{margin, Indian} \\
+E & Different airframe & 37\,309    & ---    & the mission \\
 \bottomrule
 \end{tabular}
 \end{table}
