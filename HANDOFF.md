@@ -246,12 +246,12 @@ The adopted configuration is **₹1,57,800 per aircraft**: hobby-grade where the
 failure mode is visible and the spec is easy to verify; professional for the
 autopilot, RTK receiver, accelerator, camera, matched cells and structure.
 
-> **⚠ `hardware/bom/RescueSwarm_Cost_Study.xlsx` is STALE.** It still carries the
-> pre-review option set (A 2,90,546 · B 2,63,401 · C 2,37,081 · D 1,83,640) and
-> claims a floor of ₹1.83 L at 52 % Indian content. The proposal supersedes it:
-> D is **₹1,57,800 at 36 %**. Regenerate it from the scratch scripts or delete
-> it — two artifacts disagreeing about the same number is exactly the trap this
-> document exists to prevent.
+`hardware/bom/RescueSwarm_Cost_Study.xlsx` **had** drifted out of agreement with
+the proposal. It is now **generated** by `hardware/bom/build_cost_study.py`,
+which imports every figure from `docs/proposal/figures/competition_budget.py` —
+the same module the proposal's budget and charts derive from. Nothing is
+restated in two places, so the two artifacts cannot disagree again. Re-run the
+script after any configuration change; do not edit the workbook by hand.
 
 **Three things gate the ask and are not decided:**
 

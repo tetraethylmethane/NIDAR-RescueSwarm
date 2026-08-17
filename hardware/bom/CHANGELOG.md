@@ -7,6 +7,59 @@ programmatic edit, run the recalculation check before trusting a number.
 
 ---
 
+## 2026-08-17 — the cost study is now generated, not maintained
+
+`RescueSwarm_Cost_Study.xlsx` had drifted until it disagreed with the funding
+proposal about the headline number: the workbook claimed a floor of ₹1.83 L at
+52 % Indian content while the proposal had settled on **₹1,57,800 at 36 %**. Two
+artifacts stating different costs for the same aircraft is the defect
+`HANDOFF.md` §5 exists to prevent, and patching one of them would only have
+reset the clock.
+
+**The workbook is now produced by [`build_cost_study.py`](build_cost_study.py),
+which imports every figure from
+[`docs/proposal/figures/competition_budget.py`](../../docs/proposal/figures/competition_budget.py)
+— the same module the proposal's budget section and its charts derive from.**
+Nothing is restated. Change the configuration, re-run the script, and both the
+workbook and the proposal follow.
+
+| | |
+|---|--:|
+| Per aircraft | 1,57,800 |
+| Air vehicles, fleet of 3 | 4,73,400 |
+| Subtotal | 6,53,260 |
+| **Total ask** | **10,12,264 (10.12 L)** |
+| Institutional contribution | 3,54,000 |
+| Indigenous content | 35.5 % |
+| Deferred, reinstatable | 3,16,770 |
+
+Five tabs: `00 Summary` · `01 Adopted Aircraft` (15 lines, KEEP/hobby marked
+per line with the reason) · `02 Programme Budget` (every line, original against
+ask, with the rule that moved it) · `03 Deferred` (priority-ordered) ·
+`04 Evidence` (10 live source links).
+
+**Verified after generation:** tab 01 recomputes to ₹1,57,800, tab 03 sums to
+₹3,16,770, and every headline figure matches the `.tex` — the ask appears five
+times in the proposal and agrees with the workbook in all five.
+
+The header of tab 00 says **GENERATED FILE — do not edit by hand**, because the
+next person to open it in Excel is the failure mode this change is designed
+against.
+
+### Three gates recorded on the summary tab rather than buried
+
+1. **Insurance** was deferred at team direction and may be mandatory. Confirm
+   before any flight.
+2. **Duty and GST are probably double-counted.** The model adds 22 % duty and
+   18 % GST on top of prices that are largely *Indian retail listings* — already
+   duty- and tax-paid. Exposure is roughly ₹2.3 L. This is the largest remaining
+   correction on the ask and it is an accounting audit, not a capability cut.
+3. **Motor thrust is unverified.** The selected motors publish no thrust curve;
+   the stand characterises them in P5, and a shortfall then forces a propulsion
+   change with the flight-test window already open.
+
+---
+
 ## 2026-08-11 — the Verified BOM is authoritative, and the aircraft costs ₹26,146 more
 
 **`RescueSwarm_BOM_India_Verified.xlsx` is now tracked.** It had been sitting
