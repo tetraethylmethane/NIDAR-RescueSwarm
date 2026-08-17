@@ -49,6 +49,11 @@ AIRCRAFT = [
     ("Propellers",             4,  1_000, "hobby", "Generic 18 in CF. Balance every one."),
     ("Wiring, connectors",     1,  2_400, "hobby", ""),
     ("Prop adapters",          4,    350, "hobby", ""),
+    ("VEGA co-processor",       1,      0, "KEEP",
+     "C-DAC ARIES v3.0. Free to top-100 teams, so it costs nothing to carry. "
+     "A monitor and logger, NOT an accelerator -- RV32IM at 100 MHz with "
+     "256 KB SRAM. Retained because it is the only Indian silicon on the "
+     "aircraft and the indigenisation claim in Section VIII depends on it."),
 ]
 N_AIRCRAFT = 3
 PER_AIRCRAFT = sum(q * u for _, q, u, _, _ in AIRCRAFT)

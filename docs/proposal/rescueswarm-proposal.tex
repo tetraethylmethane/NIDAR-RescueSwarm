@@ -296,6 +296,13 @@ Table~\ref{tab:designpoint} states the aircraft design point. Every value is
 produced by a sizing model held in the repository and regenerated in continuous
 integration; none is transcribed by hand.
 
+\textbf{This is the reference design point, and one line of it is not yet
+verified for the aircraft actually being funded.} The adopted configuration
+(Section~\ref{sec:ask}) uses generic motors that publish no thrust curve, so the
+thrust-to-weight figure below is a requirement rather than a measurement until
+the P5 thrust stand runs. Nothing else in the table moves: mass, energy,
+altitude, speed and payload are all set by the mission.
+
 \begin{table}[t]
 \caption{Air vehicle design point (per aircraft)}
 \label{tab:designpoint}
@@ -463,6 +470,11 @@ A & No RTK, single-frame            & 3.09\,m \\
 B & RTK, single-frame               & $\sim$1.3\,m \\
 C & RTK + multi-frame fusion +      & \textbf{0.91\,m} \\
   & calibrated ground plane         & \\
+\midrule
+\multicolumn{3}{@{}p{7.4cm}@{}}{\footnotesize Case~C assumes moving-baseline
+heading. That receiver is deferred (Section~\ref{sec:deferred}), which
+substitutes a magnetometer-class attitude term and gives \textbf{0.94\,m} ---
+an 0.03\,m penalty, and the reason the deferral is judged affordable.} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -933,9 +945,9 @@ this class.
 
 A structured cost-reduction study was performed against the verified bill of
 materials, producing four costed configurations of the same aircraft plus one
-reduced-capability alternative. Table~\ref{tab:options} and
-Fig.~\ref{fig:options} summarise them; Fig.~\ref{fig:subsystem} shows, for the
-intermediate step, where a saving of this kind is actually taken.
+reduced-capability alternative. Fig.~\ref{fig:options} summarises them, and
+Table~\ref{tab:bom} shows, subsystem by subsystem, where the adopted
+configuration takes its saving.
 
 \begin{figure}[t]
 \centering
@@ -947,35 +959,6 @@ a proposal. Option~D is adopted: it gives up margin and indigenous content, but
 no scored capability.}
 \label{fig:options}
 \end{figure}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fig-subsystem.pdf}
-\caption{Subsystem cost, Option~A against the intermediate Option~B, shown
-because it isolates one effect cleanly: almost the whole saving at that step is a
-single substitution in compute and perception. Communications moves the other
-way, the sub-gigahertz link being corrected \emph{upward} before it was later
-deferred entirely.}
-\label{fig:subsystem}
-\end{figure}
-
-\begin{table}[t]
-\caption{Costed configuration options (per aircraft)}
-\label{tab:options}
-\centering
-\footnotesize
-\begin{tabular}{@{}c l r r l@{}}
-\toprule
-\textbf{Opt.} & \textbf{Configuration} & \textbf{INR} & \textbf{Ind.} & \textbf{Costs} \\
-\midrule
-A & Verified baseline  & 2\,90\,546 & 58\,\% & --- \\
-B & Efficiency only    & 2\,63\,401 & 61\,\% & nothing \\
-C & + indigenisation   & 2\,37\,081 & 53\,\% & Indian content \\
-D & \textbf{ADOPTED}   & \textbf{1\,57\,800} & \textbf{36\,\%} & \textbf{margin, Indian} \\
-E & Different airframe & 37\,309    & ---    & the mission \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 The options are ordered by \emph{what they trade}, not by descending price,
 because the interesting question is not how cheap the aircraft can be made but
@@ -1074,7 +1057,7 @@ the money is well spent; if it does not, it was never needed. Deferring on
 evidence rather than on funding is the distinction the reinstatement table in
 Section~\ref{sec:deferred} draws, and this is the line that motivated it.
 
-Options~A to C are retained in Table~\ref{tab:options} as the reasoning that led
+Options~A to C are retained in Fig.~\ref{fig:options} as the reasoning that led
 to~D, not as live alternatives: each is a step in the argument, and a reviewer
 should be able to see the sequence rather than only its conclusion. Option~E is a
 reduced training platform that cannot carry the payload at all and is discussed
@@ -1099,8 +1082,8 @@ of 71\,\%. Table~\ref{tab:programme} gives the breakdown.
 \toprule
 \textbf{Element} & \textbf{Was} & \textbf{Ask} \\
 \midrule
-Air vehicles (3) and payload           & 8.31\,L & 4.83\,L \\
-Ground segment                         & 3.88\,L & 0.74\,L \\
+Air vehicles (3) and payload           & 8.31\,L & 4.84\,L \\
+Ground segment                         & 3.88\,L & 0.69\,L \\
 Test equipment                         & 2.26\,L & 0.36\,L \\
 Spares and consumables                 & 2.73\,L & 0.59\,L \\
 Regulatory                             & 1.75\,L & 0.05\,L \\
@@ -1307,7 +1290,7 @@ by the total.
 \subsection{A note on the training platform}
 \label{sec:mule}
 
-Option~E in Table~\ref{tab:options} is a \inr{37\,309} training airframe. It
+Option~E in Fig.~\ref{fig:options} is a \inr{37\,309} training airframe. It
 fails eight system requirements and cannot fly the mission; it is emphatically
 not a low-cost variant of the proposed system. Its value is different: the
 programme's binding constraint is an eight-week flight-test window currently
