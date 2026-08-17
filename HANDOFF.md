@@ -73,6 +73,19 @@ the 6.52 m as a **hardcoded string inside a caption** rather than computing it.
 That is prose beside a formula — the same defect §5 is organised against, in the
 script that generates the evidence.
 
+### 2b-2. The take-off delays are not visible in the telemetry as commanded
+
+The mission file sets `NAV_DELAY` to **0/15/30 s**, and the autopilots log
+`Delaying 15 sec` / `Delaying 30 sec`. The aircraft are observed leaving the pad
+at **0.0 / 3.5 / 10.0 s**. Aircraft 3 served 9.2 s of a commanded 30; aircraft 2
+served 2.7 s of a commanded 15 — inconsistent ratios, so not a clean
+`SIM_SPEEDUP` conversion.
+
+**The deconfliction result stands** (1.31 m -> 64.80 m is measured). The
+*mechanism* does not: §4.2 attributes the spacing to a 0/15/30 s stagger and the
+recording does not show those delays being served. Re-fly at `SIM_SPEEDUP 1`
+before quoting the mechanism. Full detail in `docs/proposal/README.md`.
+
 ### 2c. The mass statement does not close
 
 `docs/sizing/model-output.txt` lists **6,061 g of items against a 6,360 g

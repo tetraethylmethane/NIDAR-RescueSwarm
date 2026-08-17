@@ -85,6 +85,39 @@ rather than weakening it — an aircraft that flies this mission is further from
 58 % to 61 %, because the line it shrinks is the imported accelerator. Cost
 reduction and indigenisation are usually opposed; on this one step they are not.
 
+## The take-off delays do not appear in the telemetry as commanded
+
+Re-rendering the launch figure from the raw recording surfaced this. The mission
+file sets `NAV_DELAY` to **0 / 15 / 30 s** before each take-off, and the
+autopilots log it — `Delaying 15 sec`, `Delaying 30 sec`. But the aircraft are
+observed leaving the pad at:
+
+| aircraft | commanded | logged take-off | first altitude > 2 m |
+|---|--:|--:|--:|
+| 1 | 0 s | 0.00 s | 0.00 s |
+| 2 | 15 s | 2.80 s | 3.50 s |
+| 3 | 30 s | 9.40 s | 10.01 s |
+
+Aircraft 3 delayed 9.2 s against a commanded 30; aircraft 2 delayed 2.7 s
+against a commanded 15. The ratios are not consistent with each other, so this
+is not simply a `SIM_SPEEDUP` time-base conversion (the run is at speedup 3, and
+`done_at` of 626 s is consistent with `t` being simulated seconds).
+
+**The deconfliction still works** — closest airborne pair goes 1.31 m → 64.80 m,
+and that is measured, not assumed. What is unverified is the *mechanism*: the
+document says the spacing comes from a 0/15/30 s stagger, and the recording does
+not show those delays being served.
+
+The figure therefore plots **observed** lift-off, not commanded. Two things are
+worth doing before this is quoted as evidence of the mechanism:
+
+1. Establish whether `t` in the recording is simulated or wall-clock time.
+   `sim-flight.sh` and the recorder are the places to look.
+2. Re-fly at `SIM_SPEEDUP 1`. If the delays are served correctly there, this is
+   a simulation artefact; if they are not, `NAV_DELAY` is not doing what the
+   mission file says — which would be the fifth instance of the defect class in
+   `HANDOFF.md` §5.
+
 ## Separation numbers: HANDOFF.md is stale
 
 Writing the figure captions meant recomputing the separation results from

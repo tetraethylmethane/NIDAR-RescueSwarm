@@ -289,6 +289,231 @@ def fig_indig():
     save(fig, "fig-indig.pdf")
 
 
+# ===========================================================================
+# 7-8. SITL evidence, re-rendered for publication.
+#      Source: simulations/recordings/*.json -- the same telemetry the
+#      committed proof figures use. Prose lives in the LaTeX caption, not in
+#      the image.
+# ===========================================================================
+import bisect
+import json
+import math
+
+REC = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(OUT))),
+                   "simulations", "recordings")
+AIRFRAME = 1.046          # m, tip-to-tip; the separation floor that matters
+PAD = 3.66                # m, 12 ft launch/recovery box
+
+
+def _load(name):
+    with open(os.path.join(REC, name), encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _at(track, t):
+    ts = [q["t"] for q in track]
+    i = bisect.bisect_left(ts, t)
+    return track[min(max(i, 0), len(track) - 1)]
+
+
+def _min_sep(d, t, airborne_only=True):
+    """Closest pair at time t, in three dimensions."""
+    ids = sorted(d["tracks"])
+    best = None
+    for a in range(len(ids)):
+        for b in range(a + 1, len(ids)):
+            p1 = _at(d["tracks"][ids[a]], t)
+            p2 = _at(d["tracks"][ids[b]], t)
+            if airborne_only and (p1["alt"] < 2.0 or p2["alt"] < 2.0):
+                continue
+            sep = math.dist((p1["x"], p1["y"], p1["alt"]),
+                            (p2["x"], p2["y"], p2["alt"]))
+            best = sep if best is None else min(best, sep)
+    return best
+
+
+def fig_launch():
+    before = _load("mission-telemetry-before-fixes.json")
+    after = _load("mission-telemetry.json")
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(FULL, 2.45))
+
+    # -- (a) closest airborne pair, both runs ------------------------------
+    grid = [i * 0.25 for i in range(0, 241)]          # first 60 s
+    for d, col, lab in ((before, RED, "simultaneous launch"),
+                        (after, GREEN, "staggered launch")):
+        xs, ys = [], []
+        for t in grid:
+            v = _min_sep(d, t)
+            if v is not None:
+                xs.append(t); ys.append(v)
+        ax1.plot(xs, ys, color=col, lw=1.5, label=lab)
+        lo = min(range(len(ys)), key=lambda i: ys[i])
+        ax1.plot(xs[lo], ys[lo], "o", color=col, ms=5)
+        ax1.annotate(f"{ys[lo]:.2f} m", xy=(xs[lo], ys[lo]),
+                     xytext=(10, 14 if col == GREEN else 10),
+                     textcoords="offset points", fontsize=7.5,
+                     color=col, weight="bold")
+    ax1.axhline(AIRFRAME, color=GREY, ls="--", lw=1)
+    ax1.text(2, AIRFRAME * 0.62, "one airframe width, 1.046 m",
+             fontsize=6.3, color=GREY, ha="left")
+    ax1.set_yscale("log")
+    ax1.set_xlabel("Time since mission start (s)")
+    ax1.set_ylabel("Closest pair, 3-D (m)")
+    ax1.set_title("(a) Separation during launch")
+    ax1.legend(frameon=False, loc="upper center", ncol=1)
+    ax1.set_xlim(0, 60)
+    ax1.set_ylim(0.45, 900)
+
+    # -- (b) the mechanism: altitude stagger -------------------------------
+    # OBSERVED lift-off, not commanded. The mission file sets NAV_DELAY to
+    # 0/15/30 s; the telemetry shows the aircraft leaving the pad at
+    # 0.00/3.50/10.01 s. Plotting the commanded values would assert something
+    # this recording does not support -- see docs/proposal/README.md.
+    for i, k in enumerate(sorted(after["tracks"])):
+        tr = after["tracks"][k]
+        t = [q["t"] for q in tr if q["t"] <= 60]
+        a = [q["alt"] for q in tr if q["t"] <= 60]
+        col = [BLUE, ORANGE, PURPLE][i]
+        ax2.plot(t, a, color=col, lw=1.3, label=f"aircraft {k}")
+        lift = next((q["t"] for q in tr if q["alt"] > 2.0), None)
+        if lift is not None:
+            ax2.axvline(lift, color=col, ls=":", lw=0.9)
+            ax2.annotate(f"{lift:.1f} s", xy=(lift, 46.5 - 3.4 * i),
+                         fontsize=6.5, color=col, ha="left", va="center",
+                         xytext=(3, 0), textcoords="offset points")
+    ax2.set_xlabel("Time since mission start (s)")
+    ax2.set_ylabel("Altitude AGL (m)")
+    ax2.set_title("(b) Observed lift-off, staggered by mission file")
+    ax2.legend(frameon=False, loc="lower right")
+    ax2.set_xlim(0, 60)
+    ax2.set_ylim(0, 50)
+
+    fig.tight_layout()
+    save(fig, "fig-launch.pdf")
+
+
+def fig_pad():
+    before = _load("mission-telemetry-before-fixes.json")
+    after = _load("mission-telemetry.json")
+    fig, ax = plt.subplots(figsize=(COL, 3.0))
+
+    cx = sum(q[0] for q in after["pad_xy"]) / 3
+    cy = sum(q[1] for q in after["pad_xy"]) / 3
+    h = PAD / 2
+    ax.add_patch(plt.Rectangle((cx - h, cy - h), PAD, PAD, fill=False,
+                               ec=RED, lw=1.4))
+    # Literal multiplication sign: an escape here is eaten by Python first.
+    ax.text(cx + h, cy + h + 0.12, "3.66 m × 3.66 m pad", color=RED,
+            fontsize=7, ha="right", va="bottom")
+
+    for pts, col, mk, lab in ((before["pad_xy"], GREY, "s", "row of three"),
+                              (after["pad_xy"], GREEN, "o", "corner slots")):
+        xs = [q[0] for q in pts]
+        ys = [q[1] for q in pts]
+        ax.plot(xs, ys, mk, color=col, ms=6, ls="none", label=lab,
+                mfc="none" if col == GREY else col, mew=1.4)
+        if col == GREEN:
+            for x, y in pts:
+                ax.add_patch(plt.Circle((x, y), AIRFRAME / 2, color=col,
+                                        alpha=0.16, lw=0))
+
+    def closest(pts):
+        return min(math.dist(pts[i], pts[j])
+                   for i in range(len(pts)) for j in range(i + 1, len(pts)))
+
+    cb, ca = closest(before["pad_xy"]), closest(after["pad_xy"])
+
+    # Annotate the tightest CORNER pair, and the tightest ROW pair, each on its
+    # own geometry so the two are directly comparable.
+    a0, a1 = after["pad_xy"][1], after["pad_xy"][2]
+    ax.annotate("", xy=a0, xytext=a1,
+                arrowprops=dict(arrowstyle="<->", color=GREEN, lw=1.3))
+    ax.text((a0[0] + a1[0]) / 2 + 0.12, (a0[1] + a1[1]) / 2,
+            f"{ca:.2f} m", color=GREEN, fontsize=8, weight="bold",
+            ha="left", va="center")
+
+    b0, b1 = before["pad_xy"][0], before["pad_xy"][1]
+    ax.annotate("", xy=b0, xytext=b1,
+                arrowprops=dict(arrowstyle="<->", color=GREY, lw=1.1))
+    ax.text((b0[0] + b1[0]) / 2, b1[1] - 0.20, f"{cb:.2f} m", color=GREY,
+            fontsize=7.5, ha="center", va="top")
+
+    ax.set_xlabel("East (m)")
+    ax.set_ylabel("North (m)")
+    ax.set_title("Recovery slot geometry, same pad")
+    ax.set_aspect("equal")
+    ax.set_xlim(cx - h - 0.8, cx + h + 0.8)
+    ax.set_ylim(cy - h - 0.8, cy + h + 0.9)
+    ax.legend(frameon=False, loc="lower left", fontsize=6.8,
+              handletextpad=0.4, borderaxespad=0.2)
+    fig.tight_layout()
+    save(fig, "fig-pad.pdf")
+
+
+# ===========================================================================
+# 9. Coverage decomposition and return geometry.
+#    Source: simulations/recordings/mission-telemetry.json
+# ===========================================================================
+def fig_sweep():
+    d = _load("mission-telemetry.json")
+    fig, ax = plt.subplots(figsize=(COL, 3.1))
+
+    pad = d["pad_xy"]
+    cx = sum(q[0] for q in pad) / 3
+    cy = sum(q[1] for q in pad) / 3
+
+    bx = [q[0] for q in d["boundary_xy"]] + [d["boundary_xy"][0][0]]
+    by = [q[1] for q in d["boundary_xy"]] + [d["boundary_xy"][0][1]]
+    ax.plot(bx, by, color=GREY, ls="--", lw=1, label="search area")
+
+    cols = [BLUE, ORANGE, PURPLE]
+    for i, strip in enumerate(d["strips"]):
+        xs = [q[0] for q in strip] + [strip[0][0]]
+        ys = [q[1] for q in strip] + [strip[0][1]]
+        ax.fill(xs, ys, color=cols[i], alpha=0.07, lw=0)
+
+    for i, k in enumerate(sorted(d["tracks"])):
+        tr = [q for q in d["tracks"][k] if q["alt"] > 5]
+        ax.plot([q["x"] for q in tr], [q["y"] for q in tr],
+                color=cols[i], lw=0.9, label=f"aircraft {k}")
+
+    ax.plot(cx, cy, "s", color="black", ms=6, zorder=5)
+    ax.annotate("pad", xy=(cx, cy), xytext=(11, -3),
+                textcoords="offset points", fontsize=7, weight="bold",
+                va="center")
+
+    # The argument this figure exists to make: the sweep direction is chosen so
+    # every aircraft finishes NEAR HOME, on the lowest state of charge of the
+    # flight. Measure that at the end of the SWEEP -- the last sample inside the
+    # search boundary -- not at the end of the track, which is back at the pad.
+    ymin = min(q[1] for q in d["boundary_xy"])
+    ymax = max(q[1] for q in d["boundary_xy"])
+    ends = []
+    for k in sorted(d["tracks"]):
+        inside = [q for q in d["tracks"][k]
+                  if q["alt"] > 20 and ymin <= q["y"] <= ymax]
+        if inside:
+            last = inside[-1]
+            r = math.hypot(last["x"] - cx, last["y"] - cy)
+            ends.append(r)
+            ax.plot(last["x"], last["y"], "*", color="black", ms=8, zorder=6)
+    ax.text(0.5, -0.30,
+            f"sweeps finish {min(ends):.0f}–{max(ends):.0f} m from the pad "
+            f"(stars)",
+            transform=ax.transAxes, ha="center", fontsize=7, weight="bold")
+
+    ax.set_xlabel("East (m)")
+    ax.set_ylabel("North (m)")
+    ax.set_title("Coverage decomposition and return")
+    ax.set_aspect("equal")
+    ax.set_ylim(-360, 300)
+    ax.legend(frameon=False, fontsize=6.4, loc="upper center", ncol=2,
+              handletextpad=0.4, borderaxespad=0.1,
+              bbox_to_anchor=(0.5, 1.0))
+    fig.tight_layout()
+    save(fig, "fig-sweep.pdf")
+
+
 if __name__ == "__main__":
     print("Generating proposal figures...")
     fig_geotag()
@@ -297,4 +522,7 @@ if __name__ == "__main__":
     fig_subsystem()
     fig_funding()
     fig_indig()
+    fig_launch()
+    fig_pad()
+    fig_sweep()
     print("Done.")

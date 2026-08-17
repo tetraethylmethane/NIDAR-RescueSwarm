@@ -717,36 +717,44 @@ implicit cannot be.
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{proof-1-launch.png}
-\caption{Launch deconfliction, recorded from three ArduCopter software-in-the-loop
-autopilots. Left: all three aircraft leave the pad together and the closest pair
-passes within 1.31\,m --- inside one airframe width. Right: a delay encoded in
-the mission file before each take-off command staggers them, and the closest
-airborne pair is 64.80\,m. Both figures are reproducible from the committed
-telemetry.}
+\includegraphics[width=\textwidth]{fig-launch.pdf}
+\caption{Launch deconfliction, recomputed from the committed telemetry of three
+ArduCopter software-in-the-loop autopilots. (a) Closest pair in three
+dimensions, airborne aircraft only, on a logarithmic scale. Launching
+simultaneously brings two aircraft within 1.31\,m --- inside one airframe width,
+marked --- while staggering take-off in the mission file holds the closest pair
+to 64.80\,m. (b) The mechanism: lift-off times observed in the same recording.
+The mission file commands delays of 0/15/30\,s; the aircraft are observed
+leaving the pad at 0.0/3.5/10.0\,s, and \textbf{the figure plots what was
+observed rather than what was commanded} --- see Section~\ref{sec:notimpl}.}
 \label{fig:launch}
 \end{figure*}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{proof-4-pad.png}
-\caption{Recovery deconfliction on the landing pad. Slot centres must remain half
-an airframe inside the pad edge, so they occupy a 2.61\,m square; a row across
-that square gives 1.22\,m of spacing, its corners give the full 2.61\,m. The
-measured closest approach at any time rises from an overlapping 0.83\,m to
-2.27\,m --- twice the separation, same pad, no cost.}
+\includegraphics[width=\columnwidth]{fig-pad.pdf}
+\caption{Recovery slot geometry, drawn from the two committed recordings. Slot
+centres must stay half an airframe inside the pad edge, so they live in a
+2.61\,m square: a row across that square gives 1.22\,m of spacing, its corners
+give the full 2.61\,m. Shaded discs are the 1.046\,m airframe footprint at the
+corner slots. The measured closest approach at any time rises from an
+overlapping 0.83\,m to 2.27\,m --- twice the separation, on the same pad, at no
+cost.}
 \label{fig:pad}
 \end{figure}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{proof-2-sweep.png}
-\caption{Coverage decomposition and return geometry. Each aircraft is assigned an
-equal-area strip and flies a boustrophedon pattern within it. Enumerating the
-four start-side and direction combinations and keeping the one that ends nearest
-home brings all three aircraft back within 116--128\,m of the pad, against
-516\,m and 540\,m for two of three aircraft under the previous index-keyed rule
---- at identical path length.}
+\includegraphics[width=\columnwidth]{fig-sweep.pdf}
+\caption{Coverage decomposition and return geometry, drawn from the committed
+telemetry. Each aircraft is assigned an equal-area strip (shaded) and flies a
+boustrophedon pattern within it; each strip is swept twice, on opposing
+headings, so that boresight error cancels rather than accumulating. Stars mark
+where each sweep ends. Enumerating the four start-side and direction
+combinations and keeping the one that finishes nearest home brings all three
+aircraft to within 117--130\,m of the pad, against 516\,m and 540\,m for two of
+three under the previous index-keyed rule --- at identical path length, and on
+the lowest state of charge of the flight.}
 \label{fig:sweep}
 \end{figure}
 
