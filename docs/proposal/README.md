@@ -85,22 +85,71 @@ rather than weakening it — an aircraft that flies this mission is further from
 58 % to 61 %, because the line it shrinks is the imported accelerator. Cost
 reduction and indigenisation are usually opposed; on this one step they are not.
 
-## The abort path now names its mechanism
+## The abort path names its mechanism, and the mechanism has a trap
 
 Deleting the sub-GHz safety radio rests entirely on the ExpressLRS link carrying
 **both** safety-pilot control and the abort path. The proposal asserted that and
 never said how, which left a load-bearing claim uncheckable.
 
-It now cites the mechanism: **ExpressLRS carries MAVLink natively from version
-3.5**, so the receiver that gives the safety pilot manual control also carries
-the autopilot's command stream. On the ArduPilot side it is a serial port set to
-MAVLink v2 and nothing more.
+It now names the mode, because **only one of the two available modes actually
+works this way**:
 
-**Worth knowing if you follow tutorials on this:** the older **AirPort**
-transparent-serial mode does the same job, and much of the material online still
-uses it — but ExpressLRS's own documentation says AirPort is *no longer
-recommended* for MAVLink now that native support exists. Build against the
-native mode.
+| ELRS mode | RC control | MAVLink telemetry | Verdict |
+|---|---|---|---|
+| **Native MAVLink (3.5+)** | yes | yes | **required** — one link, one UART |
+| AirPort (older) | **no** | yes | **breaks the deferral** |
+
+AirPort is a transparent serial bridge that *consumes* the link. A build
+configured that way has telemetry and no control, and needs a **second radio**
+to fly. That is not theoretical: the widely-followed build video "Building a sub
+250g Autonomous Drone with Ardupilot and ExpressLRS AirPort Telemetry" hits this
+exact wall and solves it by buying a second ELRS pair **at 868 MHz** — which is
+the sub-gigahertz set this budget deletes.
+
+**So: configured wrongly, the deferral is not a saving, it is a defect** — and
+it surfaces at integration, not at review. The requirement is recorded on the
+receiver line in `competition_budget.py` so it travels with the BOM rather than
+living only in prose.
+
+Native MAVLink is independently tested to 126 km without failsafe, against our
+600 m geofence.
+
+**Consequence now stated in the proposal:** the abort path inherits the link's
+availability. An outage removes the operator's fastest intervention until the
+link returns or the 60 s link-loss timer fires the autonomous return. The
+aircraft is never without *a* recovery path; it can be briefly without an
+*operator-commanded* one. Measuring outage against range and attitude is a P6
+objective.
+
+## Flight-controller options, priced
+
+There are no development mules in the funded build — the three aircraft *are*
+the competition set — so "cheap board on the mules" does not map to a budget
+line. What does map is the deferred spare.
+
+| | Ask | vs. status quo | Spare-FC risk |
+|---|--:|--:|---|
+| **A** Pixhawk x3, spare deferred *(current)* | 8.24 L | — | accepted |
+| **B** Matek x3, spare deferred | **7.81 L** | −0.43 L | accepted |
+| **C** Pixhawk x3 + one Matek **as the spare** | 8.36 L | +0.12 L | **retired** |
+| **D** Matek x3 + one Matek spare | 7.92 L | −0.32 L | **retired** |
+
+Holybro Pixhawk 6C Mini **₹22,600** against Matek H743-WING/SLIM
+**₹8,999–10,656** — same STM32H743 at 480 MHz, same ArduPilot feature set, 7
+UARTs. The real trade is the Pixhawk connector standard and on-board IMU
+vibration isolation, not capability. Radiolink CrossFlight was checked and is
+**₹30,400** — more expensive than what we already have, so it is not a candidate.
+
+**Option C is the interesting one**: it retires an accepted risk (`Spare flight
+controller — 26,000 — DEFERRED`) for ₹10,000 rather than ₹26,000, and the spare
+doubles as the bench board. It costs 0.12 L instead of saving 0.43 L.
+
+## Battery failsafe is staged
+
+Reserve threshold commands RTL; a second, lower threshold commands immediate
+landing where the aircraft stands. A pack that cannot reach the pad should land
+under control at the point it admits this, rather than descend uncommanded
+partway home.
 
 ## Two text defects visible in the ground-station screenshot
 

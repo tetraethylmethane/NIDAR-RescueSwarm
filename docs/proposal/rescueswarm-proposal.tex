@@ -582,7 +582,11 @@ explicit delay before each take-off command, not in operator timing --- this is
 what converts a 1.31\,m closest approach into the 64.80\,m of
 Fig.~\ref{fig:launch}. Second, every terminal branch converges on
 return-to-launch: link loss, low battery and operator abort share one recovery
-path rather than three.
+path rather than three. Third, the battery branch is \emph{staged} rather than
+single-valued: the reserve threshold commands return-to-launch, and a second,
+lower threshold commands an immediate landing where the aircraft stands. A pack
+that cannot reach the pad should land under control at the point it admits this,
+rather than descend uncommanded partway home.
 
 \begin{figure}[t]
 \centering
@@ -1178,6 +1182,27 @@ telemetry and coordination. Those are already two independent bands across a
 margin. The 865--867\,MHz set is a \emph{third} path. It is the correct thing to
 add when funding allows, and it is not the thing to buy before the aircraft
 flies.
+
+\textbf{That argument holds only for one specific radio configuration, so I
+state it as a build requirement rather than leave it implicit.} The receivers
+must run ExpressLRS 3.5 or later in \emph{native} MAVLink mode, which
+interleaves RC control and MAVLink on a single link and a single autopilot
+UART~\cite{elrsmavlink}. The older AirPort mode reaches the same autopilot by a
+transparent serial bridge, but it \emph{consumes} the link: a build configured
+that way has telemetry and no control, and needs a second radio to fly --- which
+is precisely the sub-gigahertz set deferred here. Configured wrongly, the
+deferral is not a saving but a defect, and the failure appears at integration
+rather than at review.
+
+\emph{The abort path inherits the availability of that link.} Because abort and
+recall ride the ExpressLRS link, an outage removes the operator's fastest
+intervention until the link returns or the 60\,s link-loss timer fires the
+autonomous return of Fig.~\ref{fig:flow}. The aircraft is never without a
+recovery path --- that is the point of routing every terminal branch to
+return-to-launch --- but it can be briefly without an \emph{operator-commanded}
+one. Measuring outage statistics against range and attitude is a P6 objective,
+and it is the evidence that decides whether the sub-gigahertz path is a
+nice-to-have or a requirement.
 
 \emph{Insurance is deferred at the team's direction and I flag it as the one
 item that may not be optional.} Third-party cover is commonly mandatory for

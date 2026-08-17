@@ -41,7 +41,13 @@ AIRCRAFT = [
     ("Camera + lens",          1, 11_100, "KEEP",
      "Arducam IMX477 + 6 mm. Pi-compatible; GSD drives detection."),
     ("Pack, BMS, PDB, BEC",    1,  8_500, "hobby", ""),
-    ("RC rx, storage, cooling, mounts", 1, 8_500, "hobby", ""),
+    ("RC rx, storage, cooling, mounts", 1, 8_500, "hobby",
+     "ExpressLRS receiver MUST run 3.5+ in NATIVE MAVLink mode. That mode "
+     "carries RC control and MAVLink on ONE link and one autopilot UART, which "
+     "is what allows the sub-GHz safety radio to be deferred. The older AirPort "
+     "mode is a transparent serial bridge that CONSUMES the link -- configured "
+     "that way the aircraft has telemetry and no control, and needs the second "
+     "radio back. Not a preference; the deferral depends on it."),
     ("ESCs",                   4,  1_800, "hobby", "Generic 60 A. Rating is easy to verify."),
     ("Mesh node + antennas",   1,  6_000, "hobby", "Rule 8.14: three concurrent feeds."),
     ("Payload system",         1,  4_500, "hobby",
