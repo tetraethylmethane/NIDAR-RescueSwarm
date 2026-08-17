@@ -7,6 +7,46 @@ programmatic edit, run the recalculation check before trusting a number.
 
 ---
 
+## 2026-08-18 — per-line tax audit: the ask falls to ₹8.24 L
+
+The budget added 22 % duty and 18 % GST to the whole subtotal. That was right
+for the original ex-works estimates and became wrong when market verification
+replaced most of them with **Indian retail listings, which are duty-paid and
+tax-paid at the till**. The Agam board is quoted by its own manufacturer as
+"₹42,000 **with 5 % GST**". Grossing up a gross figure counts the same tax twice.
+
+Every line is now classified in `competition_budget.py`:
+
+| | ₹ | |
+|---|--:|---|
+| Tax-inclusive retail | 4.66 L | dated Indian listings; nothing added |
+| Ex-GST quotes and services | 1.82 L | GNSS, cells, in-house structure and payload, RTK base, thrust stand |
+| Statutory, exempt | 0.05 L | DGCA registration |
+
+Duty and GST now apply **only to the ex-GST portion**: ₹0.26 L and ₹0.37 L
+against ₹0.93 L and ₹1.34 L before. **₹1.64 L of double-counted tax removed;
+the ask falls ₹10.12 L → ₹8.24 L (−19 %), and −71 % against the original
+₹28.74 L.** No capability changed — this is an accounting correction.
+
+**One bug caught while doing it.** The air-vehicle line is a single aggregate
+row, so the ex-GST quotes inside it — the GNSS receivers, the cells, the
+in-house structure and payload fabrication — were being classified as retail
+and left untaxed. That understated the ask by ₹1.44 L of taxable base.
+`tax_split()` now decomposes that row against `AIRCRAFT`, and asserts the three
+buckets sum to the subtotal.
+
+**And the drift the generator was built to stop, caught by the generator.**
+`build_cost_study.py` was recomputing duty and GST itself rather than importing
+them, so it still reported ₹10.12 L after the audit. It now calls
+`CB.tax_split()`. Independently recomputing a number you have imported the
+inputs for is the same defect in a smaller box.
+
+Where a line is classified ex-GST on judgement rather than on a document, being
+wrong makes the request **smaller**. Confirming the classification with each
+supplier is a tranche-1 action.
+
+---
+
 ## 2026-08-17 — the cost study is now generated, not maintained
 
 `RescueSwarm_Cost_Study.xlsx` had drifted until it disagreed with the funding

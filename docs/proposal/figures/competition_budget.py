@@ -135,6 +135,55 @@ GROUPS = [("Air vehicle and payload", AIR), ("Ground segment", GROUND),
           ("Test equipment", TEST), ("Spares and consumables", SPARES),
           ("Software, data and regulatory", SOFT)]
 
+# ---------------------------------------------------------------- tax status
+# Line label -> ("incl" | "excl" | "exempt", why).
+#   incl   dated Indian retail listing; duty and GST already paid at the till
+#   excl   supplier quote or fabrication service, normally quoted ex-GST
+#   exempt statutory fee
+# Anything not listed defaults to "incl", because after the market-verification
+# pass the great majority of this bill is retail.
+TAX_STATUS = {
+    # -- air vehicle: the quoted and fabricated lines --------------------
+    "GNSS RTK primary":  ("excl", "Teravolt quote; RFQ, not a listing"),
+    "Li-ion cells":      ("excl", "GODI quote; no public price exists"),
+    "Structure":         ("excl", "in-house fabrication; machine-shop service"),
+    "Payload system":    ("excl", "in-house fabrication"),
+    # -- ground segment --------------------------------------------------
+    "RTK base receiver": ("excl", "same Teravolt quote as the rover"),
+    "Sun hood + observer monitor": ("excl", "fabricated in-house"),
+    # -- test ------------------------------------------------------------
+    "Thrust stand":      ("excl", "built, not bought"),
+    # -- payload ----------------------------------------------------------
+    "Ground-truth apparatus": ("excl", "fabricated in-house"),
+    "Relief kits (14)":  ("excl", "assembled in-house"),
+    # -- statutory ---------------------------------------------------------
+    "DGCA registration": ("exempt", "statutory fee, no GST"),
+}
+
+
+def tax_split():
+    """Subtotal split by tax status.
+
+    The air-vehicle row is an aggregate of AIRCRAFT, so it is decomposed
+    line by line -- otherwise the ex-GST quotes inside it (GNSS, cells,
+    structure, payload fabrication) are silently treated as tax-paid retail
+    and the ask is understated.
+    """
+    out = {"incl": 0, "excl": 0, "exempt": 0}
+
+    for name, q, u, _tier, _note in AIRCRAFT:
+        status = TAX_STATUS.get(name, ("incl", ""))[0]
+        out[status] += q * u * N_AIRCRAFT
+
+    for _, rows in GROUPS:
+        for lbl, _old, new, _note in rows:
+            if new == 0 or lbl.startswith("Air vehicles"):
+                continue          # aircraft handled above
+            key = lbl.split(",")[0].strip()
+            status = TAX_STATUS.get(lbl, TAX_STATUS.get(key, ("incl", "")))[0]
+            out[status] += new
+    return out
+
 DUTY, GST, CONTINGENCY = 0.22, 0.18, 0.15
 INDIG = 0.355         # COMPUTED, not estimated, from the per-line Indian
                       # fractions of the adopted configuration. Falls from 0.58
@@ -174,14 +223,20 @@ def main():
                 print(f"   {lbl:<40}{a:>8,} -> {b:>8,}{tag}")
         print(f"   {'subtotal':<40}{o:>8,} -> {n_:>8,}   ({n_-o:>+8,})")
 
-    duty = new_t * (1 - INDIG) * DUTY
-    gst = (new_t + duty) * GST
+    # Tax only what is genuinely untaxed. See TAX_STATUS.
+    split = tax_split()
+    duty = split["excl"] * (1 - INDIG) * DUTY
+    gst = (split["excl"] + duty) * GST
     cont = (new_t + duty + gst) * CONTINGENCY
     total = new_t + duty + gst + cont
     print("\n" + "=" * 78)
     print(f"  {'SUBTOTAL':<40}{old_t:>8,} -> {new_t:>8,}")
-    print(f"  {'duty + freight on imported residual':<40}{'':>8}    {duty:>8,.0f}")
-    print(f"  {'GST @ 18%':<40}{'':>8}    {gst:>8,.0f}")
+    print()
+    print(f"  {'tax-inclusive retail (no tax added)':<40}{split['incl']:>8,}")
+    print(f"  {'ex-GST quotes and services (taxed)':<40}{split['excl']:>8,}")
+    print(f"  {'statutory, exempt':<40}{split['exempt']:>8,}")
+    print(f"  {'duty + freight on the ex-tax residual':<40}{'':>8}    {duty:>8,.0f}")
+    print(f"  {'GST @ 18% on the ex-tax lines only':<40}{'':>8}    {gst:>8,.0f}")
     print(f"  {'contingency @ 15%':<40}{'':>8}    {cont:>8,.0f}")
     print(f"  {'COMPETITION ASK':<40}{'':>8}    {total:>8,.0f}   ({total/1e5:.2f} L)")
     print(f"  {'original programme ask':<40}{'':>8}    {ORIGINAL:>8,}   ({ORIGINAL/1e5:.2f} L)")

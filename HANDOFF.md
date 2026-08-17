@@ -252,7 +252,7 @@ editing a price.**
 ### 4.6 The funding ask has moved a long way — and the workbook is now stale
 
 `docs/proposal/` holds an IEEEtran funding proposal (15 pages, 12 figures,
-committed as PDF). The ask went **₹28.74 L → ₹10.12 L (−65 %)** across several
+committed as PDF). The ask went **₹28.74 L → ₹8.24 L (−71 %)** across several
 passes, driven by team decisions recorded in `docs/proposal/README.md`.
 
 The adopted configuration is **₹1,57,800 per aircraft**: hobby-grade where the
@@ -270,11 +270,12 @@ script after any configuration change; do not edit the workbook by hand.
 
 1. **Insurance** was deferred at team direction. Third-party cover is commonly
    mandatory for Indian UAV operations. **Confirm before any flight.**
-2. **Duty and GST may be double-counted.** The model adds 22 % duty and 18 % GST
-   on top of prices that are largely *Indian retail listings* — already duty- and
-   tax-paid. The Agam price is explicitly "₹42,000 **with 5 % GST**". Exposure is
-   roughly ₹2.3 L of the current ask. A per-line audit is the single largest
-   remaining correction and it is an accounting fix, not a capability cut.
+2. **Duty and GST were double-counted — now corrected.** The audit is done:
+   every line is classified tax-inclusive (₹4.66 L), ex-GST (₹1.82 L) or exempt
+   (₹0.05 L) in `competition_budget.py`, and tax applies only to the middle
+   bucket. **₹1.64 L removed; the ask fell ₹10.12 L → ₹8.24 L.** Residual risk
+   is only that a line marked ex-GST is in fact inclusive, which would reduce
+   the ask further. Confirm with each supplier in tranche 1.
 3. **Indigenous content is 36 %, not the 45 % first asserted.** Computed from
    per-line fractions. This matters beyond presentation: duty is levied on the
    imported residual, so the wrong figure understated the duty.

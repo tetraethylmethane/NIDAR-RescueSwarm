@@ -87,7 +87,7 @@ market-verified cost basis, and a phased work plan. I am explicit throughout
 about which figures are measured, which are modelled, and which remain assumed;
 no aircraft has yet flown, and the proposal is structured so that a reviewer can
 distinguish demonstrated capability from projected capability without reading
-the source material. The requested funding is \lakh{10.12} over an eight-month build.
+the source material. The requested funding is \lakh{8.24} over an eight-month build.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -840,27 +840,36 @@ the distinction as material, and four of the larger lines --- the accelerator,
 the GNSS receiver, the motors and the cells --- still fall in the second
 category. The autopilot and the camera are dated retail listings.
 
-\subsubsection{A disclosure that works against the size of this request}
+\subsubsection{A correction that works against the size of this request}
 
-\textbf{The duty and tax treatment is probably double-counted, and I would
-rather say so than have a finance office discover it.} The model adds 22\,\%
-duty and freight on the imported residual and 18\,\% goods and services tax on
-top of the subtotal --- \inr{0.93\,L} and \inr{1.34\,L} respectively, or
-\inr{2.27\,L} of the \lakh{10.12} requested.
+An earlier draft of this budget added 22\,\% duty and 18\,\% goods and
+services tax to the whole subtotal. That was correct for the original bill of
+materials, whose prices were ex-works budgetary estimates. It became wrong when
+market verification replaced most of those estimates with \emph{Indian retail
+listings}, which are duty-paid and tax-paid at the till --- the autopilot is
+quoted by its own manufacturer as ``\inr{22\,600}'' inclusive, and the deferred
+Agam board as ``\inr{42\,000} with 5\,\% GST''. \textbf{Grossing up a figure
+that is already gross counts the same tax twice.}
 
-That treatment was correct for the original bill of materials, whose prices were
-ex-works budgetary estimates. It is very likely wrong now. The market
-verification described above replaced most of those estimates with \emph{Indian
-retail listings}, which are already duty-paid and tax-paid; the autopilot price,
-for one, is quoted by its manufacturer as ``\inr{42\,000} with 5\,\% GST''
-included. Grossing up a figure that is already gross counts the same tax twice.
+Every line has now been classified, and tax is applied only to what is genuinely
+untaxed:
 
-I have not corrected it in this document because doing so honestly requires a
-per-line audit --- some Indian suppliers do quote ex-GST, and the two cases
-cannot be separated by inspection. \textbf{The consequence is that this request
-is stated conservatively: a correct audit can only move the figure downward, by
-up to \inr{2.27\,L}.} It is the first thing I would resolve with a sponsor's
-finance office, and any unspent balance is theirs rather than mine.
+\begin{itemize}
+  \item \emph{Tax-inclusive} --- a dated Indian retail listing. Nothing is
+        added. \inr{4.66\,L}, the great majority of the bill.
+  \item \emph{Ex-GST} --- a supplier quote or a fabrication service, which in
+        India is normally quoted before tax. Duty and GST apply.
+        \inr{1.82\,L}: the GNSS receivers, the cells, the in-house structure
+        and payload fabrication, the RTK base, and the thrust stand.
+  \item \emph{Exempt} --- statutory fees. \inr{0.05\,L}.
+\end{itemize}
+
+The correction removes \inr{1.64\,L} of tax that was being charged twice and
+takes the request from \lakh{10.12} to \lakh{8.24}. \textbf{Where a line is
+classified ex-GST on judgement rather than on a document, being wrong makes the
+request \emph{smaller}, not larger} --- the error runs in the sponsor's
+favour, and confirming the classification with each supplier is a tranche-1
+action.
 
 \subsection{The bill of materials in detail}
 
@@ -1055,8 +1064,8 @@ An earlier version of this budget costed a development \emph{programme} at
 \lakh{28.74}. That figure bought laboratory equipment, computing and a purchased
 field-data campaign. On review, none of those are what a competition entry
 needs, and most of the equipment is already held by the host institution. The
-ask has been recosted accordingly and is now \textbf{\lakh{10.12}}, a reduction
-of 65\,\%. Table~\ref{tab:programme} gives the breakdown.
+ask has been recosted accordingly and is now \textbf{\lakh{8.24}}, a reduction
+of 71\,\%. Table~\ref{tab:programme} gives the breakdown.
 
 \begin{table}[t]
 \caption{Competition build cost}
@@ -1074,11 +1083,11 @@ Spares and consumables                 & 2.73\,L & 0.59\,L \\
 Regulatory                             & 1.75\,L & 0.05\,L \\
 \midrule
 Subtotal                               & 18.93\,L & 6.53\,L \\
-Duty and freight, imported residual     &          & 0.93\,L \\
-Goods and services tax                  &          & 1.34\,L \\
-Contingency, 15\,\%                     &          & 1.32\,L \\
+Duty and freight, on ex-tax lines only  &          & 0.26\,L \\
+GST, on ex-tax lines only               &          & 0.37\,L \\
+Contingency, 15\,\%                     &          & 1.07\,L \\
 \midrule
-\textbf{Total requested}                &          & \textbf{10.12\,L} \\
+\textbf{Total requested}                &          & \textbf{8.24\,L} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1231,15 +1240,15 @@ give the schedule.
 \toprule
 \textbf{T} & \textbf{Months / phases} & \textbf{INR} & \textbf{Release condition} \\
 \midrule
-1 & 1--2 \quad P1--P4  & 3.55\,L & On award. Design point frozen; models regenerate \\
+1 & 1--2 \quad P1--P4  & 2.90\,L & On award. Design point frozen; models regenerate \\
 \addlinespace
-2 & 3--4 \quad P5      & 3.00\,L & P1--P4 complete: ground segment demonstrated, and link-loss and low-battery behaviour verified by fault injection \\
+2 & 3--4 \quad P5      & 2.45\,L & P1--P4 complete: ground segment demonstrated, and link-loss and low-battery behaviour verified by fault injection \\
 \addlinespace
-3 & 5--6 \quad P6--P8  & 2.15\,L & Three airframes weighed; first hover complete \\
+3 & 5--6 \quad P6--P8  & 1.75\,L & Three airframes weighed; first hover complete \\
 \addlinespace
-4 & 7--8 \quad P9--P10 & 1.42\,L & Perception and delivery trials reported with measured figures \\
+4 & 7--8 \quad P9--P10 & 1.14\,L & Perception and delivery trials reported with measured figures \\
 \midrule
-  & \textbf{Total}     & \textbf{10.12\,L} & \\
+  & \textbf{Total}     & \textbf{8.24\,L} & \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1411,8 +1420,8 @@ Airframe loss during test
 Flight insurance may be mandatory
 & Medium & Deferred at team direction. To be confirmed against the rulebook and DGCA rules before any flight \\
 \addlinespace
-Duty and GST double-counted on tax-paid retail prices
-& Medium & Works in the sponsor's favour: a per-line audit can only reduce the request, by up to \inr{2.27\,L}. First action with a finance office \\
+Tax classification of quoted lines unconfirmed
+& Low & The per-line audit is done and \inr{1.64\,L} of double-counting removed. Remaining risk is only that a line marked ex-GST is in fact inclusive, which would reduce the request further \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1519,7 +1528,7 @@ remains is the part that requires funding: to build the aircraft, fly them, and
 replace the modelled and assumed quantities in Section~\ref{sec:evidence} with
 measured ones.
 
-I am asking for \lakh{10.12} to do that, and I have tried throughout this
+I am asking for \lakh{8.24} to do that, and I have tried throughout this
 document to make every number in it checkable.
 
 %=============================================================================

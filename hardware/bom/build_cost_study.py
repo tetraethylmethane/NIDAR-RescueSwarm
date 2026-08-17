@@ -99,8 +99,12 @@ def head(ws, row, labels, widths=None, start=1):
 PER = CB.PER_AIRCRAFT
 FLEET = PER * CB.N_AIRCRAFT
 SUBTOTAL = sum(r[2] for _, rows in CB.GROUPS for r in rows)
-DUTY = SUBTOTAL * (1 - CB.INDIG) * CB.DUTY
-GST = (SUBTOTAL + DUTY) * CB.GST
+# Tax only the ex-GST lines. CB.tax_split() is the authority; computing duty
+# and GST here independently is how this workbook drifted from the proposal
+# the first time.
+SPLIT = CB.tax_split()
+DUTY = SPLIT["excl"] * (1 - CB.INDIG) * CB.DUTY
+GST = (SPLIT["excl"] + DUTY) * CB.GST
 CONT = (SUBTOTAL + DUTY + GST) * CB.CONTINGENCY
 ASK = SUBTOTAL + DUTY + GST + CONT
 INST = sum(r[1] for _, rows in CB.GROUPS for r in rows
@@ -172,8 +176,10 @@ def main():
         ("Per aircraft", PER, f"{CB.N_AIRCRAFT} aircraft"),
         ("Air vehicles, fleet", FLEET, ""),
         ("Subtotal, whole programme", SUBTOTAL, "All groups"),
-        ("Duty and freight", DUTY, f"{CB.DUTY:.0%} on the imported residual"),
-        ("GST", GST, f"{CB.GST:.0%}"),
+        ("Tax-inclusive retail", SPLIT["incl"], "Dated Indian listings. No tax added."),
+        ("Ex-GST quotes and services", SPLIT["excl"], "Quotes and fabrication. Taxed."),
+        ("Duty and freight", DUTY, f"{CB.DUTY:.0%}, ex-tax lines only"),
+        ("GST", GST, f"{CB.GST:.0%}, ex-tax lines only"),
         ("Contingency", CONT, f"{CB.CONTINGENCY:.0%} - phased release is itself a reserve"),
         ("TOTAL ASK", ASK, f"{ASK/1e5:.2f} lakh"),
         ("Institutional contribution", INST, "Equipment already held - co-funding in kind"),
