@@ -1,7 +1,8 @@
 # Covering note — institutional funding request
 
-> **Before sending:** fill the four bracketed fields below, and delete this
-> block. Everything else is ready. The figures come from
+> **Before sending:** fill the seven bracketed fields — addressee, department,
+> programme and year, date, institute, email, phone — then delete this block.
+> Everything else is ready. The figures come from
 > `RescueSwarm_University_Funding_Request.xlsx`; if you change the budget,
 > regenerate the workbook and re-check the numbers here against tab 00.
 
