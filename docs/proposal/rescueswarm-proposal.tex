@@ -530,6 +530,45 @@ frames per second, and the lower end of that range leaves no margin. Hardware
 benchmarking before design freeze is accordingly a funded, scheduled activity
 rather than an assumption.
 
+\subsection{Why the compute stack is three parts}
+\label{sec:compute}
+
+The air vehicle carries a sensor, a single-board host and a neural accelerator.
+On an aircraft this size that invites the question of why it is not one part,
+and the answer is that each does something the others cannot.
+
+The accelerator is an \textbf{M.2 module whose only interface is PCIe}. It has
+no camera input, no image signal processor and no general-purpose cores; it
+executes a compiled graph on tensors a host hands it. The sensor emits a raw
+Bayer-mosaic stream, which is not an image until something demosaics, white
+balances and scales it. And the tiling that the whole detection approach rests
+on --- cutting each frame into twelve overlapping crops, submitting them, and
+reassembling detections back into frame coordinates --- is host work by
+construction, as is every other thing the aircraft does: the phase machine,
+MAVLink routing, the mesh, survivor claim and release, the delivery excursion
+and the telemetry the ground station consumes.
+
+So the three parts are a sensor, an image pipeline with a CPU, and a matrix
+engine. Removing any one of them does not simplify the aircraft; it stops the
+detection chain working.
+
+\emph{One alternative would genuinely remove a box, and it was rejected on a
+measurable ground rather than a preference.} Sensors now exist with an
+inference engine on the die --- the imager runs the network itself and emits
+detections instead of pixels, at roughly 40\,\% lower power than a discrete
+accelerator, and it would delete the accelerator line entirely. It does not fit
+this mission: on-sensor engines carry a model of a few megabytes and perform a
+\emph{single} inference per capture at a fixed input size. This design needs
+\textbf{twelve} inferences per frame, because a survivor occupies a few tens of
+pixels in a 12\,MP frame and tiled inference is the only thing that makes that
+target detectable at all (Section~\ref{sec:pipeline}). An imager that cannot
+tile its own output is being asked to do the one thing the architecture exists
+to avoid. It also removes nothing else: the host is still required for
+everything in the paragraph above.
+
+That trade is worth stating because it is the obvious economy to propose, and
+the reason it fails is specific to small-object search rather than general.
+
 \subsection{Onboard processing pipeline}
 \label{sec:pipeline}
 
