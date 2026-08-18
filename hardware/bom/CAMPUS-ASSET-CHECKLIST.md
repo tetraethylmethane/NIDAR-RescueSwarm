@@ -19,8 +19,8 @@ total station.
 
 | | Value | Effect if confirmed |
 |---|--:|---|
-| **A · Equipment we have budgeted** | **₹56,000** remaining | Leaves the request. Ask falls to ~₹7,43,000 |
-| · *already confirmed 2026-08-18* | *₹14,500 done* | *ask 8,24,072 → **8,07,397*** |
+| **A · Equipment we have budgeted** | **₹56,000** remaining | Leaves the request. Ask falls to ~₹6,66,000 |
+| · *already confirmed 2026-08-18* | *₹14,500 done* | *ask 8,24,072 → **7,37,829** (with the deferrals below)* |
 | **B · Stock and consumables** | up to ~₹15,000 | Partial reductions |
 | **C · Questions that remove risk** | ₹25,000 + travel | Resolves the insurance flag |
 | **D · Assets already assumed** | **₹3,54,000** | ✅ **all nine confirmed** — ask is safe |
@@ -28,7 +28,7 @@ total station.
 > **D was as important as A, and it is now settled.** The budget assumes
 > ₹3,54,000 of institute equipment is available to us. All nine items were
 > confirmed on 2026-08-18, so none of that comes back into the request and the
-> ₹8,07,397 figure holds.
+> ₹7,37,829 figure holds.
 
 ---
 
@@ -36,7 +36,9 @@ total station.
 
 > **Confirmed held 2026-08-18** and already removed from the request:
 > equipment cases (₹9,000), lithium fire kit (₹4,000), charger PSU (₹1,500).
-> The ask is now **₹8,07,397**. The items below are still open.
+> A further review then deferred the remaining spares, the relief kits and
+> the ground-truth apparatus. **The ask is now ₹7,37,829.** The items below
+> are still open.
 
 ### → Civil Engineering, survey laboratory
 

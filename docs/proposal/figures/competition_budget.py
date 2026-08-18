@@ -70,11 +70,13 @@ AIR = [
      PER_AIRCRAFT * N_AIRCRAFT,
      "R4. Hobby-grade propulsion and ancillaries; autopilot, RTK, accelerator, "
      "camera and cells held professional."),
-    ("Relief kits (14)", 5_600, 5_600, "Rule C6 fixes the kit at 200 g."),
-    ("Ground-truth apparatus", 35_280, 4_860,
-     "R5. Mannequins, mats, markers, clothing and dummy kits all fabricated. "
-     "Dummy kits and clothing are BETTER made than bought -- exact 200 g mass, "
-     "and wider colour variety than matched sets."),
+    ("Relief kits (14)", 5_600, 0,
+     "DEFERRED AT TEAM DIRECTION 2026-08-18. Rule C6 fixes the kit at 200 g. "
+     "THIS IS THE DELIVERED PAYLOAD -- see the note in the deferred register."),
+    ("Ground-truth apparatus", 35_280, 0,
+     "DEFERRED AT TEAM DIRECTION 2026-08-18. Was R5, fabricated. Removing it "
+     "means detection has no target to be measured against, so recall stays "
+     "modelled -- the field-data campaign is deferred too."),
     ("Recovery parachutes, 3", 0, 0,
      "DEFERRED. PERMITTED, not required (rulebook-compliance 6.2). A crash is "
      "-50 against -10 for landing outside the zone: a ~40-point bet."),
@@ -121,8 +123,11 @@ TEST = [
 ]
 
 SPARES = [
-    ("Spare airframe structure set", 25_000, 25_000, "KEEP. What a crash consumes."),
-    ("Spare propellers, plate and tube stock", 26_200, 21_400, "KEEP. Consumables."),
+    ("Spare airframe structure set", 25_000, 0,
+     "DEFERRED AT TEAM DIRECTION 2026-08-18. This was the crash cover."),
+    ("Spare propellers, plate and tube stock", 26_200, 0,
+     "DEFERRED AT TEAM DIRECTION 2026-08-18. Propellers are the most "
+     "frequently consumed item in a flight-test campaign."),
     ("Fasteners, tape, connectors, filament", 37_800, 13_000, "KEEP."),
     ("Spare battery packs", 57_000, 0, "DEFERRED."),
     ("Spare motors", 28_000, 0, "DEFERRED. 2-3 week domestic lead time is the mitigation."),
@@ -240,7 +245,10 @@ def main():
         for lbl, a, b, note in rows:
             if a != b:
                 if b == 0 and note.startswith("R1"):
-                    inst += a
+                    # Credit newly confirmed items at what we would have SPENT,
+                    # not at the original-programme price, so this agrees with
+                    # the university workbook instead of quietly diverging.
+                    inst += CONFIRMED_HELD.get(lbl, a)
                     tag = "  <-- institutional"
                 elif b == 0:
                     tag = "  <-- deferred/removed"
