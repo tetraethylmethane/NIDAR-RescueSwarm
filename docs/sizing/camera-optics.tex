@@ -25,100 +25,156 @@
 \begin{document}
 
 \begin{center}
-{\LARGE\bfseries The camera, worked through}\\[5pt]
-{\large\color{dim} What a 6\,mm lens on an IMX477 actually sees,
-and why the sizing chapter disagrees}\\[10pt]
+{\LARGE\bfseries What the detector actually sees}\\[5pt]
+{\large\color{dim} Pixels on target through the pipeline, and a correction
+to the figure in the proposal}\\[10pt]
 {\color{rule}\rule{0.82\linewidth}{0.6pt}}\\[7pt]
-{\small Swastik Kumar \quad$\cdot$\quad Project RescueSwarm, NIDAR 2026--27
+{\small Swastik Kumar \quad$\cdot$\quad for the perception lead \quad$\cdot$\quad RescueSwarm, NIDAR 2026--27
 Track 1 \quad$\cdot$\quad 19 August 2026}
 \end{center}
 
 \vspace{6pt}
 
-\section{Why I went back to this}
+\section{What the model actually receives}
 
-We are buying an Arducam IMX477 with a 6\,mm S-mount lens, and I wanted the
-line spacing and sweep times to come out of the sensor rather than out of a
-table someone had already written. Working it through, the two do not agree,
-and the reason is worth writing down.
+You asked what the detector is being handed, so this starts there and works
+backwards to the optics. Short version: the numbers in
+\texttt{sizing-calculations.md}~\S8 were computed for a different sensor than
+the one we are buying, and the difference matters more to you than to anyone
+else on the team.
 
-Sony specifies the IMX477 as a type 1/2.3 sensor: $4056\times3040$ pixels on a
-\textbf{1.55\,\textmu m} pitch, 7.9\,mm across the diagonal. Our own
-\texttt{sizing-calculations.md}~\S8 gives the baseline as ``1/1.8\,in,
-$4056\times3040$, $7.4\times5.6$\,mm, \textbf{1.82\,\textmu m} pitch''.
+We are buying an \textbf{Arducam IMX477} with a 6\,mm S-mount lens. Sony
+specifies it as type 1/2.3: $4056\times3040$ on a \textbf{1.55\,\textmu m}
+pitch. The sizing chapter assumes ``1/1.8\,in\ldots\ \textbf{1.82\,\textmu m}
+pitch''. Same pixel \emph{count}, different pixel \emph{size} --- so
+resolution on target is not what the chapter says.
 
-\textcolor{warn}{The pixel \emph{count} is identical and the pixel
-\emph{size} is not.} Every optical quantity we depend on scales with pitch,
-so the field of view, ground sample distance, swath, line spacing and sweep
-time in that chapter all describe a camera we are not buying. What follows
-derives both, so the difference can be seen rather than argued about.
-
-\section{From three numbers to a field of view}
-
-Everything here comes from the pixel count, the pixel pitch and the focal
-length. The active area is simply count times pitch,
-\[
-w = N_x\,p = 4056 \times 1.55\,\text{\textmu m} = 6.287\,\text{mm},
-\qquad
-h = N_y\,p = 4.712\,\text{mm},
-\]
-giving a 7.86\,mm diagonal, which is the type 1/2.3 format Sony
-quotes. The lens forms that image at its focal length, so each half-field is
-the arctangent of half the sensor over $f$. There is no small-angle
-approximation in this and there does not need to be:
-\[
-\theta = 2\arctan\!\left(\frac{s}{2f}\right)
-\qquad\Longrightarrow\qquad
-\text{HFOV} = 55.3^\circ,
-\quad
-\text{VFOV} = 42.9^\circ,
-\quad
-\text{DFOV} = 66.4^\circ .
-\]
-A single pixel subtends 14.80\,mdeg. That number returns in
-\S5, because it is what decides how long the shutter may stay open.
-
-\section{Ground sample distance, footprint and spacing}
-
-The sensor and the ground form similar triangles about the lens, which gives
-the ground sample distance directly, and the swath follows from the field of
-view. Line spacing is the swath less the sidelap:
-\[
-\text{GSD} = \frac{p\,H}{f},
-\qquad
-W = 2H\tan\frac{\text{HFOV}}{2},
-\qquad
-S = W\,(1-\ell), \quad \ell = 30\,\%.
-\]
-
-Sidelap is not conservatism for its own sake. Attitude wobble, altitude error
-and lens distortion all move the real footprint around between one pass and the
-next, and a gap between passes is not a cosmetic defect --- it is a survivor
-nobody flew over.
+Here is the target through the pipeline, at the 40\,m search altitude, taking a
+supine adult as 1.7\,m by 0.5\,m:
 
 \begin{center}
-\begin{tabular}{r r r c r r r}
+\begin{tabular}{l r c r r l}
 \toprule
-\textbf{AGL} & \textbf{GSD} & \textbf{Survivor} & \textbf{Footprint} &
-\textbf{Spacing} & \textbf{Lines} & \textbf{Sweep} \\
-(m) & (cm/px) & (px) & (m) & (m) & & (s) \\
+ & \textbf{GSD} & \textbf{Target} & \textbf{Area} &
+\textbf{Of a 640 tile} & \textbf{COCO class} \\
+ & (cm/px) & (px) & (px$^2$) & & \\
 \midrule
-30 & 0.78 & 219 & 31.4$\,\times\,$23.6 & 22.0 & 9 & 253 \\
-\bfseries 40 & \bfseries 1.03 & \bfseries 165 & \bfseries 41.9$\,\times\,$31.4 & \bfseries 29.3 & \bfseries 7 & \bfseries 196 \\
-60 & 1.55 & 110 & 62.9$\,\times\,$47.1 & 44.0 & 5 & 138 \\
+Sensor, native & 1.03 & 165$\,\times\,$48 & 7960 & 26\,\% & medium \\
+After $2\times$ downsample & 2.07 & 82$\,\times\,$24 & 1990 & 13\,\% & medium \\
+Chapter figure, 60\,m, $2\times$ & 3.64 & 47$\,\times\,$14 & 642 & 7\,\% & \textcolor{warn}{\textbf{small}} \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-Transect counts and sweep times take the 10\,ha area divided
-3 ways, treat each sub-region as square, and fly it at
-8\,m/s with six seconds spent in each turn.
+\textbf{The last row is the one to look at.} The 47\,px figure currently in
+the proposal puts the target at 642\,px$^2$, which is
+\emph{below} COCO's small-object threshold of 1024\,px$^2$. On the
+sensor we are actually buying, at 40\,m, it sits at
+1990\,px$^2$ --- comfortably in the \emph{medium} band.
 
-\section{What changed when the sensor changed}
+That is not a cosmetic difference. Any published recall figure you benchmark
+against reports AP by that size class, and small-object AP is routinely a large
+fraction below medium on the same model. If we quote the 47\,px number we are
+implicitly promising small-object performance we do not have to accept.
 
-Comparing the two at the 40\,m search altitude shows the substitution is not
-simply better or worse. It is a trade, and it happens to be one nobody made
-deliberately.
+\section{Where those numbers come from}
+
+Everything follows from three quantities: pixel count, pixel pitch, focal
+length. Active area is count times pitch,
+\[
+w = 4056 \times 1.55\,\text{\textmu m} = 6.287\,\text{mm},
+\qquad
+h = 4.712\,\text{mm},
+\qquad
+d = 7.86\,\text{mm},
+\]
+which is the type 1/2.3 format Sony quotes. Half-fields are arctangents of half
+the sensor over $f$, exactly, with no small-angle approximation:
+\[
+\theta = 2\arctan\!\left(\frac{s}{2f}\right)
+\;\Longrightarrow\;
+\text{HFOV} = 55.3^\circ,\quad
+\text{VFOV} = 42.9^\circ,\quad
+\text{DFOV} = 66.4^\circ .
+\]
+Sensor and ground are similar triangles about the lens, so ground sample
+distance is just
+\[
+\text{GSD} = \frac{p\,H}{f}
+= \frac{1.55\,\text{\textmu m} \times 40\,\text{m}}{6\,\text{mm}}
+= 1.03\,\text{cm/px} .
+\]
+One pixel subtends 14.80\,mdeg, which is what sets the blur
+tolerance in~\S4.
+
+\begin{center}
+\begin{tabular}{r r r c r}
+\toprule
+\textbf{AGL} (m) & \textbf{GSD} (cm/px) & \textbf{Target} (px) &
+\textbf{Footprint} (m) & \textbf{Frames/target} \\
+\midrule
+30 & 0.78 & 219 & 31.4$\,\times\,$23.6 & 6 \\
+40 & 1.03 & 165 & 41.9$\,\times\,$31.4 & 8 \\
+60 & 1.55 & 110 & 62.9$\,\times\,$47.1 & 12 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Tiling, and one property worth checking}
+
+Tile count depends on pixel count, which did not change, so the inference
+budget is untouched: at $2\times$ downsample and 2\,Hz we still get
+12 tiles per frame and 24 inferences per second.
+
+\begin{center}
+\begin{tabular}{c c r r r r}
+\toprule
+\textbf{Downsample} & \textbf{Frame} & \textbf{Tiles} &
+\textbf{Inferences/s} & \textbf{GSD} (cm/px) & \textbf{Target} (px) \\
+\midrule
+$1\times$ & 4056$\,\times\,$3040 & 48 & 240 & 1.03 & 165 \\
+$2\times$ & 2028$\,\times\,$1520 & 12 & 24 & 2.07 & 82 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The property worth checking is the overlap. At 640\,px tiles and
+20\,\% overlap the shared margin is
+128\,px, and the target at 40\,m is
+82\,px along its long axis. \textbf{The overlap is wider than
+the target}, so no survivor can be cut by a tile boundary without appearing
+whole in the neighbouring tile. That holds at every altitude in the table
+above, and it is the reason the overlap is 20\,\% rather than something
+smaller.
+
+\section{Blur, which turns out not to bind}
+
+Forward motion smears the image by $v\,t_{\text{exp}}$ on the ground, so
+holding smear under one pixel means $t_{\text{exp}} \le \text{GSD}/v$. At
+8\,m/s:
+
+\begin{center}
+\begin{tabular}{r r l}
+\toprule
+\textbf{AGL} (m) & \textbf{Longest exposure} (ms) & \textbf{Shutter} \\
+\midrule
+30 & 0.97 & 1/1032 \\
+40 & 1.29 & 1/774 \\
+60 & 1.94 & 1/516 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\texttt{SYS-45} already mandates $1/1000$\,s or faster, which clears every
+altitude. In Indian daylight that pushes ISO down rather than exposure up, so
+it costs nothing in noise either. Blur is not what will limit recall; target
+size is.
+
+\section{What it costs the flight side}
+
+For completeness, since the same substitution moves the coverage numbers in the
+opposite direction. A smaller pixel behind the same lens narrows the field and
+finens the GSD in the same proportion, so at 40\,m:
 
 \begin{center}
 \begin{tabular}{l r r r}
@@ -136,70 +192,26 @@ Sweep time per drone, s & 195.75 & 166.93 & +17.3 \\
 \end{tabular}
 \end{center}
 
-A smaller pixel behind the same lens narrows the field and finens the ground
-sample distance in exactly the same proportion, so the two effects are the same
-number wearing different signs. \textbf{We gain
-17\,\% more pixels on a survivor and pay 17\,\% more
-sweep time} --- seven transects per drone instead of six.
+We gain 17\,\% more pixels on target and pay 17\,\% more
+sweep time --- seven transects per drone instead of six. Against 250 marks for
+detection and an 1800\,s budget I think that favours the sensor we are buying,
+but it was never a decision anyone made.
 
-Set against 250 marks for detection and an 1800\,s mission budget, I think that
-trade favours the part we are actually buying. The uncomfortable part is that
-it was never chosen: the figures we have been quoting describe neither camera.
+\section{What I need from you}
 
-\section{Two things this settles}
+Two things, and neither is urgent this week.
 
-\textbf{Motion blur is not the constraint we half-expected.} Forward motion
-smears the image by $v\,t_{\text{exp}}$ on the ground, so holding that under a
-single pixel means $t_{\text{exp}} \le \text{GSD}/v$:
+First, if you have benchmarked anything on HERIDAL or SARD, tell me which size
+band the reported AP came from. If the published number was measured on
+medium-class targets then our 40\,m figure is comparable and the 47\,px one was
+never going to be.
 
-\begin{center}
-\begin{tabular}{r r l}
-\toprule
-\textbf{AGL} (m) & \textbf{Longest exposure} (ms) & \textbf{Shutter} \\
-\midrule
-30 & 0.97 & 1/1032 \\
-40 & 1.29 & 1/774 \\
-60 & 1.94 & 1/516 \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\texttt{SYS-45} already requires $1/1000$\,s or faster, which clears every
-altitude with room to spare. In Indian daylight that requirement drives ISO
-down rather than exposure up, so it costs us nothing.
-
-\textbf{The tiling budget survives, but one published figure does not.} Tile
-count follows pixel count, which did not change, so the inference load is
-untouched:
-
-\begin{center}
-\begin{tabular}{c c r r r r}
-\toprule
-\textbf{Downsample} & \textbf{Frame} & \textbf{Tiles} &
-\textbf{Inferences/s} & \textbf{GSD} (cm/px) & \textbf{Survivor} (px) \\
-\midrule
-$1\times$ & 4056$\,\times\,$3040 & 48 & 240 & 1.03 & 165 \\
-$2\times$ & 2028$\,\times\,$1520 & 12 & 24 & 2.07 & 82 \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-At $2\times$ downsampling and 2\,Hz we still get 24 inferences per second. But
-the survivor in that downsampled frame is \textbf{82\,px}, not the
-47\,px the proposal currently states --- that figure was computed at 60\,m, on
-the other sensor, and both of those need correcting together.
-
-\section{What I would do about it}
-
-Nothing here is an argument for changing the camera. The IMX477 is the better
-of the two where the marks are, and it is already on order.
-
-It is an argument for re-baselining the documents onto the part we are buying:
-the GSD table, the swath and line-spacing figures, the sweep times, and the
-survivor pixel count in the perception section. That work runs into the
-unresolved question of whether we survey at 40\,m or 60\,m, because both move
-the same quantities, and I would rather settle the two in one pass than do the
-arithmetic twice.
+Second, the survey altitude is unresolved --- the design point says 60\,m, every
+simulation we have flown says 40\,m, and the sizing chapter proposes 40\,m
+pending a recall measurement. That measurement is yours. If you can say what
+recall looks like at 82\,px against
+47\,px, the altitude decision follows from it rather than from
+argument, and I can re-baseline the documents once instead of twice.
 
 \vfill
 {\footnotesize\color{dim}

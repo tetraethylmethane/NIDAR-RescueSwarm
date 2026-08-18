@@ -33,6 +33,11 @@ MODELLED = {                       # what sizing-calculations.md 8 assumed
 }
 
 PERSON_M = 1.7                     # supine adult, long axis
+PERSON_W = 0.5                     # supine adult, across the shoulders
+# COCO area thresholds, which is how detection papers report AP and therefore
+# how any published recall number we compare against was measured.
+COCO_SMALL_PX2 = 32 ** 2           # below this an object is "small"
+COCO_MED_PX2 = 96 ** 2             # below this it is "medium"
 SIDELAP = 0.30                     # sizing 8
 AREA_HA = 10.0                     # rulebook: 10 hectare search area
 N_DRONES = 3
