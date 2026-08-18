@@ -28,8 +28,17 @@ from __future__ import annotations
 AIRCRAFT = [
     ("Flight controller",      1, 22_600, "KEEP",
      "Holybro Pixhawk 6C Mini. Dual IMU, Pixhawk standard, ArduPilot native."),
+    ("Companion computer",     1,  8_000, "KEEP",
+     "Raspberry Pi 5 8 GB. THE HOST THE AUTONOMY RUNS ON -- Linux, ROS 2, the "
+     "coverage planner, MAVLink routing, the mesh link and the delivery logic. "
+     "It was missing: the accelerator below is a Pi AI HAT+, which communicates "
+     "over the Pi 5's PCIe and is an M.2 card with nothing to plug into "
+     "without it, and the camera is a CSI module with nothing to connect to. "
+     "The verified BOM carried a 55,000 module WITH an integrated host; the "
+     "cost pass swapped in a 20,000 accelerator and did not put the host back."),
     ("AI accelerator",         1, 20_000, "KEEP",
-     "26 TOPS. The specification floor, not a preference."),
+     "26 TOPS. The specification floor, not a preference. Pi AI HAT+ "
+     "(Hailo-8) -- an NPU, not a computer; needs the host above."),
     ("GNSS RTK primary",       1, 18_000, "KEEP",
      "No cheaper RTK-capable part exists. Governs 125 of 200 geotag points."),
     ("Motors",                 4,  4_500, "hobby",

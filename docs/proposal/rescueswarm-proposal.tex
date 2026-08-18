@@ -87,7 +87,7 @@ market-verified cost basis, and a phased work plan. I am explicit throughout
 about which figures are measured, which are modelled, and which remain assumed;
 no aircraft has yet flown, and the proposal is structured so that a reviewer can
 distinguish demonstrated capability from projected capability without reading
-the source material. The requested funding is \lakh{7.38} over an eight-month build.
+the source material. The requested funding is \lakh{7.65} over an eight-month build.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -983,7 +983,17 @@ takes the request from \lakh{10.12} to \lakh{8.24}. A later pass against the
 institute's existing equipment removed a further \inr{14\,500} of ground and
 test items that turned out to be held on campus. A further review then deferred
 the remaining spares, the relief kits and the ground-truth apparatus, giving the
-\lakh{7.38} asked
+\lakh{7.65} asked for here.
+
+\textbf{One line then had to move the other way, and it is the one that matters
+most.} Reviewing the compute architecture showed the bill of materials bought a
+camera and a neural accelerator and no computer to run them. The accelerator is
+a host-attached module communicating over the single-board computer's PCIe bus,
+and the camera is a CSI module; neither functions without that host. The
+fully specified variant carried an edge module with an integrated processor, and
+the cost reduction replaced it with the accelerator alone without restoring the
+host. \inr{8\,000} per aircraft has been added. This is not a change of scope --
+the aircraft could not have run its detection pipeline as previously costed
 for here. \textbf{Where a line is
 classified ex-GST on judgement rather than on a document, being wrong makes the
 request \emph{smaller}, not larger} --- the error runs in the sponsor's
@@ -1011,14 +1021,14 @@ fully specified reference}
 \textbf{Subsystem} & \textbf{INR} & \textbf{INR} & \textbf{Ind.} & \textbf{Driver} \\
 \midrule
 Avionics            & 85\,400 & 49\,100 & 32\,\% & Autopilot, RTK \\
-Compute, percep.\ & 79\,500 & 31\,100 & 10\,\% & Inference rate \\
+Compute, percep.\ & 79\,500 & 39\,100 & 10\,\% & Inference rate \\
 Propulsion          & 57\,396 & 30\,600 & 21\,\% & Thrust at MTOW \\
 Power               & 24\,500 & 23\,500 & 60\,\% & 292\,Wh reserve \\
 Structure           & 20\,550 & 13\,000 & 85\,\% & Arm root moment \\
 Communications  & 17\,800 &  6\,000 & 30\,\% & Three feeds \\
 Payload system      &  5\,400 &  4\,500 & 90\,\% & Four stations \\
 \midrule
-\textbf{Total} & \textbf{2\,90\,546} & \textbf{1\,57\,800} & \textbf{36\,\%} & \\
+\textbf{Total} & \textbf{2\,90\,546} & \textbf{1\,65\,800} & \textbf{36\,\%} & \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1177,7 +1187,7 @@ An earlier version of this budget costed a development \emph{programme} at
 \lakh{28.74}. That figure bought laboratory equipment, computing and a purchased
 field-data campaign. On review, none of those are what a competition entry
 needs, and most of the equipment is already held by the host institution. The
-ask has been recosted accordingly and is now \textbf{\lakh{7.38}}, a reduction
+ask has been recosted accordingly and is now \textbf{\lakh{7.65}}, a reduction
 of 71\,\%. Table~\ref{tab:programme} gives the breakdown.
 
 \begin{table}[t]
@@ -1189,18 +1199,18 @@ of 71\,\%. Table~\ref{tab:programme} gives the breakdown.
 \toprule
 \textbf{Element} & \textbf{Was} & \textbf{Ask} \\
 \midrule
-Air vehicles (3) and payload           & 8.31\,L & 4.73\,L \\
+Air vehicles (3) and payload           & 8.31\,L & 4.97\,L \\
 Ground segment                         & 3.88\,L & 0.56\,L \\
 Test equipment                         & 2.26\,L & 0.34\,L \\
 Spares and consumables                 & 2.73\,L & 0.13\,L \\
 Regulatory                             & 1.75\,L & 0.05\,L \\
 \midrule
-Subtotal                               & 18.93\,L & 5.82\,L \\
+Subtotal                               & 18.93\,L & 6.06\,L \\
 Duty and freight, on ex-tax lines only  &          & 0.24\,L \\
 GST, on ex-tax lines only               &          & 0.35\,L \\
-Contingency, 15\,\%                     &          & 0.96\,L \\
+Contingency, 15\,\%                     &          & 1.00\,L \\
 \midrule
-\textbf{Total requested}                &          & \textbf{7.38\,L} \\
+\textbf{Total requested}                &          & \textbf{7.65\,L} \\
 \bottomrule
 \end{tabular}
 
@@ -1378,7 +1388,7 @@ give the schedule.
 \toprule
 \textbf{T} & \textbf{Months / phases} & \textbf{INR} & \textbf{Release condition} \\
 \midrule
-1 & 1--2 \quad P1--P4  & 2.50\,L & On award. Design point frozen; models regenerate \\
+1 & 1--2 \quad P1--P4  & 2.77\,L & On award. Design point frozen; models regenerate \\
 \addlinespace
 2 & 3--4 \quad P5      & 2.24\,L & P1--P4 complete: ground segment demonstrated, and link-loss and low-battery behaviour verified by fault injection \\
 \addlinespace
@@ -1386,7 +1396,7 @@ give the schedule.
 \addlinespace
 4 & 7--8 \quad P9--P10 & 1.04\,L & Perception and delivery trials reported with measured figures \\
 \midrule
-  & \textbf{Total}     & \textbf{7.38\,L} & \\
+  & \textbf{Total}     & \textbf{7.65\,L} & \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1666,7 +1676,7 @@ remains is the part that requires funding: to build the aircraft, fly them, and
 replace the modelled and assumed quantities in Section~\ref{sec:evidence} with
 measured ones.
 
-I am asking for \lakh{7.38} to do that, and I have tried throughout this
+I am asking for \lakh{7.65} to do that, and I have tried throughout this
 document to make every number in it checkable.
 
 %=============================================================================
