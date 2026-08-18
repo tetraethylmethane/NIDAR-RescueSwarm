@@ -256,6 +256,29 @@ against.
 
 The proposal uses only the reproducible figures.
 
+## The proposal flies at 60 m; the simulation flies at 40 m
+
+Adding the processing-pipeline section surfaced this. The design point table
+says **Survey altitude 60 m AGL**, the geolocation budget is computed at 60 m,
+and Fig. 5 draws the sweep as "60 m AGL". But every committed recording was
+flown at **40 m** — `fly_and_record.py` passes `altitude_m=40.0`, the telemetry
+carries `search_alt: 40.0`, and the median cruise altitude is 40.6 m.
+
+So the flight evidence in Section VI does not describe the aircraft in Table I.
+
+**Neither number is obviously wrong, which is why this is recorded rather than
+patched.** `docs/sizing/configuration-trade.md` §5.3 explicitly *proposes*
+re-baselining to 40 m — it buys 50 % more pixels on target (140 px against
+93 px) for 56 s of an 1800 s budget — but marks it **PROPOSED pending a P7
+recall-vs-GSD measurement**, not adopted. The simulation harness appears to
+have moved to the proposed value while the proposal stayed on the old one.
+
+Changing it is not a one-line edit. Survey altitude sets swath, which sets line
+spacing, transect count, sweep time and the whole geolocation error budget, and
+the perception subsection's 2 cm/px → 85 px → 47 px chain is computed at 60 m.
+**Whichever way this resolves, Table I, Section IV-C, Section IV-D and Fig. 5
+have to move together.**
+
 ## Open issues a reader should know about
 
 **The design point is contested.** This document uses the **18 in / 6.36 kg**

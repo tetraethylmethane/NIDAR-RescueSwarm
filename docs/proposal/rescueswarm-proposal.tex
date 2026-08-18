@@ -530,6 +530,94 @@ frames per second, and the lower end of that range leaves no margin. Hardware
 benchmarking before design freeze is accordingly a funded, scheduled activity
 rather than an assumption.
 
+\subsection{Onboard processing pipeline}
+\label{sec:pipeline}
+
+Fig.~\ref{fig:pipeline} shows what runs where. The division of labour is the
+part worth stating plainly, because it is what keeps the search phase
+deterministic: \textbf{the autopilot owns the flight, and the companion
+computer never touches it during the sweep.} Transects are uploaded as an
+ordinary \textsc{auto} mission during setup, and the aircraft would fly the
+entire search pattern with the companion powered off. The companion observes,
+detects, and takes control only for a delivery excursion --- a bounded
+\textsc{guided} interruption that returns the aircraft to the same
+\textsc{auto} mission afterwards.
+
+That boundary matters for two reasons. A companion crash or thermal throttle
+costs detections, not control. And the search path is reproducible from the
+mission file alone, which is what makes the coverage and deconfliction results
+in Section~\ref{sec:evidence} checkable rather than emergent.
+
+\begin{figure}[t]
+\centering
+\resizebox{0.92\columnwidth}{!}{%
+\begin{tikzpicture}[node distance=3.2mm]
+
+\node[blk, fill=black!4] (fc) {\textbf{Flight controller} --- flies the
+\textsc{auto} mission\\no custom flight code in the search phase};
+
+\node[blk, below=6mm of fc] (cap) {Capture, gated on body rate
+$<15^\circ$/s\\(turn arcs suppressed: the ground-plane\\assumption is worst
+there and imagery smears)};
+\node[blk, below=of cap] (ds) {$2\times$ downsample};
+\node[blk, below=of ds] (tile) {Tile, $640\times640$, 20\,\% overlap\\12 tiles
+per frame};
+\node[blk, below=of tile] (det) {Detector on the accelerator\\24 inferences/s
+at 2\,Hz};
+\node[dec, below=5mm of det] (hit) {detection?};
+\node[blk, below=5mm of hit] (ray) {Ray--ground intersection\\near-nadir
+detections only};
+\node[blk, below=of ray] (fuse) {Multi-frame fusion\\$\geq$12 looks per target,
+best fix wins};
+\node[blk, below=of fuse] (claim) {Mesh broadcast and claim\\lowest ID breaks a
+tie};
+\node[blk, below=of claim] (del) {\textsc{guided} excursion: descend,\\null
+groundspeed, release, resume};
+
+\node[blk, right=9mm of fuse, align=center] (pub) {5\,Hz state to the\\ground
+station};
+
+\draw[flow] (fc) -- node[lbl, right] {mission file, uploaded at setup} (cap);
+\draw[flow] (cap) -- (ds);
+\draw[flow] (ds) -- (tile);
+\draw[flow] (tile) -- (det);
+\draw[flow] (det) -- (hit);
+\draw[flow] (hit) -- node[lbl, right, pos=0.45] {yes} (ray);
+\draw[flow] (ray) -- (fuse);
+\draw[flow] (fuse) -- (claim);
+\draw[flow] (claim) -- (del);
+\draw[flow] (hit.west) -- ++(-7mm,0) |- (cap.west)
+  node[lbl, pos=0.25, left] {no};
+\draw[dflow] (fuse.east) -- (pub.west);
+\draw[flow] (del.east) -- ++(12mm,0) |- node[lbl, pos=0.25, right]
+  {resumes \textsc{auto}} (fc.east);
+
+\end{tikzpicture}}
+\caption{Onboard processing. The autopilot flies the search pattern
+unaided; the companion computer detects, geolocates and claims survivors, and
+interrupts the mission only to deliver. Detection runs alongside the sweep and
+never gates it --- a missed frame costs a look, not a waypoint.}
+\label{fig:pipeline}
+\end{figure}
+
+\emph{Detection does not gate flight.} Inference runs on captured frames while
+the aircraft continues its transect. Losing frames to a thermal event or a slow
+model costs looks at a target, and the fusion requirement of twelve looks per
+pass carries enough redundancy to absorb some of that; it does not stall the
+sweep or extend the mission.
+
+\emph{The accelerator is a substitution the inference budget has not yet been
+re-run against.} The tiling arithmetic above was derived against a
+Jetson-class module, whose published throughput for comparable models spans
+roughly 24 to 41 frames per second. The adopted configuration
+(Section~\ref{sec:budget}) instead pairs a 26-TOPS accelerator with a
+single-board host, which is a different architecture with a different
+throughput curve and a lower sustained power draw. The 24-inferences-per-second
+requirement is therefore stated against hardware that has not been benchmarked,
+and P5 benchmarking on the parts actually purchased is the gate before design
+freeze. Table~\ref{tab:risk} carries this rather than the text implying the
+figure is settled.
+
 \subsection{Communications}
 
 Regulatory rules require the ground station to display a live camera feed from
