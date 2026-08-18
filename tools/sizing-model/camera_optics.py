@@ -166,3 +166,56 @@ if __name__ == "__main__":
         print(f"  {ds}x downsample @ {rate:.0f} Hz: {w}x{h}, "
               f"{tiles} tiles of 640 px, {tiles*rate:.0f} inferences/s, "
               f"GSD {gsd:.2f} cm/px, person {PERSON_M/(gsd/100):.0f} px")
+
+
+# --- optics and sampling the perception side needs, beyond GSD --------------
+APERTURE_N = 2.8                   # f-number of the 6 mm S-mount
+COC_PX = 2.0                       # circle of confusion, in pixels
+READOUT_MS = 25.0                  # IMX477 full-frame rolling readout
+BYTES_PER_PX = 1.5                 # 12-bit raw packed
+JPEG_MB = 2.0                      # typical compressed frame
+FUSION_MIN_FRAMES = 12             # SYS-46
+
+
+def hyperfocal_m(c):
+    """Focus beyond this and everything to infinity is acceptably sharp.
+
+    H = f^2 / (N * coc) + f, with the circle of confusion taken as a couple of
+    pixels rather than a film-era constant -- the sensor is what resolves.
+    """
+    f_mm = c["f_mm"]
+    coc_mm = COC_PX * c["pitch_um"] / 1000.0
+    return (f_mm ** 2 / (APERTURE_N * coc_mm) + f_mm) / 1000.0
+
+
+def rolling_shutter(c, h_m, speed_ms):
+    """Top-to-bottom skew from reading the frame out one row at a time."""
+    gsd_m = (c["pitch_um"] / 1e6) * h_m / (c["f_mm"] / 1000.0)
+    shift_m = speed_ms * READOUT_MS / 1000.0
+    return {"shift_m": shift_m, "shift_px": shift_m / gsd_m,
+            # a target only spans part of the frame, so it sees a fraction
+            "within_target_px": (PERSON_M / gsd_m) / c["px_h"]
+                                * (shift_m / gsd_m)}
+
+
+def looks_per_target(c, h_m, rate_hz, speed_ms=None):
+    """How many frames a stationary target appears in, on one pass."""
+    speed_ms = GROUNDSPEED if speed_ms is None else speed_ms
+    along = at_altitude(c, h_m)["swath_h"]
+    dwell = along / speed_ms
+    return {"along_m": along, "dwell_s": dwell, "frames": dwell * rate_hz,
+            "forward_overlap": 1.0 - (speed_ms / rate_hz) / along}
+
+
+def rate_for_fusion(c, h_m, speed_ms=None, n=FUSION_MIN_FRAMES):
+    """Capture rate needed to satisfy the fusion look count."""
+    speed_ms = GROUNDSPEED if speed_ms is None else speed_ms
+    return n / (at_altitude(c, h_m)["swath_h"] / speed_ms)
+
+
+def data_volume(c, rate_hz, seconds):
+    """Raw and compressed imagery produced by one aircraft in one sweep."""
+    raw_mb = c["px_w"] * c["px_h"] * BYTES_PER_PX / 1e6
+    return {"raw_mb_frame": raw_mb, "frames": rate_hz * seconds,
+            "raw_gb": raw_mb * rate_hz * seconds / 1000.0,
+            "jpeg_gb": JPEG_MB * rate_hz * seconds / 1000.0}

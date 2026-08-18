@@ -20,7 +20,11 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from camera_optics import (ALTITUDES, AREA_HA, COCO_MED_PX2,  # noqa: E402
                            COCO_SMALL_PX2, GROUNDSPEED, MODELLED, N_DRONES,
                            PERSON_M, PERSON_W, SIDELAP, SPECIFIED,
-                           at_altitude, blur_limit, optics)
+                           at_altitude, blur_limit, data_volume,
+                           hyperfocal_m, looks_per_target, optics,
+                           rate_for_fusion, rolling_shutter,
+                           APERTURE_N, COC_PX, FUSION_MIN_FRAMES,
+                           JPEG_MB, READOUT_MS)
 
 
 TILE_PX, TILE_OVERLAP = 640, 0.20
@@ -105,6 +109,35 @@ alt_rows_short = "\n".join(
 _w2, _h2 = SPECIFIED["px_w"] // 2, SPECIFIED["px_h"] // 2
 tiles_ds = math.ceil(_w2 / (640 * 0.8)) * math.ceil(_h2 / (640 * 0.8))
 inf_ds = tiles_ds * 2.0
+
+
+hyp = hyperfocal_m(SPECIFIED)
+rs40 = rolling_shutter(SPECIFIED, 40.0, GROUNDSPEED)
+looks_rows = []
+for h in ALTITUDES:
+    for rate in (2.0, 3.0, 5.0):
+        L = looks_per_target(SPECIFIED, h, rate)
+        ok = ("\\textcolor{warn}{\\textbf{%.1f}}" % L["frames"]
+              if L["frames"] < FUSION_MIN_FRAMES else "%.1f" % L["frames"])
+        looks_rows.append(f"{h:.0f} & {L['along_m']:.1f} & {L['dwell_s']:.2f} & "
+                          f"{rate:.0f} & {ok} & {L['forward_overlap']*100:.0f} \\\\")
+looks_rows = "\n".join(looks_rows)
+need_hz = rate_for_fusion(SPECIFIED, 40.0)
+vol = data_volume(SPECIFIED, 2.0, s40["sweep_s"])
+
+
+looks2 = looks_per_target(SPECIFIED, 40.0, 2.0)["frames"]
+along40 = looks_per_target(SPECIFIED, 40.0, 2.0)["along_m"]
+shortfall = (1 - looks2 / FUSION_MIN_FRAMES) * 100
+need_inf = need_hz * tiles_ds
+FOCAL = SPECIFIED["f_mm"]
+coc_mm = COC_PX * SPECIFIED["pitch_um"] / 1000.0
+hyp_half = hyp / 2
+rs_shift, rs_px = rs40["shift_m"], rs40["shift_px"]
+rs_in, rs_shift_cm = rs40["within_target_px"], rs40["shift_m"] * 100
+raw_mb, frames = vol["raw_mb_frame"], vol["frames"]
+raw_gb, jpeg_gb = vol["raw_gb"], vol["jpeg_gb"]
+sweep_s = s40["sweep_s"]
 
 det_gain = (s40["person_px"] / m40["person_px"] - 1) * 100
 cov_cost = (s40["sweep_s"] / m40["sweep_s"] - 1) * 100
@@ -274,6 +307,99 @@ holding smear under one pixel means $t_{{\text{{exp}}}} \le \text{{GSD}}/v$. At
 altitude. In Indian daylight that pushes ISO down rather than exposure up, so
 it costs nothing in noise either. Blur is not what will limit recall; target
 size is.
+
+\section{{Sampling in time: how many looks the fusion gets}}
+
+This is the section I would read first, because it does not currently close.
+
+A target sits in frame for as long as the along-track footprint takes to pass
+over it. The along-track footprint is the vertical field of view projected on
+the ground, so
+\[
+D = 2H\tan\frac{{\text{{VFOV}}}}{{2}},
+\qquad
+t_{{\text{{dwell}}}} = \frac{{D}}{{v}},
+\qquad
+n_{{\text{{looks}}}} = t_{{\text{{dwell}}}}\, r ,
+\]
+for capture rate $r$ and ground speed $v = {GROUNDSPEED:.0f}$\,m/s. Forward
+overlap between consecutive frames is $1 - (v/r)/D$.
+
+\begin{{center}}
+\begin{{tabular}}{{r r r r r r}}
+\toprule
+\textbf{{AGL}} & \textbf{{Along-track}} & \textbf{{Dwell}} & \textbf{{Rate}} &
+\textbf{{Looks}} & \textbf{{Fwd overlap}} \\
+(m) & (m) & (s) & (Hz) & & (\%) \\
+\midrule
+{looks_rows}
+\bottomrule
+\end{{tabular}}
+\end{{center}}
+
+\texttt{{SYS-46}} requires at least {FUSION_MIN_FRAMES} looks per target per
+pass, so that multi-frame fusion has enough independent observations to
+converge. \textcolor{{warn}}{{\textbf{{At 40\,m and 2\,Hz we get
+{looks2:.1f}.}}}} That is a {shortfall:.0f}\,\% shortfall, and it is not a
+rounding argument.
+
+The figure quoted elsewhere --- about 14 looks at 2\,Hz --- is correct for
+60\,m on the wider sensor the sizing chapter assumed. On the sensor we are
+buying, at the altitude the simulations fly, it does not hold. Meeting
+{FUSION_MIN_FRAMES} looks at 40\,m needs
+\[
+r \ge \frac{{n\,v}}{{D}} = \frac{{{FUSION_MIN_FRAMES} \times {GROUNDSPEED:.0f}}}{{{along40:.1f}}}
+= {need_hz:.2f}\,\text{{Hz}},
+\]
+which at 12 tiles per frame is {need_inf:.0f} inferences per second rather than
+{inf_ds:.0f}. That is the trade in front of us: raise the capture rate and pay
+about half again in inference load, fly slower, fly higher, or relax the look
+count. I do not think it should be decided by whoever notices it last.
+
+\section{{Focus and rolling shutter}}
+
+Two things worth ruling in or out before they surprise us.
+
+\textbf{{Focus is not a concern.}} The hyperfocal distance for this lens is
+\[
+H_{{\text{{hyp}}}} = \frac{{f^2}}{{N\,c}} + f
+= \frac{{({FOCAL:.0f}\,\text{{mm}})^2}}{{{APERTURE_N} \times {coc_mm:.4f}\,\text{{mm}}}} + {FOCAL:.0f}\,\text{{mm}}
+= {hyp:.2f}\,\text{{m}},
+\]
+taking the circle of confusion as {COC_PX:.0f} pixels rather than a film-era
+constant, since the sensor is what resolves. Focused at that distance
+everything from about {hyp_half:.1f}\,m to infinity is acceptably sharp, and we
+operate at 30--60\,m. Nothing to do.
+
+\textbf{{Rolling shutter is small but not zero.}} The IMX477 reads out row by
+row over roughly {READOUT_MS:.0f}\,ms at full frame, during which the aircraft
+moves $v\,t_{{\text{{ro}}}} = {rs_shift:.2f}$\,m. Top to bottom that is
+\textbf{{{rs_px:.0f}\,px}} of skew at 40\,m.
+
+For detection this is negligible: a target spans only part of the frame height,
+so the skew \emph{{within}} one target is about {rs_in:.1f}\,px --- less than
+the blur budget. For geolocation it is not negligible, because a detection's
+row position now carries up to {rs_shift_cm:.0f}\,cm of along-track bias
+depending on where in the frame it landed. If the geotag pipeline does not
+already correct for readout row, that is a systematic error sitting inside our
+budget rather than a random one.
+
+\section{{Imagery volume}}
+
+Relevant because we still need training data, and because the storage line in
+the parts list has to hold a mission.
+
+One frame is $4056 \times 3040$ at 12-bit packed, so
+{raw_mb:.0f}\,MB raw or about {JPEG_MB:.0f}\,MB compressed. A single
+{sweep_s:.0f}\,s sweep at 2\,Hz is {frames:.0f} frames:
+\textbf{{{raw_gb:.1f}\,GB raw, {jpeg_gb:.1f}\,GB compressed}} per aircraft, per
+sweep. Three aircraft over a full mission with retries will comfortably fill
+the 256\,GB module if we record raw, and will not come close if we record JPEG.
+
+That is a decision worth making deliberately rather than discovering on the
+day: raw gives you the data to retrain against, JPEG gives you the endurance to
+keep recording. If we want a dataset out of the competition itself, raw on at
+least one aircraft is the way to get it.
 
 \section{{What it costs the flight side}}
 

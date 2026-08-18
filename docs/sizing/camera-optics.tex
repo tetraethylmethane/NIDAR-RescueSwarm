@@ -170,6 +170,107 @@ altitude. In Indian daylight that pushes ISO down rather than exposure up, so
 it costs nothing in noise either. Blur is not what will limit recall; target
 size is.
 
+\section{Sampling in time: how many looks the fusion gets}
+
+This is the section I would read first, because it does not currently close.
+
+A target sits in frame for as long as the along-track footprint takes to pass
+over it. The along-track footprint is the vertical field of view projected on
+the ground, so
+\[
+D = 2H\tan\frac{\text{VFOV}}{2},
+\qquad
+t_{\text{dwell}} = \frac{D}{v},
+\qquad
+n_{\text{looks}} = t_{\text{dwell}}\, r ,
+\]
+for capture rate $r$ and ground speed $v = 8$\,m/s. Forward
+overlap between consecutive frames is $1 - (v/r)/D$.
+
+\begin{center}
+\begin{tabular}{r r r r r r}
+\toprule
+\textbf{AGL} & \textbf{Along-track} & \textbf{Dwell} & \textbf{Rate} &
+\textbf{Looks} & \textbf{Fwd overlap} \\
+(m) & (m) & (s) & (Hz) & & (\%) \\
+\midrule
+30 & 23.6 & 2.94 & 2 & \textcolor{warn}{\textbf{5.9}} & 83 \\
+30 & 23.6 & 2.94 & 3 & \textcolor{warn}{\textbf{8.8}} & 89 \\
+30 & 23.6 & 2.94 & 5 & 14.7 & 93 \\
+40 & 31.4 & 3.93 & 2 & \textcolor{warn}{\textbf{7.9}} & 87 \\
+40 & 31.4 & 3.93 & 3 & \textcolor{warn}{\textbf{11.8}} & 92 \\
+40 & 31.4 & 3.93 & 5 & 19.6 & 95 \\
+60 & 47.1 & 5.89 & 2 & \textcolor{warn}{\textbf{11.8}} & 92 \\
+60 & 47.1 & 5.89 & 3 & 17.7 & 94 \\
+60 & 47.1 & 5.89 & 5 & 29.4 & 97 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\texttt{SYS-46} requires at least 12 looks per target per
+pass, so that multi-frame fusion has enough independent observations to
+converge. \textcolor{warn}{\textbf{At 40\,m and 2\,Hz we get
+7.9.}} That is a 35\,\% shortfall, and it is not a
+rounding argument.
+
+The figure quoted elsewhere --- about 14 looks at 2\,Hz --- is correct for
+60\,m on the wider sensor the sizing chapter assumed. On the sensor we are
+buying, at the altitude the simulations fly, it does not hold. Meeting
+12 looks at 40\,m needs
+\[
+r \ge \frac{n\,v}{D} = \frac{12 \times 8}{31.4}
+= 3.06\,\text{Hz},
+\]
+which at 12 tiles per frame is 37 inferences per second rather than
+24. That is the trade in front of us: raise the capture rate and pay
+about half again in inference load, fly slower, fly higher, or relax the look
+count. I do not think it should be decided by whoever notices it last.
+
+\section{Focus and rolling shutter}
+
+Two things worth ruling in or out before they surprise us.
+
+\textbf{Focus is not a concern.} The hyperfocal distance for this lens is
+\[
+H_{\text{hyp}} = \frac{f^2}{N\,c} + f
+= \frac{(6\,\text{mm})^2}{2.8 \times 0.0031\,\text{mm}} + 6\,\text{mm}
+= 4.15\,\text{m},
+\]
+taking the circle of confusion as 2 pixels rather than a film-era
+constant, since the sensor is what resolves. Focused at that distance
+everything from about 2.1\,m to infinity is acceptably sharp, and we
+operate at 30--60\,m. Nothing to do.
+
+\textbf{Rolling shutter is small but not zero.} The IMX477 reads out row by
+row over roughly 25\,ms at full frame, during which the aircraft
+moves $v\,t_{\text{ro}} = 0.20$\,m. Top to bottom that is
+\textbf{19\,px} of skew at 40\,m.
+
+For detection this is negligible: a target spans only part of the frame height,
+so the skew \emph{within} one target is about 1.0\,px --- less than
+the blur budget. For geolocation it is not negligible, because a detection's
+row position now carries up to 20\,cm of along-track bias
+depending on where in the frame it landed. If the geotag pipeline does not
+already correct for readout row, that is a systematic error sitting inside our
+budget rather than a random one.
+
+\section{Imagery volume}
+
+Relevant because we still need training data, and because the storage line in
+the parts list has to hold a mission.
+
+One frame is $4056 \times 3040$ at 12-bit packed, so
+18\,MB raw or about 2\,MB compressed. A single
+196\,s sweep at 2\,Hz is 392 frames:
+\textbf{7.2\,GB raw, 0.8\,GB compressed} per aircraft, per
+sweep. Three aircraft over a full mission with retries will comfortably fill
+the 256\,GB module if we record raw, and will not come close if we record JPEG.
+
+That is a decision worth making deliberately rather than discovering on the
+day: raw gives you the data to retrain against, JPEG gives you the endurance to
+keep recording. If we want a dataset out of the competition itself, raw on at
+least one aircraft is the way to get it.
+
 \section{What it costs the flight side}
 
 For completeness, since the same substitution moves the coverage numbers in the
