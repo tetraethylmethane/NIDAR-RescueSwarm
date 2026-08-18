@@ -1,0 +1,257 @@
+% Campus asset checklist -- printable walk-around sheet.
+% Build:  pdflatex campus-asset-checklist.tex
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=15mm,top=14mm,bottom=14mm]{geometry}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+
+\definecolor{ink}{HTML}{111111}
+\definecolor{dim}{HTML}{5A5A62}
+\definecolor{rule}{HTML}{C9C9CF}
+\definecolor{hi}{HTML}{0B5394}
+\definecolor{warn}{HTML}{9C0006}
+\definecolor{band}{HTML}{EEF1F6}
+
+\setlength{\parindent}{0pt}
+\pagestyle{empty}
+\renewcommand{\arraystretch}{1.35}
+
+% a real tick box, and a write-on rule
+\newcommand{\tick}{\raisebox{-0.8pt}{\framebox[3.0mm]{\rule{0pt}{3.0mm}}}}
+\newcommand{\rs}[1]{Rs.~#1}
+\newcommand{\writeline}{\textcolor{rule}{\leaders\hrule height 0.4pt\hfill\kern0pt}}
+
+% section heading with a coloured band
+\newcommand{\where}[1]{%
+  \vspace{3.2mm}%
+  \colorbox{band}{\parbox{\dimexpr\linewidth-2\fboxsep}{%
+    \vspace{0.6mm}\textbf{\small #1}\vspace{0.6mm}}}%
+  \vspace{1.6mm}%
+}
+\newcommand{\bigsec}[1]{%
+  \vspace{3.5mm}{\color{hi}\rule{\linewidth}{0.9pt}}\\[1.2mm]
+  {\bfseries\large #1}\\[0.6mm]
+}
+% one checklist item: box, name, value
+\newcommand{\entry}[2]{\tick~\textbf{#1}\hfill\textcolor{dim}{\small #2}\\[0.8mm]}
+\newcommand{\ask}[1]{\begin{quote}\vspace{-2mm}\itshape #1\vspace{-2mm}\end{quote}}
+\newcommand{\nope}[1]{{\small\textcolor{warn}{\textbf{Not a match if:}} #1}\\[1.0mm]}
+\newcommand{\ansline}{\textcolor{dim}{\footnotesize Answer:}~\writeline\\[2.2mm]}
+
+\begin{document}
+
+{\LARGE\bfseries Campus asset checklist}\\[1.5mm]
+{\color{dim}Project RescueSwarm · NIDAR 2026--27 · what to confirm before
+submitting the funding request}\\[1mm]
+{\color{rule}\rule{\linewidth}{1.2pt}}\\[2.5mm]
+
+\textbf{Why.} Find out what the institute already owns \emph{before} asking it
+for money. Every confirmed \emph{yes} either reduces the request or removes a
+risk, and none of it costs the project any capability --- it is the same
+equipment, borrowed instead of bought.
+
+\vspace{1.5mm}
+\textbf{How.} Grouped by \emph{where you go}, so each visit is one
+conversation. \textbf{Ask the question as written.} The general question invites
+a misleading answer: \emph{``do you have a GPS?''} gets a yes that turns out to
+be a total station. Record the answer, not just yes/no --- ``yes, but booked
+until March'' is a no.
+
+\vspace{2.5mm}
+\begin{center}
+\begin{tabular}{@{}p{58mm}r p{78mm}@{}}
+\toprule
+\textbf{Section} & \textbf{Value} & \textbf{Effect if confirmed}\\
+\midrule
+A · Budgeted equipment      & \rs{70,500}   & Leaves the request. Ask falls to about \rs{7,43,000}\\
+B · Stock and consumables   & $\sim$\rs{15,000} & Partial reductions\\
+C · Questions that remove risk & \rs{25,000}+ & Resolves the insurance blocker\\
+\textbf{D · Already assumed} & \textbf{\rs{3,54,000}} & \textbf{Confirm, or the ask goes UP}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{1mm}
+{\small\textcolor{warn}{\textbf{Section D matters as much as section A.}} The
+budget already assumes \rs{3,54,000} of institute equipment is available to us.
+If it is not, that money comes back into the request. Confirming it protects the
+number you are submitting.}
+
+\bigsec{A · Equipment that would leave the budget --- \rs{70,500}}
+
+\where{$\rightarrow$ Civil Engineering, survey laboratory}
+
+\entry{RTK base receiver}{\rs{18,000} · biggest single item, least likely to just work}
+\ask{``Do you have a survey-grade GNSS receiver that can run as a \textbf{base
+station} and output \textbf{RTCM3 corrections} over serial or IP to a
+third-party rover, at about 1\,Hz? Would it be free for roughly eight field
+days?''}
+\nope{it is a total station (not GNSS); it only post-processes and cannot
+stream live corrections; it is booked for coursework in our window.}
+\ansline
+
+\entry{Survey tripod + tribrach}{\rs{4,000}}
+\ask{``A standard tripod with a 5/8-inch thread and a tribrach we could borrow
+for field days?''}
+\ansline
+
+\where{$\rightarrow$ Robotics / aeromodelling club}
+
+\entry{Safety-pilot transmitter}{\rs{8,000}}
+\ask{``Do you have an \textbf{ExpressLRS} transmitter, or a radio with a
+\textbf{module bay} that can take an ELRS module?''}
+\nope{it is FlySky, Spektrum or any non-ELRS set --- wrong protocol, cannot
+bind to our receivers. A module bay alone is enough; the module is cheap.}
+\ansline
+
+\entry{Battery chargers}{\rs{14,000}}
+\ask{``A charger that balance-charges \textbf{6S lithium at 5\,A or more}, and
+measures \textbf{per-cell internal resistance}?''}
+\nope{it cannot measure internal resistance --- that capability is why the
+separate cell tester was already deleted from the budget.}
+\ansline
+
+\where{$\rightarrow$ Mechanical Engineering laboratory}
+
+\entry{Calibrated scale}{\rs{12,000}}
+\ask{``A calibrated balance reading to about 1\,g up to 10\,kg --- and
+\textbf{can it leave the building} for a competition day?''}
+\nope{it is bench-bound. This decides the Rule C2 weigh-in, so it has to
+travel. If it cannot, we still buy one.}
+\ansline
+
+\entry{Load cell and DAQ}{would offset the \rs{8,000} thrust stand}
+\ask{``Do you have a \textbf{load cell up to about 10\,kg with a data-logger or
+DAQ} we could use for propeller thrust measurement?''}
+{\small This one is \textbf{load-bearing for the project}: our motors publish no
+thrust curve, so this measurement decides whether the aircraft hovers.}\\[1.2mm]
+\ansline
+
+\where{$\rightarrow$ Departmental stores}
+
+\entry{Equipment cases}{\rs{9,000} · foam-lined, must survive transport to the venue}
+\ansline
+\entry{Charger PSU}{\rs{1,500} · 12\,V at 20\,A or better, usable in the field}
+\ansline
+
+\where{$\rightarrow$ Institute safety office}
+
+\entry{Fire extinguisher, sand, lithium charging bags}{\rs{4,000}}
+\ask{``A \textbf{CO$_2$ or Class D} extinguisher and lithium charging bags that
+can be \textbf{signed out to a field site}?''}
+{\small 54 lithium cells are cycled across this programme. Thermal runaway is a
+real failure mode, so this capability is kept whether or not it is
+borrowed.}\\[1.2mm]
+\ansline
+
+\newpage
+
+\bigsec{B · Stock and consumables --- up to about \rs{15,000}}
+
+{\small Drawn from the \rs{13,000} fasteners line and the \rs{21,400} stock
+line. Partial answers still help.}\\[2mm]
+
+\entry{3D printer filament}{the institute already provides the printer}
+\ask{``Does the department supply \textbf{PETG or ASA filament}, or do we buy
+our own?''}
+\ansline
+
+\entry{Carbon-fibre offcuts}{machine shop}
+\ask{``Do you hold \textbf{CF plate or tube stock}, or offcuts from previous
+projects we could use for spares?''}
+\ansline
+
+\entry{Fasteners}{stores}
+\ask{``Is there a stock of \textbf{M3 socket-cap, nyloc and washers} we can draw
+against?''}
+\ansline
+
+\bigsec{C · Questions that remove a risk rather than a cost}
+
+\where{$\rightarrow$ Dean R\&D / accounts office}
+
+\entry{Insurance}{resolves a \rs{25,000} open item \emph{and} a flight blocker}
+\ask{``Does the institute hold \textbf{third-party liability cover that extends
+to student projects operating unmanned aircraft}? If not, is it required before
+we fly?''}
+{\small\textcolor{warn}{This is the single unresolved item in the budget.}
+Cover is commonly mandatory for unmanned operations in India. If the institute
+already holds a policy that extends to us, the \rs{25,000} stays out and the
+flight blocker clears. If it does not, we must know \textbf{before any flight},
+not after.}\\[1.2mm]
+\ansline
+
+\entry{Travel and participation fund}{money that is not in this budget at all}
+\ask{``Is there a \textbf{separate fund for competition travel, accommodation
+and entry fees}, distinct from equipment funding?''}
+{\small Our request covers \textbf{equipment only}. Getting three aircraft and a
+team to the venue is costed nowhere. Many institutes fund this from a different
+head, so it need not compete with the equipment request.}\\[1.2mm]
+\ansline
+
+\entry{Sanction thresholds and budget heads}{}
+\ask{``What are the \textbf{sanction limits}, and which \textbf{head} should
+capital equipment versus consumables be indented under?''}
+{\small We need this to submit correctly, not to structure around it. Our
+tranches are tied to technical milestones and must not be presented as a split
+indent.}\\[1.2mm]
+\ansline
+
+\entry{Flight-testing site}{}
+\ask{``Is there an approved \textbf{open area on or near campus} we may use for
+UAV flight testing, and what permission is needed?''}
+\ansline
+
+\bigsec{D · Confirm what the budget already assumes --- \rs{3,54,000}}
+
+{\small These are already counted as institutional contribution and
+\emph{removed} from the request. If any is not actually available, that money
+comes back into the ask.}\\[2.5mm]
+
+\begin{tabular}{@{}c p{74mm} r p{52mm}@{}}
+\toprule
+ & \textbf{Item} & \textbf{Assumed} & \textbf{Confirmed available?}\\
+\midrule
+\tick & Ground-station laptop            & \rs{85,000} & \writeline\\
+\tick & Training GPUs (model training)   & \rs{75,000} & \writeline\\
+\tick & Backup ground-station laptop     & \rs{55,000} & \writeline\\
+\tick & Portable power station / field power & \rs{55,000} & \writeline\\
+\tick & 3D printer                       & \rs{50,000} & \writeline\\
+\tick & Soldering station                & \rs{9,000}  & \writeline\\
+\tick & Rotary tool + CF extraction      & \rs{8,500}  & \writeline\\
+\tick & Bench power supply               & \rs{8,500}  & \writeline\\
+\tick & Multimeters                      & \rs{8,000}  & \writeline\\
+\midrule
+ & \textbf{Total assumed} & \textbf{\rs{3,54,000}} & \\
+\bottomrule
+\end{tabular}
+
+\vspace{3mm}
+For the GPUs the question that matters is not \emph{``do you have GPUs''} but:
+\ask{``Can we get \textbf{scheduled access} for model training, and roughly how
+many GPU-hours?''}
+
+\bigsec{After the walk-around}
+
+\begin{tabular}{@{}r@{\hspace{2.5mm}}p{158mm}@{}}
+1. & Total the confirmed items in section A.\\
+2. & Regenerate the workbook with those lines zeroed, then re-check the covering
+     note against tab 00 --- the ask, the capital share and the institutional
+     contribution all move together.\\
+3. & If anything in \textbf{D} came back unavailable, add it back to the request
+     \emph{before} submitting.\\
+4. & Open the covering note with what you found. ``We audited the institute's
+     existing assets and reduced this request by \rs{X} before submitting it''
+     is a materially stronger opening than the same number without it.\\
+\end{tabular}
+
+\vspace{4mm}
+{\color{rule}\rule{\linewidth}{0.4pt}}\\[1mm]
+{\footnotesize\color{dim}Generated from
+\texttt{hardware/bom/campus-asset-checklist.tex}. Figures reconcile with
+\texttt{RescueSwarm\_University\_Funding\_Request.xlsx} tab 02 and
+\texttt{build\_university\_request.py}.}
+
+\end{document}
