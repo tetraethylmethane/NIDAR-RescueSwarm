@@ -49,9 +49,18 @@ BOUNDARY = [(12.99800, 79.99862), (12.99800, 80.00138),
 
 # Shrink the SIMULATED pack so the failsafe lands mid-sweep instead of 44
 # simulated minutes in. The aircraft's own thresholds are untouched: this
-# changes the world, not the vehicle. BATT_LOW_VOLT (20.4 V, 3.40 V/cell) is
-# the threshold that fires, which is the real voltage failsafe path.
+# changes the world, not the vehicle.
+#
+# CORRECTION: this comment used to claim BATT_LOW_VOLT (20.4 V) is the
+# threshold that fires. It is not, and cannot be. SITL holds pack voltage
+# CONSTANT at SIM_BATT_VOLTAGE -- every recording in this repository shows a
+# single distinct voltage value -- so the voltage failsafe path is never
+# exercised here. What actually trips is BATT_LOW_MAH, the capacity path.
+# The voltage path remains UNTESTED and needs a bench or flight test.
 SIM_BATT_CAP_AH = 1.35
+# 6S nominal, matching the modelled pack. SITL's default is 12.6 V, which is
+# below this aircraft's own BATT_LOW_VOLT of 20.4 V.
+SIM_BATT_VOLTAGE = 25.2
 
 
 def build_missions():
@@ -68,15 +77,25 @@ def build_missions():
 def launch(i, slot):
     d = f"{RUN}/sitl{i}"
     os.makedirs(d, exist_ok=True)
+    # SITL aborts if any --defaults file is missing, which made this harness
+    # unrunnable without the NIDAR-GSC repo checked out beside this one. The
+    # simulation-side parameters that actually matter (SIM_SPEEDUP,
+    # SIM_BATT_CAP_AH, AUTO_OPTIONS, DISARM_DELAY) are set over MAVLink in
+    # arm_and_go, so a missing GCS file degrades rather than blocks.
+    wanted = [
+        f"{AP}/Tools/autotest/default_params/copter.parm",
+        f"{SYS}/firmware/ardupilot-params/rescueswarm-drone{i}.parm",
+        f"{SCR}/scripts/sitl-sim.parm",
+    ]
+    defaults = [f for f in wanted if os.path.exists(f)]
+    for f in wanted:
+        if f not in defaults:
+            print(f"  note: defaults file absent, skipping -> {f}")
     cmd = [
         BIN, "--model", "quad", "--instance", str(i - 1), "--sysid", str(i),
         "--home", f"{slot[0]:.8f},{slot[1]:.8f},10,0",
         "--serial0", f"udpclient:127.0.0.1:{14550 + i}",
-        "--defaults", ",".join([
-            f"{AP}/Tools/autotest/default_params/copter.parm",
-            f"{SYS}/firmware/ardupilot-params/rescueswarm-drone{i}.parm",
-            f"{SCR}/scripts/sitl-sim.parm",
-        ]),
+        "--defaults", ",".join(defaults),
     ]
     log = open(f"{d}/sitl.log", "w")
     return subprocess.Popen(cmd, cwd=d, stdout=log, stderr=subprocess.STDOUT)
@@ -135,6 +154,16 @@ def main():
     for i, m in enumerate(links, start=1):
         setp(m, "SIM_SPEEDUP", SPEEDUP)
         setp(m, "SIM_BATT_CAP_AH", SIM_BATT_CAP_AH)
+        # SITL boots a 12.6 V battery while BATT_LOW_VOLT is 20.4 V, so the
+        # vehicle sits under its own failsafe and will not arm. Give the
+        # simulated pack the modelled 6S voltage. This changes the WORLD, not
+        # the vehicle -- the aircraft's thresholds are untouched.
+        setp(m, "SIM_BATT_VOLTAGE", SIM_BATT_VOLTAGE)
+        # The committed parameters set GPS_TYPE2=1 for moving-baseline
+        # heading. That receiver is DEFERRED in the adopted budget, so the
+        # aircraft being simulated has one GNSS, not two. Left at 1 the
+        # vehicle blocks on "GPS 2: was not found" and never arms.
+        setp(m, "GPS_TYPE2", 0)
         setp(m, "AUTO_OPTIONS", 3)
         setp(m, "DISARM_DELAY", 0)
         for mid, hz in ((0, 3), (33, 4), (147, 2), (253, 5)):
