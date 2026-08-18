@@ -88,10 +88,13 @@ GROUND = [
      "A second AeroNav-1. A base needs a good antenna and a stable mount, not a "
      "different class of receiver."),
     ("Survey tripod + tribrach", 9_500, 4_000, "Photographic tripod and adapter."),
-    ("Equipment cases", 44_000, 9_000, "One aircraft case, two foam-lined crates."),
-    ("Fire extinguisher, sand, charging bags", 11_000, 4_000,
-     "KEEP THE CAPABILITY, correct the price. 54 Li-ion cells are cycled across "
-     "this programme; thermal runaway is a real failure mode."),
+    ("Equipment cases", 44_000, 0,
+     "R1: CONFIRMED HELD by the institute, 2026-08-18. Department stores."),
+    ("Fire extinguisher, sand, charging bags", 11_000, 0,
+     "R1: CONFIRMED HELD by the institute, 2026-08-18. Safety office. The "
+     "capability is still required -- 54 Li-ion cells are cycled across this "
+     "programme and thermal runaway is a real failure mode -- it is simply "
+     "no longer being bought."),
     ("Safety-pilot transmitter", 16_000, 8_000, "ELRS set."),
     ("Sun hood + observer monitor", 12_000, 1_500, "R2: hood fabricated."),
     ("Remaining ground items", 62_800, 25_000,
@@ -111,7 +114,8 @@ TEST = [
     ("Rotary tool + CF extraction", 8_500, 0, "R1: department facility."),
     ("Bench power supply", 8_500, 0, "R1: department facility."),
     ("Multimeters", 8_000, 0, "R1: department facility."),
-    ("Charger PSU", 8_000, 1_500, "Used 12 V server supply."),
+    ("Charger PSU", 8_000, 0,
+     "R1: CONFIRMED HELD by the institute, 2026-08-18."),
     ("Calibrated scale + remaining", 47_700, 12_000,
      "KEEP the calibrated scale -- it decides the rule C2 weigh-in."),
 ]
@@ -194,6 +198,17 @@ def tax_split():
             status = TAX_STATUS.get(lbl, TAX_STATUS.get(key, ("incl", "")))[0]
             out[status] += new
     return out
+
+# Confirmed held by the institute on 2026-08-18, with the amount the request
+# had ACTUALLY BUDGETED for each. The institutional contribution is credited at
+# this figure rather than at the original-programme price: we would have spent
+# 14,500 on these, not 63,000, and claiming the larger number would overstate
+# the institute's share of a document the institute itself will audit.
+CONFIRMED_HELD = {
+    "Equipment cases": 9_000,
+    "Fire extinguisher, sand, charging bags": 4_000,
+    "Charger PSU": 1_500,
+}
 
 DUTY, GST, CONTINGENCY = 0.22, 0.18, 0.15
 INDIG = 0.355         # COMPUTED, not estimated, from the per-line Indian

@@ -92,7 +92,11 @@ CONT = (SUB + DUTY + GST) * CB.CONTINGENCY
 ASK = round(SUB + DUTY + GST + CONT)
 LOADING = ASK - SUB
 
-INSTITUTIONAL = [(l, a) for _, rows in CB.GROUPS for l, a, b, n in rows
+# Newly confirmed items are credited at what the request had budgeted for them,
+# not at the original-programme price -- see CONFIRMED_HELD. Overstating the
+# institute's own contribution in a document the institute audits is a bad trade.
+INSTITUTIONAL = [(l, CB.CONFIRMED_HELD.get(l, a))
+                 for _, rows in CB.GROUPS for l, a, b, n in rows
                  if b == 0 and n.startswith("R1")]
 INST_TOTAL = sum(a for _, a in INSTITUTIONAL)
 

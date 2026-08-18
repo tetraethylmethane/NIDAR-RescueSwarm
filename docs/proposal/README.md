@@ -193,8 +193,28 @@ observed leaving the pad at:
 
 Aircraft 3 delayed 9.2 s against a commanded 30; aircraft 2 delayed 2.7 s
 against a commanded 15. The ratios are not consistent with each other, so this
-is not simply a `SIM_SPEEDUP` time-base conversion (the run is at speedup 3, and
-`done_at` of 626 s is consistent with `t` being simulated seconds).
+is not simply a `SIM_SPEEDUP` time-base conversion.
+
+**The supporting argument here was wrong and has been replaced.** This
+previously read "`done_at` of 626 s is consistent with `t` being simulated
+seconds." That figure is an artifact. Building the dashboard replay surfaced
+**exactly one interval in the 346-sample recording that exceeds 5 s: index 328
+jumps 453.93 s**, against a median interval of 0.500 s. The aircraft state does
+not jump with it — drone 3 descends 13.9 → 11.6 m across the boundary, the same
+2.25 m per sample it was doing either side, while drones 1 and 2 sit frozen at
+identical altitude and identical mAh. The recorder's clock moved; the vehicles
+did not. **Physical duration is 172.4 s, not 626 s.**
+
+The conclusion survives on better evidence. Drone 3 drew **2,082 mAh**. Over
+172 s that is 43.5 A average, the right order for hovering a 6.36 kg aircraft;
+over 626 s it would be 12 A, which that aircraft cannot hover on. So the mAh
+counter — which integrates over *simulated* time — independently puts the flight
+at about 172 s, and `t` does track simulated seconds after all.
+
+**That makes the NAV_DELAY finding stronger, not weaker.** If `t` is simulated
+seconds, commanded delays of 0/15/30 s should appear as take-offs at 0/15/30 s.
+They appear at 0/2.8/9.4. There is no time-base conversion left to explain it
+away: the delays are genuinely not being served.
 
 **The deconfliction still works** — closest airborne pair goes 1.31 m → 64.80 m,
 and that is measured, not assumed. What is unverified is the *mechanism*: the

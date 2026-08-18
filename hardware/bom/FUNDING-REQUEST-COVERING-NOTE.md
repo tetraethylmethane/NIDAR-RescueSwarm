@@ -15,32 +15,32 @@ Subject: **Request for institutional funding — Project RescueSwarm, NIDAR 2026
 
 ---
 
-I am writing to request institutional funding of **₹8,24,072** for Project
+I am writing to request institutional funding of **₹8,07,397** for Project
 RescueSwarm, our entry to NIDAR 2026–27 (Track 1): a three-aircraft autonomous
 unmanned system for search-and-rescue, which locates casualties from the air and
 delivers relief payloads to them without an operator flying the aircraft.
 
 I want to make one point at the outset, because it changes what is being decided.
 
-**This is not a request to spend ₹8.24 lakh. It is a request to acquire
-₹6,98,101 of durable laboratory equipment and to spend ₹1,25,971.** Of the
-total, **84.7% is capital that remains the institute's property** after the
+**This is not a request to spend ₹8.07 lakh. It is a request to acquire
+₹6,81,173 of durable laboratory equipment and to spend ₹1,26,224.** Of the
+total, **84.4% is capital that remains the institute's property** after the
 competition ends — three flying UAV platforms, a centimetre-accurate RTK GNSS
 base station, a calibrated propulsion thrust stand, and battery and field
 equipment. These become a working UAV laboratory available to every subsequent
-student project, thesis and competition entry. Only ₹1,25,971 — spare structure,
+student project, thesis and competition entry. Only ₹1,26,224 — spare structure,
 propellers, fasteners, relief kits and the DGCA registration fee — is genuinely
 consumed. Tabs 03 and 04 itemise both, on a deliberately conservative test:
 anything partly consumable is counted as consumed, so the retention figure holds
 up if the accounts office challenges it.
 
-**The institute already funds 30% of this programme.** Training GPUs, ground-
+**The institute already funds 31% of this programme.** Training GPUs, ground-
 station laptops, the 3D printer, the machine shop and laboratory instruments are
-already available to us and are costed into the programme at ₹3,54,000 — at no
-new cost. Against a total programme value of ₹11,78,072, this request is
+already available to us and are costed into the programme at ₹3,68,500 — at no
+new cost. Against a total programme value of ₹11,75,897, this request is
 leverage on assets the institute already holds rather than a standalone expense.
 
-**Funds are not required at once, and the first decision is ₹2,90,000.** The
+**Funds are not required at once, and the first decision is ₹2,73,000.** The
 request is structured as four tranches released against demonstrated technical
 milestones: ground segment demonstrated and failure behaviour verified by fault
 injection; three airframes weighed and first hover complete; perception and
@@ -50,21 +50,23 @@ exposure is capped at one tranche. These are engineering milestones, not
 administrative convenience, and I would ask that they be treated as a genuine
 risk control rather than as a phased indent.
 
-**We audited the institute's existing assets before asking.** Tab 02 lists
-₹70,500 of equipment — a precision balance, a survey tripod, LiPo chargers, an
+**We audited the institute's existing assets before asking, and it has already
+reduced this request.** Equipment cases, the lithium fire kit and a charger PSU
+were confirmed held on campus and have been removed, taking the ask from
+₹8,24,072 to ₹8,07,397. Tab 02 lists a further ₹56,000 of equipment — a precision balance, a survey tripod, LiPo chargers, an
 RTK base receiver — that may already exist in Civil Engineering, the robotics
 and aeromodelling clubs, or departmental stores. Each entry states the specific
 property that decides whether the existing item is actually usable for this
 project, because the general question invites a misleading answer. **If all are
 available to borrow, this request falls to approximately ₹7,43,000** and the
-institute's share of the programme rises to 36%. I would welcome direction on
+institute's share of the programme rises further. I would welcome direction on
 whom to approach.
 
 I should also record what we chose **not** to request. ₹3,17,000 of capability
 has been deliberately deferred — a second GNSS receiver, recovery parachutes, a
 training airframe, a third radio link, most spares — each listed in tab 07 with
 its reasoning. The budget was reduced from an initial ₹28,74,000 programme
-costing to ₹8,24,072 by removing everything the competition entry does not
+costing to ₹8,07,397 by removing everything the competition entry does not
 require.
 
 **One item needs the institute's judgement rather than mine.** Third-party
@@ -98,11 +100,11 @@ With thanks,
 
 | | ₹ |
 |---|--:|
-| **Requested** | **8,24,072** |
-| — capital retained by the institute (84.7%) | 6,98,101 |
-| — genuinely consumed (15.3%) | 1,25,971 |
-| Already provided by the institute | 3,54,000 |
-| Total programme value | 11,78,072 |
-| First tranche only | 2,90,000 |
-| Possible reduction if existing assets are available | −70,500 |
+| **Requested** | **8,07,397** |
+| — capital retained by the institute (84.4%) | 6,81,173 |
+| — genuinely consumed (15.6%) | 1,26,224 |
+| Already provided by the institute | 3,68,500 |
+| Total programme value | 11,75,897 |
+| First tranche only | 2,73,000 |
+| Further reduction if the remaining assets are available | −56,000 |
 | Deliberately deferred | 3,17,000 |
