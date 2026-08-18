@@ -186,7 +186,10 @@ def _repeat(lines, passes: int):
         raise ValueError("passes must be >= 1")
     out = list(lines)
     for p in range(1, passes):
-        out += [[b, a] for a, b in reversed(out[-len(lines):])]
+        # An entry is normally the two ends of a transect, but carries extra
+        # detour waypoints when the sweep had to route around a concave notch.
+        # Reverse whatever length it is rather than unpacking two.
+        out += [list(reversed(ln)) for ln in reversed(out[-len(lines):])]
     return out
 
 
@@ -312,10 +315,14 @@ def plan_mission(boundary: list[tuple[float, float]], home: tuple[float, float],
             for flip in (False, True):
                 cand = [[b, a] for a, b in base] if flip else base
                 cand = _repeat(cand, passes)
-                d_end = math.dist(slot_xy, frame.to_xy(*cand[-1][1]))
+                d_end = math.dist(slot_xy, frame.to_xy(*cand[-1][-1]))
                 if best is None or d_end < best[0]:
                     best = (d_end, cand)
         lines = best[1] if best else []
+        # Route the hops LAST, once the sweep order is settled. Doing it any
+        # earlier means the flip above reverses entries that already carry
+        # detours, putting them on the wrong side of their transect.
+        lines = bou.route_legs(lines, boundary, frame=frame)
 
         items = mis.build(slots[i], lines, alt, speed_ms=speed_ms,
                           takeoff_alt_m=transit, transit_alt_m=transit,

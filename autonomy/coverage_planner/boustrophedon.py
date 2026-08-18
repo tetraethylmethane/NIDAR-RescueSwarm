@@ -24,7 +24,8 @@ from __future__ import annotations
 
 import math
 
-from .geo import Frame, area, clip_halfplane, principal_axis, rotate
+from .geo import (Frame, area, clip_halfplane, principal_axis, rotate,
+                  segment_inside, shortest_path_inside)
 
 
 def swath_width(altitude_m: float, hfov_deg: float) -> float:
@@ -86,6 +87,96 @@ def _intersect_intervals(a, b):
     return out
 
 
+def _decompose(scan):
+    """Boustrophedon cell decomposition over the scanned runs.
+
+    `scan` is [(y, [(lo, hi), ...]), ...] in sweep order. Returns a list of
+    cells, each cell a list of (y, lo, hi) in sweep order.
+
+    WHY. On a concave region a scanline can produce several disjoint runs --
+    either side of a notch. Emitting them all in line order means the turn from
+    one transect to the next hops the notch, and the aircraft flies over ground
+    the search area excludes: measured from 10 m on a shallow notch to 49 m on
+    a deep one. Grouping runs into connected cells and covering each cell
+    completely before moving to the next is Choset's boustrophedon
+    decomposition, done on the discrete lines we actually fly rather than on
+    exact critical points -- which is sufficient, because those lines are the
+    only places the aircraft ever is.
+
+    A convex region yields exactly one run per line and therefore one cell, so
+    the output is identical to the undecomposed sweep.
+    """
+    # Label runs, then union runs on adjacent lines whose x-intervals overlap.
+    nodes = []                       # (line_index, lo, hi)
+    for li, (y, segs) in enumerate(scan):
+        for lo, hi in segs:
+            nodes.append((li, lo, hi))
+    if not nodes:
+        return []
+
+    parent = list(range(len(nodes)))
+
+    def find(a):
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+
+    def union(a, b):
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[max(ra, rb)] = min(ra, rb)
+
+    by_line = {}
+    for idx, (li, lo, hi) in enumerate(nodes):
+        by_line.setdefault(li, []).append(idx)
+    for li in sorted(by_line):
+        for a in by_line.get(li, []):
+            for b in by_line.get(li + 1, []):
+                _, alo, ahi = nodes[a]
+                _, blo, bhi = nodes[b]
+                if min(ahi, bhi) - max(alo, blo) > 1e-6:      # overlap in x
+                    union(a, b)
+
+    groups = {}
+    for idx in range(len(nodes)):
+        groups.setdefault(find(idx), []).append(idx)
+
+    cells = []
+    for members in groups.values():
+        members.sort(key=lambda i: nodes[i][0])               # sweep order
+        cells.append([(scan[nodes[i][0]][0], nodes[i][1], nodes[i][2])
+                      for i in members])
+
+    # Fly the cell we are already next to. The hop between cells is the one
+    # leg decomposition cannot remove -- a straight line between two regions
+    # separated by a notch crosses it -- so make it as short as the geometry
+    # allows by chaining on true 2-D endpoint distance, not just across-track.
+    def ends(cell):
+        """Where the sweep of `cell` starts and finishes, in (x, y)."""
+        first_y, flo, fhi = cell[0]
+        last_y, llo, lhi = cell[-1]
+        # within a cell the sweep alternates, so the exit end depends on parity
+        exit_x = lhi if (len(cell) - 1) % 2 == 0 else llo
+        return (flo, first_y), (exit_x, last_y)
+
+    ordered, remaining = [], cells[:]
+    cur = None
+    while remaining:
+        if cur is None:
+            nxt = min(remaining, key=lambda c: (c[0][0], c[0][1]))
+        else:
+            def hop(c):
+                (sx, sy), _ = ends(c)
+                alt_x = c[0][2]
+                return min(math.dist(cur, (sx, sy)), math.dist(cur, (alt_x, sy)))
+            nxt = min(remaining, key=hop)
+        remaining.remove(nxt)
+        ordered.append(nxt)
+        cur = ends(nxt)[1]
+    return ordered
+
+
 def transects(strip: list[tuple[float, float]], altitude_m: float,
               hfov_deg: float, sidelap: float = 0.30,
               frame: Frame | None = None,
@@ -137,21 +228,54 @@ def transects(strip: list[tuple[float, float]], altitude_m: float,
     if clip_to is not None:
         bound_rot = rotate(frame.poly_to_xy(clip_to), -theta)
 
-    out = []
-    for i, y in enumerate(line_ys):
+    scan = []
+    for y in line_ys:
         segs = _clip_segment_to_poly(rot, y)
         if bound_rot is not None:
             segs = _intersect_intervals(segs, _clip_segment_to_poly(bound_rot, y))
-        if not segs:
+        scan.append((y, segs))
+
+    # Emit in the rotated frame first, so the hop between cells can be routed
+    # before anything is converted back to lat/lon.
+    segs_xy = []
+    for cell in _decompose(scan):
+        for j, (y, lo, hi) in enumerate(cell):
+            x0, x1 = (lo, hi) if j % 2 == 0 else (hi, lo)
+            segs_xy.append([(x0, y), (x1, y)])
+
+    return [frame.poly_to_latlon(rotate(s, theta)) for s in segs_xy]
+
+
+def route_legs(lines, boundary, frame: Frame | None = None):
+    """Route every hop between transects so it stays inside `boundary`.
+
+    Cell decomposition stops the SWEEP crossing a concave notch, but the
+    aircraft still has to get from the last transect of one cell to the first
+    of the next, and a straight line between two lobes cuts the corner -- 10 m
+    on a shallow notch, 49 m on a deep one.
+
+    MUST BE THE LAST STEP. plan.py reverses and repeats the line list to choose
+    a sweep direction, and reversing an entry that already carries detour
+    waypoints puts the detour in FRONT of the transect it belongs behind, which
+    reintroduces the excursion it was added to remove. Detours are therefore
+    computed once the order is final and nothing reorders them afterwards.
+
+    Convex boundaries are untouched: every hop is already a straight line
+    inside the polygon, so nothing is inserted.
+    """
+    if not lines or boundary is None:
+        return lines
+    frame = frame or Frame.from_points(boundary)
+    poly = frame.poly_to_xy(boundary)
+    out = [list(ln) for ln in lines]
+    for i in range(len(out) - 1):
+        a = frame.to_xy(*out[i][-1])
+        b = frame.to_xy(*out[i + 1][0])
+        if segment_inside(poly, a, b):
             continue
-        # A concave strip can put more than one interior run on the same line.
-        # Fly them in the sweep direction so the alternation still holds and
-        # the aircraft never crosses the gap between them at search altitude.
-        if i % 2:
-            segs = [(hi, lo) for lo, hi in reversed(segs)]
-        for x0, x1 in segs:
-            pts = rotate([(x0, y), (x1, y)], theta)
-            out.append(frame.poly_to_latlon(pts))
+        detour = shortest_path_inside(poly, a, b)
+        if detour:
+            out[i].extend(frame.to_latlon(x, y) for x, y in detour)
     return out
 
 
@@ -163,12 +287,12 @@ def path_length_m(lines, frame: Frame | None = None) -> float:
     total = 0.0
     prev_end = None
     for ln in lines:
-        a = frame.to_xy(*ln[0])
-        b = frame.to_xy(*ln[1])
+        pts = [frame.to_xy(*p) for p in ln]
         if prev_end is not None:
-            total += math.dist(prev_end, a)
-        total += math.dist(a, b)
-        prev_end = b
+            total += math.dist(prev_end, pts[0])
+        for u, v in zip(pts, pts[1:]):
+            total += math.dist(u, v)
+        prev_end = pts[-1]
     return total
 
 

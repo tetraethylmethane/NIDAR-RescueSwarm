@@ -385,11 +385,44 @@ L_SHAPE = [(LAT0, LON0), (LAT0, LON0 + 0.0027), (LAT0 + 0.0016, LON0 + 0.0027),
            (LAT0 + 0.0016, LON0 + 0.0045), (LAT0 + 0.0036, LON0 + 0.0045),
            (LAT0 + 0.0036, LON0)]
 
+def _poly(*pts_m, lat0=LAT0, lon0=LON0):
+    """(east, north) metres -> (lat, lon), for writing shapes readably."""
+    f = Frame(lat0, lon0)
+    return [f.to_latlon(e, n) for e, n in pts_m]
+
+
+# The shapes an organiser could plausibly hand over, including the ones that
+# break a naive lawnmower: notches of several depths, a slot narrower than the
+# line spacing, and interleaved fingers.
+HARD_SHAPES = {
+    "L notch 100 m": _poly((-200, 0), (100, 0), (100, 100), (200, 100),
+                           (200, 400), (-200, 400)),
+    "L notch 300 m": _poly((-200, 0), (100, 0), (100, 300), (200, 300),
+                           (200, 400), (-200, 400)),
+    "U-shape": _poly((-200, 0), (-60, 0), (-60, 260), (60, 260), (60, 0),
+                     (200, 0), (200, 400), (-200, 400)),
+    "deep narrow slot": _poly((-200, 0), (200, 0), (200, 400), (20, 400),
+                              (20, 60), (-20, 60), (-20, 400), (-200, 400)),
+    "plus / cross": _poly((-70, 0), (70, 0), (70, 130), (200, 130),
+                          (200, 270), (70, 270), (70, 400), (-70, 400),
+                          (-70, 270), (-200, 270), (-200, 130), (-70, 130)),
+    "zigzag comb": _poly((-200, 0), (200, 0), (200, 400), (120, 400),
+                         (120, 150), (40, 150), (40, 400), (-40, 400),
+                         (-40, 150), (-120, 150), (-120, 400), (-200, 400)),
+}
+
 ARBITRARY = {
     "rectangle": rect(300, 400),
     "rotated 30": rect(300, 400, rot_deg=30),
     "long thin": rect(120, 700),
+    "triangle": _poly((-180, 0), (180, 0), (0, 400)),
+    "convex pentagon": _poly((-150, 0), (150, 0), (200, 250), (0, 420),
+                             (-200, 250)),
+    "24-gon": _poly(*[(200 * math.cos(2 * math.pi * i / 24),
+                       200 * math.sin(2 * math.pi * i / 24) + 220)
+                      for i in range(24)]),
     "L-shape (concave)": L_SHAPE,
+    **HARD_SHAPES,
 }
 
 
@@ -414,14 +447,15 @@ def test_transects_stay_inside_any_boundary(name):
     assert worst <= TOL_M, f"{name}: transect ran {worst:.1f} m outside"
 
 
-def test_turn_legs_may_clip_a_concave_notch():
-    """KNOWN LIMIT, pinned so it cannot get quietly worse.
+def test_turn_legs_stay_inside_a_concave_boundary():
+    """The hop between coverage cells is routed around a notch, not across it.
 
-    Transects are clipped to the boundary, but the TURN between two of them is
-    a straight line, and across a concave notch that line can leave the area.
-    Measured at 9.6 m on this L-shape. It is a transit at search altitude, not
-    a swept leg, and closing it needs boustrophedon cell decomposition rather
-    than clipping. Convex boundaries are unaffected -- there is no notch to cut.
+    This test used to assert the OPPOSITE. Cell decomposition stops the sweep
+    crossing a notch, but the aircraft still has to get from the last transect
+    of one cell to the first of the next, and a straight line between two lobes
+    cuts the corner -- 10 m on a shallow notch, 49 m on a deep one. That was
+    pinned here as a known limit until the hop was routed with a visibility
+    graph, at which point this assertion inverted.
     """
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -430,13 +464,9 @@ def test_turn_legs_may_clip_a_concave_notch():
     bxy = f.poly_to_xy(L_SHAPE)
     worst = 0.0
     for pts in _search_points(plan, f):
-        for i in range(1, len(pts) - 1, 2):
+        for i in range(len(pts) - 1):
             worst = max(worst, _worst_excursion(bxy, pts[i], pts[i + 1]))
-    assert worst > TOL_M, "expected the notch to be cut; has it been fixed?"
-    assert worst < 70.0, (
-        f"turn-leg excursion grew to {worst:.1f} m; the characterised range "
-        f"was 9.6 m on a shallow notch to 48.7 m on a deep one"
-    )
+    assert worst <= TOL_M, f"a leg ran {worst:.1f} m outside the search area"
 
 
 def test_scanline_pairs_crossings_rather_than_spanning_them():
@@ -452,3 +482,49 @@ def test_scanline_pairs_crossings_rather_than_spanning_them():
     assert len(runs) == 2, f"expected two runs across the notch, got {runs}"
     (a0, a1), (b0, b1) = runs
     assert a1 <= -10.0 + 1e-6 and b0 >= 10.0 - 1e-6
+
+
+@pytest.mark.parametrize("name", list(HARD_SHAPES))
+def test_every_leg_stays_inside_a_concave_boundary(name):
+    """No leg of the sweep leaves the search area, on any of these.
+
+    Transects are clipped to the boundary, the sweep is split into cells so it
+    never crosses a notch mid-pattern, and the hop between cells is routed
+    around rather than straight through. Before that chain existed these shapes
+    put 10-49 m of flight path outside the area the organisers gave us.
+    """
+    poly = HARD_SHAPES[name]
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        plan = plan_mission(poly, HOME, 3)
+    f = Frame.from_points(poly)
+    bxy = f.poly_to_xy(poly)
+    worst = 0.0
+    for pts in _search_points(plan, f):
+        for i in range(len(pts) - 1):
+            worst = max(worst, _worst_excursion(bxy, pts[i], pts[i + 1]))
+    assert worst <= TOL_M, f"{name}: a leg ran {worst:.1f} m outside"
+
+
+@pytest.mark.parametrize("name", list(HARD_SHAPES))
+def test_concave_areas_still_split_evenly(name):
+    """Routing around notches must not cost the equal-area guarantee."""
+    poly = HARD_SHAPES[name]
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        plan = plan_mission(poly, HOME, 3)
+    assert plan.balance["max_imbalance"] < 0.02
+
+
+def test_routing_is_a_no_op_on_a_convex_boundary():
+    """Convex missions must be untouched by any of this.
+
+    The flown configuration is a rectangle. If routing inserted so much as one
+    waypoint there, every verified separation and endurance number would be
+    describing a different flight.
+    """
+    poly = rect(300, 400)
+    lines = [[(LAT0, LON0), (LAT0 + 0.001, LON0)],
+             [(LAT0 + 0.001, LON0 + 0.001), (LAT0, LON0 + 0.001)]]
+    routed = bou.route_legs(lines, poly)
+    assert routed == [list(ln) for ln in lines]
