@@ -91,6 +91,46 @@ def physical_time(t, max_gap=5.0):
     return out, removed, jumps
 
 
+def logo(path, invert=True):
+    """Black-ink-on-white PNG -> white-on-transparent RGBA, cropped to the ink.
+
+    Returns None if the asset is missing, so the renderer still runs from a
+    clean checkout that has not fetched the branding.
+    """
+    try:
+        from PIL import Image
+        import numpy as np
+    except ImportError:
+        return None
+    if not os.path.exists(path):
+        return None
+    g = np.asarray(Image.open(path).convert("L"), dtype=float) / 255.0
+    ink = 1.0 - g if invert else g          # ink -> 1.0, paper -> 0.0
+    ys, xs = np.where(ink > 0.5)
+    if not len(xs):
+        return None
+    pad = 2
+    ink = ink[max(0, ys.min() - pad):ys.max() + pad + 1,
+              max(0, xs.min() - pad):xs.max() + pad + 1]
+    rgba = np.ones(ink.shape + (4,), dtype=float)   # white
+    rgba[..., 3] = ink                              # keyed to ink density
+    return rgba
+
+
+def place(fig, img, x, y, h):
+    """Drop an RGBA logo into figure coords at height h, aspect preserved."""
+    if img is None:
+        return None
+    ph, pw = img.shape[0], img.shape[1]
+    fw, fh = fig.get_size_inches()
+    w = h * (pw / ph) * (fh / fw)
+    ax = fig.add_axes([x, y, w, h], zorder=4)
+    ax.imshow(img, interpolation="bilinear")
+    ax.axis("off")
+    ax.patch.set_alpha(0.0)
+    return ax
+
+
 def load(path):
     d = json.load(open(path))
     d["tracks"] = {int(k): v for k, v in d["tracks"].items()}
@@ -160,19 +200,27 @@ def render(d, out, fps=20):
     # ----------------------------------------------------------- header strip
     fig.patches.append(Rectangle((0, 0.938), 1, 0.062, transform=fig.transFigure,
                                  fc=BG, ec="none", zorder=1))
-    fig.text(0.016, 0.958, "◈", fontsize=20, color=FG, zorder=3)
-    fig.text(0.034, 0.960, "DRIKR SYSTEMS", fontsize=16, fontweight="bold",
-             color=FG, zorder=3)
-    fig.text(0.148, 0.972, "TM", fontsize=6.5, color=DIM, zorder=3)
-    fig.text(0.5, 0.960, "FLIGHT DATA", fontsize=11, color=FG, ha="center",
+    assets = os.path.join(os.path.dirname(os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__)))),
+        "ground-station", "frontend", "public")
+    place(fig, logo(os.path.join(assets, "drikr-logo.png")), 0.014, 0.951, 0.030)
+    nid = logo(os.path.join(assets, "nidar-logo.png"))
+    if nid is not None:
+        ph, pw = nid.shape[0], nid.shape[1]
+        fw, fh = fig.get_size_inches()
+        w = 0.044 * (pw / ph) * (fh / fw)
+        place(fig, nid, 0.986 - w, 0.947, 0.044)
+
+    # tab row, as laid out in the mockup: FLIGHT DATA active, two inactive
+    fig.patches.append(FancyBboxPatch(
+        (0.408, 0.946), 0.086, 0.040, transform=fig.transFigure,
+        boxstyle="round,pad=0,rounding_size=0.005", fc="#1B1B20", ec=EDGE,
+        lw=1.0, zorder=2))
+    fig.text(0.451, 0.960, "FLIGHT DATA", fontsize=10, color=FG, ha="center",
              fontweight="bold", zorder=3)
-    fig.text(0.5, 0.943, "SITL replay · mission-telemetry.json", fontsize=8,
-             color=FAINT, ha="center", zorder=3)
-    fig.text(0.984, 0.958, "NIDAR", fontsize=17, fontweight="bold", color=FG,
-             ha="right", zorder=3)
-    fig.text(0.984, 0.944, "NATIONAL INNOVATION CHALLENGE FOR DRONE "
-             "APPLICATION AND RESEARCH", fontsize=5.2, color=FAINT,
-             ha="right", zorder=3)
+    fig.text(0.522, 0.960, "DIAGNOSTICS", fontsize=10, color=DIM, zorder=3)
+    fig.text(0.600, 0.960, "⚙  SETTINGS", fontsize=10, color=DIM, zorder=3)
+
 
     # -------------------------------------------------------------- the cards
     panel(fig, (0.012, 0.586, 0.268, 0.334), "MISSION STATUS")
