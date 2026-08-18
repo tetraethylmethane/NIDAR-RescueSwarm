@@ -8,6 +8,7 @@ nowhere near equal-width.
 import math
 import os
 import sys
+import warnings
 
 import pytest
 
@@ -324,3 +325,130 @@ def test_plan_is_fast_enough_for_the_setup_window():
         plan_mission(TEN_HA, HOME, 3)
     per = (time.perf_counter() - t0) / 20
     assert per < 0.5, f"{per*1000:.0f} ms per plan"
+
+
+# ---------------------------------------------------------------------------
+# Where the sweep is allowed to be, on an arbitrary boundary.
+#
+# Measured with a 1 m tolerance, because transect ends land on the boundary and
+# float rounding puts them a couple of centimetres past it. A knife-edge test
+# reports 54 % of waypoints "outside" for a rectangle that flies perfectly.
+# ---------------------------------------------------------------------------
+
+TOL_M = 1.0
+SEARCH_ALT = 40.0
+
+
+def _inside(poly, pt):
+    x, y = pt
+    c = False
+    for i in range(len(poly)):
+        x1, y1 = poly[i]
+        x2, y2 = poly[(i + 1) % len(poly)]
+        if ((y1 > y) != (y2 > y)) and \
+           (x < (x2 - x1) * (y - y1) / (y2 - y1 + 1e-12) + x1):
+            c = not c
+    return c
+
+
+def _metres_outside(poly, pt):
+    """0 if inside, else distance to the nearest edge."""
+    if _inside(poly, pt):
+        return 0.0
+    x, y = pt
+    best = float("inf")
+    for i in range(len(poly)):
+        x1, y1 = poly[i]
+        x2, y2 = poly[(i + 1) % len(poly)]
+        dx, dy = x2 - x1, y2 - y1
+        L2 = dx * dx + dy * dy
+        t = 0.0 if L2 == 0 else max(0.0, min(1.0,
+                                             ((x - x1) * dx + (y - y1) * dy) / L2))
+        best = min(best, math.hypot(x - (x1 + t * dx), y - (y1 + t * dy)))
+    return best
+
+
+def _worst_excursion(poly_xy, a, b, n=40):
+    return max(_metres_outside(poly_xy, (a[0] + (b[0] - a[0]) * j / n,
+                                         a[1] + (b[1] - a[1]) * j / n))
+               for j in range(n + 1))
+
+
+def _search_points(plan, frame):
+    """Per drone, the waypoints flown at search altitude, in order."""
+    for dr in plan.drones:
+        yield [frame.to_xy(it.lat, it.lon) for it in dr.items
+               if abs(it.lat) > 1 and abs(it.alt - SEARCH_ALT) < 0.5]
+
+
+L_SHAPE = [(LAT0, LON0), (LAT0, LON0 + 0.0027), (LAT0 + 0.0016, LON0 + 0.0027),
+           (LAT0 + 0.0016, LON0 + 0.0045), (LAT0 + 0.0036, LON0 + 0.0045),
+           (LAT0 + 0.0036, LON0)]
+
+ARBITRARY = {
+    "rectangle": rect(300, 400),
+    "rotated 30": rect(300, 400, rot_deg=30),
+    "long thin": rect(120, 700),
+    "L-shape (concave)": L_SHAPE,
+}
+
+
+@pytest.mark.parametrize("name", list(ARBITRARY))
+def test_transects_stay_inside_any_boundary(name):
+    """The SEARCH LINES never leave the search area, whatever its shape.
+
+    This is the load-bearing one. A transect outside the boundary is the
+    aircraft sweeping ground the organisers excluded.
+    """
+    poly = ARBITRARY[name]
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        plan = plan_mission(poly, HOME, 3)
+    f = Frame.from_points(poly)
+    bxy = f.poly_to_xy(poly)
+    worst = 0.0
+    for pts in _search_points(plan, f):
+        # even-indexed legs are transects; odd are the turns between them
+        for i in range(0, len(pts) - 1, 2):
+            worst = max(worst, _worst_excursion(bxy, pts[i], pts[i + 1]))
+    assert worst <= TOL_M, f"{name}: transect ran {worst:.1f} m outside"
+
+
+def test_turn_legs_may_clip_a_concave_notch():
+    """KNOWN LIMIT, pinned so it cannot get quietly worse.
+
+    Transects are clipped to the boundary, but the TURN between two of them is
+    a straight line, and across a concave notch that line can leave the area.
+    Measured at 9.6 m on this L-shape. It is a transit at search altitude, not
+    a swept leg, and closing it needs boustrophedon cell decomposition rather
+    than clipping. Convex boundaries are unaffected -- there is no notch to cut.
+    """
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        plan = plan_mission(L_SHAPE, HOME, 3)
+    f = Frame.from_points(L_SHAPE)
+    bxy = f.poly_to_xy(L_SHAPE)
+    worst = 0.0
+    for pts in _search_points(plan, f):
+        for i in range(1, len(pts) - 1, 2):
+            worst = max(worst, _worst_excursion(bxy, pts[i], pts[i + 1]))
+    assert worst > TOL_M, "expected the notch to be cut; has it been fixed?"
+    assert worst < 70.0, (
+        f"turn-leg excursion grew to {worst:.1f} m; the characterised range "
+        f"was 9.6 m on a shallow notch to 48.7 m on a deep one"
+    )
+
+
+def test_scanline_pairs_crossings_rather_than_spanning_them():
+    """A concave strip must give two runs on a line, not one bridging span.
+
+    The clipper used to return (min, max) of the crossings, which on a concave
+    strip hands back a segment straight across the notch.
+    """
+    notched = [(-100.0, -50.0), (100.0, -50.0), (100.0, 50.0),
+               (10.0, 50.0), (10.0, -10.0), (-10.0, -10.0),
+               (-10.0, 50.0), (-100.0, 50.0)]
+    runs = bou._clip_segment_to_poly(notched, 20.0)
+    assert len(runs) == 2, f"expected two runs across the notch, got {runs}"
+    (a0, a1), (b0, b1) = runs
+    assert a1 <= -10.0 + 1e-6 and b0 >= 10.0 - 1e-6

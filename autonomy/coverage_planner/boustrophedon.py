@@ -39,38 +39,72 @@ def line_spacing(altitude_m: float, hfov_deg: float, sidelap: float = 0.30) -> f
 
 
 def _clip_segment_to_poly(poly, y: float):
-    """Intersect the horizontal line y=const with a convex polygon.
+    """Intersect the horizontal line y=const with a polygon, convex OR concave.
 
-    Returns (x_min, x_max) or None. Works on the rotated frame where transects
-    are horizontal.
+    Returns a list of (x_lo, x_hi) INTERIOR intervals, left to right, on the
+    rotated frame where transects are horizontal.
+
+    This used to return a single (min(xs), max(xs)) span and was documented as
+    convex-only. On a concave strip that span bridges the notch: the line
+    crosses the boundary four times, and taking the outer pair hands the drone
+    a leg across ground the search area excludes. Measured at up to 9.6 m
+    outside on an L-shaped boundary.
+
+    Pairing the sorted crossings instead is the standard scanline fill, and it
+    is IDENTICAL for a convex polygon -- two crossings make one interval, which
+    is exactly the old min..max. So convex missions are unchanged.
     """
     xs = []
     n = len(poly)
     for i in range(n):
         (x1, y1), (x2, y2) = poly[i], poly[(i + 1) % n]
-        if (y1 - y) * (y2 - y) > 0:            # both strictly one side
-            continue
-        if abs(y2 - y1) < 1e-12:               # horizontal edge on the line
-            xs.extend([x1, x2])
-            continue
-        t = (y - y1) / (y2 - y1)
-        if -1e-9 <= t <= 1 + 1e-9:
+        if abs(y2 - y1) < 1e-12:
+            continue                           # horizontal edge: no crossing
+        # Half-open rule, so a vertex sitting exactly on the line is counted
+        # once rather than twice and the pairing stays consistent.
+        if (y1 <= y < y2) or (y2 <= y < y1):
+            t = (y - y1) / (y2 - y1)
             xs.append(x1 + t * (x2 - x1))
     if len(xs) < 2:
-        return None
-    lo, hi = min(xs), max(xs)
-    return None if hi - lo < 1e-6 else (lo, hi)
+        return []
+    xs.sort()
+    return [(a, b) for a, b in zip(xs[0::2], xs[1::2]) if b - a > 1e-6]
+
+
+def _intersect_intervals(a, b):
+    """Intersect two sorted lists of (lo, hi) intervals."""
+    out, i, j = [], 0, 0
+    while i < len(a) and j < len(b):
+        lo = max(a[i][0], b[j][0])
+        hi = min(a[i][1], b[j][1])
+        if hi - lo > 1e-6:
+            out.append((lo, hi))
+        if a[i][1] < b[j][1]:
+            i += 1
+        else:
+            j += 1
+    return out
 
 
 def transects(strip: list[tuple[float, float]], altitude_m: float,
               hfov_deg: float, sidelap: float = 0.30,
               frame: Frame | None = None,
-              start_far_side: bool = False) -> list[list[tuple[float, float]]]:
+              start_far_side: bool = False,
+              clip_to: list[tuple[float, float]] | None = None
+              ) -> list[list[tuple[float, float]]]:
     """Alternating transects covering `strip`, as (lat, lon) line segments.
 
     `start_far_side` flips which end the sweep begins at, so adjacent drones can
     be given opposing sweep directions and end up further apart rather than
     converging on a shared edge at the same moment.
+
+    `clip_to` is the mission boundary. It matters on a CONCAVE boundary: the
+    equal-area split uses half-plane clipping, which is exact only for a convex
+    region, so a strip can overhang the notch. Measured on an L-shaped area, up
+    to 9.6 m of every sweep leg ran over ground the search area excludes.
+    Intersecting each transect with the boundary as well as the strip keeps the
+    flown path inside whatever shape the organisers hand over. Convex missions
+    are unaffected -- the intersection is a no-op there.
     """
     frame = frame or Frame.from_points(strip)
     xy = frame.poly_to_xy(strip)
@@ -99,16 +133,25 @@ def transects(strip: list[tuple[float, float]], altitude_m: float,
     if start_far_side:
         line_ys.reverse()
 
+    bound_rot = None
+    if clip_to is not None:
+        bound_rot = rotate(frame.poly_to_xy(clip_to), -theta)
+
     out = []
     for i, y in enumerate(line_ys):
-        seg = _clip_segment_to_poly(rot, y)
-        if seg is None:
+        segs = _clip_segment_to_poly(rot, y)
+        if bound_rot is not None:
+            segs = _intersect_intervals(segs, _clip_segment_to_poly(bound_rot, y))
+        if not segs:
             continue
-        x0, x1 = seg
-        if i % 2:                              # alternate direction: no ferry legs
-            x0, x1 = x1, x0
-        pts = rotate([(x0, y), (x1, y)], theta)
-        out.append(frame.poly_to_latlon(pts))
+        # A concave strip can put more than one interior run on the same line.
+        # Fly them in the sweep direction so the alternation still holds and
+        # the aircraft never crosses the gap between them at search altitude.
+        if i % 2:
+            segs = [(hi, lo) for lo, hi in reversed(segs)]
+        for x0, x1 in segs:
+            pts = rotate([(x0, y), (x1, y)], theta)
+            out.append(frame.poly_to_latlon(pts))
     return out
 
 
