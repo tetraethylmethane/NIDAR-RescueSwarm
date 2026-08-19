@@ -187,7 +187,8 @@ SUPPLIER = {
     "AI accelerator": ("Edge AI module, >=20 TOPS", "e-con Systems (Chennai)", "https://www.e-consystems.com/"),
     "GNSS RTK primary": ("AeroNav-series NavIC L1+L5 RTK", "Teravolt Labs (India)", "https://teravoltlabs.com/"),
     "Motors": ("5008-class, 340 KV", "Reflex Drive (Lucknow) or equivalent", "https://reflexdrive.in/"),
-    "Li-ion cells": ("21700 NMC, >=4000 mAh, 40-45 A", "GODI India (Hyderabad)", "https://godiindia.com/"),
+    "Li-ion cells": ("21700 NMC, 4500 mAh min, 45 A continuous unrestricted "
+                     "(no 80C cut-off), DC-IR <=15 mOhm @50% SoC 25C, <=72 g", "GODI India (Hyderabad)", "https://godiindia.com/"),
     "Structure": ("CF tube, plate and machined clamps", "Kineco Kaman (Goa) + institute machine shop", "https://www.kineco.in/"),
     "Camera + lens": ("Arducam IMX477 + 6 mm S-mount", "Indian distributor", "https://robu.in/"),
     "Pack, BMS, PDB, BEC": ("6S3P pack, BMS, PDB, BEC", "Flameback Tech (Baddi, HP)", "https://www.flamebacktech.com/"),

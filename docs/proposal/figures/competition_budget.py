@@ -44,7 +44,10 @@ AIRCRAFT = [
     ("Motors",                 4,  4_500, "hobby",
      "Generic 5008-class. NO PUBLISHED THRUST -- verify on the thrust stand."),
     ("Li-ion cells",          18,    700, "KEEP",
-     "Capacity- and IR-matched. One weak cell defines the whole pack."),
+     "4500 mAh / 45 A continuous, DC-IR <=15 mOhm. Peak draw is 38.3 A/cell, "
+      "so a 40 A cell leaves 4.5% margin and a Samsung 40T is a 35 A cell "
+      "once the 80C cut-off is excluded. Capacity- and IR-matched: one weak "
+      "cell defines the whole pack."),
     ("Structure",              1, 13_000, "KEEP",
      "In-house fabrication; institute machine shop confirmed."),
     ("Camera + lens",          1, 11_100, "KEEP",
@@ -174,7 +177,10 @@ GROUPS = [("Air vehicle and payload", AIR), ("Ground segment", GROUND),
 TAX_STATUS = {
     # -- air vehicle: the quoted and fabricated lines --------------------
     "GNSS RTK primary":  ("excl", "Teravolt quote; RFQ, not a listing"),
-    "Li-ion cells":      ("excl", "GODI quote; no public price exists"),
+    "Li-ion cells":      ("excl", "GODI quote. A public benchmark DOES now "
+                              "exist: Molicel P45B -- the cell the pack is "
+                              "sized on -- lists at Rs 405 at Robokits India. "
+                              "Hold the GODI quote against that number."),
     "Structure":         ("excl", "in-house fabrication; machine-shop service"),
     "Payload system":    ("excl", "in-house fabrication"),
     # -- ground segment --------------------------------------------------
