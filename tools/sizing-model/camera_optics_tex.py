@@ -133,6 +133,11 @@ need_inf = need_hz * tiles_ds
 FOCAL = SPECIFIED["f_mm"]
 coc_mm = COC_PX * SPECIFIED["pitch_um"] / 1000.0
 hyp_half = hyp / 2
+# How far target size moves across a plausible altitude band. GSD is
+# proportional to altitude, so the aircraft not holding 40 m exactly is enough
+# to shift the scale the detector sees.
+px_lo = PERSON_M / (at_altitude(SPECIFIED, 45.0)["gsd_cm"] * 2 / 100)
+px_hi = PERSON_M / (at_altitude(SPECIFIED, 35.0)["gsd_cm"] * 2 / 100)
 rs_shift, rs_px = rs40["shift_m"], rs40["shift_px"]
 rs_in, rs_shift_cm = rs40["within_target_px"], rs40["shift_m"] * 100
 raw_mb, frames = vol["raw_mb_frame"], vol["frames"]
@@ -415,16 +420,17 @@ but it was never a decision anyone made.
 
 \section{{Where to start}}
 
-Nothing here is blocking, and none of it needs answering this week. It is
-written down so you have the numbers in front of you rather than having to
-rediscover them.
-
 \begin{{itemize}}\itemsep3pt
 
-\item \textbf{{Train and evaluate at {st_ds['len']:.0f}\,px, not at whatever the
-dataset gives you.}} That is the target size the detector will actually meet at
-40\,m after downsampling. If the training crops come out much larger, the model
-learns features it will never see in flight.
+\item \textbf{{Train across scales, then fine-tune towards
+{st_ds['len']:.0f}\,px.}} That is the target size at 40\,m after downsampling,
+but it is a centre rather than a fixed point --- ground sample distance is
+proportional to altitude, so any altitude error moves it. A $\pm$5\,m band about
+40\,m puts the same person anywhere between {px_lo:.0f} and {px_hi:.0f}\,px,
+and terrain relief widens that further. A model trained only at
+{st_ds['len']:.0f}\,px would be brittle to exactly the variation the aircraft
+guarantees, so keep normal scale augmentation and bias the fine-tuning towards
+the operating point.
 
 \item \textbf{{Check the size band when you read a published number.}} Detection
 papers report average precision separately for small, medium and large targets,

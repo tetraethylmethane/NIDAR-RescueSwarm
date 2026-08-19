@@ -291,16 +291,17 @@ but it was never a decision anyone made.
 
 \section{Where to start}
 
-Nothing here is blocking, and none of it needs answering this week. It is
-written down so you have the numbers in front of you rather than having to
-rediscover them.
-
 \begin{itemize}\itemsep3pt
 
-\item \textbf{Train and evaluate at 82\,px, not at whatever the
-dataset gives you.} That is the target size the detector will actually meet at
-40\,m after downsampling. If the training crops come out much larger, the model
-learns features it will never see in flight.
+\item \textbf{Train across scales, then fine-tune towards
+82\,px.} That is the target size at 40\,m after downsampling,
+but it is a centre rather than a fixed point --- ground sample distance is
+proportional to altitude, so any altitude error moves it. A $\pm$5\,m band about
+40\,m puts the same person anywhere between 73 and 94\,px,
+and terrain relief widens that further. A model trained only at
+82\,px would be brittle to exactly the variation the aircraft
+guarantees, so keep normal scale augmentation and bias the fine-tuning towards
+the operating point.
 
 \item \textbf{Check the size band when you read a published number.} Detection
 papers report average precision separately for small, medium and large targets,
