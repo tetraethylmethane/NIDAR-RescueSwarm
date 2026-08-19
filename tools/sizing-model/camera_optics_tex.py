@@ -413,21 +413,41 @@ sweep time --- seven transects per drone instead of six. Against 250 marks for
 detection and an 1800\,s budget I think that favours the sensor we are buying,
 but it was never a decision anyone made.
 
-\section{{What I need from you}}
+\section{{Where to start}}
 
-Two things, and neither is urgent this week.
+Nothing here is blocking, and none of it needs answering this week. It is
+written down so you have the numbers in front of you rather than having to
+rediscover them.
 
-First, if you have benchmarked anything on HERIDAL or SARD, tell me which size
-band the reported AP came from. If the published number was measured on
-medium-class targets then our 40\,m figure is comparable and the 47\,px one was
-never going to be.
+\begin{{itemize}}\itemsep3pt
 
-Second, the survey altitude is unresolved --- the design point says 60\,m, every
-simulation we have flown says 40\,m, and the sizing chapter proposes 40\,m
-pending a recall measurement. That measurement is yours. If you can say what
-recall looks like at {st_ds['len']:.0f}\,px against
-{st_old['len']:.0f}\,px, the altitude decision follows from it rather than from
-argument, and I can re-baseline the documents once instead of twice.
+\item \textbf{{Train and evaluate at {st_ds['len']:.0f}\,px, not at whatever the
+dataset gives you.}} That is the target size the detector will actually meet at
+40\,m after downsampling. If the training crops come out much larger, the model
+learns features it will never see in flight.
+
+\item \textbf{{Check the size band when you read a published number.}} Detection
+papers report average precision separately for small, medium and large targets,
+using the pixel-area thresholds in \S1. A headline figure quoted without its
+band is not comparable to anything we are doing --- ours sits in
+\emph{{medium}}, and small-object numbers are usually much worse.
+
+\item \textbf{{HERIDAL and SARD are the obvious starting datasets.}} When you
+benchmark on either, record which band the result came from, so we can tell
+whether it transfers.
+
+\item \textbf{{The measurement that unblocks a real decision is recall against
+target size.}} If you can say what recall looks like at
+{st_ds['len']:.0f}\,px versus {st_old['len']:.0f}\,px, that settles an argument
+nobody can currently settle: the design point says survey at 60\,m, every
+simulation we have flown uses 40\,m, and the sizing chapter proposes 40\,m
+pending exactly this measurement.
+
+\item \textbf{{It does not have to be precise to be useful.}} Even a rough curve
+of recall against pixel height, on whatever data you have, decides the altitude
+and lets the documents be corrected once instead of twice.
+
+\end{{itemize}}
 
 
 \end{{document}}
