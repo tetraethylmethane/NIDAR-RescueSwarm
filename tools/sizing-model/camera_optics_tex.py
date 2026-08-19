@@ -169,16 +169,7 @@ DOC = rf"""\documentclass[11pt,a4paper]{{article}}
 
 \begin{{document}}
 
-\begin{{center}}
-{{\LARGE\bfseries What the detector actually sees}}\\[5pt]
-{{\large\color{{dim}} Pixels on target through the pipeline, and a correction
-to the figure in the proposal}}\\[10pt]
-{{\color{{rule}}\rule{{0.82\linewidth}}{{0.6pt}}}}\\[7pt]
-{{\small Swastik Kumar \quad$\cdot$\quad for the perception lead \quad$\cdot$\quad RescueSwarm, NIDAR 2026--27
-Track 1 \quad$\cdot$\quad {dt.date.today().strftime('%d %B %Y')}}}
-\end{{center}}
-
-\vspace{{6pt}}
+\vspace*{{-6mm}}
 
 \section{{What the model actually receives}}
 
@@ -438,13 +429,6 @@ recall looks like at {st_ds['len']:.0f}\,px against
 {st_old['len']:.0f}\,px, the altitude decision follows from it rather than from
 argument, and I can re-baseline the documents once instead of twice.
 
-\vfill
-{{\footnotesize\color{{dim}}
-The prose here is mine; the arithmetic is not. Every figure in this note
-is computed by \texttt{{camera\_optics.py}} and typeset by
-\texttt{{camera\_optics\_tex.py}}, both under \texttt{{tools/sizing-model/}},
-so the document cannot drift from the model the way the sizing chapter drifted
-from the parts list --- which is the whole subject of the note.}}
 
 \end{{document}}
 """
