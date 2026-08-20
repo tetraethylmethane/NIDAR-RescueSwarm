@@ -1,0 +1,211 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage[margin=25mm]{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{microtype}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\titleformat{\section}{\large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\bfseries}{\thesubsection}{0.6em}{}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+\pagestyle{fancy}\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\newcommand{\inr}[1]{INR~#1}
+
+\fancyhead[L]{RescueSwarm --- Track A: Air Vehicle}
+\fancyhead[R]{\thepage}
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Track A --- Air Vehicle}\\[3mm]
+{\large RescueSwarm: work package and funding request}\\[2mm]
+NIDAR 2026--27 $\cdot$ Track 1 $\cdot$ Mission 1\\[1mm]
+\textbf{Ask: \inr{325,397}} $\cdot$ 2 students $\cdot$ Frame, propulsion, power, payload mechanism, assembly
+\end{center}
+\vspace{2mm}\hrule\vspace{4mm}
+
+
+This track builds the thing that flies. Everything else in the programme is
+carried by it, which means this track's schedule is the programme's schedule:
+no other track can begin flight validation until an aircraft exists, and the
+single measurement that decides whether one does is owned here.
+
+\section{Scope and ownership}
+
+This track owns \textbf{frame, propulsion, power, payload mechanism, assembly}. It is one of four delivery tracks defined in
+\texttt{docs/development-plan.md}~\S1.3; the integrated system argument lives in
+the master proposal, \texttt{docs/proposal/rescueswarm-proposal.pdf}, which this
+document does not restate.
+
+\section{The design point this track is funded to build}
+
+The aircraft is a quadrotor on 18\,in propellers with a maximum take-off mass of
+\textbf{6.36\,kg}, giving a three-aircraft fleet of \textbf{19.08\,kg} against
+the 25\,kg regulatory cap --- 24\,\% margin. Structure is 1\,495\,g (23.5\,\% of
+MTOW) and the battery pack 1\,449\,g (22.8\,\%); together they are 46\,\% of the
+aircraft, which is why airframe mass fraction and pack chemistry are the two
+sensitivities this track carries in the risk register.
+
+All of these figures regenerate from \texttt{tools/sizing-model/}\allowbreak
+\texttt{rescueswarm\_sizing\_model.py}. None is transcribed by hand.
+
+\section{Propulsion, and the measurement that is load-bearing}
+
+At a thrust-to-weight ratio of 2.0 the aircraft requires \textbf{125\,N total},
+which is \textbf{3.18\,kgf per motor} on an 18\,in propeller, with hover sitting
+at 1.59\,kgf --- 50\,\% of maximum, inside the healthy 45--55\,\% band. The mass
+budget allows 160\,g per motor.
+
+\textbf{The funded motors publish no thrust curve.} That is a deliberate cost
+decision, not an oversight: professional-grade motors with published data cost
+roughly 2.4 times as much. The consequence is that the thrust-to-weight figure
+above is a \emph{requirement} rather than a measurement until the thrust stand
+runs in P2, and the thrust stand is therefore not a convenience --- it is the
+instrument that says whether this aircraft hovers. It is funded accordingly.
+
+Two figures in \texttt{docs/sizing/sizing-calculations.md} contradict the model
+here, quoting 2.53 and 2.94\,kgf per motor against the model's 3.18, and one
+line still specifies a 20\,in propeller where the bill of materials buys 18\,in.
+Reconciling those is a P1 action for this track.
+
+\section{Energy: what the pack must actually do}
+
+The pack is sized by a reserve policy, not by the design mission. The mission
+consumes 105.5\,Wh; the policy requires the pack to also carry one complete
+re-sweep and four minutes of loiter, all inside an 80\,\% depth of discharge:
+\[
+105.5 + 22.1 + 60.8 = 188.4~\text{Wh usable},
+\]
+against 233.3\,Wh available --- a \textbf{24\,\% margin}.
+
+Stated independently of chemistry, so that any candidate pack can be tested
+against it, the requirement is \textbf{6S}, \textbf{$\geq$236\,Wh} nameplate,
+\textbf{$\geq$115\,A continuous}, \textbf{$\leq$40\,m$\Omega$} and
+\textbf{$\leq$1\,450\,g}. The current figure is the one most often missed: it is
+not a burst rating. At T/W 2.0 the aircraft draws 2\,481\,W, which at 21.6\,V is
+115\,A, and that must be available continuously.
+
+The adopted implementation is 18 cells in 6S3P at 4500\,mAh and 45\,A
+continuous. A 40\,A cell leaves 4.5\,\% burst margin against 18\,\%, and cells
+whose 45\,A rating depends on an 80\,\textdegree C cut-off are 35\,A cells in
+Indian ambient --- below the 38.3\,A per-cell peak. The specification was
+tightened accordingly on 2026-08-20.
+
+\section{Two open items this track owns}
+
+\textbf{The mass statement does not close.} Itemised masses sum to 6\,061\,g
+against a 6\,360\,g MTOW, leaving \textbf{299\,g} --- 4.7\,\% --- unattributed.
+It is small enough not to threaten fleet margin and large enough that it should
+be attributed rather than absorbed. Closing it is a P1 action.
+
+\textbf{Cell sourcing is a live commercial question.} The budget carries
+\inr{700} per cell against a domestic supplier quote. A drop-in equivalent lists
+publicly at \inr{405}. The action is not to switch --- cells are one of only
+four remaining Indian lines and indigenisation is scored --- but to hold the
+supplier quote against a published benchmark before committing.
+
+\section{Funding request}
+
+Every figure below is generated from
+\texttt{docs/proposal/figures/track\_budget.py}, which partitions the master
+competition budget. The four track asks plus the shared pool reconcile to the
+master figure exactly; that reconciliation is asserted in code and fails the
+build if it ever stops holding. \textbf{K} marks a line held at professional
+grade on purpose.
+
+
+\begin{center}
+\begin{tabular}{@{}p{88mm}cr@{}}
+\toprule
+\textbf{Item} & & \textbf{\inr{}} \\
+\midrule
+Motors (4 x 4,500 x 3 ac) &  & 54,000 \\
+Structure (1 x 13,000 x 3 ac) & \textbf{K} & 39,000 \\
+Li-ion cells (18 x 700 x 3 ac) & \textbf{K} & 37,800 \\
+Pack, BMS, PDB, BEC (1 x 8,500 x 3 ac) &  & 25,500 \\
+ESCs (4 x 1,800 x 3 ac) &  & 21,600 \\
+Battery chargers &  & 14,000 \\
+Payload system (1 x 4,500 x 3 ac) &  & 13,500 \\
+Propellers (4 x 1,000 x 3 ac) &  & 12,000 \\
+Calibrated scale + remaining &  & 12,000 \\
+Thrust stand &  & 8,000 \\
+Wiring, connectors (1 x 2,400 x 3 ac) &  & 7,200 \\
+Prop adapters (4 x 350 x 3 ac) &  & 4,200 \\
+\midrule
+Subtotal & & 248,800 \\
+Customs duty and freight & & 13,949 \\
+GST & & 20,205 \\
+Contingency at 15\% & & 42,443 \\
+\midrule
+\textbf{TRACK A ASK} & & \textbf{325,397} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+
+\textbf{Deferred or institutionally held, and therefore not requested:}
+3D printer, Cell tester, Charger PSU, Recovery parachutes, 3, Relief kits (14), Rotary tool + CF extraction, Spare airframe structure set, Spare battery packs, Spare motors, Spare propellers, plate and tube stock. These remain capabilities the track requires; they are simply not being
+bought. Where a deferral carries a technical consequence it is stated in the
+risk table below rather than left implicit.
+
+\section{Deliverables by phase}
+
+\begin{center}
+\begin{tabular}{@{}llp{88mm}@{}}
+\toprule
+\textbf{Phase} & \textbf{Dates} & \textbf{This track delivers} \\
+\midrule
+\textbf{P1} & 24 Aug -- 13 Sep & Long-lead orders placed: cells, motors, structure stock. Mass residual attributed. Sizing-document contradictions reconciled. \\
+\textbf{P2} & 14 Sep -- 4 Oct & \textbf{Thrust-stand measurement} -- the gate for the whole programme. Pack assembled and bench-discharged. \\
+\textbf{P3} & 5 Oct -- 18 Oct & First flight. Measured mass and hover current reported to Track C. \\
+\textbf{P5} & 9 Nov -- 22 Nov & Single-aircraft full mission including payload release. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Risks owned by this track}
+
+\begin{center}
+\begin{tabular}{@{}p{50mm}lp{70mm}@{}}
+\toprule
+\textbf{Risk} & \textbf{Sev.} & \textbf{Mitigation} \\
+\midrule
+Motors deliver less than 3.18\,kgf & High & P2 thrust stand. If they miss, the fallback is a published-curve motor at roughly 2.4$\times$ the cost, which is a budget event this track must flag the moment it is known. \\
+Mass residual grows during build & Medium & 299\,g is unattributed today. Fleet carries 4\,919\,g of growth allowance, so this is affordable, but it must be tracked from P1 not discovered at weigh-in. \\
+Cell lead time & Medium & No spare packs are funded. Domestic sourcing is 2--3 weeks; order at P1, not P2. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Interfaces to other tracks}
+
+\begin{center}
+\begin{tabular}{@{}lp{110mm}@{}}
+\toprule
+\textbf{With} & \textbf{Dependency} \\
+\midrule
+Track B & Provides the power distribution the avionics run on, and the vibration-isolated mounting the flight controller requires. \\
+Track C & Provides the mass, thrust and endurance figures the SITL model flies against. If the built aircraft differs from the model, the simulations stop being evidence. \\
+Track D & Provides the camera mounting plane and its boresight stability. Geolocation accuracy depends on that mount not moving. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Interfaces are where student programmes fail, because each side assumes the
+other owns the gap. Every row above is a two-way commitment and should be
+recorded as an interface control document at P1.
+
+
+\vfill
+\hrule\vspace{2mm}
+{\small Generated by \texttt{tools/proposal/build\_track\_proposals.py} from
+\texttt{docs/proposal/figures/track\_budget.py}. Financial figures are not
+maintained in this document and must not be edited here: change the master
+budget and regenerate. Technical claims cite the model or document that
+produced them.}
+\end{document}

@@ -1,0 +1,183 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage[margin=25mm]{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{microtype}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\titleformat{\section}{\large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\bfseries}{\thesubsection}{0.6em}{}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+\pagestyle{fancy}\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\newcommand{\inr}[1]{INR~#1}
+
+\fancyhead[L]{RescueSwarm --- Track C: Autonomy and Ground Control}
+\fancyhead[R]{\thepage}
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Track C --- Autonomy and Ground Control}\\[3mm]
+{\large RescueSwarm: work package and funding request}\\[2mm]
+NIDAR 2026--27 $\cdot$ Track 1 $\cdot$ Mission 1\\[1mm]
+\textbf{Ask: \inr{2,324}} $\cdot$ 2 students $\cdot$ Coverage planner, task allocation, state machine, ground station, SITL
+\end{center}
+\vspace{2mm}\hrule\vspace{4mm}
+
+
+This track asks for the least money in the programme and carries a large share
+of the scored functionality. That is not an accident of accounting: the
+deliverables are software, the workstations are team-supplied, and the
+verification environment is free. It is worth stating explicitly, because a
+funding split that shows a near-zero line invites the assumption that the track
+is small. It is not --- it is inexpensive.
+
+\section{Scope and ownership}
+
+This track owns \textbf{coverage planner, task allocation, state machine, ground station, sitl}. It is one of four delivery tracks defined in
+\texttt{docs/development-plan.md}~\S1.3; the integrated system argument lives in
+the master proposal, \texttt{docs/proposal/rescueswarm-proposal.pdf}, which this
+document does not restate.
+
+\section{Coverage planning over arbitrary search regions}
+
+The rulebook does not promise a rectangular search area, so the planner does not
+assume one. The implementation decomposes a possibly non-convex boundary into
+monotone cells, fills each by scanline, clips every transect to the true
+boundary, and routes between cells along a visibility graph shortest path rather
+than a straight line that might leave the region.
+
+Verified across 13 boundary shapes including non-convex notches and slots:
+\textbf{0.00\,m of path outside the boundary}, workload imbalance across three
+aircraft \textbf{$\leq$0.02\,\%}, and 157 tests passing. Three defects were found
+and fixed in reaching that state --- a scanline span that bridged concave
+notches, a missing cell decomposition, and a straight inter-cell hop that cut
+corners across excluded ground.
+
+\section{Autonomy, and how it is evidenced}
+
+The competition requires autonomous operation, and asserting it is not the same
+as showing it. The verification harness parses the flight script's own syntax
+tree and proves that \textbf{no MAVLink transmission occurs after the mode is
+set to AUTO}. That is a structural argument rather than an observational one:
+it does not depend on having watched a particular flight behave.
+
+The same harness checks inter-aircraft separation, geofence containment,
+failsafe configuration, energy consumption against the model, and recorder clock
+integrity, and exits non-zero on any failure. It is re-runnable, which means the
+autonomy claim is regenerated rather than remembered.
+
+A separation breach of 3.10\,m was found this way and corrected to 5.34\,m by
+staggering recovery loiter times. A 453.9\,s recorder clock discontinuity was
+found the same way, and independently confirmed against consumed charge.
+
+\section{The ground station is deliberately unable to fly the aircraft}
+
+Requirement SYS-20 holds that the ground station must be \emph{architecturally}
+incapable of originating a retask, waypoint change or arming command --- not
+merely configured not to. This is a design property, not a policy, and it is
+what makes the autonomy claim defensible under scrutiny: an operator cannot
+accidentally invalidate it.
+
+\section{Why the ask is small}
+
+The two workstations are team-supplied and the simulation environment is
+open-source. What remains is a fabricated sun hood and an observer monitor for
+field use. This track's real cost is student time across the full programme
+duration, which the funding request does not price and which the schedule must
+protect.
+
+\section{Funding request}
+
+Every figure below is generated from
+\texttt{docs/proposal/figures/track\_budget.py}, which partitions the master
+competition budget. The four track asks plus the shared pool reconcile to the
+master figure exactly; that reconciliation is asserted in code and fails the
+build if it ever stops holding. \textbf{K} marks a line held at professional
+grade on purpose.
+
+
+\begin{center}
+\begin{tabular}{@{}p{88mm}cr@{}}
+\toprule
+\textbf{Item} & & \textbf{\inr{}} \\
+\midrule
+Sun hood + observer monitor &  & 1,500 \\
+\midrule
+Subtotal & & 1,500 \\
+Customs duty and freight & & 213 \\
+GST & & 308 \\
+Contingency at 15\% & & 303 \\
+\midrule
+\textbf{TRACK C ASK} & & \textbf{2,324} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+
+\textbf{Deferred or institutionally held, and therefore not requested:}
+Backup GCS laptop, GCS laptop. These remain capabilities the track requires; they are simply not being
+bought. Where a deferral carries a technical consequence it is stated in the
+risk table below rather than left implicit.
+
+\section{Deliverables by phase}
+
+\begin{center}
+\begin{tabular}{@{}llp{88mm}@{}}
+\toprule
+\textbf{Phase} & \textbf{Dates} & \textbf{This track delivers} \\
+\midrule
+\textbf{P1} & 24 Aug -- 13 Sep & SITL flying one aircraft. Planner validated against arbitrary boundaries. \\
+\textbf{P2} & 14 Sep -- 4 Oct & Full mission in SITL. Verification harness passing. \\
+\textbf{P3} & 5 Oct -- 18 Oct & Simulation re-baselined against the built aircraft. \\
+\textbf{P5} & 9 Nov -- 22 Nov & Autonomous full mission, no operator input after AUTO. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Risks owned by this track}
+
+\begin{center}
+\begin{tabular}{@{}p{50mm}lp{70mm}@{}}
+\toprule
+\textbf{Risk} & \textbf{Sev.} & \textbf{Mitigation} \\
+\midrule
+Pad containment has zero margin & High & Recorded in the master proposal as a measured result. Recovery geometry must be re-verified whenever aircraft mass or descent rate changes. \\
+Survey altitude is unresolved & Medium & The design point says 60\,m; every flown simulation uses 40\,m. Coverage timing, transect count and detection all move with it. Resolution is shared with Track D and needs a recall measurement to settle. \\
+Simulation diverges from the built aircraft & Medium & SITL evidence is only evidence if the modelled aircraft matches the built one. Re-baseline against Track A's measured mass and thrust after P2. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Interfaces to other tracks}
+
+\begin{center}
+\begin{tabular}{@{}lp{110mm}@{}}
+\toprule
+\textbf{With} & \textbf{Dependency} \\
+\midrule
+Track A & Consumes measured mass, thrust and endurance. Simulation fidelity depends on receiving them after the P2 thrust-stand run. \\
+Track B & Runs on the companion computer and commands through its MAVLink routing. Depends on the link carrying control and telemetry together. \\
+Track D & Consumes detections and supplies the aircraft state --- position, attitude, time --- that each geotag is computed from. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Interfaces are where student programmes fail, because each side assumes the
+other owns the gap. Every row above is a two-way commitment and should be
+recorded as an interface control document at P1.
+
+
+\vfill
+\hrule\vspace{2mm}
+{\small Generated by \texttt{tools/proposal/build\_track\_proposals.py} from
+\texttt{docs/proposal/figures/track\_budget.py}. Financial figures are not
+maintained in this document and must not be edited here: change the master
+budget and regenerate. Technical claims cite the model or document that
+produced them.}
+\end{document}

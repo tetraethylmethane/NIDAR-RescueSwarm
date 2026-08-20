@@ -44,6 +44,12 @@ jobs:
           # the failure mode that put a 12-cell bay in a 18-cell design.
           python tools/sizing-model/cad_equations.py            > /tmp/cad-equations-output.txt
           python tools/sizing-model/cost_model.py               > /tmp/cost-model-output.txt
+          # Partitions the competition ask across the four delivery tracks and
+          # ASSERTS that the four track asks plus the shared pool reconcile to
+          # the master figure to the paisa. If a budget line is added without a
+          # track assignment, or the split stops summing, this fails here rather
+          # than in a review where four documents quietly disagree.
+          python docs/proposal/figures/track_budget.py           > /tmp/track-budget-output.txt
           # Not a sizing model -- a Monte Carlo through the real projection code
           # in perception/. It cross-checks section 11 of sizing-calculations.md
           # against an independently written forward model, and exits non-zero if
