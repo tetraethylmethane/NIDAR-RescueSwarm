@@ -23,6 +23,11 @@ FINAL DESIGN POINT  -  'RS-1' search & delivery quad
   Design mission         : 7.7 min, 105 Wh = 45% of usable energy
   Land-with SoC          : 64 %
 
+  RESERVE POLICY  (re-evaluated at THIS MTOW, not at the sizing solve)
+    nominal 105.5 Wh + re-sweep 22.1 Wh + loiter 60.8 Wh = 188.4 Wh usable
+    pack provides            233.3 Wh usable  -> margin +24%  PASS
+    minimum nameplate, ANY chemistry: 236 Wh  (6S, >=115 A continuous)
+
   MASS STATEMENT (per aircraft)
     Structure: frame, arms, landing gear, hardware     1495 g   23.5%
     Motors (4)                                          640 g   10.1%

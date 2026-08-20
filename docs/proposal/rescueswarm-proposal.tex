@@ -318,7 +318,10 @@ Maximum take-off mass    & 6.36\,kg \\
 Fleet mass (3 aircraft)  & 19.08\,kg \\
 Regulatory fleet cap     & 25\,kg \\
 Battery                  & 6S3P Li-ion 21700, 292\,Wh \\
+Pack nominal voltage     & 21.6\,V (18.0--25.2\,V) \\
+Pack mass                & 1\,449\,g \\
 Cells per aircraft       & 18 \\
+Peak pack current        & 115\,A (8.5\,C) at T/W 2.0 \\
 Static thrust-to-weight  & 2.0 \\
 Hover endurance          & 15.3\,min \\
 Design mission duration  & 7.7\,min \\
@@ -332,10 +335,11 @@ Geofence radius          & 600\,m \\
 \end{table}
 
 The thrust-to-weight ratio of 2.0 and the hover endurance of 15.3 minutes
-against a 7.7-minute design mission are both reserve policies rather than
-performance targets: the mission is sized to be completed comfortably within
-half the available energy, because the failure mode that ends a competition or a
-deployment is an aircraft that does not return.
+against a 7.7-minute design mission are reserve policies rather than performance
+targets, because the failure mode that ends a competition or a deployment is an
+aircraft that does not return. The energy reserve is stated precisely
+in Section~\ref{sec:energy}; it, and not the design mission, is what sizes the
+pack.
 
 Fig.~\ref{fig:mass} gives the mass statement behind those figures. Two features
 drive the rest of the design. Structure and battery together are 46\,\% of
@@ -363,6 +367,61 @@ are available but a smaller aircraft is not.
 overweight tolerated --- inside the 25\,kg regulatory cap.}
 \label{fig:mass}
 \end{figure}
+
+\subsection{Energy, and what the pack must actually do}
+\label{sec:energy}
+
+The design mission consumes 105.5\,Wh. The pack holds 233.3\,Wh usable. That
+gap is not slack, and stating the mission figure alone would misrepresent the
+design: the pack is sized by a \emph{reserve policy}, which requires it to carry
+the nominal mission, one complete re-sweep of the search area, and four minutes
+of loiter, all inside an 80\,\% depth of discharge:
+\[
+\underbrace{105.5}_{\text{nominal}} +
+\underbrace{22.1}_{\text{re-sweep}} +
+\underbrace{60.8}_{\text{4 min loiter}} = 188.4~\text{Wh usable},
+\]
+against 233.3\,Wh available --- a margin of \textbf{24\,\%}. The re-sweep term
+exists because a search that finds nothing on the first pass is a normal
+outcome, not a failure; the loiter term exists because a recovery queue of three
+aircraft is not instantaneous.
+
+\textbf{Stated independently of chemistry}, the requirement on any candidate
+pack is: \textbf{6S} (21.6--22.2\,V nominal, 25.2\,V maximum),
+\textbf{$\geq$236\,Wh} nameplate, \textbf{$\geq$115\,A continuous},
+\textbf{$\leq$40\,m$\Omega$} internal resistance and \textbf{$\leq$1\,450\,g}.
+The current figure is the one most often missed. It is not a burst rating: at
+thrust-to-weight 2.0 the aircraft draws 2\,481\,W, which at 21.6\,V is 115\,A,
+and that current must be available continuously rather than for a rated pulse.
+
+Those two constraints trade against each other, which is why the pack is larger
+than the energy requirement alone would suggest. At the 236\,Wh floor the pack
+would be 10.9\,Ah and would need a 10.6\,C continuous rating; at the adopted
+13.5\,Ah it needs only 8.5\,C. Carrying capacity is how the design buys down
+C-rate, and it is the reason a nominally ``low C'' cylindrical cell is adequate
+here when it would not be in a smaller pack.
+
+\textbf{Why cylindrical Li-ion rather than LiPo.} I record this as a trade
+rather than a preference, because LiPo wins part of it. A LiPo pack of equal
+energy would roughly halve the internal resistance --- about 2.5\,V of sag at
+peak against 4.6\,V --- and would carry far more current headroom, and it would
+remove the pack-assembly step entirely. It loses on three grounds that matter
+more to this programme: it is approximately 400\,g heavier per aircraft at equal
+energy, which spends fleet margin; its cycle life is two to three times worse
+across a long flight-test campaign; and it is not domestically sourced, which
+would remove one of only four remaining Indian lines in
+Section~\ref{sec:deferred}. The decision is therefore made on campaign cost and
+sourcing, not on the electrical argument, and I state it that way because the
+electrical argument points the other way.
+
+\textbf{One correction, recorded rather than absorbed.} The reserve policy was
+previously reported at 159\,Wh. That figure was computed at the sizing solve,
+before the pack was rounded up to a buildable 18 cells and maximum take-off mass
+settled roughly 0.7\,kg heavier; the model checked a constraint against a design
+point it then abandoned. Re-evaluated at the adopted mass the requirement is
+188.4\,Wh, and the chemistry-agnostic floor moves from 199\,Wh to 236\,Wh. The
+pack still passes, at 24\,\% margin rather than the 47\,\% previously implied.
+The model now performs this check at the final design point.
 
 \subsection{Segment architecture}
 
@@ -1546,7 +1605,7 @@ fabricates itself.}
 Autopilot        & \emph{Deferred:} Indian Pixhawk-standard board, domestically made \\
 Propulsion       & \emph{Deferred:} Indian motors and ESCs with published thrust data \\
 Airframe         & Indian composite fabrication \\
-Cells            & Indian, BIS-certified 21700 NMC \\
+Cells            & Indian, BIS-certified 21700 NMC, 4500\,mAh / 45\,A. \emph{Retained} \\
 Camera           & \emph{Deferred:} Indian embedded-vision supplier \\
 GNSS             & Indian receiver, NavIC L1+L5. \emph{Retained} \\
 Co-processor     & Indian RISC-V development kit \\

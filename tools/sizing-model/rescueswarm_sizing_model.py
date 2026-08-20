@@ -187,6 +187,22 @@ print(f"  Hover endurance (80% DoD): {t_hov:.1f} min")
 print(f"  Design mission         : {T/60:.1f} min, {E:.0f} Wh = {E/(E_pack*DOD):.0%} of usable energy")
 print(f"  Land-with SoC          : {100*(1-E/E_pack):.0f} %")
 
+# The reserve policy is what SIZES the pack, so it has to be re-checked at the
+# MTOW we actually adopted. STEP 3b evaluates it at the sizing solve, before the
+# pack was rounded up to a buildable 18 cells and MTOW settled ~0.7 kg heavier.
+# Reporting the solve-point figure as the requirement understates it by ~18%.
+E_req_np, _, E_nom, E_rsw, E_lo = required_pack(MTOW)
+E_need_use = E_nom + E_rsw + E_lo
+print("\n  RESERVE POLICY  (re-evaluated at THIS MTOW, not at the sizing solve)")
+print(f"    nominal {E_nom:.1f} Wh + re-sweep {E_rsw:.1f} Wh + loiter {E_lo:.1f} Wh"
+      f" = {E_need_use:.1f} Wh usable")
+print(f"    pack provides            {E_pack*DOD:.1f} Wh usable"
+      f"  -> margin {E_pack*DOD/E_need_use-1:+.0%}"
+      f"  {'PASS' if E_pack*DOD >= E_need_use else 'FAIL'}")
+_I_pk = (P_shaft*(T_W**1.5)/eta_prop_chain + P_avio)/V_nom   # I_max, defined below
+print(f"    minimum nameplate, ANY chemistry: {E_req_np:.0f} Wh"
+      f"  (6S, >={_I_pk:.0f} A continuous)")
+
 print("\n  MASS STATEMENT (per aircraft)")
 rows=[('Structure: frame, arms, landing gear, hardware',bd['struct']),
       ('Motors (4)',bd['motors']),('ESCs (4)',bd['esc']),('Propellers (4)',bd['props']),
