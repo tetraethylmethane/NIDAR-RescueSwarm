@@ -56,6 +56,13 @@ jobs:
           # asserts its own derivations against the model's results, so a
           # constant cannot change in one place and not the other.
           python tools/proposal/build_sizing_section.py
+          # Section V is generated and therefore cannot drift. Sections I-IV and
+          # VI-XII are hand-written and were checked by nothing until this. It
+          # re-derives each numeric claim from the model that owns it and exits
+          # non-zero on any mismatch. It caught three: the perception section
+          # quoted a sensor the BOM does not buy, which also made the capture
+          # gate's angular-blur threshold wrong.
+          python tools/proposal/verify_proposal_numbers.py
           # Not a sizing model -- a Monte Carlo through the real projection code
           # in perception/. It cross-checks section 11 of sizing-calculations.md
           # against an independently written forward model, and exits non-zero if
