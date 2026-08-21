@@ -286,9 +286,12 @@ def fig_indig():
     y = np.arange(len(subs))[::-1]
     cols = [GREEN if f >= 70 else (ORANGE if f >= 50 else RED) for f in frac]
     ax.barh(y, frac, color=cols, height=0.66)
-    for yi, f, v in zip(y, frac, val):
+    # Cost per subsystem was annotated inside each bar. It is dropped because
+    # the master proposal no longer carries funding content -- that lives in the
+    # track work packages now. `val` is retained: it still orders the bars by
+    # value weight, which is what makes the mean a weighted one.
+    for yi, f in zip(y, frac):
         ax.text(f + 1.5, yi, f"{f:.0f}%", va="center", fontsize=6.8)
-        ax.text(2, yi, f"{v/1000:.0f}k", va="center", fontsize=6.0, color="white")
     ax.axvline(35.5, color="black", ls="--", lw=1)
     # Above the plot area, not rotated across the bars -- a vertical label here
     # sits on top of the Power and Comms rows and becomes unreadable.
