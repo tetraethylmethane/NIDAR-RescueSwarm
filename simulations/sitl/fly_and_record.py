@@ -159,10 +159,12 @@ def main():
         # simulated pack the modelled 6S voltage. This changes the WORLD, not
         # the vehicle -- the aircraft's thresholds are untouched.
         setp(m, "SIM_BATT_VOLTAGE", SIM_BATT_VOLTAGE)
-        # The committed parameters set GPS_TYPE2=1 for moving-baseline
-        # heading. That receiver is DEFERRED in the adopted budget, so the
-        # aircraft being simulated has one GNSS, not two. Left at 1 the
-        # vehicle blocks on "GPS 2: was not found" and never arms.
+        # GPS_TYPE2=0: one receiver, because the moving-baseline second unit is
+        # DEFERRED. This used to override a committed GPS_TYPE2=1, which meant
+        # the parameters in firmware/ were never the parameters flown. The
+        # committed value is now 0 as well, so this line agrees with the file
+        # rather than silently correcting it -- and it stays, so that a future
+        # commit re-enabling the second receiver has to change both.
         setp(m, "GPS_TYPE2", 0)
         setp(m, "AUTO_OPTIONS", 3)
         setp(m, "DISARM_DELAY", 0)

@@ -36,13 +36,32 @@ AIRCRAFT = [
      "without it, and the camera is a CSI module with nothing to connect to. "
      "The verified BOM carried a 55,000 module WITH an integrated host; the "
      "cost pass swapped in a 20,000 accelerator and did not put the host back."),
-    ("AI accelerator",         1, 20_000, "KEEP",
-     "26 TOPS. The specification floor, not a preference. Pi AI HAT+ "
-     "(Hailo-8) -- an NPU, not a computer; needs the host above."),
+    ("AI accelerator",         1, 11_000, "KEEP",
+     "Pi AI HAT+ (Hailo-8, 26 TOPS) -- an NPU, not a computer; needs the host "
+     "above, and PCIe, which only the Pi 5 exposes. PRICE CORRECTED from "
+     "20,000: the part lists at 9,950-11,309 in India. THE '26 TOPS IS THE "
+     "SPECIFICATION FLOOR' CLAIM WAS WRONG and is withdrawn -- the requirement "
+     "is 37 inferences/s at 640 (12 tiles at the 3.06 Hz SYS-46 needs), and "
+     "the 13 TOPS Hailo-8L does 60-80 FPS on that workload, clearing it 1.6x. "
+     "26 TOPS is retained as MARGIN on the one budget that already fails, not "
+     "as a floor; 13 TOPS is a legitimate saving if the look count is settled "
+     "at <=3 Hz first."),
     ("GNSS RTK primary",       1, 18_000, "KEEP",
-     "No cheaper RTK-capable part exists. Governs 125 of 200 geotag points."),
+     "Governs 125 of 200 geotag points -- the step from 3.88 m to 0.75 m is "
+     "RTK and nothing else in the budget moves the number comparably. "
+     "WARNING: the part currently carried against this line is specified by "
+     "its supplier as SBAS-corrected at <1.5 m CEP, which is assisted GNSS, "
+     "NOT RTK. If that is the part bought, the system sits in the 3.88 m row "
+     "and 125 points go with it. Resolve at P1: confirm the part, substitute "
+     "a true RTK receiver, or restate the geotagging expectation."),
     ("Motors",                 4,  4_500, "hobby",
-     "Generic 5008-class. NO PUBLISHED THRUST -- verify on the thrust stand."),
+     "5008-class, 340 KV, 6S, 18 in. Requirement is 3.18 kgf per motor at "
+     "T/W 2.0 with hover at 1.59 kgf (50% of max). NO PUBLISHED THRUST -- "
+     "this is why the thrust stand is funded as an instrument rather than a "
+     "convenience. Named parts that meet it: Tarot TL96020 at ~3,378 "
+     "(marginal, 'over 3 kg' is a marketing figure not a curve) and T-Motor "
+     "MN5008 at ~10,836 (4.215 kgf published, 135 g). Buy ONE and measure "
+     "before committing the fleet."),
     ("Li-ion cells",          18,    700, "KEEP",
      "4500 mAh / 45 A continuous, DC-IR <=15 mOhm. Peak draw is 38.3 A/cell, "
       "so a 40 A cell leaves 4.5% margin and a Samsung 40T is a 35 A cell "
@@ -51,7 +70,13 @@ AIRCRAFT = [
     ("Structure",              1, 13_000, "KEEP",
      "In-house fabrication; institute machine shop confirmed."),
     ("Camera + lens",          1, 11_100, "KEEP",
-     "Arducam IMX477 + 6 mm. Pi-compatible; GSD drives detection."),
+     "Arducam IMX477 + 6 mm CS, FIXED FOCUS -- buy the bundled B0240-class "
+     "part, not a motorised-focus module and not a separate lens on top of "
+     "one. Hyperfocal distance is 4.15 m and the aircraft never flies below "
+     "30 m, so focus set once is correct at every altitude; a focus motor "
+     "buys nothing, adds a moving part on a vibrating airframe, and fails in "
+     "a way that cannot be seen from the air. Sensor is 1.55 um, type 1/2.3 "
+     "-- NOT the 1.82 um part the sizing chapter once assumed."),
     ("Pack, BMS, PDB, BEC",    1,  8_500, "hobby", ""),
     ("RC rx, storage, cooling, mounts", 1, 8_500, "hobby",
      "ExpressLRS receiver MUST run 3.5+ in NATIVE MAVLink mode. That mode "

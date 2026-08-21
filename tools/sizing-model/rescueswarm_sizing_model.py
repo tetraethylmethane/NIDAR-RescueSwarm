@@ -17,10 +17,17 @@ FM        = 0.60    # rotor figure of merit, momentum theory (lit. range 0.5-0.7
 eta_mot   = 0.82    # BLDC motor efficiency near hover operating point
 eta_esc   = 0.95
 eta_prop_chain = eta_mot*eta_esc
-P_avio    = 55.0    # W: Jetson (~15) + FC/GNSS (~5) + camera (~3) + mesh radio (~8) + servos/misc, w/ margin -> use 55 W
+# W: Pi 5 + Hailo-8 (~15) + FC/GNSS (~5) + camera (~3) + mesh radio (~8)
+# + servos/misc, with margin -> 55 W. (The breakdown used to say "Jetson",
+# which is not the compute this programme buys; the total is unchanged
+# because the Pi 5 + accelerator pair lands in the same 13-17 W band.)
+P_avio    = 55.0
 DOD       = 0.80    # usable depth of discharge (land at 20%)
-e_lipo    = 175.0   # Wh/kg pack-level, 6S LiPo (high C)
-e_liion   = 225.0   # Wh/kg pack-level, 21700 Li-ion (e.g. P42A/50S class)
+# NOTE: e_lipo and e_liion were ALSO defined here, at 175 and 225 Wh/kg, and
+# then redefined ~70 lines below at the conservative 165 and 200 that actually
+# run. Python takes the later binding, so the output was always correct and
+# the first pair was a trap for anyone reading the constants block. Removed;
+# the single definition lives with the pack sizing where it is used.
 
 # fixed (non-battery, non-structure, non-propulsion) masses, kg
 avionics = {
@@ -258,11 +265,20 @@ print("  Both fit the 25 kg fleet cap with >30% margin -> redundancy is affordab
 
 # ---------------------------------------------------------------- OPTICS
 print("\n"+"="*80); print("STEP 7  CAMERA / OPTICS SIZING"); print("="*80)
-sensor_w, sensor_h = 7.4, 5.6            # mm, 1/1.8" (approx 4:3)
+# THE SENSOR IS THE ONE THE BOM BUYS. This block hardcoded 7.4 x 5.6 mm -- a
+# 1/1.8" sensor on a 1.82 um pitch that nothing in this programme purchases.
+# The Arducam IMX477 is type 1/2.3 at 1.55 um: the same pixel COUNT on a
+# smaller pixel, so every GSD, field of view and transect count computed from
+# the old numbers was for the wrong part. Deriving the sensor from its pitch
+# rather than stating its dimensions makes that substitution impossible to
+# make silently a second time.
 px_w, px_h = 4056, 3040                  # 12.3 MP
+pitch_um = 1.55                          # Arducam IMX477, type 1/2.3
 f_mm = 6.0
+sensor_w, sensor_h = px_w*pitch_um/1000.0, px_h*pitch_um/1000.0
 HFOV = 2*np.arctan(sensor_w/(2*f_mm)); VFOV = 2*np.arctan(sensor_h/(2*f_mm))
-print(f"  Sensor 1/1.8\" {px_w}x{px_h} ({px_w*px_h/1e6:.1f} MP), f = {f_mm} mm")
+print(f"  Sensor type 1/2.3 {px_w}x{px_h} ({px_w*px_h/1e6:.1f} MP) at "
+      f"{pitch_um} um, {sensor_w:.3f} x {sensor_h:.3f} mm, f = {f_mm} mm")
 print(f"  HFOV {np.rad2deg(HFOV):.1f} deg, VFOV {np.rad2deg(VFOV):.1f} deg, pixel pitch {sensor_w*1000/px_w:.2f} um")
 print(f"\n  {'AGL':>5}{'swath':>8}{'along':>8}{'GSD':>9}{'person px':>11}{'lines':>7}{'track':>8}{'t/drone':>9}")
 res={}
@@ -433,7 +449,11 @@ print(f"       feed a mass-change event to the controller / hold position 2 s af
 # ==================== from sizing5.py ====================
 # D and m_pack carry over from the final design point above (see note at STEP 6).
 MTOW,bd=converge(m_pack,D); Ph,_=hover_power_elec(MTOW,D)
-sensor_w,px_w,f_mm=7.4,4056,6.0
+# Same correction as STEP 7: this re-derived the sensor as 7.4 mm wide, which
+# is not the part being bought. The angular pixel scale it produced (15.6
+# mdeg/px) is what put the capture gate at 15 deg/s; on the real sensor one
+# pixel is 13.6 mdeg and the gate has to come down with it.
+sensor_w,px_w,f_mm = 4056*1.55/1000.0, 4056, 6.0
 HFOV=2*np.arctan(sensor_w/(2*f_mm)); h=60.0
 W=2*h*np.tan(HFOV/2); gsd=W/px_w
 

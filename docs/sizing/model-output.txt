@@ -72,36 +72,36 @@ STEP 6  QUAD vs HEX REDUNDANCY TRADE
 ================================================================================
 STEP 7  CAMERA / OPTICS SIZING
 ================================================================================
-  Sensor 1/1.8" 4056x3040 (12.3 MP), f = 6.0 mm
-  HFOV 63.3 deg, VFOV 50.0 deg, pixel pitch 1.82 um
+  Sensor type 1/2.3 4056x3040 (12.3 MP) at 1.55 um, 6.287 x 4.712 mm, f = 6.0 mm
+  HFOV 55.3 deg, VFOV 42.9 deg, pixel pitch 1.55 um
 
     AGL   swath   along      GSD  person px  lines   track  t/drone
-    30m   37.0m   28.0m   0.91cm       186     10   4000m     187s
-    40m   49.3m   37.3m   1.22cm       140      8   3200m     149s
-    50m   61.7m   46.7m   1.52cm       112      6   2400m     112s
-    60m   74.0m   56.0m   1.82cm        93      5   2000m      93s
-    70m   86.3m   65.3m   2.13cm        80      5   2000m      93s
-    80m   98.7m   74.7m   2.43cm        70      4   1600m      75s
+    30m   31.4m   23.6m   0.78cm       219     12   4800m     224s
+    40m   41.9m   31.4m   1.03cm       165      9   3600m     168s
+    50m   52.4m   39.3m   1.29cm       132      7   2800m     131s
+    60m   62.9m   47.1m   1.55cm       110      6   2400m     112s
+    70m   73.3m   55.0m   1.81cm        94      5   2000m      93s
+    80m   83.8m   62.8m   2.07cm        82      5   2000m      93s
 
   Detection floor: CNN detectors need >~20-30 px on target for reliable small-object recall
   (HERIDAL/SARD targets are ~0.1% of frame area). All rows above clear that by >2x.
 
-  SELECTED: 60 m AGL -> GSD 1.82 cm/px, person = 93 px long, swath 74 m
+  SELECTED: 60 m AGL -> GSD 1.55 cm/px, person = 110 px long, swath 63 m
            chosen for detection margin, not for coverage speed (coverage is not the constraint)
 
   MOTION BLUR / EXPOSURE
-    v= 8 m/s, 1/500 s -> smear 16.0 mm = 0.88 px  OK
-    v= 8 m/s, 1/1000 s -> smear  8.0 mm = 0.44 px  OK
-    v=12 m/s, 1/500 s -> smear 24.0 mm = 1.32 px  MARGINAL
-    v=12 m/s, 1/1000 s -> smear 12.0 mm = 0.66 px  OK
-    attitude rate 20 deg/s at 1/1000 s -> 4611.9 px angular smear (dominates in turns -> do not trust detections while banking)
-    50% forward overlap at 8 m/s needs only 0.29 Hz capture (advance 28 m/frame)
-    80% forward overlap at 8 m/s needs only 0.71 Hz capture (advance 11 m/frame)
-    -> run detection at 5 Hz: 35x redundant coverage per target, ~35 frames per target per pass -> multi-frame fusion is free
+    v= 8 m/s, 1/500 s -> smear 16.0 mm = 1.03 px  MARGINAL
+    v= 8 m/s, 1/1000 s -> smear  8.0 mm = 0.52 px  OK
+    v=12 m/s, 1/500 s -> smear 24.0 mm = 1.55 px  MARGINAL
+    v=12 m/s, 1/1000 s -> smear 12.0 mm = 0.77 px  OK
+    attitude rate 20 deg/s at 1/1000 s -> 5280.9 px angular smear (dominates in turns -> do not trust detections while banking)
+    50% forward overlap at 8 m/s needs only 0.34 Hz capture (advance 24 m/frame)
+    80% forward overlap at 8 m/s needs only 0.85 Hz capture (advance 9 m/frame)
+    -> run detection at 5 Hz: 29x redundant coverage per target, ~29 frames per target per pass -> multi-frame fusion is free
 
   TILED INFERENCE (SAHI-style, 640px tiles, 20% overlap)
     full-res tiling = 8x6 = 48 tiles/frame -> 240 tile-inferences/s at 5 Hz  [too much for Orin Nano ~30-40 FPS]
-    downsample 2x first (2028x1520, GSD 3.65 cm, person 47 px) -> 12 tiles = 60 inferences/s
+    downsample 2x first (2028x1520, GSD 3.10 cm, person 55 px) -> 12 tiles = 60 inferences/s
     Orin Nano TensorRT FP16 YOLO @640: ~24-40 FPS measured in literature -> run 2 Hz full tiling or 5 Hz on 3x3 tiles. Budget-check on hardware in P5.
 
 ================================================================================
@@ -134,10 +134,10 @@ STEP 9  GEOTAG ERROR BUDGET (RSS, 1-sigma, target at 60 m AGL)
   GNSS_horizontal            2.50m     2.50m     0.03m     0.01m
   attitude                   1.57m     1.05m     0.31m     0.07m
   boresight_cal              1.57m     0.31m     0.21m     0.21m
-  height_scale               3.08m     2.76m     0.62m     0.62m
-  pixel_centroid             0.09m     0.09m     0.09m     0.02m
+  height_scale               2.62m     2.34m     0.52m     0.52m
+  pixel_centroid             0.08m     0.08m     0.08m     0.02m
   time_sync                  0.40m     0.16m     0.16m     0.04m
-  RSS                        4.57m     3.88m     0.75m     0.66m   <== total
+  RSS                        4.27m     3.60m     0.67m     0.57m   <== total
     A  standard GNSS, uncalibrated boresight
     B  standard GNSS, calibrated boresight
     C  RTK + dual-antenna heading + cal
@@ -191,22 +191,22 @@ STEP 11  GEOMETRY, STRUCTURE, CG
 ================================================================================
 CORRECTION 1  ANGULAR MOTION BLUR (previous run had a unit error)
 ================================================================================
-  Angular pixel scale = 63.3 deg / 4056 px = 15.61 mdeg/px
-    body rate  5 deg/s, 1/500 s ->  0.64 px angular smear
-    body rate  5 deg/s, 1/1000 s ->  0.32 px angular smear
-    body rate  5 deg/s, 1/2000 s ->  0.16 px angular smear
+  Angular pixel scale = 55.3 deg / 4056 px = 13.63 mdeg/px
+    body rate  5 deg/s, 1/500 s ->  0.73 px angular smear
+    body rate  5 deg/s, 1/1000 s ->  0.37 px angular smear
+    body rate  5 deg/s, 1/2000 s ->  0.18 px angular smear
 
-    body rate 10 deg/s, 1/500 s ->  1.28 px angular smear   <-- exceeds 1 px
-    body rate 10 deg/s, 1/1000 s ->  0.64 px angular smear
-    body rate 10 deg/s, 1/2000 s ->  0.32 px angular smear
+    body rate 10 deg/s, 1/500 s ->  1.47 px angular smear   <-- exceeds 1 px
+    body rate 10 deg/s, 1/1000 s ->  0.73 px angular smear
+    body rate 10 deg/s, 1/2000 s ->  0.37 px angular smear
 
-    body rate 20 deg/s, 1/500 s ->  2.56 px angular smear   <-- exceeds 1 px
-    body rate 20 deg/s, 1/1000 s ->  1.28 px angular smear   <-- exceeds 1 px
-    body rate 20 deg/s, 1/2000 s ->  0.64 px angular smear
+    body rate 20 deg/s, 1/500 s ->  2.93 px angular smear   <-- exceeds 1 px
+    body rate 20 deg/s, 1/1000 s ->  1.47 px angular smear   <-- exceeds 1 px
+    body rate 20 deg/s, 1/2000 s ->  0.73 px angular smear
 
-    body rate 45 deg/s, 1/500 s ->  5.76 px angular smear   <-- exceeds 1 px
-    body rate 45 deg/s, 1/1000 s ->  2.88 px angular smear   <-- exceeds 1 px
-    body rate 45 deg/s, 1/2000 s ->  1.44 px angular smear   <-- exceeds 1 px
+    body rate 45 deg/s, 1/500 s ->  6.60 px angular smear   <-- exceeds 1 px
+    body rate 45 deg/s, 1/1000 s ->  3.30 px angular smear   <-- exceeds 1 px
+    body rate 45 deg/s, 1/2000 s ->  1.65 px angular smear   <-- exceeds 1 px
 
   Translational smear at 8 m/s, 1/1000 s = 0.44 px. Angular smear dominates only in
   aggressive turns. Rule: gate detections on |body rate| < 15 deg/s, and use 1/1000 s or
@@ -246,13 +246,13 @@ CORRECTION 3  HONEST GEOTAG BUDGET (adds terms the clean model omits)
   time_sync                          0.04m       0.04m       0.04m
   EKF_lag                            0.07m       0.07m       0.07m
   boresight_residual                 0.31m       0.21m       0.16m
-  ground_height_assumption           2.76m       0.62m       0.19m
+  ground_height_assumption           2.34m       0.52m       0.16m
   target_extent_centroid             0.50m       0.50m       0.50m
   GNSS_camera_lever_arm              0.10m       0.10m       0.10m
   unmodelled                         1.00m       1.00m       0.70m
-  RSS_1sigma                         3.06m       1.30m       0.91m   <==
-  CEP50                              2.54m       1.08m       0.75m
-  R95                                5.29m       2.25m       1.57m
+  RSS_1sigma                         2.69m       1.26m       0.90m   <==
+  CEP50                              2.23m       1.05m       0.75m
+  R95                                4.65m       2.18m       1.56m
     B  standard GNSS, calibrated, 20-frame fusion
     C  RTK fix + dual-antenna heading, cal, 20-frame fusion
     C-strict  as C but surveyed ground plane (terr 0.3 m)

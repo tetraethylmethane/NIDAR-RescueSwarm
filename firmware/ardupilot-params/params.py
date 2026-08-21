@@ -111,7 +111,15 @@ BASE: dict[str, float] = {
 
     # --- GNSS / RTK (SYS-12, SYS-42) ------------------------------------
     "GPS_TYPE": 1,
-    "GPS_TYPE2": 1,
+    # 0, NOT 1. The second receiver that supplies moving-baseline heading is
+    # DEFERRED to a P6 measurement and is not being bought, so declaring it
+    # here configures an aircraft that does not exist: ArduPilot then expects
+    # a unit that never reports, and GPS_AUTO_SWITCH below has nothing to
+    # switch to. The SITL harness was already forcing this to 0 at runtime,
+    # which meant the committed value was never the flown value -- the exact
+    # failure this repository keeps hitting. Set it to 1 in the same commit
+    # that fits the receiver, not before.
+    "GPS_TYPE2": 0,
     "GPS_AUTO_SWITCH": 1,
     "GPS_INJECT_TO": 127,                    # RTCM to all GPS units
     "EK3_SRC1_POSXY": 3,                     # GPS

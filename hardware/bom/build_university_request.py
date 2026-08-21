@@ -184,16 +184,32 @@ TRANCHES = [
 # These are supplier LEADS at the adopted specification, not held quotations.
 SUPPLIER = {
     "Flight controller": ("Holybro Pixhawk 6C Mini", "Indian distributor (Robu / ElectroPi)", "https://robu.in/"),
-    "AI accelerator": ("Edge AI module, >=20 TOPS", "e-con Systems (Chennai)", "https://www.e-consystems.com/"),
-    "GNSS RTK primary": ("AeroNav-series NavIC L1+L5 RTK", "Teravolt Labs (India)", "https://teravoltlabs.com/"),
-    "Motors": ("5008-class, 340 KV", "Reflex Drive (Lucknow) or equivalent", "https://reflexdrive.in/"),
+    "AI accelerator": ("Edge AI module. REQUIREMENT IS THROUGHPUT, NOT TOPS: "
+                       ">=37 inferences/s at 640x640 INT8 (12 tiles at 3.06 Hz). "
+                       "PCIe attach; USB accelerators do not reach it.",
+                       "e-con Systems (Chennai)", "https://www.e-consystems.com/"),
+    "GNSS RTK primary": ("RTK-capable receiver: must accept RTCM3 corrections "
+                        "and report an RTK FIXED solution at <=3 cm CEP. "
+                        "SBAS-corrected receivers at ~1.5 m CEP DO NOT MEET "
+                        "THIS regardless of what the part is named -- confirm "
+                        "against the datasheet, not the product title.",
+                        "Teravolt Labs (India)", "https://teravoltlabs.com/"),
+    "Motors": ("5008-class, 340 KV, 6S, 18 in prop. MUST deliver >=3.18 kgf "
+               "static per motor with hover at 1.59 kgf (50% of max); "
+               "published thrust curve required, or thrust-stand verified "
+               "before fleet commitment. <=175 g.",
+               "Reflex Drive (Lucknow) or equivalent", "https://reflexdrive.in/"),
     "Li-ion cells": ("21700 NMC, 4500 mAh min, 45 A continuous unrestricted "
                      "(no 80C cut-off), DC-IR <=15 mOhm @50% SoC 25C, <=72 g", "GODI India (Hyderabad)", "https://godiindia.com/"),
     "Structure": ("CF tube, plate and machined clamps", "Kineco Kaman (Goa) + institute machine shop", "https://www.kineco.in/"),
-    "Camera + lens": ("Arducam IMX477 + 6 mm S-mount", "Indian distributor", "https://robu.in/"),
+    "Camera + lens": ("Arducam IMX477 (type 1/2.3, 1.55 um) + 6 mm CS lens, "
+                     "FIXED FOCUS. Hyperfocal is 4.15 m against a 30 m "
+                     "minimum altitude, so a focus motor buys nothing and "
+                     "adds a moving part.", "Indian distributor", "https://robu.in/"),
     "Pack, BMS, PDB, BEC": ("6S3P pack, BMS, PDB, BEC", "Flameback Tech (Baddi, HP)", "https://www.flamebacktech.com/"),
     "RC rx, storage, cooling, mounts": ("ExpressLRS 2.4 GHz rx (3.5+, native MAVLink)", "Zerodrag (India)", "https://zerodrag.in/"),
-    "ESCs": ("60 A, field-oriented", "Reflex Drive (Lucknow)", "https://reflexdrive.in/"),
+    "ESCs": ("50-60 A continuous, field-oriented, 6S. Peak demand is 29 A "
+            "per motor at T/W 2.0.", "Reflex Drive (Lucknow)", "https://reflexdrive.in/"),
     "Mesh node + antennas": ("5.8 GHz mesh node", "FxUAV Technologies (Burla)", "https://fxuav.in/"),
     "Payload system": ("Servo release, 4 stations", "Zerodrag + in-house", "https://zerodrag.in/"),
     "Propellers": ("18 in carbon", "Reflex Drive / UAV Garage", "https://uavgarage.com/"),
