@@ -20,8 +20,19 @@ survivors?
 ```bash
 python perception/cascade/run_experiment.py            # Stage 0, needs nothing
 python perception/cascade/economics.py                 # the decision rule
-python -m pytest perception/tests/test_cascade.py -q   # 22 tests, no GPU
+python -m pytest perception/tests/test_cascade.py -q   # 27 tests, no GPU
+
+# when you are ready to spend the fortnight
+python -m perception.cascade.fetch_data --dest data/seadronessee
+python perception/cascade/run_experiment.py --ann data/seadronessee/annotations/instances_train.json
 ```
+
+`fetch_data.py` refuses to declare the data usable unless **gimbal pitch is
+present on at least half the images**. That is not fussiness: a re-hosted copy
+converted to YOLO format keeps the boxes and drops the metadata, and without
+gimbal pitch we cannot exclude oblique frames. Every oblique frame that leaks
+into the set makes the measured recall belong to an easier problem than the one
+we fly — and the result would look good and mean nothing.
 
 ## The decision rule, fixed before any result
 
@@ -88,6 +99,7 @@ the val split or a re-split of train.
 | `economics.py` — break-even, correlated-recall model, decision rule | done, tested |
 | `dataset.py` — SeaDronesSee loader and frame selection | done, tested on synthetic COCO |
 | `run_experiment.py` Stage 0 — rejection ceiling | done, runs |
+| `fetch_data.py` — download and verification | verify tested on synthetic COCO; **download path unrun** |
 | Stage 1 — train the gate, measure recall | **needs the dataset and a GPU** |
 
 Stage 1 is the part that costs a fortnight. Stage 0 costs half an hour and is

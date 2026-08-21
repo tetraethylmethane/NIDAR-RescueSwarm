@@ -270,3 +270,55 @@ def test_most_tiles_are_negative_which_is_the_gate_headroom(tmp_path):
     plan = D.plan_tiles(f, wanted_px=38.7)
     ceiling = 1.0 - plan["n_positive"] / plan["n_tiles"]
     assert ceiling > E.break_even_rejection(E.DOWNSAMPLED, E.cascade_at(640))
+
+
+# ----------------------------------------------------------------- fetch/verify
+from perception.cascade import fetch_data as F  # noqa: E402
+
+
+def _write_split(tmp_path, name, images, annotations, cats=(("swimmer", 1),)):
+    d = tmp_path / "annotations"
+    d.mkdir(exist_ok=True)
+    p = d / f"instances_{name}.json"
+    p.write_text(json.dumps(_coco(images, annotations, cats)), encoding="utf-8")
+    return p
+
+
+def test_verify_accepts_a_well_formed_split(tmp_path, capsys):
+    imgs = [_img(i, -90.0 + i) for i in range(20)]
+    anns = [_ann(i, 10, 10, 30, 30) for i in range(20)]
+    _write_split(tmp_path, "train", imgs, anns)
+    assert F.verify(str(tmp_path)) is True
+    assert "READY" in capsys.readouterr().out
+
+
+def test_verify_rejects_a_mirror_with_no_gimbal_metadata(tmp_path, capsys):
+    """The failure this script exists to catch: a format conversion that kept
+    the boxes and dropped the fields the oblique filter needs."""
+    imgs = [{"id": i, "file_name": f"{i}.jpg", "width": 3840, "height": 2160}
+            for i in range(20)]
+    anns = [_ann(i, 10, 10, 30, 30) for i in range(20)]
+    _write_split(tmp_path, "train", imgs, anns)
+    assert F.verify(str(tmp_path)) is False
+    out = capsys.readouterr().out
+    assert "without gimbal pitch" in out and "NOT READY" in out
+
+
+def test_verify_rejects_missing_person_category(tmp_path, capsys):
+    imgs = [_img(i, -90.0) for i in range(5)]
+    anns = [_ann(i, 10, 10, 30, 30, cat=7) for i in range(5)]
+    _write_split(tmp_path, "train", imgs, anns, cats=(("boat", 7),))
+    assert F.verify(str(tmp_path)) is False
+    assert "no person-like category" in capsys.readouterr().out
+
+
+def test_verify_reports_missing_directory(tmp_path):
+    assert F.verify(str(tmp_path / "nope")) is False
+
+
+def test_verify_warns_on_a_truncated_split(tmp_path, capsys):
+    """8,930 is the published train size; anything else is a partial download."""
+    imgs = [_img(i, -90.0) for i in range(20)]
+    _write_split(tmp_path, "train", imgs, [_ann(i, 10, 10, 30, 30) for i in range(20)])
+    F.verify(str(tmp_path))
+    assert "expected 8,930" in capsys.readouterr().out
