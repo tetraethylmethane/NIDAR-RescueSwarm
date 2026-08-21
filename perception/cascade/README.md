@@ -100,7 +100,28 @@ the val split or a re-split of train.
 | `dataset.py` — SeaDronesSee loader and frame selection | done, tested on synthetic COCO |
 | `run_experiment.py` Stage 0 — rejection ceiling | done, runs |
 | `fetch_data.py` — download and verification | verify tested on synthetic COCO; **download path unrun** |
-| Stage 1 — train the gate, measure recall | **needs the dataset and a GPU** |
+| `gate.py` — training, threshold, scoring | metric logic tested; **training loop unrun** |
+| Stage 1 — actually run it | **needs Kaggle credentials, ~25 GB free, and a GPU** |
+
+### What Stage 1 still needs from you
+
+- **Kaggle credentials** (`~/.kaggle/kaggle.json`) or a manual download from
+  the official source.
+- **~25 GB free disk.** A 12.7 GB archive plus its unpacked copy.
+- **A GPU.** ~14k frames × 48 tiles on CPU is days, not hours. `gate.py` warns
+  and continues rather than refusing.
+
+### What `gate.py` cannot measure, and why it matters
+
+The decision rule assumes gate failures may be **fully correlated** across a
+pass. Object Detection v2 is independent images with no track IDs, so
+correlation is not observable in it. The real measurement needs the
+**SeaDronesSee MOT split**, where the same identity can be followed across
+consecutive frames.
+
+Until that is done, a passing per-target recall on ODv2 is necessary but not
+sufficient — and `report()` prints that caveat with every result so it cannot
+quietly become a claim.
 
 Stage 1 is the part that costs a fortnight. Stage 0 costs half an hour and is
 what decides whether the fortnight is worth spending — which is why it runs

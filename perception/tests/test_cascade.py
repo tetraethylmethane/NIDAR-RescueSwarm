@@ -322,3 +322,57 @@ def test_verify_warns_on_a_truncated_split(tmp_path, capsys):
     _write_split(tmp_path, "train", imgs, [_ann(i, 10, 10, 30, 30) for i in range(20)])
     F.verify(str(tmp_path))
     assert "expected 8,930" in capsys.readouterr().out
+
+
+# ---------------------------------------------------------------- gate scoring
+# The metric logic is testable without torch: it is arithmetic over score lists.
+from perception.cascade import gate as GT  # noqa: E402
+
+
+def test_threshold_is_chosen_by_recall_not_accuracy():
+    """96 % of tiles are empty, so accuracy is a useless objective. The
+    threshold must be the one that keeps the required fraction of positives."""
+    scores = [0.9, 0.8, 0.7, 0.6] + [0.1] * 96
+    labels = [1, 1, 1, 1] + [0] * 96
+    assert GT.threshold_for_recall(scores, labels, 1.0) == pytest.approx(0.6)
+    assert GT.threshold_for_recall(scores, labels, 0.75) == pytest.approx(0.7)
+
+
+def test_threshold_raises_when_there_are_no_positives():
+    with pytest.raises(ValueError):
+        GT.threshold_for_recall([0.1, 0.2], [0, 0])
+
+
+def test_per_target_recall_differs_from_per_tile_recall():
+    """A target in two tiles is caught if EITHER fires. Reporting per-tile
+    recall would understate the gate; reporting only per-tile would also hide
+    a target lost in both."""
+    #            t0        t1        t2        t3
+    scores = [0.9,      0.2,      0.2,      0.2]
+    labels = [1,        1,        1,        0]
+    frames = [1, 1, 1, 1]
+    # target A appears in tiles 0 and 1; target B only in tile 2
+    tids = [[(1, "A")], [(1, "A")], [(1, "B")], []]
+    res = GT.evaluate(scores, labels, frames, tids, threshold=0.5)
+    assert res["tile_recall"] == pytest.approx(1 / 3)      # 1 of 3 positive tiles
+    assert res["target_recall"] == pytest.approx(0.5)      # A found, B lost
+    assert res["n_targets"] == 2 and res["targets_missed"] == 1
+
+
+def test_rejection_counts_all_tiles_not_just_negatives():
+    scores = [0.9] + [0.1] * 9
+    labels = [1] + [0] * 9
+    res = GT.evaluate(scores, labels, [1] * 10, [[(1, "A")]] + [[]] * 9, 0.5)
+    assert res["rejection"] == pytest.approx(0.9)
+    assert res["target_recall"] == pytest.approx(1.0)
+
+
+def test_a_gate_that_rejects_everything_fails_on_recall():
+    scores = [0.1] * 10
+    labels = [1] + [0] * 9
+    res = GT.evaluate(scores, labels, [1] * 10, [[(1, "A")]] + [[]] * 9, 0.5)
+    assert res["rejection"] == pytest.approx(1.0)
+    assert res["target_recall"] == pytest.approx(0.0)
+    v = E.verdict(res["rejection"], res["target_recall"], E.DOWNSAMPLED,
+                  E.cascade_at(640))
+    assert v["cost_ok"] and not v["adopt"], "cheap but blind must not pass"
