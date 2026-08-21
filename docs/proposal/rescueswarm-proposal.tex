@@ -369,38 +369,18 @@ overweight tolerated --- inside the 25\,kg regulatory cap.}
 \label{fig:mass}
 \end{figure}
 
-\subsection{Energy, and what the pack must actually do}
+\subsection{Energy: the decisions behind the pack}
 \label{sec:energy}
 
-The design mission consumes 105.5\,Wh. The pack holds 233.3\,Wh usable. That
-gap is not slack, and stating the mission figure alone would misrepresent the
-design: the pack is sized by a \emph{reserve policy}, which requires it to carry
-the nominal mission, one complete re-sweep of the search area, and four minutes
-of loiter, all inside an 80\,\% depth of discharge:
-\[
-\underbrace{105.5}_{\text{nominal}} +
-\underbrace{22.1}_{\text{re-sweep}} +
-\underbrace{60.8}_{\text{4 min loiter}} = 188.4~\text{Wh usable},
-\]
-against 233.3\,Wh available --- a margin of \textbf{24\,\%}. The re-sweep term
-exists because a search that finds nothing on the first pass is a normal
-outcome, not a failure; the loiter term exists because a recovery queue of three
+Section~\ref{sec:sizing} derives the pack requirement in full --- the reserve
+policy that sizes it, the nameplate energy floor, and the continuous current
+figure that disqualifies most candidate packs. The re-sweep term in that policy
+exists because a search finding nothing on its first pass is a normal outcome
+rather than a failure; the loiter term exists because a recovery queue of three
 aircraft is not instantaneous.
 
-\textbf{Stated independently of chemistry}, the requirement on any candidate
-pack is: \textbf{6S} (21.6--22.2\,V nominal, 25.2\,V maximum),
-\textbf{$\geq$236\,Wh} nameplate, \textbf{$\geq$115\,A continuous},
-\textbf{$\leq$40\,m$\Omega$} internal resistance and \textbf{$\leq$1\,450\,g}.
-The current figure is the one most often missed. It is not a burst rating: at
-thrust-to-weight 2.0 the aircraft draws 2\,481\,W, which at 21.6\,V is 115\,A,
-and that current must be available continuously rather than for a rated pulse.
-
-Those two constraints trade against each other, which is why the pack is larger
-than the energy requirement alone would suggest. At the 236\,Wh floor the pack
-would be 10.9\,Ah and would need a 10.6\,C continuous rating; at the adopted
-13.5\,Ah it needs only 8.5\,C. Carrying capacity is how the design buys down
-C-rate, and it is the reason a nominally ``low C'' cylindrical cell is adequate
-here when it would not be in a smaller pack.
+Two things about the result are decisions rather than arithmetic, and they
+belong here rather than in a derivation.
 
 \textbf{Why cylindrical Li-ion rather than LiPo.} I record this as a trade
 rather than a preference, because LiPo wins part of it. A LiPo pack of equal
@@ -419,10 +399,12 @@ electrical argument points the other way.
 previously reported at 159\,Wh. That figure was computed at the sizing solve,
 before the pack was rounded up to a buildable 18 cells and maximum take-off mass
 settled roughly 0.7\,kg heavier; the model checked a constraint against a design
-point it then abandoned. Re-evaluated at the adopted mass the requirement is
-188.4\,Wh, and the chemistry-agnostic floor moves from 199\,Wh to 236\,Wh. The
-pack still passes, at 24\,\% margin rather than the 47\,\% previously implied.
-The model now performs this check at the final design point.
+point it then abandoned. Re-evaluated at the adopted mass the requirement rises
+by roughly a fifth, to the figure given in Section~\ref{sec:sizing}, and the
+chemistry-agnostic nameplate floor rises with it. The pack still passes, on a
+materially smaller margin than the earlier figure implied. The model now
+performs this check at the final design point, and a pack bought against the
+superseded number would have missed the policy.
 
 \subsection{Segment architecture}
 
@@ -813,6 +795,12 @@ mission file rather than in operator timing, and all three abnormal conditions
 converge on a single return-to-launch path.}
 \label{fig:flow}
 \end{figure}
+
+%=============================================================================
+% GENERATED from the sizing model by tools/proposal/build_sizing_section.py.
+% Regenerate with that script; do not edit generated-sizing.tex by hand.
+\input{generated-sizing}
+%=============================================================================
 
 %=============================================================================
 \section{Methodology and Work Plan}
