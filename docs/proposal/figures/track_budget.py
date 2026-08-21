@@ -106,7 +106,7 @@ LINE_TRACK = {
 
 
 def per_aircraft_by_track():
-    """The 165,800 per-aircraft figure, partitioned."""
+    """The per-aircraft figure, partitioned. Read from cb.PER_AIRCRAFT."""
     out = {t: 0 for t in TRACKS}
     for name, q, u, _tier, _note in cb.AIRCRAFT:
         out[AIRCRAFT_TRACK[name]] += q * u

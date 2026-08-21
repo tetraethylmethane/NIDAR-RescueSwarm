@@ -35,7 +35,8 @@ AIRCRAFT = [
      "over the Pi 5's PCIe and is an M.2 card with nothing to plug into "
      "without it, and the camera is a CSI module with nothing to connect to. "
      "The verified BOM carried a 55,000 module WITH an integrated host; the "
-     "cost pass swapped in a 20,000 accelerator and did not put the host back."),
+     "cost pass swapped in a 20,000 accelerator -- since repriced to 11,000 -- "
+     "and did not put the host back."),
     ("AI accelerator",         1, 11_000, "KEEP",
      "Pi AI HAT+ (Hailo-8, 26 TOPS) -- an NPU, not a computer; needs the host "
      "above, and PCIe, which only the Pi 5 exposes. PRICE CORRECTED from "

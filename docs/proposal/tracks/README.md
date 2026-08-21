@@ -10,9 +10,14 @@ lead is held to.
 | **A — Air vehicle** | Frame, propulsion, power, payload mechanism, assembly | ₹3,25,397 |
 | **B — Avionics & comms** | FC, companion computer, GNSS/RTK, mesh, safety link, video | ₹2,80,963 |
 | **C — Autonomy & GCS** | Coverage planner, allocation, state machine, ground station, SITL | ₹2,324 |
-| **D — Perception** | Detector, tiling, geotagging, calibration, dataset | ₹1,07,295 |
+| **D — Perception** | Detector, tiling, geotagging, calibration, dataset | ₹76,245 |
 | *Shared* | Safety, statutory, field kit, consumables no single track owns | ₹49,450 |
-| | **TOTAL** | **₹7,65,429** |
+| | **TOTAL** | **₹7,34,379** |
+
+> Track D fell from ₹1,07,295 when the accelerator line was corrected from
+> ₹20,000 to its actual Indian market price. These figures are generated; if
+> they disagree with `track_budget.py`, the script is right and this table is
+> stale — regenerate rather than edit.
 
 Track boundaries follow [`development-plan.md`](../../development-plan.md) §1.3.
 The shared pool is not a track — it exists because some lines (safety equipment,
