@@ -34,6 +34,9 @@ gimbal pitch we cannot exclude oblique frames. Every oblique frame that leaks
 into the set makes the measured recall belong to an easier problem than the one
 we fly — and the result would look good and mean nothing.
 
+**Running Stage 1 on a university GPU: see [RUNBOOK.md](RUNBOOK.md)** for the
+download link, the cluster session, and the order to do things in.
+
 ## The decision rule, fixed before any result
 
 Adopt **only if both hold** on held-out data:
