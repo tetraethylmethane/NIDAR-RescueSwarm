@@ -90,7 +90,11 @@ AIRCRAFT = [
     ("Mesh node + antennas",   1,  6_000, "hobby", "Rule 8.14: three concurrent feeds."),
     ("Payload system",         1,  4_500, "hobby",
      "Metal detents retained -- a brownout must not drop a kit."),
-    ("Propellers",             4,  1_000, "hobby", "Generic 18 in CF. Balance every one."),
+    ("Propellers",             4,  1_625, "hobby",
+     "Tarot 1855 CF, CW/CCW. PRICE CORRECTED from 1,000: the verified "
+     "Indian listing is 3,250 per counter-rotating PAIR, so four is 6,500 "
+     "per aircraft. Balance every one; this is the most frequently "
+     "destroyed item in a flight-test campaign."),
     ("Wiring, connectors",     1,  2_400, "hobby", ""),
     ("Prop adapters",          4,    350, "hobby", ""),
     ("VEGA co-processor",       1,      0, "KEEP",
