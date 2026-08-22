@@ -15,6 +15,11 @@
 \usepackage{titlesec}
 \usepackage[hidelinks]{hyperref}
 \usepackage{fancyhdr}
+\usepackage{graphicx}
+% brainwave.pdf is the society mark, converted from SVG by
+% tools/proposal/svg_logo_to_pdf.py -- pdflatex cannot read SVG, and this
+% machine has no inkscape or ImageMagick.
+\graphicspath{{images/}}
 
 \newcommand{\rs}[1]{\mbox{INR~#1}}
 % Table furniture, defined once so every table matches.
@@ -38,13 +43,23 @@
 
 \begin{document}
 
+\thispagestyle{empty}
+
+% ---- letterhead ------------------------------------------------------------
+\noindent
+\raisebox{-0.5\height}{\includegraphics[height=16mm]{brainwave.pdf}}%
+\hfill
+\raisebox{-0.5\height}{\includegraphics[height=15mm]{thapar_logo.png}}
+
+\vspace{3mm}\hrule\vspace{6mm}
+
 \begin{center}
 {\LARGE\bfseries An Autonomous Multi-UAV System for\\[1.5mm]
 Post-Disaster Search, Localisation and Payload Delivery}\\[5mm]
 Swastik Kumar \quad$\cdot$\quad Electronics \& Communication Engineering\\
 Thapar Institute of Engineering \& Technology \quad$\cdot$\quad \today
 \end{center}
-\thispagestyle{empty}
+
 \vspace{1mm}\hrule\vspace{4mm}
 
 %-----------------------------------------------------------------------------
