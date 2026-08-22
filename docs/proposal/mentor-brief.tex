@@ -56,8 +56,9 @@ the detector looks at it.} We have a fix, and we can test it on free public data
 before committing to anything.
 
 This document explains the flaw, the fix, and what the whole programme needs ---
-\textbf{\rs{7{,}34{,}379} across seven small steps}, each released only when
-the previous one has produced a result. The first decision is INR~31,371.
+\textbf{\rs{7{,}34{,}379} across nine small steps}, each released only when
+the previous one has produced a result. The first decision is INR~31,371 --
+about four per cent of the whole -- and no single step exceeds INR~1,05,172.
 
 %-----------------------------------------------------------------------------
 \section{Problem}
@@ -142,20 +143,21 @@ still settles an open question and costs the same to obtain.
 %-----------------------------------------------------------------------------
 \section{Resources needed}
 
-Money is not needed in one decision, or even in four. The programme splits into
-\textbf{seven small steps}, and the order is engineering rather than accounting:
-prove the motor before buying twelve of them, fly one aircraft before building
-three.
+Money is not needed in one decision. The programme splits into \textbf{nine
+small steps}, and the order is engineering rather than accounting: prove the
+motor before buying twelve of them, and fly one complete aircraft before
+building the other two.
 
 Each step is released only when the previous one has produced a result, so the
-department is never committed to more than one step at a time --- and the first
-decision is \rs{31{,}371}, not \rs{7{,}34{,}379}.
+department is never committed to more than one step at a time. \textbf{The first
+decision is \rs{31{,}371}} --- about four per cent of the programme --- and no
+single step exceeds \rs{1{,}05{,}172}.
 
-All prices are current Indian retail. Totals include customs duty, GST and 15\,\%
-contingency where they apply.
+All prices are current Indian retail. Totals include customs duty, GST and
+15\,\% contingency where they apply.
 
 \begin{center}
-\begin{tabular}{@{}clrL{6.0cm}@{}}
+\begin{tabular}{@{}clrL{5.9cm}@{}}
 \toprule
 \textbf{\#} & \textbf{Step} & \textbf{INR} & \textbf{Released only when} \\
 \midrule
@@ -164,8 +166,10 @@ contingency where they apply.
 3 & Aircraft one: airframe and power & 89,192 & Avionics powered and communicating on the bench \\
 4 & Fly aircraft one & 42,574 & Airframe assembled and weighed \\
 5 & Ground station and registration & 66,992 & First flight completed \\
-6 & Aircraft two & 1,99,539 & Aircraft one has flown a full mission \\
-7 & Aircraft three & 1,99,539 & Two aircraft flying with verified separation \\
+6 & Aircraft two: avionics & 1,05,172 & Aircraft one has flown a full mission \\
+7 & Aircraft two: airframe & 94,367 & Aircraft two's avionics verified \\
+8 & Aircraft three: avionics & 1,05,172 & Two aircraft flying, separation verified \\
+9 & Aircraft three: airframe & 94,367 & Aircraft three's avionics verified \\
 \midrule
 & \textbf{Total} & \textbf{7,34,379} & \\
 \bottomrule
@@ -176,7 +180,8 @@ contingency where they apply.
 
 The smallest step, and the one that decides everything after it. Our motors are
 sold without a published thrust curve, so we do not yet know that the aircraft
-can lift itself. Rather than buy twelve on faith, we buy \emph{one} and measure.
+can lift itself. Rather than buy twelve on faith, we buy \emph{one} and measure
+it.
 
 \begin{center}\small
 \begin{tabular}{@{}L{3.2cm}L{4.6cm}rrL{4.0cm}@{}}
@@ -218,7 +223,7 @@ Mesh radio & 5.8\,GHz + antennas & 1 & 6,000 & Video and data between aircraft \
 \toprule
 \textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why} \\
 \midrule
-Motors & Tarot TL96020, remaining three & 3 & 13,500 & Bought only after step 1 proved the first one \\
+Motors & Tarot TL96020, remaining three & 3 & 13,500 & Bought only after step 1 proved the first \\
 Airframe & 25\,$\times$\,23\,mm carbon tube (Kineco Kaman) + machined clamps & 1 & 13,000 & Fabricated in the institute machine shop \\
 Battery cells & Molicel P45B 21700, 4500\,mAh & 18 & 12,600 & Peak draw is 38.3\,A per cell; a 40\,A cell has no margin \\
 Pack assembly & 6S 60\,A BMS + power board + regulator & 1 & 8,500 & 18 cells must be welded, fused and balanced \\
@@ -265,12 +270,16 @@ Survey tripod & Photographic tripod and adapter & 1 & 4,000 & Survey-grade is no
 \end{tabular}
 \end{center}
 
-\subsection*{Steps 6 and 7 --- Aircraft two and three \quad \textbf{\rs{1{,}99{,}539} each}}
+\subsection*{Steps 6 to 9 --- Aircraft two and three}
 
-Identical to steps 2 and 3 combined, repeated once per aircraft. These are the
-two largest requests, and deliberately the last: by the time either is made, a
-complete aircraft has already flown the mission, so what is being funded is
-\emph{replication of a proven design} rather than a hope.
+Each remaining aircraft repeats steps 2 and 3: first its avionics
+(\rs{1{,}05{,}172}), then its airframe and power (\rs{94{,}367}, slightly more
+than aircraft one because all four motors are bought together). The parts and
+reasons are identical to the tables above.
+
+These four steps are deliberately last. By the time any of them is requested, a
+complete aircraft has already flown the mission --- so what is being funded is
+\textbf{replication of a design that works}, not a hope that it will.
 
 \subsection*{Two notes on the parts}
 
@@ -293,13 +302,13 @@ this line has to rise.
 
 Smaller steps are not free. Buying one aircraft at a time means placing the same
 imported order three times, and imported parts take four to six weeks. Ordering
-all three sets together at step 2 would save roughly \textbf{eight to twelve
-weeks} of schedule, at the price of a much larger single decision.
+all three sets together would save roughly \textbf{eight to twelve weeks} of
+schedule, at the price of a much larger single decision.
 
 We have chosen the smaller steps because we would rather move slowly with your
-confidence than quickly without it. If the schedule becomes the binding
-constraint, consolidating steps 2, 6 and 7 into one order is the lever ---
-and it is your call, not ours.
+confidence than quickly without it. If schedule becomes the binding constraint,
+consolidating steps 2, 6 and 8 into one order is the lever --- and that is your
+call, not ours.
 
 \textbf{For the detection test specifically}, we need nothing beyond what the
 department already has: about \textbf{one week on a GPU} and \textbf{30\,GB of
