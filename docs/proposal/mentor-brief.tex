@@ -50,127 +50,106 @@ Thapar Institute of Engineering \& Technology \quad$\cdot$\quad \today
 %-----------------------------------------------------------------------------
 \section{Executive summary}
 
-Floods displace millions of people in India each year, and the limiting factor
-in a rescue is not reaching survivors but locating them.
+Floods displace millions of people in India each year. The limiting factor in a
+rescue is not reaching survivors but locating them.
 
 We propose three one-metre, 6.4\,kg multirotor aircraft that search flooded
-ground as a coordinated group under a single operator, identify people from the
-air, report their position to approximately one metre, and deliver a relief kit
-to each. The system requires no mobile network and no internet connection.
+ground as a coordinated group under one operator, identify people from the air,
+report their position to about a metre, and deliver a relief kit to each ---
+without mobile network or internet.
 
-The sizing, error budgets and flight software are complete and reproducible, and
+Sizing, error budgets and flight software are complete and reproducible;
 coordination has been demonstrated across three simulated autopilots. No
-aircraft has yet flown, so the figures presented here are calculated; the
-programme below is ordered to replace them with measurements, beginning with the
-most consequential.
+aircraft has yet flown, so the figures here are calculated, and the programme is
+ordered to replace them with measurements.
 
-The request is \textbf{\rs{7{,}43{,}004} across 32 phases}, no phase exceeding
-\rs{30{,}000}, each released on the demonstrated result of the preceding one.
-The first is \rs{26{,}196}.
+The request is \textbf{\rs{7{,}43{,}004} across 32 phases}, none above
+\rs{30{,}000}, each released on the result of the preceding one.
 
 %-----------------------------------------------------------------------------
 \section{The problem}
 
-After a flood, the binding constraint is time-to-locate. Boat teams search
-slowly, at considerable risk, and cannot observe rooftops. Helicopters are
-scarce, costly per flight hour, and generally committed to evacuation. Neither
-covers a large area quickly while reporting precise positions.
+After a flood the binding constraint is time-to-locate. Boat teams search
+slowly, at risk, and cannot see rooftops. Helicopters are scarce and committed
+to evacuation. Conventional drones need one pilot each, depend on infrastructure
+the disaster has removed, and cannot assist a survivor once found.
 
-Conventional small drones do not close this gap. They require one pilot per
-aircraft, depend on network infrastructure the disaster has removed, and locate
-survivors without assisting them.
+Detection is the harder problem. A person in floodwater presents head and
+shoulders only, about 40\,cm across. Detection models take a fixed, small input,
+so the usual approach shrinks the image and the target shrinks with it, to a
+size at which published accuracy is 29--61\,\%. A smaller, faster model is
+worse, because smaller models take smaller inputs.
 
-The more difficult problem is detection itself. A person in floodwater presents
-only head and shoulders, approximately 40\,cm across. Detection models accept a
-fixed, small input, so the conventional approach reduces the image to fit --- and
-the target reduces with it, to a size at which published results report accuracy
-between 29\,\% and 61\,\%. Selecting a smaller, faster model worsens this,
-because smaller models accept smaller inputs. Two further constraints are
-specific to flooding: no existing dataset annotates \emph{people} in flood
-imagery, and thermal imaging is ineffective in water, where skin temperature
-equilibrates toward that of the water.
+Flooding adds two constraints: no dataset annotates \emph{people} in flood
+imagery, and thermal imaging fails in water, where skin equilibrates toward
+water temperature.
 
 %-----------------------------------------------------------------------------
 \section{Our solution}
 
-\textbf{System architecture.} The operator defines a search region of arbitrary
-shape; the software partitions it into three balanced sub-regions and plans a
-coverage path over each. This has been verified across thirteen non-convex
-boundary shapes with no path leaving the region and workload imbalance below
-0.02\,\%. The aircraft then operate autonomously, and the test harness
-demonstrates structurally that no command is transmitted after the mission
-begins. Detection and geolocation execute on board. Each aircraft carries four
-kits and can descend, null its groundspeed over a survivor, and release one.
-Link loss, low battery and operator abort all converge on a single
-return-and-land behaviour.
+\textbf{System.} The operator draws a search region of any shape; the software
+splits it into three balanced sub-regions and plans a path over each --- verified
+on thirteen non-convex shapes, no path leaving the region, imbalance below
+0.02\,\%. The aircraft then fly autonomously, and the test harness demonstrates
+structurally that no command is sent after the mission begins. Detection and
+geolocation run on board. Each aircraft carries four kits and can descend, null
+its groundspeed over a survivor, and release one. Link loss, low battery and
+operator abort converge on a single return-and-land behaviour.
 
-\textbf{Detection approach.} The image is not reduced. Each full-resolution
-frame is divided into 48 overlapping tiles processed at native resolution, and
-the survey altitude is 40\,m rather than 60\,m. Together these place the target
-at \textbf{39 pixels} rather than 13 --- nine times the area, and outside the
-size band in which detector performance degrades sharply. Both changes are
-required; either alone leaves the target within that band.
+\textbf{Detection.} The image is not shrunk. Each frame is divided into 48
+overlapping tiles processed at native resolution, and the survey altitude is
+40\,m rather than 60\,m. Together these place the target at \textbf{39 pixels}
+rather than 13 --- nine times the area, and outside the band where detector
+performance collapses. Both changes are needed; either alone leaves the target
+inside it.
 
-The approach requires four times the computation, and this was verified as
-feasible before adoption: 48 tiles at 2\,Hz is 96 inferences per second, against
-130--160 measured for the selected accelerator. The additional transects at the
-lower altitude cost seconds, and total mission duration is marginally shorter
-than at 60\,m because the climb is reduced.
+This costs four times the computation and was verified feasible first: 48 tiles
+at 2\,Hz is 96 inferences per second against 130--160 measured for the
+accelerator. Mission duration is marginally shorter than at 60\,m, the lower
+climb outweighing the extra transects.
 
-\textbf{One item remains open.} Confirming a survivor across twelve frames
-requires approximately 3\,Hz, which exceeds the accelerator's capacity. A
-two-stage approach would recover this, using a low-cost model to eliminate the
-approximately 87\,\% of tiles containing only water. It will be evaluated
-against public data before adoption, since a first-pass filter that discards a
-tile containing a person fails without indication.
+\textbf{One item is open.} Confirming a survivor across twelve frames needs
+about 3\,Hz, which exceeds that capacity. A two-stage filter --- a low-cost model
+discarding the roughly 87\,\% of tiles that are open water --- would recover it.
+It will be evaluated against public data first, since such a filter fails
+without indication when it discards a tile containing a person.
 
 %-----------------------------------------------------------------------------
 \section{Deliverables}
 
-\begin{enumerate}\itemsep1pt
+\begin{enumerate}\itemsep0pt
 \item Three aircraft operating as a coordinated group under one operator.
 \item A ground station that displays mission state and is architecturally
-incapable of commanding the aircraft, so autonomy cannot be circumvented in use.
-\item Autonomy software --- area partitioning, path planning, task allocation and
-failsafe logic --- with an automated test suite.
-\item A measured detection accuracy figure, replacing the calculated one.
-\item A measured determination of whether the two-stage filter permits the
-capture rate required for twelve-frame confirmation.
-\item A publication: image tiling, aerial person detection and low-power onboard
-inference have not previously been combined for flood conditions.
+incapable of commanding the aircraft.
+\item Autonomy software --- partitioning, path planning, allocation, failsafes ---
+with an automated test suite.
+\item Measured detection accuracy and a verdict on the two-stage filter,
+replacing the calculated figures.
+\item A publication: tiling, aerial person detection and low-power onboard
+inference have not been combined for flood conditions.
 \item Source code and results published in either outcome.
 \end{enumerate}
 
 %-----------------------------------------------------------------------------
 \section{Benefits}
 
-\textbf{Operational.} Three aircraft survey ten hectares in under eight minutes
-and provide a rescue coordinator with a list of coordinates rather than a video
-feed requiring continuous attention, and do so without network infrastructure.
+\textbf{Operational.} Ten hectares surveyed in under eight minutes, returning a
+list of coordinates rather than a video feed needing continuous attention.
 
-\textbf{Economic.} The complete system costs less than one hour of helicopter
-search time, is transportable by road, and is operated by two people.
+\textbf{Economic.} Less than one hour of helicopter search time for the complete
+system, transportable by road and operated by two people.
 
-\textbf{Institutional.} A calibrated thrust stand, a certified scale, a ground
-station, a tested autonomy codebase and trained students remain with the
-department after the project concludes.
+\textbf{Institutional.} A thrust stand, certified scale, ground station, tested
+codebase and trained students remain with the department.
 
-\textbf{Strategic.} Indian suppliers are selected wherever they meet the
-specification, both for supply-chain sovereignty and because domestic lead times
-are approximately half those of imports, which directly increases available
-flight-test time.
-
-\textbf{Transferable.} Only the training data is flood-specific. The same system
-applies to earthquake rubble survey, wildfire perimeter mapping and avalanche
-search.
+\textbf{Strategic.} Indian suppliers wherever they meet the specification, for
+sovereignty and because domestic lead times are about half those of imports.
 
 %-----------------------------------------------------------------------------
 \section{Resources needed}
 
-The programme is divided into \textbf{32 phases}. Each funds a single purchase,
-carries one objective, and is released only when the preceding phase has
-produced its result. \textbf{No phase exceeds \rs{30{,}000}}; the largest is
-\rs{29{,}440} and the first is \rs{26{,}196}.
+Each phase funds a single purchase and carries one objective. The largest is
+\rs{29{,}440}, the first \rs{26{,}196}.
 
 The sequence follows engineering dependency: the motor is measured before eleven
 more are bought, and one aircraft flies a complete mission before either of the
@@ -395,61 +374,45 @@ accuracy, as the corrections are relative. \\
 
 \subsection{Structural cost of this arrangement}
 
-Thirty-two approvals is a material administrative overhead, and procuring one
-aircraft at a time requires the same imported order three times, at a schedule
-cost of approximately eight to twelve weeks. Consolidating the per-aircraft
-phases into a single order is available if schedule becomes the binding
-constraint.
+Thirty-two approvals is a material administrative overhead, and buying one
+aircraft at a time places the same imported order three times --- roughly eight
+to twelve weeks of schedule. Consolidating the per-aircraft phases into one
+order is available if schedule becomes binding.
 
-\textbf{The detection evaluation requires no additional procurement:}
-approximately one week on a departmental GPU and 30\,GB of storage. The dataset
-is public and the software is open source.
+\textbf{The detection evaluation needs no procurement:} about a week on a
+departmental GPU and 30\,GB of storage, against a public dataset.
 
 %-----------------------------------------------------------------------------
 \section{Future work}
 
 \textbf{Near term.} Replace each calculated quantity with a measured one:
-detection accuracy, motor thrust and setup time. Evaluate near-infrared sensing,
-in which water absorbs strongly and human subjects do not, so a person appears
-bright against dark water; a camera without its infrared filter costs
-approximately \rs{3{,}000} and a public dataset exists for evaluation prior to
-purchase. Beyond flooding, the system applies to earthquake, wildfire and
-avalanche search.
+detection accuracy, motor thrust, setup time. Evaluate near-infrared sensing ---
+water absorbs strongly and skin does not, so a person appears bright against
+dark water. A camera without its infrared filter costs about \rs{3{,}000}, and a
+public dataset allows evaluation before purchase. Only the training data is
+flood-specific; the same system suits earthquake, wildfire and avalanche search.
 
-\textbf{Longer term: autonomous aircraft under severe power constraint.} The
-central constraint of this work --- a capable aircraft deciding for itself within
-a very small power budget --- is a hard requirement in planetary aviation. NASA's
-\emph{Ingenuity} completed 72 flights on Mars from a 1.8\,kg airframe in an
-atmosphere under one per cent of Earth's density. \emph{Dragonfly} launches in
-2028 for Titan, where atmospheric density is four times that of Earth at one
-seventh the gravity.
-
-The difficulty in those missions is not flight but that a radio command requires
-minutes to arrive: no operator is in the loop, so every decision is made on
-board. What transfers from this work is the portion that is not flood-specific
---- onboard survey planning, perception executed to an energy budget rather than
-an accuracy target, and safe behaviour in the absence of a link. One caution
-applies: microcontroller-class processors, frequently proposed for such
-missions, cannot resolve targets of the size considered here, so a planetary
-configuration would require a different operating point. This is a research
-question in its own right.
+\textbf{Longer term.} A capable aircraft deciding for itself within a very small
+power budget is a hard requirement in planetary aviation. \emph{Ingenuity} flew
+72 times on Mars from a 1.8\,kg airframe in an atmosphere under one per cent of
+Earth's density; \emph{Dragonfly} launches in 2028 for Titan. The difficulty
+there is not flight but that a command takes minutes to arrive, so every
+decision is made on board. What transfers is what is not flood-specific:
+onboard survey planning, perception run to an energy budget, and safe behaviour
+without a link. One caution --- microcontroller-class processors, often proposed
+for such missions, cannot resolve targets of this size, so a planetary
+configuration needs a different operating point.
 
 %-----------------------------------------------------------------------------
 \section{Conclusion}
 
-The design is complete and explicit as to which quantities are measured and
-which are calculated. We request the means to complete it in 32 phases, no
-phase exceeding \rs{30{,}000}, so that no expenditure is committed before the
-preceding phase has produced evidence.
+The design is complete and explicit about which quantities are measured and
+which are calculated. Phases 1 and 2 total \rs{31{,}371} and resolve the
+question the rest depends on: whether these motors lift this aircraft.
 
-Phases 1 and 2 total \rs{31{,}371} and resolve the question on which the
-remainder depends: whether the selected motors lift this aircraft. The immediate
-technical requirement is smaller still --- approximately one week of GPU time to
-evaluate the detection approach against public data.
-
-\vspace{2mm}
-We would welcome your guidance on two decisions: the operating altitude, which
-the detection evaluation will inform, and whether to adopt the two-stage
-detector once it has been measured.
+\vspace{1mm}
+We would welcome your guidance on two decisions --- the operating altitude, which
+the detection evaluation will inform, and whether to adopt the two-stage filter
+once measured.
 
 \end{document}
