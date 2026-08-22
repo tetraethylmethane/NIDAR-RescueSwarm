@@ -51,17 +51,16 @@ Thapar Institute of Engineering \& Technology \quad$\cdot$\quad \today
 \section{Executive summary}
 
 Floods displace millions of people in India each year. The limiting factor in a
-rescue is not reaching survivors but locating them.
+rescue is locating survivors, not reaching them.
 
-We propose three one-metre, 6.4\,kg multirotor aircraft that search flooded
-ground as a coordinated group under one operator, identify people from the air,
-report their position to about a metre, and deliver a relief kit to each ---
-without mobile network or internet.
+Three one-metre, 6.4\,kg multirotor aircraft search flooded ground as a
+coordinated group under one operator, identify people from the air, report their
+position to a metre, and deliver a relief kit to each. No mobile network or
+internet is required.
 
-Sizing, error budgets and flight software are complete and reproducible;
-coordination has been demonstrated across three simulated autopilots. No
-aircraft has yet flown, so the figures here are calculated, and the programme is
-ordered to replace them with measurements.
+Sizing, error budgets and flight software are complete; coordination is
+demonstrated across three simulated autopilots. No aircraft has flown, so the
+figures here are calculated.
 
 The request is \textbf{\rs{7{,}43{,}004} across 32 phases}, none above
 \rs{30{,}000}, each released on the result of the preceding one.
@@ -69,50 +68,47 @@ The request is \textbf{\rs{7{,}43{,}004} across 32 phases}, none above
 %-----------------------------------------------------------------------------
 \section{The problem}
 
-After a flood the binding constraint is time-to-locate. Boat teams search
-slowly, at risk, and cannot see rooftops. Helicopters are scarce and committed
-to evacuation. Conventional drones need one pilot each, depend on infrastructure
-the disaster has removed, and cannot assist a survivor once found.
+Boat teams search slowly, at risk, and cannot see rooftops. Helicopters are
+scarce and committed to evacuation. Conventional drones need one pilot each,
+depend on infrastructure the flood has removed, and cannot assist a survivor
+once found.
 
 Detection is the harder problem. A person in floodwater presents head and
-shoulders only, about 40\,cm across. Detection models take a fixed, small input,
-so the usual approach shrinks the image and the target shrinks with it, to a
-size at which published accuracy is 29--61\,\%. A smaller, faster model is
-worse, because smaller models take smaller inputs.
+shoulders, 40\,cm across. Detection models take a fixed, small input, so the
+usual approach shrinks the image and the target with it, to a size at which
+published accuracy is 29--61\,\%. A smaller model is worse: smaller models take
+smaller inputs.
 
-Flooding adds two constraints: no dataset annotates \emph{people} in flood
-imagery, and thermal imaging fails in water, where skin equilibrates toward
-water temperature.
+No dataset annotates people in flood imagery. Thermal imaging fails in water,
+where skin equilibrates toward water temperature.
 
 %-----------------------------------------------------------------------------
 \section{Our solution}
 
-\textbf{System.} The operator draws a search region of any shape; the software
-splits it into three balanced sub-regions and plans a path over each --- verified
-on thirteen non-convex shapes, no path leaving the region, imbalance below
-0.02\,\%. The aircraft then fly autonomously, and the test harness demonstrates
+\textbf{System.} The operator draws a search region of any shape. The software
+splits it into three balanced sub-regions and plans a path over each, verified
+on thirteen non-convex shapes with no path leaving the region and imbalance
+below 0.02\,\%. The aircraft fly autonomously; the test harness shows
 structurally that no command is sent after the mission begins. Detection and
-geolocation run on board. Each aircraft carries four kits and can descend, null
-its groundspeed over a survivor, and release one. Link loss, low battery and
+geolocation run on board. Each aircraft carries four kits, descends, nulls its
+groundspeed over a survivor and releases one. Link loss, low battery and
 operator abort converge on a single return-and-land behaviour.
 
 \textbf{Detection.} The image is not shrunk. Each frame is divided into 48
-overlapping tiles processed at native resolution, and the survey altitude is
-40\,m rather than 60\,m. Together these place the target at \textbf{39 pixels}
-rather than 13 --- nine times the area, and outside the band where detector
-performance collapses. Both changes are needed; either alone leaves the target
-inside it.
+overlapping tiles at native resolution, and the survey altitude is 40\,m rather
+than 60\,m. The target becomes \textbf{39 pixels} rather than 13, nine times the
+area, outside the band where detector performance collapses. Either change alone
+leaves it inside.
 
-This costs four times the computation and was verified feasible first: 48 tiles
-at 2\,Hz is 96 inferences per second against 130--160 measured for the
-accelerator. Mission duration is marginally shorter than at 60\,m, the lower
-climb outweighing the extra transects.
+The cost is four times the computation: 48 tiles at 2\,Hz is 96 inferences per
+second, against 130--160 measured for the accelerator. Mission duration is
+shorter than at 60\,m, the lower climb outweighing the extra transects.
 
 \textbf{One item is open.} Confirming a survivor across twelve frames needs
-about 3\,Hz, which exceeds that capacity. A two-stage filter --- a low-cost model
-discarding the roughly 87\,\% of tiles that are open water --- would recover it.
-It will be evaluated against public data first, since such a filter fails
-without indication when it discards a tile containing a person.
+3\,Hz, which exceeds that capacity. A two-stage filter, discarding the 87\,\% of
+tiles that are open water, would recover it. A filter that discards a tile
+containing a person fails without indication, so it will be evaluated against
+public data before adoption.
 
 %-----------------------------------------------------------------------------
 \section{Deliverables}
@@ -123,27 +119,26 @@ without indication when it discards a tile containing a person.
 incapable of commanding the aircraft.
 \item Autonomy software --- partitioning, path planning, allocation, failsafes ---
 with an automated test suite.
-\item Measured detection accuracy and a verdict on the two-stage filter,
-replacing the calculated figures.
+\item Measured detection accuracy and a verdict on the two-stage filter.
 \item A publication: tiling, aerial person detection and low-power onboard
 inference have not been combined for flood conditions.
-\item Source code and results published in either outcome.
+\item Source code and results, published in either outcome.
 \end{enumerate}
 
 %-----------------------------------------------------------------------------
 \section{Benefits}
 
-\textbf{Operational.} Ten hectares surveyed in under eight minutes, returning a
-list of coordinates rather than a video feed needing continuous attention.
+\textbf{Operational.} Ten hectares in under eight minutes, returning coordinates
+rather than a video feed needing continuous attention.
 
-\textbf{Economic.} Less than one hour of helicopter search time for the complete
-system, transportable by road and operated by two people.
+\textbf{Economic.} The complete system costs less than one hour of helicopter
+search time, travels by road, and is operated by two people.
 
 \textbf{Institutional.} A thrust stand, certified scale, ground station, tested
 codebase and trained students remain with the department.
 
-\textbf{Strategic.} Indian suppliers wherever they meet the specification, for
-sovereignty and because domestic lead times are about half those of imports.
+\textbf{Strategic.} Indian suppliers wherever they meet the specification;
+domestic lead times are half those of imports.
 
 %-----------------------------------------------------------------------------
 \section{Resources needed}
@@ -370,22 +365,21 @@ departmental GPU and 30\,GB of storage, against a public dataset.
 %-----------------------------------------------------------------------------
 \section{Future work}
 
-\textbf{Near term.} Replace each calculated quantity with a measured one:
-detection accuracy, motor thrust, setup time. Evaluate near-infrared sensing ---
-water absorbs strongly and skin does not, so a person appears bright against
-dark water. A camera without its infrared filter costs about \rs{3{,}000}, and a
-public dataset allows evaluation before purchase. Only the training data is
-flood-specific; the same system suits earthquake, wildfire and avalanche search.
+\textbf{Near term.} Measure what is currently calculated: detection accuracy,
+motor thrust, setup time. Evaluate near-infrared sensing --- water absorbs
+strongly and skin does not, so a person appears bright against dark water. A
+camera without its infrared filter costs \rs{3{,}000}, and a public dataset
+allows evaluation before purchase. Only the training data is flood-specific; the
+same system suits earthquake, wildfire and avalanche search.
 
-\textbf{Longer term.} A capable aircraft deciding for itself within a very small
+\textbf{Longer term.} A capable aircraft deciding for itself within a small
 power budget is a hard requirement in planetary aviation. \emph{Ingenuity} flew
 72 times on Mars from a 1.8\,kg airframe in an atmosphere under one per cent of
-Earth's density; \emph{Dragonfly} launches in 2028 for Titan. The difficulty
-there is not flight but that a command takes minutes to arrive, so every
-decision is made on board. What transfers is what is not flood-specific:
-onboard survey planning, perception run to an energy budget, and safe behaviour
-without a link. One caution --- microcontroller-class processors, often proposed
-for such missions, cannot resolve targets of this size, so a planetary
+Earth's density; \emph{Dragonfly} launches in 2028 for Titan. A command takes
+minutes to arrive, so every decision is made on board. What transfers is what is
+not flood-specific: onboard survey planning, perception run to an energy budget,
+and safe behaviour without a link. Microcontroller-class processors, often
+proposed for such missions, cannot resolve targets of this size, so a planetary
 configuration needs a different operating point.
 
 %-----------------------------------------------------------------------------
