@@ -233,16 +233,15 @@ considered and rejected, the reason is stated.
 \thead{Item} & \thead{Model} & \thead{INR} & \thead{Rationale} \\
 \midrule
 Calibrated scale & Bench scale, 30\,kg, 1\,g resolution, certified & 12,000 &
-Take-off mass is a hard limit. 1\,g on a 6\,360\,g aircraft is 0.02\,\%, so mass
-is tracked component by component. Certification makes the figure defensible. \\
+Mass is a hard limit; 1\,g resolves 0.02\,\% of the aircraft, so build-up is
+tracked per component. Certified, so the figure is defensible. \\
 Thrust stand & 20\,kg load cell, HX711 amplifier, power meter, frame in-house &
 8,000 &
-The motors ship without a thrust curve, so the governing quantity of the design
-is unverified. Measuring thrust and current together gives thrust per watt.
-Commercial stands start near \rs{45{,}000}. \\
+The motors ship without a thrust curve. Measuring thrust and current together
+gives thrust per watt. Commercial stands start near \rs{45{,}000}. \\
 Motor (one) & Tarot TL96020, 5008, 340\,KV & 4,500 &
-One unit measured before eleven are committed. Requirement is 3.18\,kgf at full
-throttle, hover at half, where efficiency peaks and gust authority remains. \\
+One measured before eleven are committed. Requirement 3.18\,kgf, hover at half
+throttle where efficiency peaks. \\
 \bottomrule
 \end{tabular}
 \endgroup
@@ -256,29 +255,25 @@ throttle, hover at half, where efficiency peaks and gust authority remains. \\
 \thead{Item} & \thead{Model} & \thead{INR} & \thead{Rationale} \\
 \midrule
 Flight controller & Holybro Pixhawk 6C~Mini & 22,600 &
-Two isolated inertial units, so one sensor failure does not end the flight. Runs
-ArduPilot, which the simulation testing is built on. F4 boards at \rs{6{,}000}
-lack memory for the logging and failsafe configuration. \\
+Two isolated inertial units; runs ArduPilot, which our simulation is built on.
+F4 boards at \rs{6{,}000} lack memory for the logging and failsafe set. \\
 GNSS receiver & RTK-capable, RTCM3, $\leq$3\,cm CEP & 18,000 &
-The largest single error term. Standard GNSS gives a survivor position to 3.9\,m;
-RTK gives 0.75\,m. No other expenditure improves this comparably. \\
+The largest single error term: 3.9\,m on standard GNSS against 0.75\,m with RTK. \\
 Camera and lens & Arducam IMX477, 6\,mm CS, fixed focus & 11,100 &
-1.55\,\textmu m pixels give 1.03\,cm/px at 40\,m --- 39 pixels on a person in
-water. Hyperfocal is 4.15\,m, so fixed focus is sharp everywhere above 30\,m; a
-motorised module adds a moving part that can drift unnoticed. \\
+1.03\,cm/px at 40\,m, or 39 pixels on a person in water. Hyperfocal 4.15\,m, so
+fixed focus is sharp above 30\,m; a focus motor can drift unnoticed. \\
 AI accelerator & Pi AI~HAT+ 26~TOPS (Hailo-8) & 11,000 &
-Runs the detector on board. Measured at 130--160\,FPS against a 96 requirement.
-The 13~TOPS variant saves \rs{4{,}000} but reaches only 60--80. \\
+130--160\,FPS measured against a 96 requirement. The 13~TOPS variant saves
+\rs{4{,}000} but reaches only 60--80. \\
 Radio and storage & ExpressLRS 2.4\,GHz, firmware 3.5+ & 8,500 &
-Its native mode carries control and telemetry on one port, which removes the
-need for a second radio --- \rs{19{,}000} per aircraft. The earlier firmware mode
-consumes the link and would leave telemetry without control. \\
+Native mode carries control and telemetry on one port, removing a
+\rs{19{,}000} second radio. Earlier firmware consumes the link. \\
 Onboard computer & Raspberry Pi~5, 8\,GB & 8,000 &
-Hosts the planner, routing, mesh and delivery logic. The only board in this
-class exposing PCIe, which the accelerator requires. \\
+Hosts planner, routing, mesh and delivery logic. The only board in class
+exposing PCIe, which the accelerator requires. \\
 Mesh radio & 5.8\,GHz node and antennas & 6,000 &
-Three simultaneous video streams. Offered load is 2.5\,Mbps on a 20\,Mbps
-channel; the constraint is link margin at range, not bandwidth. \\
+Three video streams. 2.5\,Mbps offered on a 20\,Mbps channel; the constraint is
+link margin, not bandwidth. \\
 \bottomrule
 \end{tabular}
 \endgroup
@@ -292,33 +287,31 @@ channel; the constraint is link margin at range, not bandwidth. \\
 \thead{Item} & \thead{Model} & \thead{INR} & \thead{Rationale} \\
 \midrule
 Motors & Tarot TL96020, 340\,KV, 4 off & 18,000 &
-3.18\,kgf each at full throttle, giving twice the aircraft weight in thrust with
-hover at half. 340\,KV suits an 18\,in propeller at this pack voltage. \\
+3.18\,kgf each, giving twice the aircraft weight in thrust. 340\,KV suits an
+18\,in propeller at this pack voltage. \\
 Airframe & 25\,$\times$\,23\,mm carbon tube, machined clamps, in-house & 13,000 &
-Bending stress at design thrust is about 4\,\% of material capability. Bending
-is not the failure mode; clamp design and vibration fatigue are, so joints are
-machined rather than printed. \\
+Bending stress is 4\,\% of capability. Bending is not the failure mode; clamp
+design and vibration fatigue are, so joints are machined. \\
 Battery cells & Molicel P45B 21700, 4500\,mAh, 18 off & 12,600 &
-Six-series, three-parallel: 292\,Wh, covering the mission plus a full second
-search plus four minutes loiter. Peak is 38.3\,A per cell, so a 40\,A cell would
-sit at 96\,\% of rating. \\
+6S3P, 292\,Wh: the mission plus a full second search plus four minutes loiter.
+Peak 38.3\,A per cell, so a 40\,A cell sits at 96\,\% of rating. \\
 Pack assembly & 6S 60\,A BMS, distribution board, regulator & 8,500 &
-Cells arrive loose. Covers welding, fusing, balancing and monitoring. \\
+Cells arrive loose; covers welding, fusing, balancing and monitoring. \\
 Speed controllers & 50--60\,A continuous, 6S, 4 off & 7,200 &
-Peak demand is 29\,A per motor, so these run near half rating and stay within
-thermal limits. Undersizing here is a known cause of in-flight failure. \\
+Peak 29\,A per motor, so these run near half rating. Undersizing here is a
+known cause of in-flight failure. \\
 Propellers & Tarot 1855 carbon, CW/CCW, 4 off & 6,500 &
-18\,in carbon matched to motor and pack voltage, at \rs{3{,}250} per pair. The
-most frequently replaced item in a flight campaign. \\
+18\,in carbon at \rs{3{,}250} per pair. The most frequently replaced item in a
+flight campaign. \\
 Payload release & Four metal-gear servos, mechanical detents & 4,500 &
 Detents rather than holding torque, so a power interruption cannot release a
-kit. Four stations, released individually. \\
+kit. \\
 Wiring & 10\,AWG silicone, XT90-S, JST-GH & 2,400 &
-Gauge set by the 115\,A peak. The anti-spark connector prevents contact pitting
-when a 292\,Wh pack is connected. \\
+Gauge set by the 115\,A peak; anti-spark prevents contact pitting on a 292\,Wh
+pack. \\
 Propeller adapters & 6\,mm self-tightening hubs, 4 off & 1,400 &
-Rotation seats the nut rather than loosening it. A propeller released at
-operating speed loses the aircraft. \\
+Rotation seats the nut rather than loosening it; a released propeller loses the
+aircraft. \\
 \bottomrule
 \end{tabular}
 \endgroup
@@ -332,18 +325,17 @@ operating speed loses the aircraft. \\
 \thead{Item} & \thead{Model} & \thead{INR} & \thead{Rationale} \\
 \midrule
 Battery chargers & ToolkitRC M6D, 500\,W, 25\,A, dual, 2 off & 11,672 &
-A 13.5\,Ah pack needs about 340\,W to charge in an hour. The commonly specified
-HOTA D6~Pro (\rs{10{,}499}--\rs{13{,}500}) gives 325\,W per channel and would run
-at its limit. The M6D gives 500\,W at \rs{5{,}836} and needs only an external
-supply the department holds. Four channels charge the fleet in parallel. \\
+A 13.5\,Ah pack needs about 340\,W to charge in an hour. The usual HOTA D6~Pro
+(\rs{10{,}499}--\rs{13{,}500}) gives 325\,W per channel and would run at its
+limit; the M6D gives 500\,W at \rs{5{,}836} and needs only a supply the
+department holds. Four channels charge the fleet at once. \\
 Consumables & Fasteners, thread-lock, tape, filament & 13,000 &
-Consumed continuously in assembly and repair; interruption halts build progress. \\
+Consumed continuously in assembly and repair. \\
 Safety-pilot radio & RadioMaster Boxer, ExpressLRS & 6,955 &
-Manual override, required every flight. Full-size hall gimbals, as assuming
-control of a 6.4\,kg aircraft under fault conditions demands precise input. \\
+Manual override, required every flight. Full-size gimbals: taking control of a
+6.4\,kg aircraft under fault conditions demands precise input. \\
 Sun hood and monitor & Fabricated hood, second-hand monitor & 1,500 &
-Laptop displays are illegible in direct sun, and an operator who cannot read the
-display cannot supervise the flight. \\
+Laptop displays are illegible in direct sun. \\
 \bottomrule
 \end{tabular}
 \endgroup
@@ -357,17 +349,16 @@ display cannot supervise the flight. \\
 \thead{Item} & \thead{Model} & \thead{INR} & \thead{Rationale} \\
 \midrule
 Field consumables & Cables, mounts, spares, transport protection & 25,000 &
-Corrections travel over the existing telemetry link, so no separate
-base-to-aircraft radio is needed. \\
+Corrections travel over the existing telemetry link, so no separate radio is
+needed. \\
 Base station & Second GNSS receiver, airborne class & 18,000 &
-Centimetre positioning compares the aircraft against a stationary receiver on a
-known point. Without it, positions degrade from 0.75\,m to 3.9\,m. \\
+Compares the aircraft against a stationary receiver on a known point; without
+it positions degrade to 3.9\,m. \\
 Registration & Statutory, three aircraft & 5,000 &
-At 6.36\,kg these fall in the Small category of the Drone Rules 2021, so
-registration precedes any flight. \\
+At 6.36\,kg these are Small category under the Drone Rules 2021. \\
 Survey tripod & Photographic tripod and adapter & 4,000 &
-The base needs a stable, repeatable mount rather than survey-grade absolute
-accuracy, as the corrections are relative. \\
+A stable, repeatable mount; the corrections are relative, so survey-grade
+accuracy is unnecessary. \\
 \bottomrule
 \end{tabular}
 \endgroup
