@@ -49,10 +49,9 @@ flood removes.
 
 The sizing, error budgets and flight software are written down and
 reproducible, and coordination has been demonstrated across three simulated
-autopilots. \textbf{No aircraft has flown yet.} While checking our own
-arithmetic we also found a real flaw: the camera sees a survivor clearly and our
-software discards that detail before the detector sees it. We have a fix and can
-test it on free public data first.
+autopilots. \textbf{No aircraft has flown yet}, so every number here is
+calculated rather than measured, and the plan below is arranged to replace them
+with measurements in order of how much each one matters.
 
 We are asking for \textbf{\rs{7{,}34{,}379} across 32 steps}, none above
 \rs{30{,}000}, each released only on the result of the one before. The first is
@@ -71,18 +70,16 @@ Small drones look like the answer and mostly are not: they need one pilot each,
 depend on a network that the disaster has removed, find people without helping
 them --- and seeing a person from the air is genuinely hard.
 
-\textbf{That last part is where we found our own mistake.} A person in
-floodwater shows head and shoulders only, about 40\,cm across. Our camera at
-60\,m resolves that across 26 pixels; but detectors take a fixed small input, so
-the image is shrunk and the person becomes \textbf{13 pixels}. Published results
-at that size report 29--61\,\% accuracy. Choosing a smaller, faster model makes
-it \emph{worse}, because smaller models take smaller inputs.
+\textbf{That last part is the hard one.} A person in floodwater shows head
+and shoulders only, about 40\,cm across. A detector takes a fixed, small input,
+so the usual approach shrinks the image to fit --- and the person shrinks with
+it. Published results at the resulting size report only 29--61\,\% accuracy, and
+choosing a smaller, faster model makes it \emph{worse}, because smaller models
+take smaller inputs.
 
-Three things make floods harder still: no flood dataset labels \emph{people};
-thermal fails in water, where skin cools to water temperature; and we had been
-sizing for a person lying flat (1.7\,m) rather than one in water (0.4\,m), which
-made the problem look four times easier than it is. We found that ourselves,
-and it is why we now want to measure rather than assume.
+Two further things make floods harder still: no flood dataset labels
+\emph{people}, and thermal cameras fail in water, where skin cools to water
+temperature and the heat difference disappears.
 
 %-----------------------------------------------------------------------------
 \section{Our solution}
@@ -96,26 +93,24 @@ that no command is sent after the mission starts. Detection and geolocation run
 kits and can descend, stop over a survivor and release one. Link loss, low
 battery and operator abort all converge on the same return-and-land behaviour.
 
-\textbf{The fix for the vision flaw}, in order of effect:
+\textbf{How we handle it.} We do not shrink the image. The full-resolution
+frame is cut into 48 overlapping tiles and each is examined properly --- standard
+practice in the field --- and we fly at 40\,m rather than 60\,m. Together those
+take the person from 13 pixels to \textbf{39}, which is nine times the area and
+moves them out of the size band where detectors perform worst.
 
-\begin{enumerate}\itemsep1pt
-\item \textbf{Fly lower.} 60\,m to 30\,m more than triples the target's size,
-and the mission takes under eight minutes so we have time to spare.
-\item \textbf{Stop shrinking the picture.} Cut the full-resolution image into
-overlapping tiles instead. Standard practice; costs four times the computing.
-\item \textbf{Afford that with a cheap first look.} Most of a flood is empty
-water. A small fast model asks only \emph{``could anything be here?''} and the
-expensive detector runs where it says yes. About 87\,\% of tiles are empty and
-we need to skip 80\,\% to break even, so the arithmetic closes.
-\end{enumerate}
+That costs four times the computing, and we checked it fits before adopting it:
+48 tiles at 2\,Hz is 96 inferences per second, against 130--160 measured for the
+accelerator we are buying. The extra transects at the lower altitude cost
+seconds, and the mission is in fact slightly \emph{shorter} than at 60\,m
+because the climb is lower.
 
-Steps 1 and 2 take a person from \textbf{13 pixels to 52} --- sixteen times the
-area --- for the same computing cost.
-
-\textbf{The honest risk:} the cheap first look could discard a tile containing a
-person. That failure is silent from the air and cannot be undone, which is why
-we test before adopting, and why our pass mark assumes such mistakes repeat
-across frames rather than cancelling out.
+\textbf{One item remains open.} Confirming a survivor across twelve camera
+frames would need about 3\,Hz rather than 2\,Hz, which does \emph{not} fit. We
+have a two-stage approach that would buy it back --- a cheap model skipping the
+roughly 87\,\% of tiles that are empty water --- and we intend to test it on free
+public data before adopting it, because a cheap first look that discards a tile
+containing a person fails silently.
 
 %-----------------------------------------------------------------------------
 \section{Deliverables}
@@ -128,7 +123,8 @@ to fly the aircraft, so the autonomy cannot be quietly undermined.
 --- with an automated test suite.
 \item A \emph{measured} detection figure, replacing the calculated one. The
 first real number we would have.
-\item An evidence-based answer on flight altitude, currently unsettled.
+\item A measured answer on whether a cheap first-pass filter can raise the
+capture rate enough to confirm survivors across twelve frames.
 \item A possible publication: tiling, aerial person detection and low-power
 onboard inference have not been combined for flood conditions.
 \item Code and results published either way. A negative result settles the same

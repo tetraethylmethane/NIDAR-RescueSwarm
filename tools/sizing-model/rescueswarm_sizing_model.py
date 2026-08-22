@@ -105,7 +105,11 @@ e_liion = 200.0   # 21700 Li-ion (Molicel P45B class), pack level incl. holders/
 
 D = 18*0.0254
 v_climb, v_desc = 3.0, 2.5
-h_search, h_transit, h_drop = 60.0, 40.0, 6.0
+# 40 m, not 60. At 60 m a person in water is 25.8 px natively and 12.9 px
+# after the old downsample; at 40 m natively they are 38.7 px, which is 2.2x
+# the area and out of the small-object band where detectors do worst. The
+# extra transects cost ~56 s of a mission that has minutes to spare.
+h_search, h_transit, h_drop = 40.0, 30.0, 6.0
 v_search, v_transit = 8.0, 12.0
 k_cruise = 0.93
 
@@ -124,7 +128,7 @@ per_del_t = 150/v_transit + (h_search-h_drop)/v_desc + 8 + 2 + (h_transit-h_drop
 def mission(m):
     Ph,_ = hover_power_elec(m,D)
     segs=[('Arm, spin-up, launch queue',45, Ph*0.35),
-          ('Climb to 60 m', h_search/v_climb, P_climb(m,v_climb)),
+          (f'Climb to {h_search:.0f} m', h_search/v_climb, P_climb(m,v_climb)),
           ('Transit to sub-region', 120/v_transit, P_cruise(m)),
           ('Area sweep', L_per/v_search + t_turns, P_cruise(m)),
           ('Delivery (%.1f drops)'%n_del, n_del*per_del_t, P_cruise(m)*0.98),
@@ -291,9 +295,9 @@ for h in [30,40,50,60,70,80]:
     print(f"  {h:4.0f}m{W:7.1f}m{Lalong:7.1f}m{gsd*100:7.2f}cm{ppl:10.0f}{n:7.0f}{trk:7.0f}m{t:8.0f}s")
 print("\n  Detection floor: CNN detectors need >~20-30 px on target for reliable small-object recall")
 print("  (HERIDAL/SARD targets are ~0.1% of frame area). All rows above clear that by >2x.")
-h=60; W,gsd,ppl,n,trk,t = res[h]
+h=40; W,gsd,ppl,n,trk,t = res[h]
 print(f"\n  SELECTED: {h} m AGL -> GSD {gsd*100:.2f} cm/px, person = {ppl:.0f} px long, swath {W:.0f} m")
-print(f"           chosen for detection margin, not for coverage speed (coverage is not the constraint)")
+print(f"           chosen for detection margin. Coverage is not the constraint: the extra\n           transects cost seconds of a mission with minutes to spare")
 
 # blur & shutter
 print("\n  MOTION BLUR / EXPOSURE")
@@ -318,14 +322,28 @@ print(f"    -> run detection at 5 Hz: {5/ (8.0/Lalong):.0f}x redundant coverage 
 tile=640; ov_t=0.2
 nt_w=np.ceil(px_w/(tile*(1-ov_t))); nt_h=np.ceil(px_h/(tile*(1-ov_t)))
 print(f"\n  TILED INFERENCE (SAHI-style, {tile}px tiles, {ov_t:.0%} overlap)")
-print(f"    full-res tiling = {nt_w:.0f}x{nt_h:.0f} = {nt_w*nt_h:.0f} tiles/frame -> "
-      f"{nt_w*nt_h*5:.0f} tile-inferences/s at 5 Hz  [too much for Orin Nano ~30-40 FPS]")
-dsf=2
-print(f"    downsample {dsf}x first ({px_w//dsf}x{px_h//dsf}, GSD {gsd*dsf*100:.2f} cm, person {ppl/dsf:.0f} px) ->"
-      f" {np.ceil(px_w/dsf/(tile*(1-ov_t)))*np.ceil(px_h/dsf/(tile*(1-ov_t))):.0f} tiles = "
-      f"{np.ceil(px_w/dsf/(tile*(1-ov_t)))*np.ceil(px_h/dsf/(tile*(1-ov_t)))*5:.0f} inferences/s")
-print(f"    Orin Nano TensorRT FP16 YOLO @640: ~24-40 FPS measured in literature -> "
-      f"run 2 Hz full tiling or 5 Hz on 3x3 tiles. Budget-check on hardware in P5.")
+print(f"    NATIVE tiling = {nt_w:.0f}x{nt_h:.0f} = {nt_w*nt_h:.0f} tiles/frame")
+# The accelerator is a Hailo-8, not the Orin Nano this block used to cite --
+# that part is not in the bill of materials and its 30-40 FPS is what made
+# native tiling look unaffordable in the first place.
+for _hz in (2.0, 3.06):
+    _need = nt_w * nt_h * _hz
+    print(f"      at {_hz:.2f} Hz -> {_need:5.0f} inf/s   "
+          f"Hailo-8 (130-160 FPS): {'FITS' if _need <= 130 else 'EXCEEDS':7}  "
+          f"Hailo-8L (60-80): {'fits' if _need <= 60 else 'exceeds'}")
+print(f"    2 Hz is the adopted rate and fits with margin. 3.06 Hz -- the rate")
+print(f"    SYS-46's 12-look requirement needs -- does NOT, and is the open item")
+print(f"    the two-stage gate in perception/cascade/ exists to buy back.")
+# NATIVE tiling: dsf=1. The old 2x downsample was adopted because 48 crops
+# looked unaffordable against an Orin Nano's 24-40 FPS -- a part that is not in
+# the bill of materials. On the accelerator we actually buy, 48 tiles at 2 Hz
+# fits. The downsample was discarding resolution we had already paid for, and
+# it cost 4x the target area on the ground.
+dsf=1
+print(f"    what the detector is handed: {px_w//dsf}x{px_h//dsf}, "
+      f"GSD {gsd*dsf*100:.2f} cm/px, a supine adult {ppl/dsf:.0f} px long")
+print(f"    a person in WATER (0.4 m across) is {0.4/(gsd*dsf):.0f} px -- the size that")
+print(f"    the design must be checked against, and the reason for 40 m over 60 m.")
 
 # ---------------------------------------------------------------- BALLISTICS
 print("\n"+"="*80); print("STEP 8  PAYLOAD DROP BALLISTICS"); print("="*80)
@@ -360,8 +378,8 @@ print("  -> release velocity dominates, exactly as in the fixed-wing airdrop lit
 print("     A multirotor can null groundspeed; a fixed-wing cannot. Hover-and-drop wins.")
 
 # ---------------------------------------------------------------- GEOLOCATION
-print("\n"+"="*80); print("STEP 9  GEOTAG ERROR BUDGET (RSS, 1-sigma, target at 60 m AGL)"); print("="*80)
-h=60.0; r_edge=W/2
+print("\n"+"="*80); print("STEP 9  GEOTAG ERROR BUDGET (RSS, 1-sigma, target at 40 m AGL)"); print("="*80)
+h=40.0; r_edge=W/2
 def budget(gnss_h, gnss_v, att_deg, boresight_deg, terr_m, tsync, v, npx, gsd_):
     e_gnss=gnss_h
     e_att=h*np.tan(np.deg2rad(att_deg))
@@ -454,7 +472,7 @@ MTOW,bd=converge(m_pack,D); Ph,_=hover_power_elec(MTOW,D)
 # mdeg/px) is what put the capture gate at 15 deg/s; on the real sensor one
 # pixel is 13.6 mdeg and the gate has to come down with it.
 sensor_w,px_w,f_mm = 4056*1.55/1000.0, 4056, 6.0
-HFOV=2*np.arctan(sensor_w/(2*f_mm)); h=60.0
+HFOV=2*np.arctan(sensor_w/(2*f_mm)); h=40.0
 W=2*h*np.tan(HFOV/2); gsd=W/px_w
 
 print("="*80); print("CORRECTION 1  ANGULAR MOTION BLUR (previous run had a unit error)"); print("="*80)

@@ -4,10 +4,10 @@ STEP 3b  BATTERY SIZED BY RESERVE POLICY  (coupled: pack mass <-> MTOW <-> energ
   Policy: pack must deliver  [nominal mission + one full re-sweep + 4 min loiter]
           within an 80% depth of discharge, and hover endurance >= 2x mission time.
 
-  LiPo  : pack 1406 g (232 Wh) -> MTOW 6.29 kg, fleet 18.88 kg, hover 12.4 min, mission 7.7 min, endurance ratio 1.6x
-           nominal 104 Wh + re-sweep 22 Wh + loiter 60 Wh = 186 Wh needed
-  Li-ion: pack  996 g (199 Wh) -> MTOW 5.64 kg, fleet 16.92 kg, hover 12.4 min, mission 7.7 min, endurance ratio 1.6x
-           nominal 89 Wh + re-sweep 19 Wh + loiter 51 Wh = 159 Wh needed
+  LiPo  : pack 1511 g (249 Wh) -> MTOW 6.46 kg, fleet 19.38 kg, hover 12.8 min, mission 7.6 min, endurance ratio 1.7x
+           nominal 106 Wh + re-sweep 32 Wh + loiter 62 Wh = 200 Wh needed
+  Li-ion: pack 1056 g (211 Wh) -> MTOW 5.74 kg, fleet 17.21 kg, hover 12.8 min, mission 7.6 min, endurance ratio 1.7x
+           nominal 90 Wh + re-sweep 27 Wh + loiter 53 Wh = 169 Wh needed
 
 ================================================================================
 FINAL DESIGN POINT  -  'RS-1' search & delivery quad
@@ -20,13 +20,13 @@ FINAL DESIGN POINT  -  'RS-1' search & delivery quad
   Disk loading           : 9.69 kg/m2   power loading 7.0 g/W
   Hover power            : 668 W shaft / 913 W electrical
   Hover endurance (80% DoD): 15.3 min
-  Design mission         : 7.7 min, 105 Wh = 45% of usable energy
-  Land-with SoC          : 64 %
+  Design mission         : 7.6 min, 103 Wh = 44% of usable energy
+  Land-with SoC          : 65 %
 
   RESERVE POLICY  (re-evaluated at THIS MTOW, not at the sizing solve)
-    nominal 105.5 Wh + re-sweep 22.1 Wh + loiter 60.8 Wh = 188.4 Wh usable
-    pack provides            233.3 Wh usable  -> margin +24%  PASS
-    minimum nameplate, ANY chemistry: 236 Wh  (6S, >=115 A continuous)
+    nominal 103.4 Wh + re-sweep 30.9 Wh + loiter 60.8 Wh = 195.2 Wh usable
+    pack provides            233.3 Wh usable  -> margin +19%  PASS
+    minimum nameplate, ANY chemistry: 244 Wh  (6S, >=115 A continuous)
 
   MASS STATEMENT (per aircraft)
     Structure: frame, arms, landing gear, hardware     1495 g   23.5%
@@ -53,13 +53,13 @@ FINAL DESIGN POINT  -  'RS-1' search & delivery quad
   MISSION SEGMENTS
     segment                                       t       P        E
     Arm, spin-up, launch queue                  45s    319W     4.0Wh
-    Climb to 60 m                               20s   1153W     6.4Wh
+    Climb to 40 m                               13s   1153W     4.3Wh
     Transit to sub-region                       10s    853W     2.4Wh
-    Area sweep                                  93s    853W    22.1Wh
-    Delivery (3.3 drops)                       185s    835W    42.9Wh
+    Area sweep                                 131s    853W    30.9Wh
+    Delivery (3.3 drops)                       147s    835W    34.1Wh
     RTH transit ~250 m                          21s    853W     4.9Wh
     Recovery hold, descend, land                90s    913W    22.8Wh
-    TOTAL                                      464s          105.5Wh   (7.7 min of a 30 min allowance)
+    TOTAL                                      457s          103.4Wh   (7.6 min of a 30 min allowance)
 ================================================================================
 STEP 6  QUAD vs HEX REDUNDANCY TRADE
 ================================================================================
@@ -86,23 +86,30 @@ STEP 7  CAMERA / OPTICS SIZING
   Detection floor: CNN detectors need >~20-30 px on target for reliable small-object recall
   (HERIDAL/SARD targets are ~0.1% of frame area). All rows above clear that by >2x.
 
-  SELECTED: 60 m AGL -> GSD 1.55 cm/px, person = 110 px long, swath 63 m
-           chosen for detection margin, not for coverage speed (coverage is not the constraint)
+  SELECTED: 40 m AGL -> GSD 1.03 cm/px, person = 165 px long, swath 42 m
+           chosen for detection margin. Coverage is not the constraint: the extra
+           transects cost seconds of a mission with minutes to spare
 
   MOTION BLUR / EXPOSURE
-    v= 8 m/s, 1/500 s -> smear 16.0 mm = 1.03 px  MARGINAL
-    v= 8 m/s, 1/1000 s -> smear  8.0 mm = 0.52 px  OK
-    v=12 m/s, 1/500 s -> smear 24.0 mm = 1.55 px  MARGINAL
-    v=12 m/s, 1/1000 s -> smear 12.0 mm = 0.77 px  OK
+    v= 8 m/s, 1/500 s -> smear 16.0 mm = 1.55 px  MARGINAL
+    v= 8 m/s, 1/1000 s -> smear  8.0 mm = 0.77 px  OK
+    v=12 m/s, 1/500 s -> smear 24.0 mm = 2.32 px  MARGINAL
+    v=12 m/s, 1/1000 s -> smear 12.0 mm = 1.16 px  MARGINAL
     attitude rate 20 deg/s at 1/1000 s -> 5280.9 px angular smear (dominates in turns -> do not trust detections while banking)
-    50% forward overlap at 8 m/s needs only 0.34 Hz capture (advance 24 m/frame)
-    80% forward overlap at 8 m/s needs only 0.85 Hz capture (advance 9 m/frame)
-    -> run detection at 5 Hz: 29x redundant coverage per target, ~29 frames per target per pass -> multi-frame fusion is free
+    50% forward overlap at 8 m/s needs only 0.51 Hz capture (advance 16 m/frame)
+    80% forward overlap at 8 m/s needs only 1.27 Hz capture (advance 6 m/frame)
+    -> run detection at 5 Hz: 20x redundant coverage per target, ~20 frames per target per pass -> multi-frame fusion is free
 
   TILED INFERENCE (SAHI-style, 640px tiles, 20% overlap)
-    full-res tiling = 8x6 = 48 tiles/frame -> 240 tile-inferences/s at 5 Hz  [too much for Orin Nano ~30-40 FPS]
-    downsample 2x first (2028x1520, GSD 3.10 cm, person 55 px) -> 12 tiles = 60 inferences/s
-    Orin Nano TensorRT FP16 YOLO @640: ~24-40 FPS measured in literature -> run 2 Hz full tiling or 5 Hz on 3x3 tiles. Budget-check on hardware in P5.
+    NATIVE tiling = 8x6 = 48 tiles/frame
+      at 2.00 Hz ->    96 inf/s   Hailo-8 (130-160 FPS): FITS     Hailo-8L (60-80): exceeds
+      at 3.06 Hz ->   147 inf/s   Hailo-8 (130-160 FPS): EXCEEDS  Hailo-8L (60-80): exceeds
+    2 Hz is the adopted rate and fits with margin. 3.06 Hz -- the rate
+    SYS-46's 12-look requirement needs -- does NOT, and is the open item
+    the two-stage gate in perception/cascade/ exists to buy back.
+    what the detector is handed: 4056x3040, GSD 1.03 cm/px, a supine adult 165 px long
+    a person in WATER (0.4 m across) is 39 px -- the size that
+    the design must be checked against, and the reason for 40 m over 60 m.
 
 ================================================================================
 STEP 8  PAYLOAD DROP BALLISTICS
@@ -128,16 +135,16 @@ STEP 8  PAYLOAD DROP BALLISTICS
      A multirotor can null groundspeed; a fixed-wing cannot. Hover-and-drop wins.
 
 ================================================================================
-STEP 9  GEOTAG ERROR BUDGET (RSS, 1-sigma, target at 60 m AGL)
+STEP 9  GEOTAG ERROR BUDGET (RSS, 1-sigma, target at 40 m AGL)
 ================================================================================
   term                           A         B         C         D
   GNSS_horizontal            2.50m     2.50m     0.03m     0.01m
-  attitude                   1.57m     1.05m     0.31m     0.07m
-  boresight_cal              1.57m     0.31m     0.21m     0.21m
+  attitude                   1.05m     0.70m     0.21m     0.05m
+  boresight_cal              1.05m     0.21m     0.14m     0.14m
   height_scale               2.62m     2.34m     0.52m     0.52m
-  pixel_centroid             0.08m     0.08m     0.08m     0.02m
+  pixel_centroid             0.05m     0.05m     0.05m     0.01m
   time_sync                  0.40m     0.16m     0.16m     0.04m
-  RSS                        4.27m     3.60m     0.67m     0.57m   <== total
+  RSS                        3.93m     3.51m     0.61m     0.55m   <== total
     A  standard GNSS, uncalibrated boresight
     B  standard GNSS, calibrated boresight
     C  RTK + dual-antenna heading + cal
@@ -241,18 +248,18 @@ CORRECTION 3  HONEST GEOTAG BUDGET (adds terms the clean model omits)
 ================================================================================
   term                                   B           C    C-strict
   GNSS_horizontal                    0.56m       0.01m       0.01m
-  attitude                           0.23m       0.07m       0.07m
-  pixel_centroid                     0.02m       0.02m       0.02m
+  attitude                           0.16m       0.05m       0.05m
+  pixel_centroid                     0.01m       0.01m       0.01m
   time_sync                          0.04m       0.04m       0.04m
   EKF_lag                            0.07m       0.07m       0.07m
-  boresight_residual                 0.31m       0.21m       0.16m
+  boresight_residual                 0.21m       0.14m       0.10m
   ground_height_assumption           2.34m       0.52m       0.16m
   target_extent_centroid             0.50m       0.50m       0.50m
   GNSS_camera_lever_arm              0.10m       0.10m       0.10m
   unmodelled                         1.00m       1.00m       0.70m
-  RSS_1sigma                         2.69m       1.26m       0.90m   <==
-  CEP50                              2.23m       1.05m       0.75m
-  R95                                4.65m       2.18m       1.56m
+  RSS_1sigma                         2.67m       1.25m       0.89m   <==
+  CEP50                              2.22m       1.04m       0.74m
+  R95                                4.62m       2.16m       1.54m
     B  standard GNSS, calibrated, 20-frame fusion
     C  RTK fix + dual-antenna heading, cal, 20-frame fusion
     C-strict  as C but surveyed ground plane (terr 0.3 m)

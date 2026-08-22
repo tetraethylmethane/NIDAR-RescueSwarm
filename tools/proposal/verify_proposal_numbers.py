@@ -62,7 +62,7 @@ check("IV-A", "cells per aircraft", 18, M.n_cells)
 check("IV-A", "peak pack current", 115, M.I_max, tol=0.01, unit="A")
 check("IV-A", "peak C-rate", 8.5, M.I_max / M.Ah_pack, tol=0.02, unit="C")
 check("IV-A", "hover endurance", 15.3, M.t_hov, tol=0.01, unit="min")
-check("IV-A", "design mission duration", 7.7, M.T / 60, tol=0.01, unit="min")
+check("IV-A", "design mission duration", 7.6, M.T / 60, tol=0.01, unit="min")
 check("IV-A", "rotor diameter", 18, M.D / 0.0254, unit="in")
 check("IV-A", "static thrust-to-weight", 2.0, M.T_W)
 
@@ -91,41 +91,60 @@ check("IV-B", "survivor kits share of MTOW", 12.6, 100 * KITS / mtow,
       tol=0.02, unit="%")
 
 # =====================================================================  IV-E
-# Perception / inference budget, as written in the hand-authored section
-spec60 = CO.at_altitude(CO.SPECIFIED, 60.0)
-modl60 = CO.at_altitude(CO.MODELLED, 60.0)
+# Perception. The design is NATIVE tiling at 40 m -- no downsample -- and the
+# target is a person in WATER (0.4 m across), which is the worst posture and
+# the one the document is now sized against.
+WATER_M = 0.40
 spec40 = CO.at_altitude(CO.SPECIFIED, 40.0)
-# tiles at 2x downsample
-w2, h2 = CO.SPECIFIED["px_w"] // 2, CO.SPECIFIED["px_h"] // 2
-tiles = math.ceil(w2 / (640 * 0.8)) * math.ceil(h2 / (640 * 0.8))
-check("IV-E", "tiles per frame at 2x downsample", 12, tiles)
-check("IV-E", "inferences/s at 2 Hz", 24, tiles * 2.0, unit="/s")
-# Claims are now written against the sensor the BOM actually buys.
-def band(gsd_cm):
-    """Target long axis in pixels, and its bounding-box area in px^2."""
-    gsd_m = gsd_cm / 100.0
-    L = CO.PERSON_M / gsd_m
-    W = CO.PERSON_W / gsd_m
-    return L, L * W
+spec60 = CO.at_altitude(CO.SPECIFIED, 60.0)
 
-L40, A40 = band(spec40["gsd_cm"] * 2)
-L60, A60 = band(spec60["gsd_cm"] * 2)
-check("IV-E", "GSD at 40 m, 2x, as bought", 2.07, spec40["gsd_cm"] * 2,
-      tol=0.02, unit="cm/px")
-check("IV-E", "target px at 40 m, 2x", 82, L40, tol=0.02, unit="px")
-check("IV-E", "target area at 40 m, 2x", 1990, A40, tol=0.02, unit="px2")
-check("IV-E", "GSD at 60 m, 2x, as bought", 3.10, spec60["gsd_cm"] * 2,
-      tol=0.02, unit="cm/px")
-check("IV-E", "target px at 60 m, 2x", 55, L60, tol=0.02, unit="px")
-check("IV-E", "target area at 60 m, 2x", 884, A60, tol=0.02, unit="px2")
-results.append((A60 < CO.COCO_SMALL_PX2, "IV-E",
-                "60 m target is BELOW the COCO small threshold", 1, 1, 0.0, "",
-                f"{A60:.0f} px2 vs {CO.COCO_SMALL_PX2} -- the claim in the text"))
-results.append((CO.COCO_SMALL_PX2 <= A40 < CO.COCO_MED_PX2, "IV-E",
-                "40 m target is in the COCO medium band", 1, 1, 0.0, "",
-                f"{A40:.0f} px2"))
+
+def tiles_for(w, h):
+    return math.ceil((w - 640) / 512) + 1, math.ceil((h - 640) / 512) + 1
+
+
+nw, nh = tiles_for(CO.SPECIFIED["px_w"], CO.SPECIFIED["px_h"])
+check("IV-E", "tiles per frame, NATIVE", 48, nw * nh)
+check("IV-E", "inferences/s at 2 Hz, native", 96, nw * nh * 2.0, unit="/s")
+# It has to fit the accelerator, or native tiling is not affordable and the
+# whole change is wrong. 130 FPS is the LOW end of the measured range.
+results.append((nw * nh * 2.0 <= 130, "IV-E",
+                "native tiling at 2 Hz fits the accelerator", 1, 1, 0.0, "",
+                f"{nw*nh*2.0:.0f} inf/s vs 130-160 FPS measured"))
+results.append((nw * nh * 3.06 > 130, "IV-E",
+                "3.06 Hz does NOT fit -- the open item the gate would buy back",
+                1, 1, 0.0, "", f"{nw*nh*3.06:.0f} inf/s vs 130 FPS"))
+
+
+def water(gsd_cm):
+    """The 0.4 m target: long axis in px, and area in px^2."""
+    L = WATER_M / (gsd_cm / 100.0)
+    return L, L * L
+
+
+for lbl, gsd, px, area in (
+        ("40 m native", spec40["gsd_cm"], 39, 1498),
+        ("60 m native", spec60["gsd_cm"], 26, 666),
+        ("40 m, 2x downsample", spec40["gsd_cm"] * 2, 19, 375),
+        ("60 m, 2x downsample", spec60["gsd_cm"] * 2, 13, 166)):
+    L, A = water(gsd)
+    check("IV-E", f"water target at {lbl} (px)", px, L, tol=0.03, unit="px")
+    check("IV-E", f"water target at {lbl} (area)", area, A, tol=0.03, unit="px2")
+
+# The whole argument for the change: only the adopted row clears COCO small.
+_, A40n = water(spec40["gsd_cm"])
+_, A60n = water(spec60["gsd_cm"])
+_, A40d = water(spec40["gsd_cm"] * 2)
+results.append((A40n >= CO.COCO_SMALL_PX2 and A60n < CO.COCO_SMALL_PX2
+                and A40d < CO.COCO_SMALL_PX2, "IV-E",
+                "ONLY 40 m + native clears the COCO small threshold", 1, 1, 0.0, "",
+                f"40m native {A40n:.0f} vs 60m native {A60n:.0f}, "
+                f"40m downsampled {A40d:.0f}, threshold {CO.COCO_SMALL_PX2}"))
 check("IV-E", "sensor pitch stated in text", 1.55, CO.SPECIFIED["pitch_um"],
       unit="um")
+results.append(("Survey altitude          & 40\\,m AGL" in TEX, "IV-E",
+                "design point table says 40 m", 1, 1, 0.0, "",
+                "the altitude decision is now taken, not open"))
 
 # angular blur gate quoted in the pipeline figure
 ang_per_px = CO.optics(CO.SPECIFIED)["hfov"] / CO.SPECIFIED["px_w"]   # deg/px
