@@ -137,9 +137,10 @@ def fig_mass():
     # The model's own mass statement lists 6,061 g against a 6,360 g MTOW.
     # The 299 g residual is shown rather than left for a reader to find by
     # adding the bars up.
-    items = ["Structure", "Battery pack", "Avionics\n+ harness",
-             "Survivor kits", "Motors", "Unallocated\nresidual",
-             "Propellers", "Magazine\n+ release", "ESCs"]
+    # Single-line tick labels. The two-line ones made the row pitch uneven and
+    # crowded the axis; the qualifiers moved into the caption instead.
+    items = ["Structure", "Battery pack", "Avionics", "Survivor kits",
+             "Motors", "Unallocated", "Propellers", "Magazine", "ESCs"]
     g = [1495, 1449, 925, 800, 640, 299, 288, 240, 224]
     colours = [GREY, BLUE, PURPLE, GREEN, ORANGE, RED, ORANGE, GREEN, ORANGE]
     y = np.arange(len(items))[::-1]

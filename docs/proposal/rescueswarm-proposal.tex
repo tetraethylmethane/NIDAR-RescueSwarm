@@ -15,6 +15,10 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{array}
+% Ragged-right paragraph column. Justified text in a 2-3 cm column stretches
+% inter-word spaces into rivers and hyphenates almost every line; ragged right
+% is markedly more readable at these widths and costs nothing.
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \usepackage{url}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric,arrows.meta,positioning,fit,calc,backgrounds}
@@ -339,7 +343,7 @@ The thrust-to-weight ratio of 2.0 and the hover endurance of 15.3 minutes
 against a 7.7-minute design mission are reserve policies rather than performance
 targets, because the failure mode that ends a competition or a deployment is an
 aircraft that does not return. The energy reserve is stated precisely
-in Section~\ref{sec:energy}; it, and not the design mission, is what sizes the
+in Section~\ref{sec:sizing}; it, and not the design mission, is what sizes the
 pack.
 
 Fig.~\ref{fig:mass} gives the mass statement behind those figures. Two features
@@ -363,7 +367,8 @@ are available but a smaller aircraft is not.
 \centering
 \includegraphics[width=\columnwidth]{fig-mass.pdf}
 \caption{Mass budget per aircraft. Generated from
-\texttt{docs/sizing/model-output.txt}. The fleet figure of 19\,081\,g carries
+\texttt{docs/sizing/model-output.txt}. \emph{Avionics} includes the wiring
+harness and \emph{magazine} the release mechanism. The fleet figure of 19\,081\,g carries
 4\,919\,g of growth allowance against a 24\,kg internal target --- 26\,\% build
 overweight tolerated --- inside the 25\,kg regulatory cap.}
 \label{fig:mass}
@@ -851,7 +856,7 @@ protect it.
 \label{tab:phases}
 \centering
 \small
-\begin{tabular}{@{}cp{2.05cm}p{4.3cm}@{}}
+\begin{tabular}{@{}cL{2.05cm}L{4.3cm}@{}}
 \toprule
 \textbf{Ph.} & \textbf{Title} & \textbf{Principal exit criterion} \\
 \midrule
@@ -1195,7 +1200,7 @@ strongly domestic is what the team fabricates itself.}
 \label{tab:indig}
 \centering
 \small
-\begin{tabular}{@{}lp{4.4cm}@{}}
+\begin{tabular}{@{}lL{4.4cm}@{}}
 \toprule
 \textbf{Subsystem} & \textbf{Status} \\
 \midrule
@@ -1229,7 +1234,7 @@ than as an accelerator.
 \label{tab:risk}
 \centering
 \small
-\begin{tabular}{@{}p{2.3cm}cp{3.6cm}@{}}
+\begin{tabular}{@{}L{2.7cm}cL{3.8cm}@{}}
 \toprule
 \textbf{Risk} & \textbf{Sev.} & \textbf{Mitigation} \\
 \midrule
@@ -1358,8 +1363,7 @@ is achievable, and engineered under a verification discipline that
 distinguishes what has been demonstrated from what has merely been designed.
 Where an Indian part was deferred it was deferred on cost, not on capability ---
 domestic industry can supply the autopilot and the propulsion, and
-Section~
-ef{sec:indig} states what restoring them costs.
+Section~\ref{sec:indig} states what restoring them costs.
 
 The system's design point, error budgets and cost basis are established and
 reproducible. Its coordination and failsafe behaviour have been demonstrated in

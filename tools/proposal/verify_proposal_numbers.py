@@ -153,6 +153,25 @@ check("IV-D", "case D RSS (20-frame fusion)", 0.66, rssD, tol=0.05, unit="m")
 check("IV-G", "total offered load", 2.5,
       (235 * 3 + 1800) / 1000.0, tol=0.02, unit="Mbps")
 
+# ================================================================  formatting
+# A MANGLED control sequence is invisible to LaTeX's own warnings. When the
+# backslash of \ref is eaten -- which a non-raw Python string will do, because
+# \r is a carriage return -- the document compiles clean, reports zero
+# undefined references, and prints "Section  efsec:indig" to the reader.
+# Checking for undefined refs does not catch this. Checking for the wreckage does.
+_MANGLED = re.compile(r"(?<!\\)\b(ef|abel|extbf|extit|egin|nd|ightarrow)\{")
+_bad = [m.group(0) for m in _MANGLED.finditer(TEX)]
+results.append((not _bad, "fmt", "no mangled LaTeX control sequences",
+                1, 1, 0.0, "", f"found {_bad[:4]}" if _bad else
+                "guards the \\ref -> 'ef{' failure that compiles clean"))
+
+# A tie that lost its command leaves a line ending in a bare tilde.
+_dangling = [i + 1 for i, ln in enumerate(TEX.splitlines())
+             if ln.rstrip().endswith("~")]
+results.append((not _dangling, "fmt", "no line ends in a dangling tie",
+                1, 1, 0.0, "", f"lines {_dangling[:5]}" if _dangling else
+                "a 'Section~' with nothing after it means a lost \\ref"))
+
 # =====================================================================  V
 # The generated section: confirm it is actually \input, not stale inline text
 gen = os.path.join(ROOT, "docs", "proposal", "generated-sizing.tex")
