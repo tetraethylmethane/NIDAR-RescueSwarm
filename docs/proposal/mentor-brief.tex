@@ -141,17 +141,19 @@ inference have not been combined for flood conditions.
 %-----------------------------------------------------------------------------
 \section{Benefits}
 
-\textbf{Operational.} Ten hectares in under eight minutes, returning coordinates
-rather than a video feed needing continuous attention.
-
-\textbf{Economic.} The complete system costs less than one hour of helicopter
-search time, travels by road, and is operated by two people.
-
-\textbf{Institutional.} A thrust stand, certified scale, ground station, tested
-codebase and trained students remain with the department.
-
-\textbf{Strategic.} Indian suppliers wherever they meet the specification;
-domestic lead times are half those of imports.
+% Four parallel items, so they are set as a list -- the same way Deliverables
+% above sets its parallel items. As running paragraphs the labels did not hang
+% and the block read as one mass of text.
+\begin{itemize}\itemsep2pt
+\item \textbf{Operational.} Ten hectares in under eight minutes, returning
+coordinates rather than a video feed needing continuous attention.
+\item \textbf{Economic.} The complete system costs less than one hour of
+helicopter search time, travels by road, and is operated by two people.
+\item \textbf{Institutional.} A thrust stand, certified scale, ground station,
+tested codebase and trained students remain with the department.
+\item \textbf{Strategic.} Indian suppliers wherever they meet the
+specification; domestic lead times are half those of imports.
+\end{itemize}
 
 %-----------------------------------------------------------------------------
 \section{Resources needed}
@@ -162,7 +164,9 @@ The sequence follows engineering dependency: the motor is measured before eleven
 more are bought, and one aircraft flies a complete mission before either of the
 others is begun.
 
-\clearpage
+% No \clearpage here: the longtable defines \endhead, so it repeats its header
+% on every continuation page and can start mid-page. Forcing a fresh page left
+% the lower half of the preceding page blank.
 \subsection{Phase schedule}
 
 \begingroup
@@ -221,7 +225,6 @@ measured thrust figure. Phase 13 begins the second aircraft only after the first
 has flown a complete mission, so the largest blocks of expenditure fund
 replication of a demonstrated configuration rather than a projection.
 
-\clearpage
 \subsection{Component selection}
 
 Figures marked \textbf{V} are current Indian retail listings from a named
