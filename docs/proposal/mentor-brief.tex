@@ -6,6 +6,8 @@
 \usepackage{mathptmx}
 \usepackage[margin=20mm]{geometry}
 \usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{needspace}
 \usepackage{array}
 \usepackage{microtype}
 \usepackage{titlesec}
@@ -164,19 +166,29 @@ selected against a quantity the design produces. Where a lower-cost alternative
 was considered and rejected, the reason is stated.
 
 %---------------------------------------------------------------- phase 1
-\subsection*{Phase 1 --- Propulsion verification \quad steps 1--2 \quad \rs{31{,}371}}
+\needspace{4\baselineskip}\subsection*{Phase 1 --- Propulsion verification \quad steps 1--2 \quad \rs{31{,}371}}
 
 \textbf{Objective:} determine whether the selected motor produces the thrust the
 design requires, and establish a mass reference against which the build can be
-tracked. \quad \textbf{Released:} on approval. \quad
+tracked.
+
+\textbf{Released on:} approval.
+
 \textbf{Completion criterion:} measured static thrust of $\geq$3.18\,kgf per
 motor at full throttle.
 
-\begin{center}\small
-\begin{tabular}{@{}L{3.0cm}L{4.2cm}rL{7.4cm}@{}}
+{\small
+\begin{longtable}{@{}L{3.0cm}L{4.2cm}rL{7.4cm}@{}}
 \toprule
 \textbf{Item} & \textbf{Model / specification} & \textbf{INR} & \textbf{Selection rationale} \\
 \midrule
+\endfirsthead
+\toprule
+\textbf{Item} & \textbf{Model / specification} & \textbf{INR} & \textbf{Selection rationale} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
 Calibrated scale &
 Bench scale, 30\,kg capacity, 1\,g resolution, with calibration certificate &
 12,000 &
@@ -200,27 +212,34 @@ One unit is procured for measurement before the remaining eleven are committed.
 The requirement is 3.18\,kgf at full throttle with hover at approximately half,
 where propeller efficiency is highest and control authority remains available
 for gust rejection. \\
-\bottomrule
-\end{tabular}
-\end{center}
+\end{longtable}}
 
 \textbf{If the measurement fails}, the programme concludes at \rs{31{,}371}, and
 both instruments remain departmental assets.
 
 %---------------------------------------------------------------- phase 2
-\subsection*{Phase 2 --- First aircraft \quad steps 3--10 \quad \rs{1{,}97{,}238}}
+\needspace{4\baselineskip}\subsection*{Phase 2 --- First aircraft \quad steps 3--10 \quad \rs{1{,}97{,}238}}
 
 \textbf{Objective:} construct and integrate one complete aircraft capable of
-autonomous flight, onboard detection and payload release. \quad
-\textbf{Released:} on the Phase 1 thrust measurement. \quad
+autonomous flight, onboard detection and payload release.
+
+\textbf{Released on:} the Phase 1 thrust measurement.
+
 \textbf{Completion criterion:} airframe assembled, weighed, and all avionics
 powered and communicating.
 
-\begin{center}\small
-\begin{tabular}{@{}L{3.0cm}L{4.2cm}rL{7.4cm}@{}}
+{\small
+\begin{longtable}{@{}L{3.0cm}L{4.2cm}rL{7.4cm}@{}}
 \toprule
 \textbf{Item} & \textbf{Model} & \textbf{INR} & \textbf{Selection rationale} \\
 \midrule
+\endfirsthead
+\toprule
+\textbf{Item} & \textbf{Model} & \textbf{INR} & \textbf{Selection rationale} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
 Flight controller & Holybro Pixhawk 6C~Mini & 22,600 &
 Two independent inertial measurement units on silicone isolation, so a single
 sensor failure or airframe resonance does not terminate the flight. Runs
@@ -310,24 +329,32 @@ Propeller adapters & 6\,mm self-tightening hubs, 4 units & 1,400 &
 Self-tightening geometry, so rotation seats the retaining nut rather than
 loosening it. A propeller released at operating speed results in loss of the
 aircraft. \\
-\bottomrule
-\end{tabular}
-\end{center}
+\end{longtable}}
 
 %---------------------------------------------------------------- phase 3
-\subsection*{Phase 3 --- Flight-test capability \quad steps 11--12 \quad \rs{42{,}574}}
+\needspace{4\baselineskip}\subsection*{Phase 3 --- Flight-test capability \quad steps 11--12 \quad \rs{42{,}574}}
 
 \textbf{Objective:} establish the ground support required to fly the first
 aircraft safely and repeatedly --- charging, manual override and field
-readiness. \quad \textbf{Released:} on airframe assembly and weigh-in. \quad
+readiness.
+
+\textbf{Released on:} airframe assembly and weigh-in.
+
 \textbf{Completion criterion:} first flight completed under safety-pilot
 supervision.
 
-\begin{center}\small
-\begin{tabular}{@{}L{3.0cm}L{4.2cm}rL{7.4cm}@{}}
+{\small
+\begin{longtable}{@{}L{3.0cm}L{4.2cm}rL{7.4cm}@{}}
 \toprule
 \textbf{Item} & \textbf{Model} & \textbf{INR} & \textbf{Selection rationale} \\
 \midrule
+\endfirsthead
+\toprule
+\textbf{Item} & \textbf{Model} & \textbf{INR} & \textbf{Selection rationale} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
 Battery chargers & ToolkitRC M6D, 500\,W, 25\,A, dual channel, 2 units & 11,672 &
 The pack is 13.5\,Ah; charging within approximately one hour requires about
 340\,W. The commonly specified HOTA D6~Pro (\rs{10{,}499}--\rs{13{,}500})
@@ -349,24 +376,32 @@ aircraft under fault conditions requires precise input. \\
 Sun hood and monitor & Fabricated hood with second-hand monitor & 1,500 &
 Laptop displays are not legible in direct sunlight, and an operator unable to
 read the display cannot supervise the flight. \\
-\bottomrule
-\end{tabular}
-\end{center}
+\end{longtable}}
 
 %---------------------------------------------------------------- phase 4
-\subsection*{Phase 4 --- Positioning and regulatory compliance \quad steps 13--16 \quad \rs{66{,}992}}
+\needspace{4\baselineskip}\subsection*{Phase 4 --- Positioning and regulatory compliance \quad steps 13--16 \quad \rs{66{,}992}}
 
 \textbf{Objective:} establish centimetre-accurate positioning and complete
 statutory registration, so that geolocation accuracy can be measured on the
-first aircraft. \quad \textbf{Released:} on first flight. \quad
+first aircraft.
+
+\textbf{Released on:} first flight.
+
 \textbf{Completion criterion:} RTK fix demonstrated in the field and reported
 survivor position measured against surveyed ground truth.
 
-\begin{center}\small
-\begin{tabular}{@{}L{3.0cm}L{4.2cm}rL{7.4cm}@{}}
+{\small
+\begin{longtable}{@{}L{3.0cm}L{4.2cm}rL{7.4cm}@{}}
 \toprule
 \textbf{Item} & \textbf{Model} & \textbf{INR} & \textbf{Selection rationale} \\
 \midrule
+\endfirsthead
+\toprule
+\textbf{Item} & \textbf{Model} & \textbf{INR} & \textbf{Selection rationale} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
 Field consumables & Cables, mounts, field spares, transport protection & 25,000 &
 Position corrections are carried over the existing telemetry link, so no
 separate base-to-aircraft radio is required. \\
@@ -384,20 +419,21 @@ registration mandatory prior to flight. \\
 Survey tripod & Photographic tripod with adapter & 4,000 &
 The base receiver requires a stable and repeatable mounting rather than
 survey-grade absolute accuracy, as the corrections are relative. \\
-\bottomrule
-\end{tabular}
-\end{center}
+\end{longtable}}
 
 %---------------------------------------------------------------- phases 5-6
-\subsection*{Phases 5 and 6 --- Fleet completion \quad steps 17--32 \quad \rs{2{,}02{,}413} each}
+\needspace{4\baselineskip}\subsection*{Phases 5 and 6 --- Fleet completion \quad steps 17--32 \quad \rs{2{,}02{,}413} each}
 
-\textbf{Phase 5 objective:} replicate the validated design as the second
+\textbf{Objective:} replicate the validated design as the second
 aircraft and demonstrate two-aircraft coordinated operation with verified
-separation. \quad \textbf{Released:} on aircraft one completing a full mission.
+separation.
 
-\textbf{Phase 6 objective:} complete the fleet and demonstrate three-aircraft
-coordinated search under a single operator. \quad \textbf{Released:} on
-two-aircraft separation being verified in flight.
+\textbf{Released on:} aircraft one completing a full mission.
+
+\textbf{Objective:} complete the fleet and demonstrate three-aircraft
+coordinated search under a single operator.
+
+\textbf{Released on:} two-aircraft separation verified in flight.
 
 Each phase repeats the Phase 2 component set exactly, in the same eight steps,
 at \rs{2{,}02{,}413} --- marginally higher than aircraft one, as all four motors

@@ -178,11 +178,27 @@ check("IV-G", "total offered load", 2.5,
 # \r is a carriage return -- the document compiles clean, reports zero
 # undefined references, and prints "Section  efsec:indig" to the reader.
 # Checking for undefined refs does not catch this. Checking for the wreckage does.
-_MANGLED = re.compile(r"(?<!\\)\b(ef|abel|extbf|extit|egin|nd|ightarrow)\{")
-_bad = [m.group(0) for m in _MANGLED.finditer(TEX)]
-results.append((not _bad, "fmt", "no mangled LaTeX control sequences",
-                1, 1, 0.0, "", f"found {_bad[:4]}" if _bad else
-                "guards the \\ref -> 'ef{' failure that compiles clean"))
+_MANGLED = re.compile(r"(?<!\\)\b(ef|abel|extbf|extit|egin|nd|ightarrow|mph|uad)\{")
+_TEXDIR0 = os.path.join(ROOT, "docs", "proposal")
+_mangled_hits = []
+for _dp, _dn, _fs in os.walk(_TEXDIR0):
+    for _fn in _fs:
+        if not _fn.endswith(".tex"):
+            continue
+        with io.open(os.path.join(_dp, _fn), encoding="utf-8") as _fh:
+            _body = _fh.read()
+        # A TAB immediately before a control-sequence name is the signature of
+        # a re.sub replacement string eating the backslash: "\textbf" -> TAB
+        # + "extbf". Tabs are legal LaTeX, so only this pattern is flagged.
+        for _m in _MANGLED.finditer(_body):
+            _mangled_hits.append(f"{_fn}:{_m.group(0)}")
+        for _n in ("textbf", "textit", "emph", "begin", "end", "item"):
+            if chr(9) + _n in _body:
+                _mangled_hits.append(f"{_fn}:TAB+{_n}")
+results.append((not _mangled_hits, "fmt", "no mangled LaTeX control sequences",
+                1, 1, 0.0, "", "; ".join(sorted(set(_mangled_hits))[:4])
+                if _mangled_hits else
+                "scans every .tex; catches both lost backslashes and TAB+name"))
 
 # The same accident writes CONTROL CHARACTERS, not just missing backslashes:
 # \r becomes CR, \a becomes BEL, \b backspace, \f formfeed, \v vertical tab.
