@@ -1,0 +1,291 @@
+%=============================================================================
+%  Programme brief for the faculty mentor.
+%  Plain language, no competition framing. Build:  pdflatex mentor-brief
+%=============================================================================
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage[margin=24mm]{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{microtype}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\rs}[1]{\mbox{INR~#1}}
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.6em}{}
+\setlength{\parskip}{0.55em}
+\setlength{\parindent}{0pt}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small Flood search and rescue --- programme brief}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\arraystretch}{1.2}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Finding People in Floodwater from the Air}\\[3mm]
+{\large A three-drone search system, the flaw we found in it,\\
+and what it will take to finish}\\[5mm]
+Swastik Kumar\\
+Department of Electronics \& Communication Engineering\\
+Thapar Institute of Engineering \& Technology\\[2mm]
+\today
+\end{center}
+\thispagestyle{empty}
+\vspace{2mm}\hrule\vspace{5mm}
+
+%-----------------------------------------------------------------------------
+\section{Executive summary}
+
+Floods displace millions of people in India every year. The slow part of a
+rescue is usually not reaching survivors --- it is \emph{finding} them.
+
+We are building three one-metre, 6.4\,kg multirotor aircraft that fly a search
+pattern over flooded ground, recognise people from the air, report their
+coordinates, and drop a small relief kit to each. Everything has to be decided
+on a computer small enough to fly, without any phone or internet connection.
+
+Most of the design is settled and its arithmetic is written down and
+reproducible. But while checking it we found a real flaw: \textbf{our camera
+sees a survivor clearly, and our own software throws that detail away before
+the detector looks at it.} We have a fix, and we can test it on free public data
+before committing to anything.
+
+This document explains the flaw, the fix, and what the whole programme needs ---
+\textbf{\rs{7{,}34{,}379} across four phases}, each released only when the
+previous one has produced evidence.
+
+%-----------------------------------------------------------------------------
+\section{Problem}
+
+\textbf{We are discarding resolution we already paid for.}
+
+A person in floodwater shows only their head and shoulders --- roughly 40\,cm
+across. Our camera, flying at 60\,m, resolves that across about 26 pixels. But
+detection models take a fixed, small input, so the picture is shrunk to fit.
+After shrinking, the person occupies about \textbf{13 pixels}.
+
+At that size, published results for detecting tiny people report accuracy
+between 29\,\% and 61\,\%. That is not good enough when a missed person is a
+missed rescue. And the obvious response --- use a smaller, faster model ---
+makes it \emph{worse}, because smaller models take smaller inputs.
+
+Three further things make floods harder than they first appear:
+
+\begin{itemize}\itemsep2pt
+\item \textbf{No suitable training data exists.} Flood datasets label buildings
+and water damage, not people. Datasets of people in water are open sea: clear
+blue water, no debris, no rooftops.
+\item \textbf{Thermal cameras do not rescue us.} In water, skin cools toward
+water temperature and the heat difference largely disappears. Thermal helps on
+rooftops and fails in exactly the case we care most about.
+\item \textbf{We were sizing for the wrong target.} Our early work assumed a
+person lying flat, 1.7\,m long, rather than a person in water, 0.4\,m across.
+That made the problem look four times easier than it is. We found the mistake
+ourselves --- and it is precisely why we now want to measure rather than assume.
+\end{itemize}
+
+%-----------------------------------------------------------------------------
+\section{Solution}
+
+Three changes, in order of how much they help.
+
+\textbf{1. Fly lower.} Coming down from 60\,m to 30\,m more than triples how
+large a person appears. It costs a little flying time, and we have a great deal
+to spare --- the planned mission takes under eight minutes.
+
+\textbf{2. Stop shrinking the picture.} Instead, cut the full-resolution image
+into overlapping tiles and examine each one properly. This is well established
+practice. The catch is that it costs four times the computing power.
+
+\textbf{3. Make step 2 affordable with a cheap first look.} Most of a flooded
+area is empty water. A small, fast model checks each tile and asks only
+\emph{``could there be anything here?''} The expensive detector then runs only
+where the answer is yes. We calculate that about \textbf{87\,\% of tiles are
+empty}, and we need to skip \textbf{80\,\%} to break even --- so the arithmetic
+closes.
+
+Steps 1 and 2 together take a person from \textbf{13 pixels to 52} ---
+\textbf{sixteen times the area} --- for the same computing cost.
+
+\textbf{The honest risk.} The cheap first look might discard a tile that had a
+person in it. That failure is silent from the air and cannot be undone later.
+This is exactly why we intend to test it before adopting it, and why our pass
+mark assumes the pessimistic case: that such mistakes repeat from frame to frame
+rather than cancelling out.
+
+%-----------------------------------------------------------------------------
+\section{Deliverables}
+
+\begin{enumerate}\itemsep3pt
+\item \textbf{Three working aircraft}, flown as a coordinated group under one
+operator, with no phone or internet dependency.
+\item \textbf{A clear yes or no on the detection method}, judged against a
+threshold we wrote down \emph{before} running anything: skip at least 80.5\,\%
+of tiles while still finding at least 90\,\% of people.
+\item \textbf{A measured detection figure} to replace the calculated one we rely
+on today. It would be the first real number we have.
+\item \textbf{An evidence-based answer on flight altitude}, which our own design
+currently leaves unsettled between 60\,m and 40\,m.
+\item \textbf{A possible publication.} Three research areas --- image tiling,
+aerial person detection, and low-power onboard processing --- have not been
+combined for flood conditions. That is a narrow, defensible contribution, and it
+is testable rather than merely argued.
+\item \textbf{Code, data and results published either way.} A negative result
+still settles an open question and costs the same to obtain.
+\end{enumerate}
+
+%-----------------------------------------------------------------------------
+\section{Resources needed}
+
+Money is not needed at once. The programme splits into four phases, each
+released only on evidence from the one before, so exposure is capped at a single
+phase and the decision can be revisited at every gate.
+
+All prices are current Indian retail. Totals include customs duty, GST and a
+15\,\% contingency where they apply.
+
+\subsection*{Phase 1 --- Long-lead procurement \quad Months 1--2 \quad \textbf{\rs{4{,}61{,}029}}}
+
+Everything with a delivery delay. Nothing here can be ordered late without
+stopping the build.
+
+\begin{center}\small
+\begin{tabular}{@{}L{3.1cm}L{4.5cm}rrL{4.1cm}@{}}
+\toprule
+\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why this part} \\
+\midrule
+Flight controller & Holybro Pixhawk 6C Mini & 3 & 67,800 & Dual IMU, industry-standard, runs open-source autopilot \\
+GNSS receiver & Centimetre-accurate (RTK) & 3 & 54,000 & Position accuracy is the largest single error in the system \\
+Motors & Tarot TL96020, 5008 / 340\,KV & 12 & 54,000 & Must lift 3.18\,kgf each; buy one and measure first \\
+Battery cells & Molicel P45B 21700, 4500\,mAh & 54 & 37,800 & Peak draw is 38.3\,A per cell; a 40\,A cell has no margin \\
+Camera + lens & Arducam IMX477 + 6\,mm, \textbf{fixed focus} & 3 & 33,300 & Fixed focus is correct at every altitude we fly \\
+AI accelerator & Raspberry Pi AI HAT+ (Hailo-8) & 3 & 33,000 & Runs the detector on board \\
+Radio + storage & ExpressLRS 2.4\,GHz & 3 & 25,500 & One link carries control \emph{and} telemetry \\
+Onboard computer & Raspberry Pi 5, 8\,GB & 3 & 24,000 & The host everything runs on \\
+Speed controllers & 50--60\,A continuous, 6S & 12 & 21,600 & Peak is 29\,A per motor \\
+Mesh radio & 5.8\,GHz + antennas & 3 & 18,000 & Three simultaneous video feeds \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Phase 2 --- Bench build and the measurement that matters \quad Months 3--4 \quad \textbf{\rs{1{,}32{,}054}}}
+
+\begin{center}\small
+\begin{tabular}{@{}L{3.1cm}L{4.5cm}rrL{4.1cm}@{}}
+\toprule
+\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why this part} \\
+\midrule
+Airframe & 25\,$\times$\,23\,mm carbon tube (Kineco Kaman) + machined clamps & 3 & 39,000 & Fabricated in the institute machine shop \\
+Pack assembly & 6S 60\,A BMS + power board + regulator & 3 & 25,500 & 18 cells per aircraft must be welded and balanced \\
+Calibrated scale & Bench scale, 30\,kg $\times$ 1\,g, certified & 1 & 12,000 & Mass is a hard limit; we cannot argue with a scale we do not own \\
+\textbf{Thrust stand} & 20\,kg load cell + HX711 + power meter, frame built in-house & 1 & 8,000 & \textbf{The gate for the whole build} --- our motors publish no thrust curve \\
+Battery charger & \textbf{ToolkitRC M6D}, 500\,W / 25\,A, dual & 2 & 11,672 & See note below \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{A small saving worth having.} The usual choice is the HOTA D6 Pro at
+\rs{10{,}499}--\rs{13{,}500}, but at 325\,W per channel it can only just charge
+our packs. The ToolkitRC M6D is 500\,W at \rs{5{,}836} --- cheaper and faster.
+It needs a separate power supply, which the department already owns. Two units
+give four channels, so the whole fleet charges at once on a flight day, and it
+still comes in \rs{2{,}328} under budget.
+
+\subsection*{Phase 3 --- Assembly, first flight, spares \quad Months 5--6 \quad \textbf{\rs{74{,}303}}}
+
+\begin{center}\small
+\begin{tabular}{@{}L{3.1cm}L{4.5cm}rrL{4.1cm}@{}}
+\toprule
+\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why this part} \\
+\midrule
+Payload release & 4 metal-gear servos + mechanical detent per aircraft & 3 & 13,500 & A power glitch must not drop a kit \\
+Consumables & Fasteners, thread-lock, tape, filament & --- & 13,000 & Consumed continuously; running out stops work \\
+Propellers & Tarot 1855 carbon, CW/CCW (TL2848) & 12 & 12,000 & See note below \\
+Safety-pilot radio & \textbf{RadioMaster Boxer}, ExpressLRS & 1 & 6,955 & A pilot taking over manually needs full-size sticks \\
+Wiring & 10\,AWG silicone, XT90-S, JST-GH & 3 & 7,200 & Wire gauge is set by the 115\,A peak \\
+Propeller adapters & 6\,mm self-tightening hubs & 12 & 4,200 & A nut loosening at 5{,}000\,rpm loses the aircraft \\
+Sun hood & Fabricated, plus a second-hand monitor & 1 & 1,500 & Screens are unreadable in Punjab daylight \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{One line is under-budgeted, and we would rather say so now.} We carry
+\rs{1{,}000} per propeller. The verified Indian listing for this propeller is
+\rs{3{,}250} per counter-rotating \emph{pair}, so four propellers is
+\rs{6{,}500} per aircraft rather than \rs{4{,}000} --- a shortfall of about
+\rs{7{,}500} across the fleet. Propellers are also the item most often broken in
+testing. We intend to look for a cheaper supplier first and absorb the remainder
+from the charger saving and contingency; if neither works, this line has to rise.
+
+\subsection*{Phase 4 --- Field operations and regulatory \quad Months 7--8 \quad \textbf{\rs{66{,}992}}}
+
+\begin{center}\small
+\begin{tabular}{@{}L{3.1cm}L{4.5cm}rrL{4.1cm}@{}}
+\toprule
+\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why this part} \\
+\midrule
+Field consumables & Cables, mounts, spares for field use & --- & 25,000 & Corrections ride the existing radio, so no extra base radio \\
+Base station receiver & Second GNSS unit on a tripod & 1 & 18,000 & Without it the aircraft have no position corrections \\
+Registration & Statutory, unmanned aircraft & 3 & 5,000 & At 6.36\,kg these fall in the Small category under the Drone Rules 2021 \\
+Survey tripod & Photographic tripod and adapter & 1 & 4,000 & A survey-grade tripod is not required for this \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Summary, and the release gates}
+
+\begin{center}
+\begin{tabular}{@{}lrL{7.4cm}@{}}
+\toprule
+\textbf{Phase} & \textbf{INR} & \textbf{Released when} \\
+\midrule
+1 \quad Long-lead procurement & 4,61,029 & On approval \\
+2 \quad Bench build and thrust & 1,32,054 & Design frozen and orders placed \\
+3 \quad Assembly and first flight & 74,303 & \textbf{Thrust measured}; three airframes weighed \\
+4 \quad Field operations & 66,992 & First hover completed \\
+\midrule
+\textbf{Total} & \textbf{7,34,379} & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{For the detection test specifically}, we need nothing beyond what the
+department already has: roughly \textbf{one week on a GPU} and about
+\textbf{30\,GB of storage}. The dataset is public and free and the software is
+open source.
+
+\textbf{Three ways this gets cheaper.} A smaller AI accelerator saves about
+\rs{12{,}000} but halves our processing headroom. Importing cells rather than
+buying Indian saves about \rs{15{,}900} but gives up one of only four
+domestically sourced parts. And confirming which test equipment the department
+already owns could remove up to \rs{56{,}000} --- that one costs nothing but the
+asking, and we have already listed the exact items to check.
+
+%-----------------------------------------------------------------------------
+\section{Conclusion}
+
+The design is further along than it looks: the sizing, the error budgets and the
+flight software are written down, reproducible, and honest about which numbers
+are measured and which are still calculated.
+
+What we are asking for is the means to finish it, released in four steps so that
+nothing is committed before the previous step has produced evidence. The
+immediate need is small --- about a week of GPU time to test the detection idea
+on free public data.
+
+We would rather find out now whether that idea holds than build on a figure we
+calculated but never measured. Having already found one sizing mistake that way,
+testing first seems clearly the better choice.
+
+\vspace{4mm}
+We would also value your guidance on four decisions that are ours to make but
+that we would rather not make alone: the body size we design against, the
+operating altitude, whether to adopt the two-stage detection approach, and which
+of two processing modules to buy.
+
+\end{document}

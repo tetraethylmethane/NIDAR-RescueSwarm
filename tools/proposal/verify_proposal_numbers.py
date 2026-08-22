@@ -165,6 +165,27 @@ results.append((not _bad, "fmt", "no mangled LaTeX control sequences",
                 1, 1, 0.0, "", f"found {_bad[:4]}" if _bad else
                 "guards the \\ref -> 'ef{' failure that compiles clean"))
 
+# The same accident writes CONTROL CHARACTERS, not just missing backslashes:
+# \r becomes CR, \a becomes BEL, \b backspace, \f formfeed, \v vertical tab.
+# Those are invisible in an editor and cannot be matched by a text search, so
+# they are the worst version of this bug. Scan every .tex we generate or edit.
+_TEXDIR = os.path.join(ROOT, "docs", "proposal")
+_ctrl_hits = []
+for _dirpath, _dirnames, _files in os.walk(_TEXDIR):
+    for _fn in _files:
+        if not _fn.endswith(".tex"):
+            continue
+        _p = os.path.join(_dirpath, _fn)
+        with io.open(_p, encoding="utf-8", newline="") as _fh:
+            _body = _fh.read()
+        _hits = {hex(ord(c)) for c in _body
+                 if ord(c) < 32 and c not in ("\n", "\t", "\r")}
+        if _hits:
+            _ctrl_hits.append(f"{_fn}:{sorted(_hits)}")
+results.append((not _ctrl_hits, "fmt", "no stray control characters in any .tex",
+                1, 1, 0.0, "", "; ".join(_ctrl_hits) if _ctrl_hits else
+                "CR/BEL/BS written in place of a backslash are invisible"))
+
 # A tie that lost its command leaves a line ending in a bare tilde.
 _dangling = [i + 1 for i, ln in enumerate(TEX.splitlines())
              if ln.rstrip().endswith("~")]
