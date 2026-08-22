@@ -54,8 +54,8 @@ aircraft has yet flown, so the figures presented here are calculated; the
 programme below is ordered to replace them with measurements, beginning with the
 most consequential.
 
-The request is \textbf{\rs{7{,}43{,}004} across six phases and 32 steps}, no
-step exceeding \rs{30{,}000}, each released on the demonstrated result of the
+The request is \textbf{\rs{7{,}43{,}004} across 32 phases}, no
+phase exceeding \rs{30{,}000}, each released on the demonstrated result of the
 preceding one. The first is \rs{31{,}371}.
 
 %-----------------------------------------------------------------------------
@@ -157,25 +157,89 @@ search.
 %-----------------------------------------------------------------------------
 \section{Resources needed}
 
-The programme is divided into six phases. Each has a stated objective, a defined
-completion criterion, and is released only when the preceding phase has
-demonstrated its result. No individual step exceeds \rs{30{,}000}.
+The programme is divided into \textbf{32 phases}. Each funds a single
+purchase, carries one objective, and is released only when the preceding phase
+has produced its result. \textbf{No phase exceeds \rs{30{,}000}}; the largest is
+\rs{29{,}440} and the first is \rs{26{,}196}.
+
+The sequence is determined by engineering dependency rather than by
+convenience: the motor is measured before eleven more are bought, and one
+aircraft flies a complete mission before either of the others is begun.
+
+\subsection*{Phase schedule}
+
+\begin{longtable}{@{}rL{8.0cm}rL{5.1cm}@{}}
+\toprule
+\textbf{\#} & \textbf{Objective} & \textbf{INR} & \textbf{Released on} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{\#} & \textbf{Objective} & \textbf{INR} & \textbf{Released on} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{@{}r}{\textbf{Total}} & \textbf{7,43,004} & \\
+\bottomrule
+\endlastfoot
+1 & Establish thrust and mass measurement capability & 26,196 & Approval \\
+2 & Verify measured static thrust against the 3.18\,kgf requirement & 5,175 & Instruments commissioned \\
+\addlinespace
+3 & Aircraft 1 --- autopilot and control link & 25,990 & \textbf{Thrust verified} \\
+4 & Aircraft 1 --- onboard compute and inference & 21,850 & Autopilot bench-tested \\
+5 & Aircraft 1 --- centimetre positioning & 27,892 & Compute stack operating \\
+6 & Aircraft 1 --- sensing and communications & 29,440 & Position fix acquired \\
+7 & Aircraft 1 --- airframe fabrication & 20,144 & Avionics integrated on the bench \\
+8 & Aircraft 1 --- battery pack assembly & 29,299 & Airframe fabricated \\
+9 & Aircraft 1 --- drive train and payload mechanism & 27,098 & Pack bench-discharged \\
+10 & Aircraft 1 --- propulsion completed & 15,525 & Drive train installed \\
+\addlinespace
+11 & Charging and manual override for flight test & 25,300 & Aircraft one assembled and weighed \\
+12 & Field equipment & 17,274 & Charging verified \\
+\addlinespace
+13 & Aircraft 2 --- autopilot and control link & 25,990 & \textbf{Aircraft one flew a full mission} \\
+14 & Aircraft 2 --- onboard compute and inference & 21,850 & Autopilot bench-tested \\
+15 & Aircraft 2 --- centimetre positioning & 27,892 & Compute stack operating \\
+16 & Aircraft 2 --- sensing and communications & 29,440 & Position fix acquired \\
+17 & Aircraft 2 --- airframe fabrication & 20,144 & Avionics integrated on the bench \\
+18 & Aircraft 2 --- battery pack assembly & 29,299 & Airframe fabricated \\
+19 & Aircraft 2 --- drive train and payload mechanism & 27,098 & Pack bench-discharged \\
+20 & Aircraft 2 --- propulsion completed & 20,700 & Drive train installed \\
+\addlinespace
+21 & Aircraft 3 --- autopilot and control link & 25,990 & \textbf{Two aircraft flying, separation verified} \\
+22 & Aircraft 3 --- onboard compute and inference & 21,850 & Autopilot bench-tested \\
+23 & Aircraft 3 --- centimetre positioning & 27,892 & Compute stack operating \\
+24 & Aircraft 3 --- sensing and communications & 29,440 & Position fix acquired \\
+25 & Aircraft 3 --- airframe fabrication & 20,144 & Avionics integrated on the bench \\
+26 & Aircraft 3 --- battery pack assembly & 29,299 & Airframe fabricated \\
+27 & Aircraft 3 --- drive train and payload mechanism & 27,098 & Pack bench-discharged \\
+28 & Aircraft 3 --- propulsion completed & 20,700 & Drive train installed \\
+\addlinespace
+29 & Correction source for centimetre positioning & 27,892 & First flight completed \\
+30 & Stable, repeatable base mounting & 4,600 & Base receiver acquired \\
+31 & Deployable ground segment & 28,750 & Base station operating \\
+32 & Statutory registration & 5,750 & Ground segment complete \\
+\end{longtable}
+
+Individual phases are rounded to the rupee, so the column sums to within a few
+rupees of the total.
+
+\textbf{Phases 3 and 13 are the two decision points that matter.} Phase 3
+commits the first significant expenditure and is released only on a measured
+thrust figure. Phase 13 begins the second aircraft and is released only after
+the first has flown a complete mission --- so the two largest blocks of
+expenditure fund replication of a demonstrated configuration rather than a
+projection.
+
+\subsection*{Component selection}
 
 Every component below is a specific model at a current Indian retail price,
 selected against a quantity the design produces. Where a lower-cost alternative
 was considered and rejected, the reason is stated.
 
-%---------------------------------------------------------------- phase 1
-\needspace{4\baselineskip}\subsection*{Phase 1 --- Propulsion verification \quad steps 1--2 \quad \rs{31{,}371}}
+\subsubsection*{Measurement instruments \quad \rs{24{,}500}}
 
-\textbf{Objective:} determine whether the selected motor produces the thrust the
-design requires, and establish a mass reference against which the build can be
-tracked.
-
-\textbf{Released on:} approval.
-
-\textbf{Completion criterion:} measured static thrust of $\geq$3.18\,kgf per
-motor at full throttle.
+Procured in phases 1 and 2. If the thrust measurement fails, the programme
+concludes at \rs{31{,}371} and both instruments remain departmental assets.
 
 {\small
 \begin{longtable}{@{}L{3.0cm}L{4.2cm}rL{7.4cm}@{}}
@@ -214,19 +278,10 @@ where propeller efficiency is highest and control authority remains available
 for gust rejection. \\
 \end{longtable}}
 
-\textbf{If the measurement fails}, the programme concludes at \rs{31{,}371}, and
-both instruments remain departmental assets.
+\subsubsection*{Per aircraft --- avionics, airframe and drive \quad \rs{1{,}59{,}300}}
 
-%---------------------------------------------------------------- phase 2
-\needspace{4\baselineskip}\subsection*{Phase 2 --- First aircraft \quad steps 3--10 \quad \rs{1{,}97{,}238}}
-
-\textbf{Objective:} construct and integrate one complete aircraft capable of
-autonomous flight, onboard detection and payload release.
-
-\textbf{Released on:} the Phase 1 thrust measurement.
-
-\textbf{Completion criterion:} airframe assembled, weighed, and all avionics
-powered and communicating.
+Procured in eight phases per aircraft: phases 3--10 for the first, 13--20 for
+the second, 21--28 for the third.
 
 {\small
 \begin{longtable}{@{}L{3.0cm}L{4.2cm}rL{7.4cm}@{}}
@@ -331,17 +386,9 @@ loosening it. A propeller released at operating speed results in loss of the
 aircraft. \\
 \end{longtable}}
 
-%---------------------------------------------------------------- phase 3
-\needspace{4\baselineskip}\subsection*{Phase 3 --- Flight-test capability \quad steps 11--12 \quad \rs{42{,}574}}
+\subsubsection*{Flight-test support \quad \rs{36{,}500}}
 
-\textbf{Objective:} establish the ground support required to fly the first
-aircraft safely and repeatedly --- charging, manual override and field
-readiness.
-
-\textbf{Released on:} airframe assembly and weigh-in.
-
-\textbf{Completion criterion:} first flight completed under safety-pilot
-supervision.
+Procured in phases 11 and 12, once the first airframe is assembled and weighed.
 
 {\small
 \begin{longtable}{@{}L{3.0cm}L{4.2cm}rL{7.4cm}@{}}
@@ -378,17 +425,10 @@ Laptop displays are not legible in direct sunlight, and an operator unable to
 read the display cannot supervise the flight. \\
 \end{longtable}}
 
-%---------------------------------------------------------------- phase 4
-\needspace{4\baselineskip}\subsection*{Phase 4 --- Positioning and regulatory compliance \quad steps 13--16 \quad \rs{66{,}992}}
+\subsubsection*{Ground segment and statutory \quad \rs{52{,}000}}
 
-\textbf{Objective:} establish centimetre-accurate positioning and complete
-statutory registration, so that geolocation accuracy can be measured on the
-first aircraft.
-
-\textbf{Released on:} first flight.
-
-\textbf{Completion criterion:} RTK fix demonstrated in the field and reported
-survivor position measured against surveyed ground truth.
+Procured in phases 29--32, after the first flight, so that geolocation accuracy
+can be measured on a flying aircraft.
 
 {\small
 \begin{longtable}{@{}L{3.0cm}L{4.2cm}rL{7.4cm}@{}}
@@ -421,62 +461,18 @@ The base receiver requires a stable and repeatable mounting rather than
 survey-grade absolute accuracy, as the corrections are relative. \\
 \end{longtable}}
 
-%---------------------------------------------------------------- phases 5-6
-\needspace{4\baselineskip}\subsection*{Phases 5 and 6 --- Fleet completion \quad steps 17--32 \quad \rs{2{,}02{,}413} each}
+\subsection*{Structural cost of this arrangement}
 
-\textbf{Objective:} replicate the validated design as the second
-aircraft and demonstrate two-aircraft coordinated operation with verified
-separation.
-
-\textbf{Released on:} aircraft one completing a full mission.
-
-\textbf{Objective:} complete the fleet and demonstrate three-aircraft
-coordinated search under a single operator.
-
-\textbf{Released on:} two-aircraft separation verified in flight.
-
-Each phase repeats the Phase 2 component set exactly, in the same eight steps,
-at \rs{2{,}02{,}413} --- marginally higher than aircraft one, as all four motors
-are procured together. No individual step exceeds \rs{29{,}440}.
-
-These are the final two requests by design. At the point either is made, a
-complete aircraft has already flown the mission, so the expenditure funds
-replication of a demonstrated configuration.
-
-%---------------------------------------------------------------- summary
-\subsection*{Summary}
-
-\begin{center}
-\begin{tabular}{@{}clrL{5.0cm}@{}}
-\toprule
-\textbf{Phase} & \textbf{Objective} & \textbf{INR} & \textbf{Released on} \\
-\midrule
-1 & Propulsion verification & 31,371 & Approval \\
-2 & First aircraft & 1,97,238 & Measured thrust \\
-3 & Flight-test capability & 42,574 & Airframe weighed \\
-4 & Positioning and registration & 66,992 & First flight \\
-5 & Second aircraft & 2,02,413 & Full mission flown \\
-6 & Third aircraft & 2,02,413 & Separation verified \\
-\midrule
-& \textbf{Total} & \textbf{7,43,004} & \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-Individual steps are rounded to the rupee, so the column sums to within a few
-rupees of the total.
-
-\textbf{Structural cost.} This arrangement carries an administrative overhead of
-32 approvals, and procuring one aircraft at a time requires the same imported
-order to be placed three times, at a schedule cost of approximately eight to
-twelve weeks. Consolidating the per-aircraft phases into a single order is
-available if schedule becomes the binding constraint.
+Thirty-two approvals is a material administrative overhead, and procuring one
+aircraft at a time requires the same imported order to be placed three times,
+at a schedule cost of approximately eight to twelve weeks. Consolidating the
+per-aircraft phases into a single order is available if schedule becomes the
+binding constraint.
 
 \textbf{The detection evaluation requires no additional procurement:}
 approximately one week on a departmental GPU and 30\,GB of storage. The dataset
 is public and the software is open source.
 
-%-----------------------------------------------------------------------------
 \section{Future work}
 
 \textbf{Near term.} Replace each calculated quantity with a measured one:
@@ -509,8 +505,7 @@ question in its own right.
 \section{Conclusion}
 
 The design is complete and explicit as to which quantities are measured and
-which are calculated. We request the means to complete it in six phases and 32
-steps, no step exceeding \rs{30{,}000}, so that no expenditure is committed
+which are calculated. We request the means to complete it in 32 phases, no phase exceeding \rs{30{,}000}, so that no expenditure is committed
 before the preceding step has produced evidence.
 
 Phase 1 is \rs{31{,}371} and resolves the question on which the remainder
