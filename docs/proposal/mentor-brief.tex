@@ -1,11 +1,10 @@
 %=============================================================================
-%  Programme brief for the faculty mentor.
-%  Plain language, whole-programme scope. Build:  pdflatex mentor-brief
+%  Programme brief for the faculty mentor. Concise. Build: pdflatex mentor-brief
 %=============================================================================
 \documentclass[11pt,a4paper]{article}
 \usepackage[T1]{fontenc}
 \usepackage{mathptmx}
-\usepackage[margin=24mm]{geometry}
+\usepackage[margin=22mm]{geometry}
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{microtype}
@@ -16,473 +15,272 @@
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \newcommand{\rs}[1]{\mbox{INR~#1}}
 \titleformat{\section}{\large\bfseries}{\thesection.}{0.6em}{}
-\setlength{\parskip}{0.55em}
+\titlespacing*{\section}{0pt}{10pt}{4pt}
+\setlength{\parskip}{0.45em}
 \setlength{\parindent}{0pt}
 \pagestyle{fancy}\fancyhf{}
-\fancyhead[L]{\small Autonomous multi-UAV search and delivery --- programme brief}
+\fancyhead[L]{\small Autonomous multi-UAV search and delivery}
 \fancyhead[R]{\small\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
-\renewcommand{\arraystretch}{1.2}
+\renewcommand{\arraystretch}{1.15}
 
 \begin{document}
 
 \begin{center}
-{\LARGE\bfseries An Autonomous Multi-UAV System for\\[2mm]
-Post-Disaster Search, Localisation\\[2mm]
-and Payload Delivery}\\[6mm]
-{\large Finding people in floodwater faster than a boat can}\\[6mm]
-Swastik Kumar\\
-Department of Electronics \& Communication Engineering\\
-Thapar Institute of Engineering \& Technology\\[2mm]
-\today
+{\LARGE\bfseries An Autonomous Multi-UAV System for\\[1.5mm]
+Post-Disaster Search, Localisation and Payload Delivery}\\[5mm]
+Swastik Kumar \quad$\cdot$\quad Electronics \& Communication Engineering\\
+Thapar Institute of Engineering \& Technology \quad$\cdot$\quad \today
 \end{center}
 \thispagestyle{empty}
-\vspace{2mm}\hrule\vspace{5mm}
+\vspace{1mm}\hrule\vspace{4mm}
 
 %-----------------------------------------------------------------------------
 \section{Executive summary}
 
 Floods displace millions of people in India every year. The slow part of a
-rescue is usually not reaching survivors --- it is \emph{finding} them.
+rescue is not reaching survivors --- it is \emph{finding} them.
 
-We are building three one-metre, 6.4\,kg multirotor aircraft that fly a search
-pattern over flooded ground as a coordinated group under \textbf{a single
-operator}, recognise people from the air, report their coordinates to within
-about a metre, and drop a small relief kit to each. It works with \textbf{no
-mobile network and no internet} --- which matters, because those are among the
-first things a flood takes away.
+We are building three one-metre, 6.4\,kg multirotor aircraft that search flooded
+ground as a coordinated group under \textbf{one operator}, recognise people from
+the air, report their position to about a metre, and drop a relief kit to each.
+It needs \textbf{no mobile network and no internet} --- among the first things a
+flood removes.
 
-The design is further along than it may look. The sizing, the error budgets and
-the flight software are written down, reproducible, and honest about which
-numbers are measured and which are still calculated. Coordination and failsafe
-behaviour have been demonstrated across three simultaneous simulated autopilots.
+The sizing, error budgets and flight software are written down and
+reproducible, and coordination has been demonstrated across three simulated
+autopilots. \textbf{No aircraft has flown yet.} While checking our own
+arithmetic we also found a real flaw: the camera sees a survivor clearly and our
+software discards that detail before the detector sees it. We have a fix and can
+test it on free public data first.
 
-Two things remain. \textbf{No aircraft has flown yet}, and while checking our own
-arithmetic we found a real flaw in the vision pipeline: the camera sees a
-survivor clearly and our software throws that detail away before the detector
-looks at it. We have a fix, and we can test it on free public data before
-committing to anything.
-
-This document sets out the problem, the system, what it delivers, who benefits
-and what it costs --- \textbf{\rs{7{,}34{,}379} across nine small steps}, the
-first of which is \rs{31{,}371}.
+We are asking for \textbf{\rs{7{,}34{,}379} across 32 steps}, none above
+\rs{30{,}000}, each released only on the result of the one before. The first is
+\rs{26{,}196}.
 
 %-----------------------------------------------------------------------------
-\section{The problem we are solving}
+\section{The problem}
 
-\textbf{After a flood, the binding constraint is time-to-locate.}
+\textbf{After a flood, the binding constraint is time-to-locate.} Boat teams
+search slowly and at high risk and cannot see onto rooftops. Helicopters are
+scarce, costly per hour, and committed to evacuation. Nothing fills the gap
+between them: covering a large area quickly and reporting exactly where people
+are.
 
-Ground and boat teams reach people, but they search slowly, at high risk to
-themselves, and they cannot see over debris fields or onto rooftops. Helicopters
-search quickly but are scarce, expensive per flight hour, and usually committed
-to evacuation rather than systematic survey. In between sits a gap that nothing
-currently fills: \emph{covering a large area quickly and reporting exactly where
-people are}.
+Small drones look like the answer and mostly are not: they need one pilot each,
+depend on a network that the disaster has removed, find people without helping
+them --- and seeing a person from the air is genuinely hard.
 
-Small drones look like the obvious answer and mostly do not fill it either, for
-four reasons:
-
-\begin{itemize}\itemsep2pt
-\item \textbf{One pilot per aircraft.} Most systems need a trained operator
-flying manually. Three aircraft means three pilots, and a disaster response
-rarely has three to spare.
-\item \textbf{They rely on a network.} Cloud detection and mobile telemetry are
-useless in exactly the conditions that produced the emergency.
-\item \textbf{They find, but do not help.} Spotting someone and reaching them
-are different problems, and a drone that only spots leaves a gap of hours.
-\item \textbf{Seeing a person from the air is genuinely hard.} This is the part
-most proposals skip, and it is where we found our own mistake.
-\end{itemize}
-
-\subsection*{The technical problem inside that}
-
-A person in floodwater shows only head and shoulders --- roughly 40\,cm across.
-Our camera at 60\,m resolves that across about 26 pixels. But detection models
-take a fixed, small input, so the picture is shrunk to fit, and after shrinking
-the person occupies about \textbf{13 pixels}.
-
-At that size, published results for detecting tiny people report accuracy
-between 29\,\% and 61\,\%. That is not good enough when a missed person is a
-missed rescue. And the obvious response --- use a smaller, faster model --- makes
+\textbf{That last part is where we found our own mistake.} A person in
+floodwater shows head and shoulders only, about 40\,cm across. Our camera at
+60\,m resolves that across 26 pixels; but detectors take a fixed small input, so
+the image is shrunk and the person becomes \textbf{13 pixels}. Published results
+at that size report 29--61\,\% accuracy. Choosing a smaller, faster model makes
 it \emph{worse}, because smaller models take smaller inputs.
 
-Three further things make floods harder than they first appear:
-
-\begin{itemize}\itemsep2pt
-\item \textbf{No suitable training data exists.} Flood datasets label buildings
-and water damage, not people. Datasets of people in water are open sea: clear
-blue water, no debris, no rooftops.
-\item \textbf{Thermal cameras do not rescue us.} In water, skin cools toward
-water temperature and the heat difference largely disappears. Thermal helps on
-rooftops and fails in exactly the case we care most about.
-\item \textbf{We were sizing for the wrong target.} Our early work assumed a
-person lying flat, 1.7\,m long, rather than a person in water, 0.4\,m across.
-That made the problem look four times easier than it is. We found the mistake
-ourselves --- and it is precisely why we now want to measure rather than assume.
-\end{itemize}
+Three things make floods harder still: no flood dataset labels \emph{people};
+thermal fails in water, where skin cools to water temperature; and we had been
+sizing for a person lying flat (1.7\,m) rather than one in water (0.4\,m), which
+made the problem look four times easier than it is. We found that ourselves,
+and it is why we now want to measure rather than assume.
 
 %-----------------------------------------------------------------------------
 \section{Our solution}
 
-\subsection*{The system}
+\textbf{The system.} The operator draws a search area of any shape; the software
+divides it into three balanced pieces and plans a path over each --- verified on
+thirteen awkward shapes with no path leaving the region and under 0.02\,\%
+imbalance. The aircraft then fly themselves: our harness proves structurally
+that no command is sent after the mission starts. Detection and geolocation run
+\emph{on board}, so nothing depends on a radio link. Each aircraft carries four
+kits and can descend, stop over a survivor and release one. Link loss, low
+battery and operator abort all converge on the same return-and-land behaviour.
 
-Three identical aircraft, one operator, no network dependency.
+\textbf{The fix for the vision flaw}, in order of effect:
 
-\begin{itemize}\itemsep2pt
-\item \textbf{The area is divided automatically.} The operator draws a search
-region of any shape; the software splits it into three balanced pieces and plans
-a lawnmower path over each. We have verified this on thirteen awkward boundary
-shapes, including ones with notches and slots, with no path leaving the region
-and under 0.02\,\% workload imbalance.
-\item \textbf{The aircraft fly themselves.} Once launched they follow the plan
-without further instruction. Our test harness proves this structurally, by
-showing that no command is transmitted after the mission starts.
-\item \textbf{Detection happens on board.} Each aircraft carries a small
-computer and an AI accelerator, so nothing depends on a radio link or a server.
-\item \textbf{Positions are reported to about a metre}, using
-centimetre-accurate satellite positioning corrected from a base station we set
-up ourselves.
-\item \textbf{Each aircraft carries four relief kits} and can descend, stop over
-a survivor, and release one.
-\item \textbf{It fails safely.} Loss of link, low battery or an operator abort
-all converge on the same return-and-land behaviour, verified in simulation.
-\end{itemize}
+\begin{enumerate}\itemsep1pt
+\item \textbf{Fly lower.} 60\,m to 30\,m more than triples the target's size,
+and the mission takes under eight minutes so we have time to spare.
+\item \textbf{Stop shrinking the picture.} Cut the full-resolution image into
+overlapping tiles instead. Standard practice; costs four times the computing.
+\item \textbf{Afford that with a cheap first look.} Most of a flood is empty
+water. A small fast model asks only \emph{``could anything be here?''} and the
+expensive detector runs where it says yes. About 87\,\% of tiles are empty and
+we need to skip 80\,\% to break even, so the arithmetic closes.
+\end{enumerate}
 
-\subsection*{The fix for the vision problem}
+Steps 1 and 2 take a person from \textbf{13 pixels to 52} --- sixteen times the
+area --- for the same computing cost.
 
-Three changes, in order of how much they help.
-
-\textbf{1. Fly lower.} Coming down from 60\,m to 30\,m more than triples how
-large a person appears. It costs a little flying time, and we have a great deal
-to spare --- the planned mission takes under eight minutes.
-
-\textbf{2. Stop shrinking the picture.} Instead, cut the full-resolution image
-into overlapping tiles and examine each one properly. This is well-established
-practice; the catch is that it costs four times the computing power.
-
-\textbf{3. Make step 2 affordable with a cheap first look.} Most of a flooded
-area is empty water. A small, fast model checks each tile and asks only
-\emph{``could there be anything here?''} The expensive detector then runs only
-where the answer is yes. About \textbf{87\,\% of tiles are empty} and we need to
-skip \textbf{80\,\%} to break even, so the arithmetic closes.
-
-Steps 1 and 2 together take a person from \textbf{13 pixels to 52} ---
-\textbf{sixteen times the area} --- for the same computing cost.
-
-\textbf{The honest risk.} The cheap first look might discard a tile that had a
-person in it. That failure is silent from the air and cannot be undone later.
-This is exactly why we intend to test it before adopting it, and why our pass
-mark assumes the pessimistic case: that such mistakes repeat from frame to frame
-rather than cancelling out.
+\textbf{The honest risk:} the cheap first look could discard a tile containing a
+person. That failure is silent from the air and cannot be undone, which is why
+we test before adopting, and why our pass mark assumes such mistakes repeat
+across frames rather than cancelling out.
 
 %-----------------------------------------------------------------------------
 \section{Deliverables}
 
-\begin{enumerate}\itemsep3pt
-\item \textbf{Three working aircraft}, flying as a coordinated group under one
-operator with no network dependency.
-\item \textbf{A ground station} showing all three aircraft, their health, search
-progress and confirmed survivor positions --- and deliberately \emph{unable} to
-fly the aircraft, so the autonomy cannot be quietly undermined by an operator.
-\item \textbf{Autonomy software} for area division, path planning, task
-allocation and failsafe behaviour, with an automated test suite.
-\item \textbf{A measured detection figure} to replace the calculated one we rely
-on today. It would be the first real number we have.
-\item \textbf{An evidence-based answer on flight altitude}, which our own design
-currently leaves unsettled.
-\item \textbf{A possible publication.} Three research areas --- image tiling,
-aerial person detection, and low-power onboard processing --- have not been
-combined for flood conditions. That is a narrow, defensible contribution, and it
-is testable rather than merely argued.
-\item \textbf{Code, data and results published either way.} A negative result
-still settles an open question and costs the same to obtain.
+\begin{enumerate}\itemsep1pt
+\item Three aircraft flying as a coordinated group under one operator.
+\item A ground station that shows everything and is deliberately \emph{unable}
+to fly the aircraft, so the autonomy cannot be quietly undermined.
+\item Autonomy software --- area division, path planning, allocation, failsafes
+--- with an automated test suite.
+\item A \emph{measured} detection figure, replacing the calculated one. The
+first real number we would have.
+\item An evidence-based answer on flight altitude, currently unsettled.
+\item A possible publication: tiling, aerial person detection and low-power
+onboard inference have not been combined for flood conditions.
+\item Code and results published either way. A negative result settles the same
+question and costs the same.
 \end{enumerate}
 
 %-----------------------------------------------------------------------------
 \section{Benefits}
 
-\textbf{Operationally}, the system turns a slow, dangerous, manual search into a
-fast and systematic one. Three aircraft sweep ten hectares in under eight
-minutes and hand a rescue coordinator a list of coordinates rather than a video
-feed somebody has to watch. Crucially it does this \emph{without} a network,
-which is the condition that actually obtains after a flood.
+\textbf{Operational.} Three aircraft sweep ten hectares in under eight minutes
+and hand a coordinator a list of coordinates rather than a video feed somebody
+must watch --- with no network, which is the condition that actually obtains.
 
-\textbf{Economically}, the whole three-aircraft system costs less than a single
-hour of helicopter search time. It travels by road, stores between seasons, and
-is operated by two people.
+\textbf{Economic.} The whole system costs less than one hour of helicopter
+search time, travels by road, and is run by two people.
 
-\textbf{For the department}, the programme leaves behind more than three
-aircraft: a calibrated thrust stand, a certified scale, a working ground
-station, an autonomy codebase with an automated test suite, and a group of
-students who have taken a system from arithmetic to flight. Most of that
-equipment, and all of the software, outlives this project.
+\textbf{Departmental.} What outlives the project: a calibrated thrust stand, a
+certified scale, a ground station, a tested autonomy codebase, and students who
+have taken a system from arithmetic to flight.
 
-\textbf{Strategically}, the design favours Indian suppliers wherever they can
-meet the specification --- for sovereignty, and for the practical reason that
-domestic lead times are roughly half those of imports, which directly buys
-flight-test days inside a fixed schedule.
+\textbf{Strategic.} Indian suppliers wherever they meet the specification --- for
+sovereignty, and because domestic lead times are half those of imports, which
+buys flight-test days.
 
-\textbf{Beyond floods}, nothing in the system is flood-specific except the
-training data. The same aircraft, planner and delivery mechanism apply to
-earthquake rubble survey, wildfire perimeter mapping, avalanche search and
-routine infrastructure inspection.
+\textbf{Transferable.} Nothing is flood-specific except the training data. The
+same system suits earthquake rubble survey, wildfire perimeter mapping and
+avalanche search.
 
 %-----------------------------------------------------------------------------
 \section{Resources needed}
 
-Money is not needed in one decision. The programme splits into \textbf{nine
-small steps}, and the order is engineering rather than accounting: prove the
-motor before buying twelve of them, and fly one complete aircraft before
-building the other two.
+The order is engineering, not accounting: prove the motor before buying twelve,
+and fly one aircraft before building three. \textbf{No step exceeds
+\rs{30{,}000}}, and each is released only when the previous one has produced a
+result --- so the department is never committed to more than one small step.
 
-Each step is released only when the previous one has produced a result, so the
-department is never committed to more than one step at a time. \textbf{The first
-decision is \rs{31{,}371}} --- about four per cent of the programme --- and no
-single step exceeds \rs{1{,}05{,}172}.
-
-All prices are current Indian retail. Totals include customs duty, GST and
-15\,\% contingency where they apply.
-
-\begin{center}
-\begin{tabular}{@{}clrL{5.9cm}@{}}
+\begin{center}\small
+\begin{tabular}{@{}rL{8.1cm}rL{4.4cm}@{}}
 \toprule
-\textbf{\#} & \textbf{Step} & \textbf{INR} & \textbf{Released only when} \\
+\textbf{\#} & \textbf{Step} & \textbf{INR} & \textbf{Gate} \\
 \midrule
-1 & Prove the propulsion & 31,371 & On approval \\
-2 & Aircraft one: avionics and sensing & 1,05,172 & \textbf{Measured thrust $\geq$ 3.18\,kgf per motor} \\
-3 & Aircraft one: airframe and power & 89,192 & Avionics powered and communicating on the bench \\
-4 & Fly aircraft one & 42,574 & Airframe assembled and weighed \\
-5 & Ground station and registration & 66,992 & First flight completed \\
-6 & Aircraft two: avionics & 1,05,172 & Aircraft one has flown a full mission \\
-7 & Aircraft two: airframe & 94,367 & Aircraft two's avionics verified \\
-8 & Aircraft three: avionics & 1,05,172 & Two aircraft flying, separation verified \\
-9 & Aircraft three: airframe & 94,367 & Aircraft three's avionics verified \\
+1 & Thrust stand + calibrated scale & 26,196 & On approval \\
+2 & \textbf{One motor}, to measure & 5,175 & Stand built \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Aircraft one --- released only on measured thrust $\geq$ 3.18\,kgf per motor}} \\
+3 & Flight controller & 25,990 & Thrust proven \\
+4 & Onboard computer + AI accelerator & 21,850 & --- \\
+5 & GNSS receiver (centimetre-accurate) & 27,892 & --- \\
+6 & Camera, radio, mesh & 29,440 & --- \\
+7 & Airframe (carbon tube, clamps) & 20,144 & Avionics talking \\
+8 & Battery cells + pack assembly & 29,299 & --- \\
+9 & Speed controllers, release, propellers, wiring & 24,223 & --- \\
+10 & Remaining three motors & 15,525 & --- \\
+\midrule
+11 & Charger + safety-pilot radio & 25,300 & Airframe weighed \\
+12 & Consumables + sun hood & 17,274 & --- \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Ground station --- released on first flight}} \\
+13 & Base station receiver & 27,892 & First flight \\
+14 & Survey tripod & 4,600 & --- \\
+15 & Field cables, mounts, spares & 28,750 & --- \\
+16 & Registration and remaining statutory & 5,750 & --- \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Aircraft two --- released only after aircraft one flies a full mission}} \\
+17--24 & Same eight steps as 3--10 & 1,99,538 & Mission flown \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Aircraft three --- released only after two aircraft fly with verified separation}} \\
+25--32 & Same eight steps as 3--10 & 1,99,538 & Separation verified \\
 \midrule
 & \textbf{Total} & \textbf{7,34,379} & \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\subsection*{Step 1 --- Prove the propulsion \quad \textbf{\rs{31{,}371}}}
+Steps 17--32 repeat steps 3--10 exactly, once per aircraft, none above
+\rs{29{,}440}. By the time any is requested a complete aircraft has already
+flown --- so what is funded is \textbf{replication of a working design}.
+(Individual steps are rounded to the rupee, so the column sums to within a few
+rupees of the total.)
 
-The smallest step, and the one that decides everything after it. Our motors are
-sold without a published thrust curve, so we do not yet know that the aircraft
-can lift itself. Rather than buy twelve on faith, we buy \emph{one} and measure
-it.
+\textbf{Named parts.} Holybro Pixhawk 6C~Mini; Raspberry~Pi~5 8\,GB with the
+Pi AI HAT+ (Hailo-8); Arducam IMX477 with a 6\,mm \emph{fixed-focus} lens
+(hyperfocal distance is 4.15\,m, so focus set once is correct at every altitude
+we fly); Molicel P45B cells, 4500\,mAh at 45\,A because peak draw is 38.3\,A per
+cell; Tarot TL96020 motors; ToolkitRC~M6D chargers; RadioMaster Boxer.
 
-\begin{center}\small
-\begin{tabular}{@{}L{3.2cm}L{4.6cm}rrL{4.0cm}@{}}
-\toprule
-\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why} \\
-\midrule
-Calibrated scale & Bench scale, 30\,kg $\times$ 1\,g, certified & 1 & 12,000 & Mass is a hard limit; we cannot argue with a scale we do not own \\
-Thrust stand & 20\,kg load cell + HX711 + power meter, frame built in-house & 1 & 8,000 & The instrument that answers the question \\
-Motor & Tarot TL96020, 5008 / 340\,KV & \textbf{1} & 4,500 & One, not twelve. Must lift 3.18\,kgf \\
-\bottomrule
-\end{tabular}
-\end{center}
+\textbf{Two notes.} The obvious charger, the HOTA D6~Pro at
+\rs{10{,}499}--\rs{13{,}500}, is 325\,W per channel and can barely charge our
+packs; the ToolkitRC M6D is 500\,W at \rs{5{,}836} and needs only a power supply
+the department already owns. And one line is \emph{under}-budgeted: propellers
+are carried at \rs{1{,}000} each against a verified \rs{3{,}250} per pair ---
+about \rs{7{,}500} short across three aircraft, on the item most often broken.
+We will seek a cheaper supplier and absorb the rest from contingency.
 
-\textbf{If this step fails, the programme stops here having spent
-\rs{31{,}371}} --- and both instruments remain useful departmental equipment.
+\textbf{What this costs.} Thirty-two approvals is real administrative work, and
+buying one aircraft at a time means placing the same imported order three times
+--- roughly eight to twelve weeks of schedule. We have chosen it anyway, because
+we would rather move slowly with your confidence than quickly without it. If
+either becomes binding, merging the per-aircraft steps is the lever, and that is
+your call.
 
-\subsection*{Step 2 --- Aircraft one: avionics and sensing \quad \textbf{\rs{1{,}05{,}172}}}
-
-\begin{center}\small
-\begin{tabular}{@{}L{3.2cm}L{4.6cm}rrL{4.0cm}@{}}
-\toprule
-\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why} \\
-\midrule
-Flight controller & Holybro Pixhawk 6C Mini & 1 & 22,600 & Dual sensors, industry standard, open-source autopilot \\
-GNSS receiver & Centimetre-accurate (RTK) & 1 & 18,000 & Position accuracy is the largest single error in the system \\
-Camera + lens & Arducam IMX477 + 6\,mm, \textbf{fixed focus} & 1 & 11,100 & Fixed focus is correct at every altitude we fly \\
-AI accelerator & Raspberry Pi AI HAT+ (Hailo-8) & 1 & 11,000 & Runs the detector on board \\
-Radio + storage & ExpressLRS 2.4\,GHz & 1 & 8,500 & One link carries control \emph{and} telemetry \\
-Onboard computer & Raspberry Pi 5, 8\,GB & 1 & 8,000 & The host everything runs on \\
-Mesh radio & 5.8\,GHz + antennas & 1 & 6,000 & Video and data between aircraft \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\subsection*{Step 3 --- Aircraft one: airframe and power \quad \textbf{\rs{89{,}192}}}
-
-\begin{center}\small
-\begin{tabular}{@{}L{3.2cm}L{4.6cm}rrL{4.0cm}@{}}
-\toprule
-\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why} \\
-\midrule
-Motors & Tarot TL96020, remaining three & 3 & 13,500 & Bought only after step 1 proved the first \\
-Airframe & 25\,$\times$\,23\,mm carbon tube (Kineco Kaman) + machined clamps & 1 & 13,000 & Fabricated in the institute machine shop \\
-Battery cells & Molicel P45B 21700, 4500\,mAh & 18 & 12,600 & Peak draw is 38.3\,A per cell; a 40\,A cell has no margin \\
-Pack assembly & 6S 60\,A BMS + power board + regulator & 1 & 8,500 & 18 cells must be welded, fused and balanced \\
-Speed controllers & 50--60\,A continuous, 6S & 4 & 7,200 & Peak is 29\,A per motor \\
-Payload release & 4 metal-gear servos + mechanical detent & 1 & 4,500 & A power glitch must not drop a kit \\
-Propellers & Tarot 1855 carbon, CW/CCW & 4 & 4,000 & See note below \\
-Wiring & 10\,AWG silicone, XT90-S, JST-GH & 1 & 2,400 & Gauge is set by the 115\,A peak \\
-Propeller adapters & 6\,mm self-tightening hubs & 4 & 1,400 & A nut loosening at 5{,}000\,rpm loses the aircraft \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\subsection*{Step 4 --- Fly aircraft one \quad \textbf{\rs{42{,}574}}}
-
-\begin{center}\small
-\begin{tabular}{@{}L{3.2cm}L{4.6cm}rrL{4.0cm}@{}}
-\toprule
-\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why} \\
-\midrule
-Battery charger & \textbf{ToolkitRC M6D}, 500\,W / 25\,A, dual & 2 & 11,672 & See note below \\
-Consumables & Fasteners, thread-lock, tape, filament & --- & 13,000 & Consumed continuously; running out stops work \\
-Safety-pilot radio & \textbf{RadioMaster Boxer}, ExpressLRS & 1 & 6,955 & A pilot taking over manually needs full-size sticks \\
-Sun hood & Fabricated, plus a second-hand monitor & 1 & 1,500 & Screens are unreadable in Punjab daylight \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\subsection*{Step 5 --- Ground station and registration \quad \textbf{\rs{66{,}992}}}
-
-Brought forward ahead of the second and third aircraft, because centimetre
-positioning has to be working before we can measure how accurately aircraft one
-reports a person's coordinates.
-
-\begin{center}\small
-\begin{tabular}{@{}L{3.2cm}L{4.6cm}rrL{4.0cm}@{}}
-\toprule
-\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why} \\
-\midrule
-Field consumables & Cables, mounts, field spares & --- & 25,000 & Corrections ride the existing radio, so no extra base radio \\
-Base station & Second GNSS receiver on a tripod & 1 & 18,000 & Without it the aircraft have no corrections \\
-Registration & Statutory, unmanned aircraft & 3 & 5,000 & At 6.36\,kg these are Small category under the Drone Rules 2021 \\
-Survey tripod & Photographic tripod and adapter & 1 & 4,000 & Survey-grade is not required here \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\subsection*{Steps 6 to 9 --- Aircraft two and three}
-
-Each remaining aircraft repeats steps 2 and 3: first its avionics
-(\rs{1{,}05{,}172}), then its airframe and power (\rs{94{,}367}, slightly more
-than aircraft one because all four motors are bought together). The parts and
-the reasons are identical to the tables above.
-
-These four steps are deliberately last. By the time any of them is requested, a
-complete aircraft has already flown the mission --- so what is being funded is
-\textbf{replication of a design that works}, not a hope that it will.
-
-\subsection*{Two notes on the parts}
-
-\textbf{A saving worth having.} The usual charger is the HOTA D6 Pro at
-\rs{10{,}499}--\rs{13{,}500}, but at 325\,W per channel it can barely charge our
-packs. The ToolkitRC M6D is 500\,W at \rs{5{,}836} --- cheaper and faster. It
-needs a separate power supply, which the department already owns. Two units give
-four channels, so the fleet charges at once on a flight day, and it still comes
-in \rs{2{,}328} under budget.
-
-\textbf{One line is under-budgeted, and we would rather say so now.} We carry
-\rs{1{,}000} per propeller. The verified Indian listing is \rs{3{,}250} per
-counter-rotating \emph{pair}, so four propellers is \rs{6{,}500} per aircraft
-rather than \rs{4{,}000} --- about \rs{7{,}500} short across three aircraft, on
-the item most often broken in testing. We will look for a cheaper supplier first
-and absorb the rest from the charger saving and contingency; if neither works,
-this line has to rise.
-
-\subsection*{What splitting this way costs}
-
-Smaller steps are not free. Buying one aircraft at a time means placing the same
-imported order three times, and imported parts take four to six weeks. Ordering
-all three sets together would save roughly \textbf{eight to twelve weeks} of
-schedule, at the price of a much larger single decision.
-
-We have chosen the smaller steps because we would rather move slowly with your
-confidence than quickly without it. If schedule becomes the binding constraint,
-consolidating steps 2, 6 and 8 into one order is the lever --- and that is your
-call, not ours.
-
-\textbf{For the detection test specifically}, we need nothing beyond what the
-department already has: about \textbf{one week on a GPU} and \textbf{30\,GB of
-storage}. The dataset is public and the software is open source.
+\textbf{For the detection test we need nothing new}: about a week on a
+departmental GPU and 30\,GB of storage. The dataset is public, the software open
+source.
 
 %-----------------------------------------------------------------------------
 \section{Future work}
 
-\subsection*{Near term}
+\textbf{Near term.} Replace every modelled number with a measured one ---
+detection accuracy, motor thrust, setup time. Test near-infrared sensing: water
+absorbs infrared and people do not, so a person appears bright against dark
+water. A camera without its infrared filter costs about \rs{3{,}000} and a
+public dataset exists to test it before buying. Beyond floods, the same system
+suits earthquake, wildfire and avalanche search.
 
-\textbf{Measure what is currently modelled.} Detection accuracy, motor thrust
-and setup time are all calculated rather than observed. Each can be measured
-with equipment already in the plan above, and the programme is arranged so that
-every measurement arrives before the decision that depends on it.
+\textbf{Longer term: aircraft that must think for themselves.} Our central
+constraint --- a capable aircraft deciding for itself inside a very small power
+budget --- is a hard requirement in planetary aviation. NASA's \emph{Ingenuity}
+flew 72 times on Mars from a 1.8\,kg airframe in an atmosphere under one per
+cent of Earth's density. \emph{Dragonfly} launches in 2028 for Titan, where the
+air is four times denser than Earth's at one seventh the gravity.
 
-\textbf{Better sensing for water.} People in water are easier to see in
-near-infrared than in ordinary colour: water absorbs infrared strongly and a
-person does not, so they appear bright against a dark background. A camera
-without its infrared filter costs about \rs{3{,}000}, and a public dataset
-exists to test the idea before buying anything. This is the cheapest promising
-experiment we have identified.
+What makes those hard is not the flying but that \textbf{a radio command takes
+minutes to arrive}: nobody is piloting, so every choice is made on board. That
+is our problem with the difficulty raised, and what transfers is what is not
+about floods --- planning a survey on board, running perception to an
+\emph{energy} budget, and failing safely with no link.
 
-\textbf{Beyond floods.} Nothing in the aircraft or the planner is
-flood-specific. Earthquake rubble survey, wildfire perimeter mapping and
-avalanche search need the same capability with different training data.
-
-\subsection*{Longer term: aircraft that must think for themselves}
-
-There is a class of problem where our central constraint --- \emph{a capable
-aircraft deciding for itself inside a very small power budget} --- is not a
-design preference but a hard requirement. Planetary aviation is the clearest
-example.
-
-NASA's \emph{Ingenuity} flew 72 times on Mars before rotor damage grounded it in
-January 2024, from a 1.8\,kg airframe with 1.21\,m rotors, in an atmosphere less
-than one per cent as dense as Earth's. NASA's \emph{Dragonfly}, launching in
-2028 for Saturn's moon Titan, is a very different machine: about 875\,kg on
-eight rotors, flying in an atmosphere four times denser than Earth's at one
-seventh the gravity --- conditions far kinder to a rotorcraft than Mars.
-
-What makes those vehicles hard is not the flying. It is that \textbf{a radio
-command takes minutes to arrive}, so nobody is piloting and nothing can be
-decided on the ground in time. Every choice --- where to look, what is worth
-photographing, when to abort --- has to be made on board, by a computer running
-on a power budget far smaller than ours.
-
-That is our problem with the difficulty turned up, and the parts of this work
-that would transfer are the parts that are not about floods:
-
-\begin{itemize}\itemsep2pt
-\item deciding a survey pattern on board and executing it with no operator;
-\item running perception inside a fixed \emph{energy} budget rather than to a
-fixed accuracy target;
-\item failing safely when the link is gone --- for us a contingency, for them the
-normal condition.
-\end{itemize}
-
-\textbf{We should be careful not to overstate this.} Our own analysis found that
-the very smallest class of processor --- the microcontroller-scale hardware often
-proposed for such missions --- cannot see our targets at all, because shrinking
-the image to fit that processor destroys the thing we are looking for. A
-planetary version would need a different operating point: lower altitude, a
-larger target, or a coarser task. That is a genuine research question rather
-than a slide, and it is the honest version of the claim.
+\textbf{We should not overstate it.} Our own analysis found that
+microcontroller-class processors --- the hardware usually proposed for such
+missions --- cannot see our targets at all, because shrinking the image to fit
+them destroys what we are looking for. A planetary version needs a different
+operating point. That is a research question, not a slide.
 
 %-----------------------------------------------------------------------------
 \section{Conclusion}
 
-The design is further along than it looks. The sizing, the error budgets and the
-flight software are written down, reproducible, and explicit about which numbers
-are measured and which are still calculated.
+The design is further along than it looks, and explicit about which numbers are
+measured and which are not. We are asking for the means to finish it in 32 small
+steps, none above \rs{30{,}000}, so nothing is committed before the previous
+step has produced evidence.
 
-What we are asking for is the means to finish it, released in nine steps so that
-nothing is committed before the previous step has produced evidence. The first
-step is \rs{31{,}371} and answers the question everything else depends on:
-can these motors lift this aircraft.
+The first step is \rs{26{,}196} and answers the question everything depends on:
+can these motors lift this aircraft. The immediate technical need is smaller
+still --- a week of GPU time to test the detection idea on free public data.
+Having already found one sizing mistake by checking, testing first seems clearly
+the better choice.
 
-The immediate technical need is smaller still --- about a week of GPU time to
-test the detection idea on free public data. We would rather find out now
-whether it holds than build on a figure we calculated but never measured. Having
-already found one sizing mistake that way, testing first seems clearly the
-better choice.
-
-\vspace{3mm}
-We would also value your guidance on four decisions that are ours to make but
-would rather not make alone: the body size we design against, the operating
-altitude, whether to adopt the two-stage detection approach, and which of two
-processing modules to buy.
+\vspace{2mm}
+We would value your guidance on four decisions that are ours but that we would
+rather not make alone: the body size we design against, the operating altitude,
+whether to adopt the two-stage detector, and which of two processing modules to
+buy.
 
 \end{document}
