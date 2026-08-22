@@ -38,398 +38,453 @@ Thapar Institute of Engineering \& Technology \quad$\cdot$\quad \today
 %-----------------------------------------------------------------------------
 \section{Executive summary}
 
-Floods displace millions of people in India every year, and the slow part of a
-rescue is not reaching survivors --- it is \emph{finding} them.
+Floods displace millions of people in India each year, and the limiting factor
+in a rescue is not reaching survivors but locating them.
 
-We are building three one-metre, 6.4\,kg multirotor aircraft that search flooded
-ground as a coordinated group under \textbf{one operator}, recognise people from
-the air, report their position to about a metre, and drop a relief kit to each.
-It requires \textbf{no mobile network and no internet}, which matters because
-those are among the first things a flood removes.
+We propose three one-metre, 6.4\,kg multirotor aircraft that search flooded
+ground as a coordinated group under a single operator, identify people from the
+air, report their position to approximately one metre, and deliver a relief kit
+to each. The system requires no mobile network and no internet connection.
 
 The sizing, error budgets and flight software are complete and reproducible, and
 coordination has been demonstrated across three simulated autopilots. No
-aircraft has flown yet, so the numbers here are calculated; the plan below is
-ordered to replace them with measurements, hardest question first.
+aircraft has yet flown, so the figures presented here are calculated; the
+programme below is ordered to replace them with measurements, beginning with the
+most consequential.
 
-We are asking for \textbf{\rs{7{,}43{,}004} across 32 steps}, none above
-\rs{30{,}000}, each released only on the result of the one before. The first is
-\rs{26{,}196}.
+The request is \textbf{\rs{7{,}43{,}004} across six phases and 32 steps}, no
+step exceeding \rs{30{,}000}, each released on the demonstrated result of the
+preceding one. The first is \rs{31{,}371}.
 
 %-----------------------------------------------------------------------------
 \section{The problem}
 
-\textbf{After a flood the binding constraint is time-to-locate.} Boat teams
-search slowly, at high risk, and cannot see onto rooftops. Helicopters are
-scarce, costly per hour, and committed to evacuation. Nothing covers a large
-area quickly \emph{and} reports exactly where people are.
+After a flood, the binding constraint is time-to-locate. Boat teams search
+slowly, at considerable risk, and cannot observe rooftops. Helicopters are
+scarce, costly per flight hour, and generally committed to evacuation. Neither
+covers a large area quickly while reporting precise positions.
 
-Small drones look like the answer and mostly are not: they need one pilot each,
-depend on a network the disaster has removed, and find people without helping
-them.
+Conventional small drones do not close this gap. They require one pilot per
+aircraft, depend on network infrastructure the disaster has removed, and locate
+survivors without assisting them.
 
-The harder problem is seeing a person at all. Someone in floodwater shows head
-and shoulders only, about 40\,cm across. Detectors take a fixed, small input, so
-the conventional approach shrinks the image to fit --- and the person shrinks
-with it, to a size where published results report only 29--61\,\% accuracy.
-Choosing a smaller, faster model makes this \emph{worse}, because smaller models
-take smaller inputs. Two further constraints are specific to floods: no existing
-dataset labels \emph{people} in flood imagery, and thermal cameras fail in
-water, where skin cools to water temperature.
+The more difficult problem is detection itself. A person in floodwater presents
+only head and shoulders, approximately 40\,cm across. Detection models accept a
+fixed, small input, so the conventional approach reduces the image to fit --- and
+the target reduces with it, to a size at which published results report accuracy
+between 29\,\% and 61\,\%. Selecting a smaller, faster model worsens this,
+because smaller models accept smaller inputs. Two further constraints are
+specific to flooding: no existing dataset annotates \emph{people} in flood
+imagery, and thermal imaging is ineffective in water, where skin temperature
+equilibrates toward that of the water.
 
 %-----------------------------------------------------------------------------
 \section{Our solution}
 
-\textbf{The system.} The operator draws a search area of any shape; the software
-divides it into three balanced pieces and plans a path over each --- verified on
-thirteen awkward boundary shapes with no path leaving the region and under
-0.02\,\% workload imbalance. The aircraft then fly themselves, and our test
-harness proves structurally that no command is sent after the mission begins.
-Detection and geolocation run \emph{on board}, so nothing depends on a link.
-Each aircraft carries four kits and can descend, stop over a survivor and
-release one. Link loss, low battery and operator abort all converge on the same
-return-and-land behaviour.
+\textbf{System architecture.} The operator defines a search region of arbitrary
+shape; the software partitions it into three balanced sub-regions and plans a
+coverage path over each. This has been verified across thirteen non-convex
+boundary shapes with no path leaving the region and workload imbalance below
+0.02\,\%. The aircraft then operate autonomously, and the test harness
+demonstrates structurally that no command is transmitted after the mission
+begins. Detection and geolocation execute on board, so neither depends on a
+radio link. Each aircraft carries four kits and can descend, null its
+groundspeed over a survivor, and release one. Link loss, low battery and
+operator abort all converge on a single return-and-land behaviour.
 
-\textbf{Seeing the survivor.} We do not shrink the image. The full-resolution
-frame is cut into 48 overlapping tiles, each examined at native resolution, and
-we fly at 40\,m rather than 60\,m. Together these put the person at
-\textbf{39 pixels} instead of 13 --- nine times the area, and out of the size
-band where detectors perform worst. Only both changes together achieve it;
-either alone leaves the target in the difficult band.
+\textbf{Detection approach.} The image is not reduced. Each full-resolution
+frame is divided into 48 overlapping tiles processed at native resolution, and
+the survey altitude is 40\,m rather than 60\,m. Together these place the target
+at \textbf{39 pixels} rather than 13 --- nine times the area, and outside the
+size band in which detector performance degrades sharply. Both changes are
+required; either alone leaves the target within that band.
 
-It costs four times the computing, and it fits: 48 tiles at 2\,Hz is 96
-inferences per second against the 130--160 measured for our accelerator. The
-extra transects cost seconds, and the mission is in fact slightly shorter than
-at 60\,m because the climb is lower.
+The approach requires four times the computation, and this has been verified as
+feasible before adoption: 48 tiles at 2\,Hz is 96 inferences per second, against
+130--160 measured for the selected accelerator. The additional transects at the
+lower altitude cost seconds, and total mission duration is marginally shorter
+than at 60\,m because the climb is reduced.
 
-\textbf{One item is open.} Confirming a survivor across twelve frames needs
-about 3\,Hz, which does not fit. A two-stage approach would buy it back --- a
-cheap model skipping the roughly 87\,\% of tiles that are empty water --- and we
-will test it on free public data before adopting it, because a first-pass filter
-that discards a tile containing a person fails silently.
+\textbf{One item remains open.} Confirming a survivor across twelve frames
+requires approximately 3\,Hz, which exceeds the accelerator's capacity. A
+two-stage approach would recover this, using a low-cost model to eliminate the
+approximately 87\,\% of tiles containing only water. It will be evaluated
+against public data before adoption, since a first-pass filter that discards a
+tile containing a person fails without indication.
 
 %-----------------------------------------------------------------------------
 \section{Deliverables}
 
 \begin{enumerate}\itemsep1pt
-\item Three aircraft flying as a coordinated group under one operator.
-\item A ground station that displays everything and is deliberately \emph{unable}
-to fly the aircraft, so the autonomy cannot be undermined in use.
-\item Autonomy software --- area division, path planning, allocation, failsafes
---- with an automated test suite.
-\item A \emph{measured} detection figure, replacing the calculated one.
-\item A measured answer on whether the two-stage filter can raise the capture
-rate enough to confirm survivors across twelve frames.
+\item Three aircraft operating as a coordinated group under one operator.
+\item A ground station that displays mission state and is architecturally
+incapable of commanding the aircraft, so autonomy cannot be circumvented in use.
+\item Autonomy software --- area partitioning, path planning, task allocation and
+failsafe logic --- with an automated test suite.
+\item A measured detection accuracy figure, replacing the calculated one.
+\item A measured determination of whether the two-stage filter permits the
+capture rate required for twelve-frame confirmation.
 \item A publication: image tiling, aerial person detection and low-power onboard
-inference have not been combined for flood conditions.
-\item Code and results published either way.
+inference have not previously been combined for flood conditions.
+\item Source code and results published in either outcome.
 \end{enumerate}
 
 %-----------------------------------------------------------------------------
 \section{Benefits}
 
-\textbf{Operational.} Three aircraft sweep ten hectares in under eight minutes
-and hand a coordinator a list of coordinates rather than a video feed somebody
-must watch --- with no network, which is the condition that actually obtains.
+\textbf{Operational.} Three aircraft survey ten hectares in under eight minutes
+and provide a rescue coordinator with a list of coordinates rather than a video
+feed requiring continuous attention, and do so without network infrastructure.
 
-\textbf{Economic.} The whole system costs less than one hour of helicopter
-search time, travels by road, and is run by two people.
+\textbf{Economic.} The complete system costs less than one hour of helicopter
+search time, is transportable by road, and is operated by two people.
 
-\textbf{Departmental.} A calibrated thrust stand, a certified scale, a ground
-station, a tested autonomy codebase and trained students all outlive the
-project.
+\textbf{Institutional.} A calibrated thrust stand, a certified scale, a ground
+station, a tested autonomy codebase and trained students remain with the
+department after the project concludes.
 
-\textbf{Strategic.} Indian suppliers wherever they meet the specification --- for
-sovereignty, and because domestic lead times are half those of imports, which
-buys flight-test days.
+\textbf{Strategic.} Indian suppliers are selected wherever they meet the
+specification, both for supply-chain sovereignty and because domestic lead times
+are approximately half those of imports, which directly increases available
+flight-test time.
 
-\textbf{Transferable.} Nothing is flood-specific except the training data. The
-same system suits earthquake rubble survey, wildfire mapping and avalanche
+\textbf{Transferable.} Only the training data is flood-specific. The same system
+applies to earthquake rubble survey, wildfire perimeter mapping and avalanche
 search.
 
 %-----------------------------------------------------------------------------
 \section{Resources needed}
 
-Every part below is a specific model at a current Indian retail price, chosen
-against a number the design produces. Where a cheaper part exists and was
-rejected, the reason is given.
+The programme is divided into six phases. Each has a stated objective, a defined
+completion criterion, and is released only when the preceding phase has
+demonstrated its result. No individual step exceeds \rs{30{,}000}.
 
-\subsection*{Measurement equipment --- bought first, because it gates everything}
+Every component below is a specific model at a current Indian retail price,
+selected against a quantity the design produces. Where a lower-cost alternative
+was considered and rejected, the reason is stated.
+
+%---------------------------------------------------------------- phase 1
+\subsection*{Phase 1 --- Propulsion verification \quad steps 1--2 \quad \rs{31{,}371}}
+
+\textbf{Objective:} determine whether the selected motor produces the thrust the
+design requires, and establish a mass reference against which the build can be
+tracked. \quad \textbf{Released:} on approval. \quad
+\textbf{Completion criterion:} measured static thrust of $\geq$3.18\,kgf per
+motor at full throttle.
 
 \begin{center}\small
-\begin{tabular}{@{}L{3.0cm}L{4.3cm}rL{7.3cm}@{}}
+\begin{tabular}{@{}L{3.0cm}L{4.2cm}rL{7.4cm}@{}}
 \toprule
-\textbf{Item} & \textbf{Model / specification} & \textbf{INR} & \textbf{Why this, and why this specification} \\
+\textbf{Item} & \textbf{Model / specification} & \textbf{INR} & \textbf{Selection rationale} \\
 \midrule
-Thrust stand &
-20\,kg load cell, HX711 24-bit amplifier, inline power meter, frame fabricated
-in-house & 8,000 &
-Our motors are sold without a thrust curve, so the single most important number
-in the design --- whether four of them lift 6.36\,kg --- is currently unknown.
-The load cell resolves to a few grams against a 3.18\,kgf requirement, and
-measuring current at the same time gives thrust \emph{per watt}, which is what
-sets endurance. Commercial stands start near \rs{45{,}000}; the sensing parts
-cost under \rs{1{,}000} and the frame is a machine-shop job. \\
-\addlinespace
 Calibrated scale &
 Bench scale, 30\,kg capacity, 1\,g resolution, with calibration certificate &
 12,000 &
-Maximum take-off mass is a hard limit, not a target. 1\,g resolution on a
-6\,360\,g aircraft is 0.02\,\%, so build-up can be tracked part by part rather
-than discovered at the end. The certificate is the point: an uncertified scale
-gives a number we cannot defend. \\
+Maximum take-off mass is a hard limit. A resolution of 1\,g against a 6\,360\,g
+aircraft is 0.02\,\%, permitting mass to be tracked component by component
+during assembly. Certification is required for the resulting figure to be
+defensible. \\
+\addlinespace
+Thrust stand &
+20\,kg load cell, HX711 24-bit amplifier, inline power meter, frame fabricated
+in-house & 8,000 &
+The selected motors are supplied without a published thrust curve, so the
+governing quantity of the design is presently unverified. Simultaneous thrust
+and current measurement yields thrust per watt, which determines endurance.
+Commercial instruments begin near \rs{45{,}000}; the sensing components cost
+under \rs{1{,}000} and the frame is within the institute machine shop's
+capability. \\
+\addlinespace
+Motor (single) & Tarot TL96020, 5008 frame, 340\,KV & 4,500 &
+One unit is procured for measurement before the remaining eleven are committed.
+The requirement is 3.18\,kgf at full throttle with hover at approximately half,
+where propeller efficiency is highest and control authority remains available
+for gust rejection. \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\subsection*{Per aircraft --- avionics and sensing \quad \rs{85{,}200}}
+\textbf{If the measurement fails}, the programme concludes at \rs{31{,}371}, and
+both instruments remain departmental assets.
+
+%---------------------------------------------------------------- phase 2
+\subsection*{Phase 2 --- First aircraft \quad steps 3--10 \quad \rs{1{,}97{,}238}}
+
+\textbf{Objective:} construct and integrate one complete aircraft capable of
+autonomous flight, onboard detection and payload release. \quad
+\textbf{Released:} on the Phase 1 thrust measurement. \quad
+\textbf{Completion criterion:} airframe assembled, weighed, and all avionics
+powered and communicating.
 
 \begin{center}\small
-\begin{tabular}{@{}L{3.0cm}L{4.3cm}rL{7.3cm}@{}}
+\begin{tabular}{@{}L{3.0cm}L{4.2cm}rL{7.4cm}@{}}
 \toprule
-\textbf{Item} & \textbf{Model} & \textbf{INR} & \textbf{Why this, and why this specification} \\
+\textbf{Item} & \textbf{Model} & \textbf{INR} & \textbf{Selection rationale} \\
 \midrule
 Flight controller & Holybro Pixhawk 6C~Mini & 22,600 &
-Two independent inertial sensors on silicone isolation, so a single sensor
-failure or a resonance does not end the flight. Runs ArduPilot natively, which
-is what our simulation testing is built on. Cheaper F4-class boards exist at
-around \rs{6{,}000} but lack the memory headroom for the logging and failsafe
-configuration we rely on. \\
+Two independent inertial measurement units on silicone isolation, so a single
+sensor failure or airframe resonance does not terminate the flight. Runs
+ArduPilot natively, which the simulation testing is built against. F4-class
+boards at approximately \rs{6{,}000} lack the memory required for the logging
+and failsafe configuration in use. \\
 \addlinespace
 GNSS receiver & RTK-capable, RTCM3 corrections, $\leq$3\,cm CEP & 18,000 &
-Position accuracy is the single largest error term in the system. With ordinary
-GNSS a reported survivor position is good to about 3.9\,m; with RTK it is 0.75\,m.
-Nothing else in the budget improves the number comparably, which is why this
-line survives every cost reduction. \\
+Positioning accuracy is the largest single error term in the system. Standard
+GNSS yields a reported survivor position accurate to approximately 3.9\,m; RTK
+yields 0.75\,m. No other expenditure improves this figure comparably. \\
 \addlinespace
 Onboard computer & Raspberry Pi~5, 8\,GB & 8,000 &
-The host everything runs on: Linux, the coverage planner, message routing, the
-mesh link and the delivery logic. It is also the only board in this class that
-exposes PCIe, which the accelerator physically requires --- the previous
-generation cannot be used at all. \\
+Hosts the operating system, coverage planner, message routing, mesh link and
+delivery logic. It is also the only board in this class exposing PCIe, which the
+accelerator requires; the preceding generation is not compatible. \\
 \addlinespace
 AI accelerator & Raspberry Pi AI~HAT+ 26~TOPS (Hailo-8) & 11,000 &
-Runs the detector on board, so detection never depends on a radio link. Measured
-at 130--160 frames per second for our model and input size; we need 96. The
-13~TOPS version is about \rs{4{,}000} cheaper but manages 60--80, which does not
-cover 96. \\
+Executes the detector on board, so detection is independent of the radio link.
+Measured at 130--160 frames per second for the model and input size in use,
+against a requirement of 96. The 13~TOPS variant is approximately \rs{4{,}000}
+lower but achieves 60--80, which is insufficient. \\
 \addlinespace
-Camera + lens & Arducam IMX477, 6\,mm CS lens, \textbf{fixed focus} & 11,100 &
-1.55\,\textmu m pixels give 1.03\,cm per pixel at 40\,m, which is what puts a
-person in water at 39 pixels. Fixed focus is deliberate: the hyperfocal distance
-is 4.15\,m, so a lens set once is sharp from 2\,m to infinity and we never fly
-below 30\,m. A motorised-focus module costs more, adds a moving part to a
-vibrating airframe, and can drift without any indication from the air. \\
+Camera and lens & Arducam IMX477 with 6\,mm CS lens, fixed focus & 11,100 &
+A 1.55\,\textmu m pixel pitch yields 1.03\,cm per pixel at 40\,m, placing a
+person in water at 39 pixels. Fixed focus is specified deliberately: the
+hyperfocal distance is 4.15\,m, so a lens set once is sharp from 2\,m to
+infinity, and the aircraft never operates below 30\,m. A motorised module costs
+more, introduces a moving part on a vibrating airframe, and can drift without
+indication in flight. \\
 \addlinespace
-Radio + storage & ExpressLRS 2.4\,GHz receiver (firmware 3.5+), storage, cooling,
-mounts & 8,500 &
-In its native mode this one link carries manual control \emph{and} telemetry on a
-single autopilot port. That is why no second radio is needed --- a saving of
-about \rs{19{,}000} per aircraft --- and the firmware version matters, because the
-older mode consumes the link and would leave the aircraft with telemetry and no
-control. \\
+Radio, storage, cooling & ExpressLRS 2.4\,GHz receiver, firmware 3.5 or later,
+with storage and mounting & 8,500 &
+In its native mode this link carries manual control and telemetry on a single
+autopilot port, which is why a second radio is unnecessary --- a saving of
+approximately \rs{19{,}000} per aircraft. The firmware version is material: the
+earlier mode consumes the link and would leave the aircraft with telemetry but
+no control. \\
 \addlinespace
 Mesh radio & 5.8\,GHz node with antennas & 6,000 &
-Carries three simultaneous video feeds to the ground station. Total offered load
-is 2.5\,Mbps against a 20\,Mbps channel; the constraint is link margin at range,
-not bandwidth. \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\subsection*{Per aircraft --- airframe, power and drive \quad \rs{74{,}100}}
-
-\begin{center}\small
-\begin{tabular}{@{}L{3.0cm}L{4.3cm}rL{7.3cm}@{}}
-\toprule
-\textbf{Item} & \textbf{Model} & \textbf{INR} & \textbf{Why this, and why this specification} \\
+Carries three simultaneous video streams to the ground station. Total offered
+load is 2.5\,Mbps against a 20\,Mbps channel; the constraint is link margin at
+range rather than bandwidth. \\
 \midrule
-Motors & Tarot TL96020, 5008 frame, 340\,KV, 4 off & 18,000 &
-Must produce 3.18\,kgf each at full throttle so the aircraft has twice its weight
-in thrust, with hover at half throttle where propellers are efficient and there
-is authority left for gusts. 340\,KV is the winding that suits an 18\,in
-propeller on this battery voltage. \\
+Motors & Tarot TL96020, 340\,KV, remaining three & 13,500 &
+Procured after Phase 1 has verified the first unit. \\
 \addlinespace
-Airframe & 25\,$\times$\,23\,mm carbon tube, machined clamps, plate; fabricated
-in-house & 13,000 &
-The tube is sized so bending stress at full thrust is about 4\,\% of what the
-material takes --- bending is not what breaks these aircraft; clamp design and
-vibration fatigue are, which is why the joints are machined rather than printed. \\
+Airframe & 25\,$\times$\,23\,mm carbon tube, machined clamps and plate,
+fabricated in-house & 13,000 &
+The tube is sized such that bending stress at design thrust is approximately
+4\,\% of material capability. Bending is not the governing failure mode; clamp
+design and vibration fatigue are, which is why the joints are machined rather
+than printed. \\
 \addlinespace
-Battery cells & Molicel P45B 21700, 4500\,mAh, 45\,A, 18 off & 12,600 &
-Eighteen cells in a six-series, three-parallel pack: 292\,Wh, enough for the
-mission plus a complete second search plus four minutes of loiter. Peak draw is
-38.3\,A per cell, so a 40\,A cell would run at 96\,\% of rating with no margin.
-Capacity and internal resistance must be matched, because one weak cell sets the
-behaviour of the whole pack. \\
+Battery cells & Molicel P45B 21700, 4500\,mAh, 45\,A, 18 units & 12,600 &
+Eighteen cells in six-series, three-parallel configuration: 292\,Wh, sufficient
+for the mission plus a complete second search plus four minutes of loiter. Peak
+draw is 38.3\,A per cell, so a 40\,A cell would operate at 96\,\% of rating with
+no margin. Capacity and internal resistance must be matched, as a single weak
+cell determines pack behaviour. \\
 \addlinespace
-Pack assembly & 6S 60\,A battery management, power distribution, regulator &
-8,500 &
-The cells arrive loose. This is the welding, fusing, balancing and monitoring
-that turns them into a pack that can be charged and discharged safely. \\
+Pack assembly & 6S 60\,A battery management system, power distribution board,
+regulator & 8,500 &
+Cells are supplied loose. This covers the welding, fusing, balancing and
+monitoring required to produce a pack that can be charged and discharged safely. \\
 \addlinespace
-Speed controllers & 50--60\,A continuous, 6S, 4 off & 7,200 &
-Peak demand is 29\,A per motor, so a 50--60\,A controller runs at about half
-rating and stays cool. Undersizing here is a common cause of mid-flight failure. \\
+Speed controllers & 50--60\,A continuous, 6S, 4 units & 7,200 &
+Peak demand is 29\,A per motor, so a 50--60\,A unit operates at approximately
+half rating and remains within thermal limits. Undersizing at this point is a
+recognised cause of in-flight failure. \\
 \addlinespace
-Propellers & Tarot 1855 carbon, CW/CCW, 4 off & 6,500 &
-18\,in carbon matched to the motor and battery voltage. Verified at \rs{3{,}250}
-per counter-rotating pair. These are the most frequently destroyed item in any
+Propellers & Tarot 1855 carbon fibre, CW/CCW, 4 units & 6,500 &
+18\,in carbon matched to the motor and pack voltage, verified at \rs{3{,}250}
+per counter-rotating pair. These are the most frequently replaced item in a
 flight-test campaign and should be treated as semi-consumable. \\
 \addlinespace
 Payload release & Four metal-gear servos with mechanical detents & 4,500 &
-Metal detents rather than servo torque alone, so a power interruption cannot
-release a kit. Four stations, released one at a time. \\
+Mechanical detents rather than servo holding torque, so a power interruption
+cannot release a kit. Four stations, released individually. \\
 \addlinespace
 Wiring & 10\,AWG silicone main leads, XT90-S anti-spark, JST-GH signal & 2,400 &
-Gauge is set by the 115\,A peak; thinner wire would drop voltage and heat under
-load. The anti-spark connector prevents the arc that pits contacts when a 292\,Wh
-pack is plugged in. \\
+Conductor gauge is set by the 115\,A peak; thinner wire would introduce voltage
+drop and heating under load. The anti-spark connector prevents contact pitting
+when a 292\,Wh pack is connected. \\
 \addlinespace
-Propeller adapters & 6\,mm self-tightening hubs, 4 off & 1,400 &
-Self-tightening so rotation seats the nut rather than loosening it. A propeller
-released at 5{,}000\,rpm destroys the aircraft. \\
+Propeller adapters & 6\,mm self-tightening hubs, 4 units & 1,400 &
+Self-tightening geometry, so rotation seats the retaining nut rather than
+loosening it. A propeller released at operating speed results in loss of the
+aircraft. \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\subsection*{Flight-test support \quad \rs{36{,}500}}
+%---------------------------------------------------------------- phase 3
+\subsection*{Phase 3 --- Flight-test capability \quad steps 11--12 \quad \rs{42{,}574}}
+
+\textbf{Objective:} establish the ground support required to fly the first
+aircraft safely and repeatedly --- charging, manual override and field
+readiness. \quad \textbf{Released:} on airframe assembly and weigh-in. \quad
+\textbf{Completion criterion:} first flight completed under safety-pilot
+supervision.
 
 \begin{center}\small
-\begin{tabular}{@{}L{3.0cm}L{4.3cm}rL{7.3cm}@{}}
+\begin{tabular}{@{}L{3.0cm}L{4.2cm}rL{7.4cm}@{}}
 \toprule
-\textbf{Item} & \textbf{Model} & \textbf{INR} & \textbf{Why this, and why this specification} \\
+\textbf{Item} & \textbf{Model} & \textbf{INR} & \textbf{Selection rationale} \\
 \midrule
-Battery chargers & ToolkitRC M6D, 500\,W, 25\,A, dual channel, 2 off & 11,672 &
-Our pack is 13.5\,Ah; charging it in about an hour needs roughly 340\,W. The
-commonly recommended HOTA D6~Pro (\rs{10{,}499}--\rs{13{,}500}) delivers 325\,W
-per channel and would be at its limit. The M6D delivers 500\,W at \rs{5{,}836}
-and needs only an external supply, which the department already owns. Two units
-give four channels, so the whole fleet charges in parallel on a flight day. \\
+Battery chargers & ToolkitRC M6D, 500\,W, 25\,A, dual channel, 2 units & 11,672 &
+The pack is 13.5\,Ah; charging within approximately one hour requires about
+340\,W. The commonly specified HOTA D6~Pro (\rs{10{,}499}--\rs{13{,}500})
+provides 325\,W per channel and would operate at its limit. The M6D provides
+500\,W at \rs{5{,}836} and requires only an external supply, which the
+department already holds. Two units provide four channels, permitting the fleet
+to be charged in parallel. \\
 \addlinespace
-Consumables & Fasteners, thread-lock, carbon tape, heat-shrink, printer filament
-& 13,000 &
-Consumed continuously through assembly and repair. Running out stops work, and
-these are the items nobody remembers to budget. \\
+Consumables & Fasteners, thread-locking compound, carbon tape, heat-shrink,
+printer filament & 13,000 &
+Consumed continuously during assembly and repair; interruption of supply halts
+build progress. \\
 \addlinespace
 Safety-pilot radio & RadioMaster Boxer, ExpressLRS & 6,955 &
 Manual override, required for every test flight. Full-size hall-effect gimbals
-rather than a pocket radio, because a pilot taking control of a 6.4\,kg aircraft
-in an emergency needs proper sticks. \\
+are specified rather than a compact unit, as assuming control of a 6.4\,kg
+aircraft under fault conditions requires precise input. \\
 \addlinespace
-Sun hood + monitor & Fabricated hood, second-hand monitor & 1,500 &
-Laptop screens are unreadable in Punjab daylight, and an operator who cannot see
-the display cannot supervise the flight. \\
+Sun hood and monitor & Fabricated hood with second-hand monitor & 1,500 &
+Laptop displays are not legible in direct sunlight, and an operator unable to
+read the display cannot supervise the flight. \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\subsection*{Ground segment and statutory \quad \rs{52{,}000}}
+%---------------------------------------------------------------- phase 4
+\subsection*{Phase 4 --- Positioning and regulatory compliance \quad steps 13--16 \quad \rs{66{,}992}}
+
+\textbf{Objective:} establish centimetre-accurate positioning and complete
+statutory registration, so that geolocation accuracy can be measured on the
+first aircraft. \quad \textbf{Released:} on first flight. \quad
+\textbf{Completion criterion:} RTK fix demonstrated in the field and reported
+survivor position measured against surveyed ground truth.
 
 \begin{center}\small
-\begin{tabular}{@{}L{3.0cm}L{4.3cm}rL{7.3cm}@{}}
+\begin{tabular}{@{}L{3.0cm}L{4.2cm}rL{7.4cm}@{}}
 \toprule
-\textbf{Item} & \textbf{Model} & \textbf{INR} & \textbf{Why this, and why this specification} \\
+\textbf{Item} & \textbf{Model} & \textbf{INR} & \textbf{Selection rationale} \\
 \midrule
 Field consumables & Cables, mounts, field spares, transport protection & 25,000 &
-Position corrections travel over the telemetry link we already have, so no
-separate base-to-aircraft radio is needed. \\
+Position corrections are carried over the existing telemetry link, so no
+separate base-to-aircraft radio is required. \\
 \addlinespace
-Base station receiver & Second GNSS receiver, same class as the aircraft unit &
+Base station receiver & Second GNSS receiver, same class as the airborne unit &
 18,000 &
-Centimetre positioning works by comparing the aircraft against a stationary
-receiver on a surveyed point. Without it the aircraft fall back to ordinary
-GNSS and reported positions degrade from 0.75\,m to 3.9\,m. \\
+Centimetre positioning operates by comparison against a stationary receiver on a
+known point. Without it the aircraft revert to standard GNSS and reported
+positions degrade from 0.75\,m to approximately 3.9\,m. \\
 \addlinespace
 Registration & Statutory registration, three aircraft & 5,000 &
-At 6.36\,kg these fall in the Small category of the Drone Rules 2021, so
-registration is mandatory before any flight. \\
+At 6.36\,kg these fall within the Small category of the Drone Rules 2021, making
+registration mandatory prior to flight. \\
 \addlinespace
-Survey tripod & Photographic tripod and adapter & 4,000 &
-The base receiver needs to be stationary and repeatable, not surveyed to
-professional tolerance --- the corrections are relative. \\
+Survey tripod & Photographic tripod with adapter & 4,000 &
+The base receiver requires a stable and repeatable mounting rather than
+survey-grade absolute accuracy, as the corrections are relative. \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\subsection*{Release schedule --- 32 steps, none above \rs{30{,}000}}
+%---------------------------------------------------------------- phases 5-6
+\subsection*{Phases 5 and 6 --- Fleet completion \quad steps 17--32 \quad \rs{2{,}02{,}413} each}
 
-The order is engineering, not accounting: prove the motor before buying twelve,
-and fly one complete aircraft before building the other two.
+\textbf{Phase 5 objective:} replicate the validated design as the second
+aircraft and demonstrate two-aircraft coordinated operation with verified
+separation. \quad \textbf{Released:} on aircraft one completing a full mission.
 
-\begin{center}\small
-\begin{tabular}{@{}rL{7.6cm}rL{5.2cm}@{}}
+\textbf{Phase 6 objective:} complete the fleet and demonstrate three-aircraft
+coordinated search under a single operator. \quad \textbf{Released:} on
+two-aircraft separation being verified in flight.
+
+Each phase repeats the Phase 2 component set exactly, in the same eight steps,
+at \rs{2{,}02{,}413} --- marginally higher than aircraft one, as all four motors
+are procured together. No individual step exceeds \rs{29{,}440}.
+
+These are the final two requests by design. At the point either is made, a
+complete aircraft has already flown the mission, so the expenditure funds
+replication of a demonstrated configuration.
+
+%---------------------------------------------------------------- summary
+\subsection*{Summary}
+
+\begin{center}
+\begin{tabular}{@{}clrL{5.0cm}@{}}
 \toprule
-\textbf{Steps} & \textbf{Content} & \textbf{INR} & \textbf{Released only when} \\
+\textbf{Phase} & \textbf{Objective} & \textbf{INR} & \textbf{Released on} \\
 \midrule
-1--2 & Thrust stand, scale, and \textbf{one} motor to measure & 31,371 & On approval \\
-3--10 & Aircraft one, in eight purchases & 1,97,238 & \textbf{Measured thrust $\geq$ 3.18\,kgf per motor} \\
-11--12 & Chargers, safety radio, consumables, hood & 42,574 & Airframe assembled and weighed \\
-13--16 & Base station, tripod, field kit, registration & 66,992 & First flight completed \\
-17--24 & Aircraft two, same eight purchases & 2,02,413 & Aircraft one flew a full mission \\
-25--32 & Aircraft three, same eight purchases & 2,02,413 & Two aircraft flying, separation verified \\
+1 & Propulsion verification & 31,371 & Approval \\
+2 & First aircraft & 1,97,238 & Measured thrust \\
+3 & Flight-test capability & 42,574 & Airframe weighed \\
+4 & Positioning and registration & 66,992 & First flight \\
+5 & Second aircraft & 2,02,413 & Full mission flown \\
+6 & Third aircraft & 2,02,413 & Separation verified \\
 \midrule
 & \textbf{Total} & \textbf{7,43,004} & \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-No individual step exceeds \rs{29{,}440}. Aircraft two and three are the last
-requests, so by the time either is made a complete aircraft has already flown
-the mission --- what is funded is replication of a working design. (Steps are
-rounded to the rupee, so the column sums to within a few rupees of the total.)
+Individual steps are rounded to the rupee, so the column sums to within a few
+rupees of the total.
 
-\textbf{What this structure costs.} Thirty-two approvals is real administrative
-work, and buying one aircraft at a time means placing the same imported order
-three times, worth roughly eight to twelve weeks of schedule. We have chosen it
-anyway; if either becomes binding, merging the per-aircraft steps into one order
-is the lever.
+\textbf{Structural cost.} This arrangement carries an administrative overhead of
+32 approvals, and procuring one aircraft at a time requires the same imported
+order to be placed three times, at a schedule cost of approximately eight to
+twelve weeks. Consolidating the per-aircraft phases into a single order is
+available if schedule becomes the binding constraint.
 
-\textbf{The detection test needs nothing new} --- about one week on a
-departmental GPU and 30\,GB of storage. The dataset is public and the software
-is open source.
+\textbf{The detection evaluation requires no additional procurement:}
+approximately one week on a departmental GPU and 30\,GB of storage. The dataset
+is public and the software is open source.
 
 %-----------------------------------------------------------------------------
 \section{Future work}
 
-\textbf{Near term.} Replace every calculated number with a measured one:
-detection accuracy, motor thrust, setup time. Test near-infrared sensing --- water
-absorbs infrared and people do not, so a person appears bright against dark
-water. A camera without its infrared filter costs about \rs{3{,}000} and a public
-dataset exists to test the idea before buying. Beyond floods, the same system
-suits earthquake, wildfire and avalanche search.
+\textbf{Near term.} Replace each calculated quantity with a measured one:
+detection accuracy, motor thrust and setup time. Evaluate near-infrared sensing,
+in which water absorbs strongly and human subjects do not, so a person appears
+bright against dark water; a camera without its infrared filter costs
+approximately \rs{3{,}000} and a public dataset exists for evaluation prior to
+purchase. Beyond flooding, the system applies to earthquake, wildfire and
+avalanche search.
 
-\textbf{Longer term: aircraft that must think for themselves.} Our central
-constraint --- a capable aircraft deciding for itself inside a very small power
-budget --- is a hard requirement in planetary aviation. NASA's \emph{Ingenuity}
-flew 72 times on Mars from a 1.8\,kg airframe in an atmosphere under one per cent
-of Earth's density. \emph{Dragonfly} launches in 2028 for Titan, where the air is
-four times denser than Earth's at one seventh the gravity.
+\textbf{Longer term: autonomous aircraft under severe power constraint.} The
+central constraint of this work --- a capable aircraft deciding for itself within
+a very small power budget --- is a hard requirement in planetary aviation. NASA's
+\emph{Ingenuity} completed 72 flights on Mars from a 1.8\,kg airframe in an
+atmosphere under one per cent of Earth's density. \emph{Dragonfly} launches in
+2028 for Titan, where atmospheric density is four times that of Earth at one
+seventh the gravity.
 
-What makes those hard is not the flying but that \textbf{a radio command takes
-minutes to arrive}: nobody is piloting, so every choice is made on board. What
-transfers from this work is what is not about floods --- planning a survey on
-board, running perception to an \emph{energy} budget, and failing safely with no
-link. One caution worth stating: microcontroller-class processors, the hardware
-usually proposed for such missions, cannot resolve targets of the size we care
-about, so a planetary version needs a different operating point. That is a
-research question in its own right.
+The difficulty in those missions is not flight but that a radio command requires
+minutes to arrive: no operator is in the loop, so every decision is made on
+board. What transfers from this work is the portion that is not flood-specific
+--- onboard survey planning, perception executed to an energy budget rather than
+an accuracy target, and safe behaviour in the absence of a link. One caution
+applies: microcontroller-class processors, frequently proposed for such
+missions, cannot resolve targets of the size considered here, so a planetary
+configuration would require a different operating point. This is a research
+question in its own right.
 
 %-----------------------------------------------------------------------------
 \section{Conclusion}
 
-The design is complete and explicit about which numbers are measured and which
-are calculated. We are asking for the means to finish it in 32 steps, none above
-\rs{30{,}000}, so nothing is committed before the previous step has produced
-evidence.
+The design is complete and explicit as to which quantities are measured and
+which are calculated. We request the means to complete it in six phases and 32
+steps, no step exceeding \rs{30{,}000}, so that no expenditure is committed
+before the preceding step has produced evidence.
 
-The first step is \rs{31{,}371} and answers the question everything else depends
-on: can these motors lift this aircraft. The immediate technical need is smaller
-still --- a week of GPU time to test the detection approach on free public data.
+Phase 1 is \rs{31{,}371} and resolves the question on which the remainder
+depends: whether the selected motors lift this aircraft. The immediate technical
+requirement is smaller still --- approximately one week of GPU time to evaluate
+the detection approach against public data.
 
 \vspace{2mm}
-We would value your guidance on two decisions: the operating altitude, which the
-detection test will inform, and whether to adopt the two-stage detector once we
-have measured it.
+We would welcome your guidance on two decisions: the operating altitude, which
+the detection evaluation will inform, and whether to adopt the two-stage
+detector once it has been measured.
 
 \end{document}
