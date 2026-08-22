@@ -56,8 +56,8 @@ the detector looks at it.} We have a fix, and we can test it on free public data
 before committing to anything.
 
 This document explains the flaw, the fix, and what the whole programme needs ---
-\textbf{\rs{7{,}34{,}379} across four phases}, each released only when the
-previous one has produced evidence.
+\textbf{\rs{7{,}34{,}379} across seven small steps}, each released only when
+the previous one has produced a result. The first decision is INR~31,371.
 
 %-----------------------------------------------------------------------------
 \section{Problem}
@@ -142,131 +142,169 @@ still settles an open question and costs the same to obtain.
 %-----------------------------------------------------------------------------
 \section{Resources needed}
 
-Money is not needed at once. The programme splits into four phases, each
-released only on evidence from the one before, so exposure is capped at a single
-phase and the decision can be revisited at every gate.
+Money is not needed in one decision, or even in four. The programme splits into
+\textbf{seven small steps}, and the order is engineering rather than accounting:
+prove the motor before buying twelve of them, fly one aircraft before building
+three.
 
-All prices are current Indian retail. Totals include customs duty, GST and a
-15\,\% contingency where they apply.
+Each step is released only when the previous one has produced a result, so the
+department is never committed to more than one step at a time --- and the first
+decision is \rs{31{,}371}, not \rs{7{,}34{,}379}.
 
-\subsection*{Phase 1 --- Long-lead procurement \quad Months 1--2 \quad \textbf{\rs{4{,}61{,}029}}}
+All prices are current Indian retail. Totals include customs duty, GST and 15\,\%
+contingency where they apply.
 
-Everything with a delivery delay. Nothing here can be ordered late without
-stopping the build.
-
-\begin{center}\small
-\begin{tabular}{@{}L{3.1cm}L{4.5cm}rrL{4.1cm}@{}}
+\begin{center}
+\begin{tabular}{@{}clrL{6.0cm}@{}}
 \toprule
-\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why this part} \\
+\textbf{\#} & \textbf{Step} & \textbf{INR} & \textbf{Released only when} \\
 \midrule
-Flight controller & Holybro Pixhawk 6C Mini & 3 & 67,800 & Dual IMU, industry-standard, runs open-source autopilot \\
-GNSS receiver & Centimetre-accurate (RTK) & 3 & 54,000 & Position accuracy is the largest single error in the system \\
-Motors & Tarot TL96020, 5008 / 340\,KV & 12 & 54,000 & Must lift 3.18\,kgf each; buy one and measure first \\
-Battery cells & Molicel P45B 21700, 4500\,mAh & 54 & 37,800 & Peak draw is 38.3\,A per cell; a 40\,A cell has no margin \\
-Camera + lens & Arducam IMX477 + 6\,mm, \textbf{fixed focus} & 3 & 33,300 & Fixed focus is correct at every altitude we fly \\
-AI accelerator & Raspberry Pi AI HAT+ (Hailo-8) & 3 & 33,000 & Runs the detector on board \\
-Radio + storage & ExpressLRS 2.4\,GHz & 3 & 25,500 & One link carries control \emph{and} telemetry \\
-Onboard computer & Raspberry Pi 5, 8\,GB & 3 & 24,000 & The host everything runs on \\
-Speed controllers & 50--60\,A continuous, 6S & 12 & 21,600 & Peak is 29\,A per motor \\
-Mesh radio & 5.8\,GHz + antennas & 3 & 18,000 & Three simultaneous video feeds \\
+1 & Prove the propulsion & 31,371 & On approval \\
+2 & Aircraft one: avionics and sensing & 1,05,172 & \textbf{Measured thrust $\geq$ 3.18\,kgf per motor} \\
+3 & Aircraft one: airframe and power & 89,192 & Avionics powered and communicating on the bench \\
+4 & Fly aircraft one & 42,574 & Airframe assembled and weighed \\
+5 & Ground station and registration & 66,992 & First flight completed \\
+6 & Aircraft two & 1,99,539 & Aircraft one has flown a full mission \\
+7 & Aircraft three & 1,99,539 & Two aircraft flying with verified separation \\
+\midrule
+& \textbf{Total} & \textbf{7,34,379} & \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\subsection*{Phase 2 --- Bench build and the measurement that matters \quad Months 3--4 \quad \textbf{\rs{1{,}32{,}054}}}
+\subsection*{Step 1 --- Prove the propulsion \quad \textbf{\rs{31{,}371}}}
+
+The smallest step, and the one that decides everything after it. Our motors are
+sold without a published thrust curve, so we do not yet know that the aircraft
+can lift itself. Rather than buy twelve on faith, we buy \emph{one} and measure.
 
 \begin{center}\small
-\begin{tabular}{@{}L{3.1cm}L{4.5cm}rrL{4.1cm}@{}}
+\begin{tabular}{@{}L{3.2cm}L{4.6cm}rrL{4.0cm}@{}}
 \toprule
-\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why this part} \\
+\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why} \\
 \midrule
-Airframe & 25\,$\times$\,23\,mm carbon tube (Kineco Kaman) + machined clamps & 3 & 39,000 & Fabricated in the institute machine shop \\
-Pack assembly & 6S 60\,A BMS + power board + regulator & 3 & 25,500 & 18 cells per aircraft must be welded and balanced \\
 Calibrated scale & Bench scale, 30\,kg $\times$ 1\,g, certified & 1 & 12,000 & Mass is a hard limit; we cannot argue with a scale we do not own \\
-\textbf{Thrust stand} & 20\,kg load cell + HX711 + power meter, frame built in-house & 1 & 8,000 & \textbf{The gate for the whole build} --- our motors publish no thrust curve \\
-Battery charger & \textbf{ToolkitRC M6D}, 500\,W / 25\,A, dual & 2 & 11,672 & See note below \\
+Thrust stand & 20\,kg load cell + HX711 + power meter, frame built in-house & 1 & 8,000 & The instrument that answers the question \\
+Motor & Tarot TL96020, 5008 / 340\,KV & \textbf{1} & 4,500 & One, not twelve. Must lift 3.18\,kgf \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\textbf{A small saving worth having.} The usual choice is the HOTA D6 Pro at
-\rs{10{,}499}--\rs{13{,}500}, but at 325\,W per channel it can only just charge
-our packs. The ToolkitRC M6D is 500\,W at \rs{5{,}836} --- cheaper and faster.
-It needs a separate power supply, which the department already owns. Two units
-give four channels, so the whole fleet charges at once on a flight day, and it
-still comes in \rs{2{,}328} under budget.
+\textbf{If this step fails, the programme stops here having spent
+\rs{31{,}371}} --- and both instruments remain useful departmental equipment.
 
-\subsection*{Phase 3 --- Assembly, first flight, spares \quad Months 5--6 \quad \textbf{\rs{74{,}303}}}
+\subsection*{Step 2 --- Aircraft one: avionics and sensing \quad \textbf{\rs{1{,}05{,}172}}}
 
 \begin{center}\small
-\begin{tabular}{@{}L{3.1cm}L{4.5cm}rrL{4.1cm}@{}}
+\begin{tabular}{@{}L{3.2cm}L{4.6cm}rrL{4.0cm}@{}}
 \toprule
-\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why this part} \\
+\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why} \\
 \midrule
-Payload release & 4 metal-gear servos + mechanical detent per aircraft & 3 & 13,500 & A power glitch must not drop a kit \\
+Flight controller & Holybro Pixhawk 6C Mini & 1 & 22,600 & Dual sensors, industry standard, open-source autopilot \\
+GNSS receiver & Centimetre-accurate (RTK) & 1 & 18,000 & Position accuracy is the largest single error in the system \\
+Camera + lens & Arducam IMX477 + 6\,mm, \textbf{fixed focus} & 1 & 11,100 & Fixed focus is correct at every altitude we fly \\
+AI accelerator & Raspberry Pi AI HAT+ (Hailo-8) & 1 & 11,000 & Runs the detector on board \\
+Radio + storage & ExpressLRS 2.4\,GHz & 1 & 8,500 & One link carries control \emph{and} telemetry \\
+Onboard computer & Raspberry Pi 5, 8\,GB & 1 & 8,000 & The host everything runs on \\
+Mesh radio & 5.8\,GHz + antennas & 1 & 6,000 & Video and data between aircraft \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Step 3 --- Aircraft one: airframe and power \quad \textbf{\rs{89{,}192}}}
+
+\begin{center}\small
+\begin{tabular}{@{}L{3.2cm}L{4.6cm}rrL{4.0cm}@{}}
+\toprule
+\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why} \\
+\midrule
+Motors & Tarot TL96020, remaining three & 3 & 13,500 & Bought only after step 1 proved the first one \\
+Airframe & 25\,$\times$\,23\,mm carbon tube (Kineco Kaman) + machined clamps & 1 & 13,000 & Fabricated in the institute machine shop \\
+Battery cells & Molicel P45B 21700, 4500\,mAh & 18 & 12,600 & Peak draw is 38.3\,A per cell; a 40\,A cell has no margin \\
+Pack assembly & 6S 60\,A BMS + power board + regulator & 1 & 8,500 & 18 cells must be welded, fused and balanced \\
+Speed controllers & 50--60\,A continuous, 6S & 4 & 7,200 & Peak is 29\,A per motor \\
+Payload release & 4 metal-gear servos + mechanical detent & 1 & 4,500 & A power glitch must not drop a kit \\
+Propellers & Tarot 1855 carbon, CW/CCW & 4 & 4,000 & See note below \\
+Wiring & 10\,AWG silicone, XT90-S, JST-GH & 1 & 2,400 & Gauge is set by the 115\,A peak \\
+Propeller adapters & 6\,mm self-tightening hubs & 4 & 1,400 & A nut loosening at 5{,}000\,rpm loses the aircraft \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Step 4 --- Fly aircraft one \quad \textbf{\rs{42{,}574}}}
+
+\begin{center}\small
+\begin{tabular}{@{}L{3.2cm}L{4.6cm}rrL{4.0cm}@{}}
+\toprule
+\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why} \\
+\midrule
+Battery charger & \textbf{ToolkitRC M6D}, 500\,W / 25\,A, dual & 2 & 11,672 & See note below \\
 Consumables & Fasteners, thread-lock, tape, filament & --- & 13,000 & Consumed continuously; running out stops work \\
-Propellers & Tarot 1855 carbon, CW/CCW (TL2848) & 12 & 12,000 & See note below \\
 Safety-pilot radio & \textbf{RadioMaster Boxer}, ExpressLRS & 1 & 6,955 & A pilot taking over manually needs full-size sticks \\
-Wiring & 10\,AWG silicone, XT90-S, JST-GH & 3 & 7,200 & Wire gauge is set by the 115\,A peak \\
-Propeller adapters & 6\,mm self-tightening hubs & 12 & 4,200 & A nut loosening at 5{,}000\,rpm loses the aircraft \\
 Sun hood & Fabricated, plus a second-hand monitor & 1 & 1,500 & Screens are unreadable in Punjab daylight \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\textbf{One line is under-budgeted, and we would rather say so now.} We carry
-\rs{1{,}000} per propeller. The verified Indian listing for this propeller is
-\rs{3{,}250} per counter-rotating \emph{pair}, so four propellers is
-\rs{6{,}500} per aircraft rather than \rs{4{,}000} --- a shortfall of about
-\rs{7{,}500} across the fleet. Propellers are also the item most often broken in
-testing. We intend to look for a cheaper supplier first and absorb the remainder
-from the charger saving and contingency; if neither works, this line has to rise.
+\subsection*{Step 5 --- Ground station and registration \quad \textbf{\rs{66{,}992}}}
 
-\subsection*{Phase 4 --- Field operations and regulatory \quad Months 7--8 \quad \textbf{\rs{66{,}992}}}
+Brought forward ahead of the second and third aircraft, because centimetre
+positioning has to be working before we can measure how accurately aircraft one
+reports a person's coordinates.
 
 \begin{center}\small
-\begin{tabular}{@{}L{3.1cm}L{4.5cm}rrL{4.1cm}@{}}
+\begin{tabular}{@{}L{3.2cm}L{4.6cm}rrL{4.0cm}@{}}
 \toprule
-\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why this part} \\
+\textbf{Item} & \textbf{Model} & \textbf{Qty} & \textbf{Total} & \textbf{Why} \\
 \midrule
-Field consumables & Cables, mounts, spares for field use & --- & 25,000 & Corrections ride the existing radio, so no extra base radio \\
-Base station receiver & Second GNSS unit on a tripod & 1 & 18,000 & Without it the aircraft have no position corrections \\
-Registration & Statutory, unmanned aircraft & 3 & 5,000 & At 6.36\,kg these fall in the Small category under the Drone Rules 2021 \\
-Survey tripod & Photographic tripod and adapter & 1 & 4,000 & A survey-grade tripod is not required for this \\
+Field consumables & Cables, mounts, field spares & --- & 25,000 & Corrections ride the existing radio, so no extra base radio \\
+Base station & Second GNSS receiver on a tripod & 1 & 18,000 & Without it the aircraft have no corrections \\
+Registration & Statutory, unmanned aircraft & 3 & 5,000 & At 6.36\,kg these are Small category under the Drone Rules 2021 \\
+Survey tripod & Photographic tripod and adapter & 1 & 4,000 & Survey-grade is not required here \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\subsection*{Summary, and the release gates}
+\subsection*{Steps 6 and 7 --- Aircraft two and three \quad \textbf{\rs{1{,}99{,}539} each}}
 
-\begin{center}
-\begin{tabular}{@{}lrL{7.4cm}@{}}
-\toprule
-\textbf{Phase} & \textbf{INR} & \textbf{Released when} \\
-\midrule
-1 \quad Long-lead procurement & 4,61,029 & On approval \\
-2 \quad Bench build and thrust & 1,32,054 & Design frozen and orders placed \\
-3 \quad Assembly and first flight & 74,303 & \textbf{Thrust measured}; three airframes weighed \\
-4 \quad Field operations & 66,992 & First hover completed \\
-\midrule
-\textbf{Total} & \textbf{7,34,379} & \\
-\bottomrule
-\end{tabular}
-\end{center}
+Identical to steps 2 and 3 combined, repeated once per aircraft. These are the
+two largest requests, and deliberately the last: by the time either is made, a
+complete aircraft has already flown the mission, so what is being funded is
+\emph{replication of a proven design} rather than a hope.
+
+\subsection*{Two notes on the parts}
+
+\textbf{A saving worth having.} The usual charger is the HOTA D6 Pro at
+\rs{10{,}499}--\rs{13{,}500}, but at 325\,W per channel it can barely charge our
+packs. The ToolkitRC M6D is 500\,W at \rs{5{,}836} --- cheaper and faster. It
+needs a separate power supply, which the department already owns. Two units give
+four channels, so the fleet charges at once on a flight day, and it still comes
+in \rs{2{,}328} under budget.
+
+\textbf{One line is under-budgeted, and we would rather say so now.} We carry
+\rs{1{,}000} per propeller. The verified Indian listing is \rs{3{,}250} per
+counter-rotating \emph{pair}, so four propellers is \rs{6{,}500} per aircraft
+rather than \rs{4{,}000} --- about \rs{7{,}500} short across three aircraft, on
+the item most often broken in testing. We will look for a cheaper supplier first
+and absorb the rest from the charger saving and contingency; if neither works,
+this line has to rise.
+
+\subsection*{What splitting this way costs}
+
+Smaller steps are not free. Buying one aircraft at a time means placing the same
+imported order three times, and imported parts take four to six weeks. Ordering
+all three sets together at step 2 would save roughly \textbf{eight to twelve
+weeks} of schedule, at the price of a much larger single decision.
+
+We have chosen the smaller steps because we would rather move slowly with your
+confidence than quickly without it. If the schedule becomes the binding
+constraint, consolidating steps 2, 6 and 7 into one order is the lever ---
+and it is your call, not ours.
 
 \textbf{For the detection test specifically}, we need nothing beyond what the
-department already has: roughly \textbf{one week on a GPU} and about
-\textbf{30\,GB of storage}. The dataset is public and free and the software is
-open source.
+department already has: about \textbf{one week on a GPU} and \textbf{30\,GB of
+storage}. The dataset is public and the software is open source.
 
-\textbf{Three ways this gets cheaper.} A smaller AI accelerator saves about
-\rs{12{,}000} but halves our processing headroom. Importing cells rather than
-buying Indian saves about \rs{15{,}900} but gives up one of only four
-domestically sourced parts. And confirming which test equipment the department
-already owns could remove up to \rs{56{,}000} --- that one costs nothing but the
-asking, and we have already listed the exact items to check.
-
-%-----------------------------------------------------------------------------
 \section{Conclusion}
 
 The design is further along than it looks: the sizing, the error budgets and the
