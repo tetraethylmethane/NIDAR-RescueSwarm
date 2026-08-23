@@ -80,8 +80,18 @@ listed = (bd["struct"] + bd["motors"] + bd["esc"] + bd["props"]
 resid = mtow - listed
 check("IV-B", "structure + battery share of MTOW",
       0.46, (struct + M.m_pack) / mtow, tol=0.02)
-check("IV-B", "unallocated mass residual", 299, resid * 1000, tol=0.05, unit="g")
-check("IV-B", "residual as % of MTOW", 4.7, 100 * resid / mtow, tol=0.05, unit="%")
+# This was reported as an unallocated residual. It is the recovery parachute:
+# present in the model's payload_system dict, absent from the printed mass
+# statement, so the statement fell short of MTOW by exactly the parachute mass.
+# The check now asserts the identity rather than tolerating a gap.
+check("IV-B", "recovery parachute + mount", 300, resid * 1000, tol=0.01, unit="g")
+check("IV-B", "parachute as % of MTOW", 4.7, 100 * resid / mtow, tol=0.05, unit="%")
+# Compared as totals, not as a difference against zero: a relative tolerance
+# cannot be taken against an expected value of 0, and the residual carries
+# about 2e-7 g of floating-point noise.
+check("IV-B", "mass statement closes to MTOW", mtow * 1000,
+      (listed + M.payload_system["recovery parachute + mount"]) * 1000,
+      tol=1e-9, unit="g")
 check("IV-B", "growth allowance to 24 kg fleet",
       4919, (24 - fleet) * 1000, tol=0.02, unit="g")
 check("IV-B", "build overweight tolerated",

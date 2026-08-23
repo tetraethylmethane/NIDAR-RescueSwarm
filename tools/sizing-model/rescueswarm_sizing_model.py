@@ -215,11 +215,19 @@ print(f"    minimum nameplate, ANY chemistry: {E_req_np:.0f} Wh"
       f"  (6S, >={_I_pk:.0f} A continuous)")
 
 print("\n  MASS STATEMENT (per aircraft)")
+# The parachute line was missing here while being present in payload_system,
+# so the printed statement fell 300 g short of MTOW and the gap read as an
+# unattributed residual. Rows are now built from the dict rather than retyped,
+# which is why the assertion below can be made at all.
 rows=[('Structure: frame, arms, landing gear, hardware',bd['struct']),
       ('Motors (4)',bd['motors']),('ESCs (4)',bd['esc']),('Propellers (4)',bd['props']),
-      ('Battery pack',bd['battery']),('Avionics + wiring harness',bd['avionics']),
-      ('Payload magazine + release',0.240),('Survivor kits (4 x 200 g)',0.800)]
+      ('Battery pack',bd['battery']),('Avionics + wiring harness',bd['avionics'])] \
+     + [(k[0].upper()+k[1:], v) for k,v in payload_system.items()]
 for n,v in rows: print(f"    {n:<48}{v*1000:7.0f} g  {v/MTOW:6.1%}")
+_listed = sum(v for _,v in rows)
+assert abs(_listed - MTOW) < 1e-9, (
+    f"mass statement does not close: {_listed*1000:.1f} g listed "
+    f"against {MTOW*1000:.1f} g MTOW")
 print(f"    {'MTOW':<48}{MTOW*1000:7.0f} g")
 print(f"    {'Fleet of 3 (weigh-in figure)':<48}{3*MTOW*1000:7.0f} g")
 print(f"    {'Growth allowance to 24.0 kg fleet target':<48}{(24-3*MTOW)*1000:7.0f} g  "

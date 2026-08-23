@@ -144,15 +144,19 @@ def fig_geotag():
 # ===========================================================================
 def fig_mass():
     fig, ax = plt.subplots(figsize=(COL, 2.35))
-    # The model's own mass statement lists 6,061 g against a 6,360 g MTOW.
-    # The 299 g residual is shown rather than left for a reader to find by
-    # adding the bars up.
+    # The bar previously labelled "Unallocated, 299 g" was the recovery
+    # parachute: it is in the model's payload_system dict but was missing from
+    # the printed mass statement, so the gap looked like a residual. The rows
+    # below now sum to MTOW exactly, and the model asserts the same.
     # Single-line tick labels. The two-line ones made the row pitch uneven and
     # crowded the axis; the qualifiers moved into the caption instead.
     items = ["Structure", "Battery pack", "Avionics", "Survivor kits",
-             "Motors", "Unallocated", "Propellers", "Magazine", "ESCs"]
-    g = [1495, 1449, 925, 800, 640, 299, 288, 240, 224]
+             "Motors", "Parachute", "Propellers", "Magazine", "ESCs"]
+    g = [1495, 1449, 925, 800, 640, 300, 288, 240, 224]
     colours = [GREY, BLUE, PURPLE, GREEN, ORANGE, RED, ORANGE, GREEN, ORANGE]
+    # 1 g of slack: each row is rounded to the gram independently, so the
+    # rounded rows sum to 6361 where the unrounded ones sum to MTOW exactly.
+    assert abs(sum(g) - 6360) <= 2, f"mass figure does not close: {sum(g)}"
     y = np.arange(len(items))[::-1]
     ax.barh(y, g, color=colours, height=0.68)
     for yi, v in zip(y, g):

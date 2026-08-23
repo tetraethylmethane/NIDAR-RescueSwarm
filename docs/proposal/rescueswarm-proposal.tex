@@ -30,7 +30,7 @@
 %   simulations/recordings/   committed SITL output
 %   ground-station/           captured screenshots
 % Regenerate the first set with:  python figures/make_figures.py
-\graphicspath{{figures/}{../../simulations/recordings/}{../../ground-station/}}
+\graphicspath{{figures/}{images/}{../../simulations/recordings/}{../../ground-station/}}
 
 % ---- TikZ styles used by the architecture and flow figures --------------
 \tikzset{
@@ -53,7 +53,17 @@
 
 \begin{document}
 
-\title{RescueSwarm: An Indigenously Sourced\\
+% Letterhead. IEEEtran is already in two-column mode before \maketitle, so a
+% \textwidth box placed above it overflows the first column by exactly one
+% column. The title block is the only full-width context on page 1 -- it is
+% set as the optional argument of \twocolumn -- so the marks go inside \title.
+\title{%
+\parbox{\textwidth}{%
+  \raisebox{-0.5\height}{\includegraphics[height=10mm]{brainwave.pdf}}%
+  \hfill
+  \raisebox{-0.5\height}{\includegraphics[height=9mm]{thapar_logo.png}}%
+  \\[1.5mm]\rule{\textwidth}{0.4pt}}\\[3mm]
+RescueSwarm: An Indigenously Sourced\\
 Autonomous Multi-UAV System for Post-Disaster\\
 Search, Localisation and Payload Delivery\\[2pt]
 \large Technical Design Proposal}
@@ -358,12 +368,12 @@ maximum take-off mass, which is why airframe mass fraction and pack chemistry
 are the two sensitivities carried in the risk register rather than, say, avionics
 choice.
 
-\textbf{The itemisation does not close.} The model's listed items sum to
-6\,061\,g against a 6\,360\,g maximum take-off mass, leaving 299\,g ---
-4.7\,\% --- unallocated. The residual does not threaten the fleet margin, but
-it is large enough to require attribution; closing it is a P1 action. The survivor kits are 800\,g --- 12.6\,\% of MTOW and fixed by the
-mission at four kits of exactly 200\,g --- so payload is an input to the sizing
-loop, not an output of it. This is why propulsion and energy resist cost
+The itemisation closes to maximum take-off mass exactly, and the model asserts
+that it does. The largest discretionary line is the recovery parachute and its
+mount at 300\,g, 4.7\,\% of the aircraft and the only mass carried against loss
+of the airframe rather than against the mission. The survivor kits are 800\,g
+--- 12.6\,\% of MTOW and fixed by the mission at four kits of exactly 200\,g ---
+so payload is an input to the sizing loop, not an output of it. This is why propulsion and energy resist cost
 reduction in a way that avionics does not: they are
 sized by a payload that is not negotiable, so cheaper parts of the same class
 are available but a smaller aircraft is not.
