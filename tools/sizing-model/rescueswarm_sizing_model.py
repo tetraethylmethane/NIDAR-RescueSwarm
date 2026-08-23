@@ -483,9 +483,14 @@ for rate in [5,10,20,45]:
         print(f"    body rate {rate:2.0f} deg/s, 1/{1/texp:.0f} s -> {rate*texp/ang_per_px:5.2f} px angular smear"
               + ("   <-- exceeds 1 px" if rate*texp/ang_per_px>1 else ""))
     print()
+# The gate follows from the pixel scale, so it is derived rather than asserted:
+# one pixel of smear at 1/1000 s occurs at exactly ang_per_px/texp deg/s. The
+# stated rule rounds that down to a whole degree.
+_gate = np.floor(ang_per_px / (1 / 1000.0))
 print("  Translational smear at 8 m/s, 1/1000 s = 0.44 px. Angular smear dominates only in")
-print("  aggressive turns. Rule: gate detections on |body rate| < 15 deg/s, and use 1/1000 s or")
-print("  faster. Both are easily met on straight transects; suppress inference in the turn arcs.")
+print(f"  aggressive turns. At 1/1000 s, 1 px of smear occurs at {ang_per_px/(1/1000.0):.2f} deg/s, so the")
+print(f"  rule is: gate detections on |body rate| < {_gate:.0f} deg/s and use 1/1000 s or faster.")
+print("  Both are easily met on straight transects; suppress inference in the turn arcs.")
 
 print("\n"+"="*80); print("CORRECTION 2  RF LINK BUDGET WITH LEGAL POWER AND REAL ANTENNAS"); print("="*80)
 print("  India, 5.825-5.875 GHz delicensed for drones: up to 1 W (30 dBm) Tx, 4 W (36 dBm) EIRP.")

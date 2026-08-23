@@ -538,7 +538,7 @@ With two people and aggressive overlapping (boots, GNSS/RTK convergence and maga
 | SYS-06 | Peak current capability ≥ 90 A; ESC ≥ 50 A each; 10 AWG mains | §6 |
 | SYS-14 | Hover endurance ≥ 15 min at MTOW; land with ≥ 25 % SoC | §4, §9.1 |
 | SYS-44 | Search altitude held to ±5 m; GSD ≤ 2.0 cm/px ⚠ *altitude under review* | §8 |
-| SYS-45 | Shutter ≤ 1/1000 s; inference gated at body rate < 15 °/s | §8.1 |
+| SYS-45 | Shutter ≤ 1/1000 s; inference gated at body rate < 13 °/s | §8.1 |
 | SYS-46 | Detection at ≥ 2 Hz with ≥ 12 frames per target per pass | §8.2 |
 | SYS-47 | Constant groundspeed 8 m/s during sweep, wind-compensated | §9.2 |
 | SYS-48 | Boresight and lever-arm calibration before any accuracy claim | §11 |
