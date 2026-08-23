@@ -248,8 +248,8 @@ P_{\text{peak}} = \frac{(@@TW@@\,T)^{3/2}}{\mathrm{FM}\sqrt{2\rho A}\,\eta}
 \;\Longrightarrow\;
 I_{\text{peak}} = @@Ipk@@~\text{A}.
 \]
-\textbf{That current, not the energy, is what disqualifies most candidate
-packs.} It is a continuous requirement rather than a burst rating: the aircraft
+That current, not the energy, is what disqualifies most candidate
+packs. It is a continuous requirement rather than a burst rating: the aircraft
 must be able to hold @@TW@@ $\times$ weight, not pulse it. The adopted pack
 supplies @@Ipack@@\,A, a margin of @@Imargin@@\,\%, and the per-motor share sets
 the controller rating at @@esc@@\,A peak.
@@ -330,7 +330,7 @@ distance at altitude $H$ is
 giving a @@sww@@\,$\times$\,@@swh@@\,m footprint and a 1.7\,m supine adult
 subtending \textbf{@@ppl40@@\,px} at 40\,m. One pixel subtends @@ifov@@\,mdeg.
 
-\textbf{Focus is not a design problem, and the arithmetic says so.} The
+\textbf{Focus.} This is not a design problem, and the arithmetic says so. The
 hyperfocal distance,
 \[
 H_{\text{hyp}} = \frac{f^{2}}{Nc} + f = @@hyp@@~\text{m},
@@ -341,18 +341,18 @@ aircraft never operates below 30\,m. A fixed lens set once is correct at every
 altitude flown, and a focus mechanism would add a moving part, a power draw and
 a failure mode that cannot be detected from the air.
 
-\textbf{Motion blur does not bind either.} Holding smear under one pixel
+\textbf{Motion blur.} This does not bind either. Holding smear under one pixel
 requires $t_{\text{exp}} \le \text{GSD}/v$, which at @@vg@@\,m/s is
 @@blur@@\,ms --- a shutter of $1/@@blurinv@@$\,s. The requirement already
 mandates $1/1000$\,s or faster.
 
-\textbf{Rolling shutter is small but not zero.} Reading the frame out over
+\textbf{Rolling shutter.} Small but not zero. Reading the frame out over
 @@rsms@@\,ms while the aircraft moves gives @@rsm@@\,m of top-to-bottom skew,
 about @@rspx@@\,px. Negligible for detection; \emph{not} negligible for
 geolocation, where a detection's row position carries an along-track bias unless
 the pipeline corrects for readout row.
 
-\textbf{Temporal sampling is where the budget does not close.} A target is in
+\textbf{Temporal sampling.} This is where the budget does not close. A target is in
 frame for the along-track footprint divided by ground speed, so at 40\,m and
 2\,Hz it receives \textbf{@@looks@@ looks} against the @@fusion@@ that
 multi-frame fusion requires. Meeting that count needs
@@ -374,7 +374,7 @@ Integrating the fall with quadratic drag from a 6\,m release gives
 @@t6@@\,s to impact at @@vi6@@\,m/s, with a crosswind drift of @@d63@@\,m at
 3\,m/s and @@d66@@\,m at 6\,m/s.
 
-\textbf{The governing sensitivity is release velocity, not release height.} A
+The governing sensitivity is release velocity, not release height. A
 residual ground speed of 0.5\,m/s displaces the impact point by about 0.53\,m,
 whereas a full metre of altitude error contributes under 4\,cm. This is the
 whole argument for hover-and-drop: a multirotor can null its ground speed before

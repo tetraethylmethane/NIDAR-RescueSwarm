@@ -63,9 +63,9 @@
   \hfill
   \raisebox{-0.5\height}{\includegraphics[height=9mm]{thapar_logo.png}}%
   \\[1.5mm]\rule{\textwidth}{0.4pt}}\\[3mm]
-RescueSwarm: An Indigenously Sourced\\
-Autonomous Multi-UAV System for Post-Disaster\\
-Search, Localisation and Payload Delivery\\[2pt]
+RescueSwarm: An Autonomous Multi-UAV System\\
+for Post-Disaster Search, Localisation\\
+and Payload Delivery\\[2pt]
 \large Technical Design Proposal}
 
 % NOTE: `&` and `_` are LaTeX special characters (alignment tab and subscript)
@@ -88,13 +88,11 @@ helicopter search is fast but scarce and expensive. This proposal describes
 RescueSwarm, a three-aircraft autonomous unmanned aerial system that surveys a
 designated area, detects and geolocates survivors, and delivers a standardised
 relief kit to each, under a single operator and without any reliance on cellular
-or internet infrastructure. The system is designed around a deliberate
-constraint: indigenous sourcing wherever it is achievable, both because
-supply-chain sovereignty is a national priority and because domestic lead times
-are roughly half those of imports, which directly buys flight-test days inside a
-schedule-limited programme. The configuration described here reaches
-approximately 36\,\% Indian content, and we state which lines were deferred and
-what that omission costs the system rather than the budget. We present the
+or internet infrastructure. Components are sourced domestically where a
+qualifying part exists, principally because domestic lead times are roughly
+half those of imports and therefore buy flight-test days inside a
+schedule-limited programme; we state which lines were deferred and what each
+omission costs the system rather than the budget. We present the
 system architecture, the sizing and error models that fix its design point,
 the simulation evidence obtained to date, and a phased work plan. We are explicit throughout
 about which figures are measured, which are modelled, and which remain assumed;
@@ -105,8 +103,7 @@ the source material.
 
 \begin{IEEEkeywords}
 unmanned aerial systems, multi-robot coordination, search and rescue,
-coverage path planning, RTK geolocation, edge inference, indigenous
-manufacturing, disaster response
+coverage path planning, RTK geolocation, edge inference, disaster response
 \end{IEEEkeywords}
 
 %=============================================================================
@@ -148,23 +145,17 @@ is therefore not simply flight, but \emph{coordinated autonomous flight under a
 single operator}: area decomposition, task allocation, deconfliction, consolidated
 reporting, and graceful degradation when the command link is lost.
 
-\subsection{Why indigenous sourcing is a design constraint, not a slogan}
+\subsection{Why sourcing is a schedule decision}
 
-We treat domestic sourcing as a first-class design constraint for two reasons,
-only one of which is political.
+Domestic sourcing is treated here as a schedule constraint rather than a
+policy position. Our supplier survey puts typical import lead times at four to
+six weeks against two to three weeks domestically. In a programme whose binding
+constraint is an eight-week flight-test window, that difference is not a
+procurement detail: it is the difference between two test campaigns and one.
+Suppliers are therefore named specifically throughout, and lead time is carried
+alongside price wherever a part is selected.
 
-The first is sovereignty: a disaster-response asset whose critical components
-have a single foreign supplier is a strategic liability, and national policy
-correctly prioritises domestic capability.
-
-The second is schedule, and in a programme of this length it dominates. Our
-supplier survey puts typical import lead times at four to six weeks against two
-to three weeks domestically. In a programme whose binding constraint is an
-eight-week flight-test window, that difference is not a procurement detail --- it
-is the difference between two test campaigns and one. Indigenisation, in this
-programme, buys flying days.
-
-\textbf{This argument cuts against a decision taken later in the document.} The
+This argument cuts against a decision taken later in the document. The
 build defers the Indian autopilot and Indian propulsion on cost, and the
 imported parts replacing them carry the longer lead time just described as
 decisive. The mitigation is structural: every long-lead item is ordered in
@@ -207,10 +198,6 @@ resulting schedule risk is carried in Table~\ref{tab:risk}.
         survivor location by controlled free-fall release.
   \item[\textbf{O5}] Operate with no cellular, internet or cloud dependency at
         any point in the mission.
-  \item[\textbf{O6}] Maximise value-weighted indigenous content across the
-        bill of materials without compromising O1--O5, and state explicitly
-        which Indian lines were deferred and what the substitution costs the
-        system.
 \end{itemize}
 
 \subsection{Explicit non-objectives}
@@ -317,8 +304,8 @@ Table~\ref{tab:designpoint} states the aircraft design point. Every value is
 produced by a sizing model held in the repository and regenerated in continuous
 integration; none is transcribed by hand.
 
-\textbf{This is the reference design point, and one line of it is not yet
-verified for the aircraft actually being funded.} The adopted configuration
+This is the reference design point, and one line of it is not yet verified for
+the aircraft actually being built. The adopted configuration
 (Section~\ref{sec:deferred}) uses generic motors that publish no thrust curve, so the
 thrust-to-weight figure below is a requirement rather than a measurement until
 the P5 thrust stand runs. Nothing else in the table moves: mass, energy,
@@ -627,14 +614,14 @@ The target here is a person \emph{in water} --- head and shoulders, about
 0.4\,m across --- which is the worst posture and therefore the one the design
 is sized against. A supine adult on a rooftop is four times easier.
 
-\textbf{The size class, not the pixel count, is the number that matters.}
+The size class, not the pixel count, is the number that matters.
 Published recall figures report average precision \emph{by} size band, and
 small-object AP is routinely far below medium on the same model. Only the top
 row clears the COCO 32$^2$\,px$^2$ small-object threshold --- which is why the
 design point is 40\,m and native tiling, and why the two changes had to be made
 together. Either alone leaves the target in the band where detectors do worst.
 
-\textbf{Two modelling choices set these figures.} The optics are computed for
+Two modelling choices set these figures. The optics are computed for
 the 1.55\,\textmu m sensor the bill of materials buys, not for a generic sensor
 of the same pixel \emph{count} at a different pixel \emph{size}: it is pitch,
 not count, that fixes ground sample distance. And the target is taken as a
@@ -1043,7 +1030,7 @@ Nominal edge clearance is 0.523\,m --- one airframe radius --- so no part of a
 stationary aircraft lies outside the box, and the geometric requirement is met
 by construction.
 
-\textbf{That is compliance with no margin, and it is worth stating plainly.} The
+That is compliance with no margin, and it is worth stating plainly. The
 rules admit no part of any aircraft outside the box during launch and landing.
 Touchdown dispersion of $\pm$0.5\,m, the figure this programme uses elsewhere
 for landing accuracy, would put up to half a metre of airframe over the edge.
@@ -1108,7 +1095,7 @@ from a local cache, so nothing here depends on a network. The mission counters
 are correct: rule 8.11 caps survivors at ten, and the 15:00 window is the
 \texttt{SYS-35} fast-completion threshold --- half the permitted thirty minutes
 --- rather than the flight-time limit.
-\textbf{This is a bench capture, not a mission.} No mission file is loaded,
+This is a bench capture, not a mission. No mission file is loaded,
 which is why all three aircraft read \textsc{stabilize} at 100\,\% charge, why
 no assigned search areas or survivor markers are drawn, and why the video panes
 carry test patterns; no camera has yet flown. \textbf{Two strings in the
@@ -1162,14 +1149,8 @@ into measured ones.
 \section{Scope of This Build}
 \label{sec:deferred}
 
-This document describes an integrated system. \textbf{The funding request is not
-part of it.} The programme is delivered by four tracks, each of which carries
-its own work package and its own funding request, generated from a single budget
-model rather than restated by hand:
-\path{docs/proposal/tracks/}. The four track asks reconcile to the programme
-total exactly, and that reconciliation is asserted in continuous integration.
-
-What belongs here is not what the build costs but \emph{what it does and does
+This document describes an integrated system; the funding request is held
+separately and is not part of it. What belongs here is not what the build costs but \emph{what it does and does
 not contain}, because several arguments earlier in this document depend on it.
 
 \subsection{What this build deliberately does not include}
@@ -1200,8 +1181,8 @@ at the time of writing at any price, which settles the question for this build
 and removes it from the cost-reduction argument entirely. \textbf{P6
 characterises achieved heading accuracy on the built aircraft; if it exceeds
 roughly 1$^\circ$, a heading source must be reinstated} --- by then either
-through firmware maturity at this supplier or through an imported dual-antenna
-receiver, with the indigenous-content cost that implies.
+through firmware maturity at this supplier or through an imported
+dual-antenna receiver.
 
 \emph{The sub-gigahertz safety radio is deferred, and that deferral rests on a
 configuration rather than on a judgement.} The primary link must run in a mode
@@ -1239,76 +1220,6 @@ geolocation accuracy is measured is \emph{itself RTK-derived}. The two error
 sources are therefore correlated, and any measured geotag figure reported in
 P7--P8 will be slightly optimistic against an independently surveyed datum. Any
 accuracy claim arising from those phases will state this.
-
-\section{Indigenisation Strategy}
-\label{sec:indig}
-%=============================================================================
-
-Indigenous content is measured, not asserted. Every line in the bill of
-materials carries a declared Indian value fraction, and the aggregate is
-computed rather than estimated, which makes the claim auditable.
-
-\textbf{The configuration adopted for this build carries
-approximately 36\,\% Indian content, down from 58\,\% in the fully specified
-aircraft.} That figure is computed from the per-line Indian fractions of the
-adopted bill of materials rather than estimated; an earlier draft of this
-proposal asserted 45\,\%, which the computation does not support. we report what
-applies to what is actually being funded rather than the figure that flatters
-the argument.
-
-Fig.~\ref{fig:indig} decomposes it, and the decomposition is far more
-informative than the aggregate. \textbf{Propulsion falls from 89\,\% to
-21\,\% and avionics from 60\,\% to 32\,\%} --- the two lines that make the
-aircraft affordable are precisely the two that make it less Indian. What remains
-strongly domestic is what the team fabricates or assembles itself: the payload
-system at 90\,\% and the airframe structure at 85\,\%.
-
-\textbf{This is the clearest consequence of the sourcing decision, and it is
-reversible.} Two lines account for almost all of it: the autopilot and
-propulsion --- motors, speed controllers and certified propellers. Restoring
-both would return the aircraft to roughly 58\,\% Indian content, and the
-Track~A and Track~B work packages price that reinstatement. Both are drop-in reinstatements
-requiring no redesign. Component sponsorship from the Indian suppliers surveyed
-for this bill of materials is the intended route, and it is the reason those
-suppliers are named throughout rather than described generically.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fig-indig.pdf}
-\caption{Indian content by subsystem for the adopted configuration,
-value-weighted. Four subsystems now sit below 40\,\%, and between them they
-account for roughly three quarters of the aircraft by value --- which is why
-the aggregate is worth decomposing rather than quoting alone. What remains
-strongly domestic is what the team fabricates itself.}
-\label{fig:indig}
-\end{figure}
-
-\begin{table}[t]
-\caption{Indigenisation status by subsystem}
-\label{tab:indig}
-\centering
-\small
-\begin{tabular}{@{}lL{4.4cm}@{}}
-\toprule
-\textbf{Subsystem} & \textbf{Status} \\
-\midrule
-Autopilot        & \emph{Deferred:} Indian Pixhawk-standard board, domestically made \\
-Propulsion       & \emph{Deferred:} Indian motors and ESCs with published thrust data \\
-Airframe         & Indian composite fabrication \\
-Cells            & Indian, BIS-certified 21700 NMC, 4500\,mAh / 45\,A. \emph{Retained} \\
-Camera           & \emph{Deferred:} Indian embedded-vision supplier \\
-GNSS             & Indian receiver, NavIC L1+L5. \emph{Retained} \\
-Co-processor     & Indian RISC-V development kit \\
-Inference module & \textbf{No Indian equivalent exists at this class} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The inference accelerator is the one genuinely irreducible import.
-Mitigation is confined to an Indian carrier board and Indian enclosure and
-thermal design. The domestic RISC-V development kit carried on the aircraft is
-a genuine demonstration of Indian silicon in flight, albeit in a monitoring
-role rather than as an accelerator.
 
 %=============================================================================
 \section{Risk Register}
@@ -1369,9 +1280,8 @@ the programme for precisely this reason.
 %=============================================================================
 
 \begin{enumerate}
-  \item Three flight-qualified aircraft with a documented, market-verified bill
-        of materials at approximately 36\,\% Indian content, and a costed route
-        to restoring the deferred Indian autopilot and propulsion.
+  \item Three flight-qualified aircraft with a documented, market-verified
+        bill of materials.
   \item A single-operator ground control station demonstrated end to end against
         real aircraft, with no network dependency.
   \item A measured detection recall figure against fabricated survivor targets
@@ -1383,16 +1293,7 @@ the programme for precisely this reason.
   \item A measured setup-to-launch time distribution over repeated drills.
   \item An open, reproducible evidence base in which every published figure
         regenerates from its model under continuous integration.
-  \item A supply-chain report identifying, for each subsystem, the domestic
-        capability that exists, the capability that does not, and what would be
-        required to close the gap.
 \end{enumerate}
-
-The seventh deliverable may prove the most durable. The exercise of sourcing a
-complete airframe domestically, at component granularity and with verified
-prices, produced a map of Indian UAV supply-chain maturity that we have not seen
-published elsewhere, including the specific and narrow point at which it
-currently fails.
 
 %=============================================================================
 \section{Future Work}
@@ -1412,7 +1313,7 @@ thermal qualification for monsoon conditions; and endurance beyond the present
 15.3 minutes, which at this payload means a different airframe class rather than
 a better battery.
 
-\textbf{The night-sensing route is not the obvious one.} Thermal imaging is the
+The night-sensing route is not the obvious one. Thermal imaging is the
 default answer, and it is genuinely valuable over rooftops, dry debris and
 open ground. It degrades, however, for precisely the case this system is built
 around. A person immersed in floodwater equilibrates toward water temperature,
@@ -1486,12 +1387,11 @@ regardless of what follows it.
 %=============================================================================
 
 We propose an autonomous three-aircraft system that addresses the localisation
-bottleneck in post-flood search and rescue, sourced domestically wherever that
-is achievable, and engineered under a verification discipline that
-distinguishes what has been demonstrated from what has merely been designed.
-Where an Indian part was deferred it was deferred on cost, not on capability ---
-domestic industry can supply the autopilot and the propulsion, and
-Section~\ref{sec:indig} states what restoring them costs.
+bottleneck in post-flood search and rescue, engineered under a verification
+discipline that distinguishes what has been demonstrated from what has merely
+been designed. Where a part was deferred it was deferred on cost, not on
+capability, and Section~\ref{sec:deferred} states what each omission costs the
+system.
 
 The system's design point, error budgets and cost basis are established and
 reproducible. Its coordination and failsafe behaviour have been demonstrated in
@@ -1499,8 +1399,8 @@ hardware-in-the-loop simulation across three simultaneous autopilots. What
 remains is to build the aircraft, fly them, and replace the modelled and
 assumed quantities in Section~\ref{sec:evidence} with measured ones.
 
-The resources this requires are set out in the four track work packages, not
-here. What this document undertakes is narrower: that every number in it is
+The resources this requires are documented separately. What this document
+undertakes is narrower: that every number in it is
 checkable, and that those not yet measured say so.
 
 %=============================================================================

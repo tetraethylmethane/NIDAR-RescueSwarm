@@ -289,38 +289,6 @@ def fig_funding():
 # ===========================================================================
 # 6. Indigenisation by subsystem.  Source: verified BOM declared fractions.
 # ===========================================================================
-def fig_indig():
-    fig, ax = plt.subplots(figsize=(COL, 2.4))
-    # ADOPTED configuration. Propulsion falls 89% -> 21% and avionics
-    # 60% -> 32%: the generic motors and imported autopilot are exactly
-    # what make this configuration affordable.
-    subs = ["Payload", "Structure", "Power", "Avionics",
-            "Comms", "Propulsion", "Compute &\nperception"]
-    frac = [90.0, 85.0, 60.0, 32.0, 30.0, 21.0, 10.0]
-    val = [4500, 13000, 23500, 49100, 6000, 30600, 31100]
-    y = np.arange(len(subs))[::-1]
-    cols = [GREEN if f >= 70 else (ORANGE if f >= 50 else RED) for f in frac]
-    ax.barh(y, frac, color=cols, height=0.66)
-    # Cost per subsystem was annotated inside each bar. It is dropped because
-    # the master proposal no longer carries funding content -- that lives in the
-    # track work packages now. `val` is retained: it still orders the bars by
-    # value weight, which is what makes the mean a weighted one.
-    for yi, f in zip(y, frac):
-        ax.text(f + 1.5, yi, f"{f:.0f}%", va="center", fontsize=6.8)
-    ax.axvline(35.5, color="black", ls="--", lw=1)
-    # Above the plot area, not rotated across the bars -- a vertical label here
-    # sits on top of the Power and Comms rows and becomes unreadable.
-    ax.annotate("adopted mean 36%", xy=(35.5, len(subs) - 0.45),
-                xytext=(4, 0), textcoords="offset points",
-                fontsize=6.3, ha="left", va="center")
-    ax.set_yticks(y); ax.set_yticklabels(subs)
-    ax.set_xlabel("Indian content, value-weighted (%)")
-    ax.set_xlim(0, 108)
-    ax.set_ylim(-0.7, len(subs) - 0.05)
-    ax.set_title("Indigenous content by subsystem, as adopted")
-    ax.grid(axis="y", alpha=0)
-    fig.tight_layout()
-    save(fig, "fig-indig.pdf")
 
 
 # ===========================================================================
@@ -571,7 +539,6 @@ if __name__ == "__main__":
     fig_options()
     fig_subsystem()
     fig_funding()
-    fig_indig()
     fig_launch()
     fig_pad()
     fig_sweep()

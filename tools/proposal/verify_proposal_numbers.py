@@ -70,10 +70,10 @@ check("IV-A", "static thrust-to-weight", 2.0, M.T_W)
 # Mass statement narrative
 bd = M.bd
 struct = bd["struct"]
-# The residual is NOT MTOW minus sum(bd) -- bd sums to MTOW exactly. It is the
-# gap inside the payload line: bd["payload"] is 1340 g, but the itemisation the
-# document prints accounts for only the 240 g magazine and 4 x 200 g of kits.
-# That 300 g is real and unattributed, which is what the proposal says.
+# Not MTOW minus sum(bd) -- bd sums to MTOW exactly. This is the gap inside the
+# payload line: bd["payload"] is 1340 g, of which the two lines below account
+# for 1040 g. The remaining 300 g is the recovery parachute, and the checks
+# that follow assert it is exactly that rather than tolerating a residual.
 MAGAZINE, KITS = 0.240, 0.800
 listed = (bd["struct"] + bd["motors"] + bd["esc"] + bd["props"]
           + bd["battery"] + bd["avionics"] + MAGAZINE + KITS)
@@ -274,9 +274,6 @@ UNVERIFIED = [
   "exists to check it against; Section VII says so explicitly."),
  ("IV-A", "thrust-to-weight 2.0", "A requirement, not a measurement. The "
   "funded motors publish no thrust curve; P2 thrust stand settles it."),
- ("VIII", "36 % / 58 % Indian content", "Computed in the cost model from "
-  "per-line Indian fractions, which are supplier judgements rather than "
-  "derived quantities."),
 ]
 print()
 print("=" * 92)
