@@ -503,6 +503,16 @@ RTK-fixed, and detections made before convergence are geotagged in float and
 re-fused once fixed. This decoupling recovers approximately ninety seconds of
 setup time that a survey-in procedure would otherwise consume.
 
+A second receiver from the same supplier, the AeroNav-X5, is under evaluation
+against the baseline part. It is built on a Septentrio GNSS+ core with 448
+tracking channels and specifies 0.6\,cm~$+$~0.5\,ppm horizontal RTK against the
+baseline's 1\,cm~$+$~1\,ppm, a seven-second RTK initialisation, and AIM+
+interference mitigation, which is a relevant property for an asset intended to
+operate in a degraded radio environment. It tracks NavIC on L5 where the
+baseline part carries NavIC across more bands. Selection between the two is
+pending quotation; neither is publicly priced, and the geolocation budget in
+Section~\ref{sec:geotag} is met by either.
+
 Corrections reach the aircraft over the existing command link rather than a
 dedicated correction radio. This is a documented mode of both the autopilot and
 the receiver rather than an assumption on our part: ArduPilot's
