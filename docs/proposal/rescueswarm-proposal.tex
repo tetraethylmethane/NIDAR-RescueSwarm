@@ -83,10 +83,10 @@ constraint: indigenous sourcing wherever it is achievable, both because
 supply-chain sovereignty is a national priority and because domestic lead times
 are roughly half those of imports, which directly buys flight-test days inside a
 schedule-limited programme. The configuration described here reaches
-approximately 36\,\% Indian content, and I state which lines were deferred and
-what that omission costs the system rather than the budget. I present the
+approximately 36\,\% Indian content, and we state which lines were deferred and
+what that omission costs the system rather than the budget. We present the
 system architecture, the sizing and error models that fix its design point,
-the simulation evidence obtained to date, and a phased work plan. I am explicit throughout
+the simulation evidence obtained to date, and a phased work plan. We are explicit throughout
 about which figures are measured, which are modelled, and which remain assumed;
 no aircraft has yet flown, and the proposal is structured so that a reviewer can
 distinguish demonstrated capability from projected capability without reading
@@ -140,14 +140,14 @@ reporting, and graceful degradation when the command link is lost.
 
 \subsection{Why indigenous sourcing is a design constraint, not a slogan}
 
-I treat domestic sourcing as a first-class design constraint for two reasons,
+We treat domestic sourcing as a first-class design constraint for two reasons,
 only one of which is political.
 
 The first is sovereignty: a disaster-response asset whose critical components
 have a single foreign supplier is a strategic liability, and national policy
 correctly prioritises domestic capability.
 
-The second is schedule, and in a programme of this length it dominates. My
+The second is schedule, and in a programme of this length it dominates. Our
 supplier survey puts typical import lead times at four to six weeks against two
 to three weeks domestically. In a programme whose binding constraint is an
 eight-week flight-test window, that difference is not a procurement detail --- it
@@ -205,7 +205,7 @@ resulting schedule risk is carried in Table~\ref{tab:risk}.
 
 \subsection{Explicit non-objectives}
 
-I state these because proposals of this kind are frequently over-scoped, and
+These are stated because proposals of this kind are frequently over-scoped, and
 because each exclusion is a deliberate engineering decision rather than an
 omission.
 
@@ -235,7 +235,7 @@ boustrophedon decomposition~\cite{choset2000coverage} remains the standard
 in-region motion primitive for sensor footprints that are rectangular in the
 body frame.
 
-I adopt a static equal-area partition with boustrophedon in-region coverage
+We adopt a static equal-area partition with boustrophedon in-region coverage
 rather than a full DARP implementation. This is a deliberate trade of optimality
 for determinism: a static partition produces an identical, inspectable plan for
 identical inputs, which is a precondition for the verification regime described
@@ -247,7 +247,7 @@ future-work path where dynamic reallocation becomes necessary.
 The Consensus-Based Bundle Algorithm (CBBA) is the canonical decentralised
 auction method for multi-agent assignment~\cite{choi2009cbba}. Its guarantees
 depend on a consensus phase over a communication graph. For a three-aircraft
-system with a reliable star topology to a single ground station, I implement
+system with a reliable star topology to a single ground station, we implement
 greedy claim-and-lock with a deterministic tie-break, which is materially
 simpler to verify and whose worst-case behaviour on three agents is well within
 acceptable bounds.
@@ -392,7 +392,7 @@ aircraft is not instantaneous.
 Two things about the result are decisions rather than arithmetic, and they
 belong here rather than in a derivation.
 
-\textbf{Why cylindrical Li-ion rather than LiPo.} I record this as a trade
+\textbf{Why cylindrical Li-ion rather than LiPo.} We record this as a trade
 rather than a preference, because LiPo wins part of it. A LiPo pack of equal
 energy would roughly halve the internal resistance --- about 2.5\,V of sag at
 peak against 4.6\,V --- and would carry far more current headroom, and it would
@@ -402,8 +402,7 @@ energy, which spends fleet margin; its cycle life is two to three times worse
 across a long flight-test campaign; and it is not domestically sourced, which
 would remove one of only four remaining Indian lines in
 Section~\ref{sec:deferred}. The decision is therefore made on campaign cost and
-sourcing, not on the electrical argument, and I state it that way because the
-electrical argument points the other way.
+sourcing, not on the electrical argument, which points the other way.
 
 \textbf{Where the reserve is evaluated.} A reserve policy is only meaningful at
 the mass the aircraft actually flies. The pack is rounded up to a buildable 18
@@ -470,8 +469,10 @@ the operator rather than the algorithm.}
 
 \subsubsection{Air segment}
 Three identical quadrotors, each carrying a Pixhawk-standard autopilot running
-ArduPilot~\cite{ardupilot}, a dual-band NavIC/GNSS receiver providing RTK
-position, a nadir-mounted 12\,MP camera, an edge inference module, a four-station
+ArduPilot~\cite{ardupilot}, a multi-band NavIC/GNSS receiver providing RTK
+position (Teravolt AeroNav-Pro RTK, tracking NavIC, GPS, GLONASS, Galileo,
+BeiDou and QZSS on L1/L2/L5/L6 at 25\,Hz, specified at
+1\,cm~$+$~1\,ppm in RTK~\cite{teravoltaeronav}), a nadir-mounted 12\,MP camera, an edge inference module, a four-station
 kit magazine with positive-lock detents, a 5.8\,GHz mesh radio for telemetry and
 video, and a 2.4\,GHz ExpressLRS link carrying safety-pilot control and abort
 independently of the autonomy stack.
@@ -501,12 +502,11 @@ sum of squares of GNSS position error, boresight and lever-arm residual, attitud
 error, terrain-model error and timing skew.
 
 Table~\ref{tab:geotag} shows the dominant conclusion: positioning quality, not
-optics, governs. This is what makes RTK a scoring requirement rather than an
+optics, governs. This is what makes RTK a mission requirement rather than an
 optimisation, and it is why the RTK receiver and its base station survive every
 cost-reduction pass while a great deal else does
-not. The \emph{second} receiver, which supplies moving-baseline heading, is a
-different case and is deferred to a measurement --- see
-Section~\ref{sec:deferred}.
+not. The \emph{second} receiver, which would supply moving-baseline heading, is
+a different case and is deferred --- see Section~\ref{sec:deferred}.
 
 \begin{table}[t]
 \caption{Geolocation error by configuration}
@@ -899,7 +899,7 @@ P10 & Setup and contingency  & Setup drill timed over repeated runs; margin reco
 \subsection{Verification strategy}
 \label{sec:evidence}
 
-The programme's verification discipline is, I believe, its most transferable
+The programme's verification discipline is its most transferable
 contribution, and it exists because of a specific and recurring class of defect.
 
 On four separate occasions during preparatory work, a configuration artefact was
@@ -941,7 +941,7 @@ because an inconsistency that can be reintroduced by hand eventually is.
 \section{Preliminary Results}
 %=============================================================================
 
-Substantial work has been completed before this request. I summarise it here
+Substantial work has been completed before this request. we summarise it here
 with the evidence class of each result stated, because a claim whose basis is
 declared can be independently checked, whereas a claim whose basis is left
 implicit cannot be.
@@ -1123,18 +1123,26 @@ is entitled to claim.
 \emph{The field-data campaign and the ground-truth apparatus are both deferred,
 and the consequence is stated plainly: \textbf{detection recall in this document
 is modelled, not measured.}} There is currently no funded route to measuring it.
-Of everything listed here this is the omission with the largest effect on a
-scored outcome, and it is the first item that should be reinstated if the
+Of everything listed here this is the omission with the largest effect on
+delivered capability, and it is the first item that should be reinstated if the
 position changes.
 
-\emph{The second GNSS receiver is deferred to a measurement, not to funding.} It
-supplies moving-baseline heading, and Section~\ref{sec:geotag} shows that
-substituting a magnetometer-class attitude allocation into the case-C budget
-costs \textbf{18\,mm}. The honest case for it was never the error budget --- it
-was insurance against a magnetometer sitting near a high-current bus, which the
-budget does not model. That is an unmeasured risk. \textbf{P6 characterises
-achieved heading accuracy on the built aircraft; if it exceeds roughly
-1$^\circ$, the receiver is reinstated.} If it does not, it was never needed.
+\emph{The second GNSS receiver is deferred, and the deferral is now forced
+rather than chosen.} It would supply moving-baseline heading, and
+Section~\ref{sec:geotag} shows that substituting a magnetometer-class attitude
+allocation into the case-C budget costs \textbf{18\,mm}. The case for it was
+never the error budget --- it was insurance against a magnetometer sitting near
+a high-current bus, which the budget does not model.
+
+The supplier has since confirmed that although both candidate receivers operate
+as RTK rovers, moving-baseline dual-antenna heading remains under
+development~\cite{teravoltaeronav}. The capability is therefore not purchasable
+at the time of writing at any price, which settles the question for this build
+and removes it from the cost-reduction argument entirely. \textbf{P6
+characterises achieved heading accuracy on the built aircraft; if it exceeds
+roughly 1$^\circ$, a heading source must be reinstated} --- by then either
+through firmware maturity at this supplier or through an imported dual-antenna
+receiver, with the indigenous-content cost that implies.
 
 \emph{The sub-gigahertz safety radio is deferred, and that deferral rests on a
 configuration rather than on a judgement.} The primary link must run in a mode
@@ -1149,7 +1157,7 @@ roughly forty points against the probability of a crash.
 
 \emph{Spares cover what crashes, not what fails rarely.} Propellers, motors,
 arms, plate stock and packs are retained. Spare autopilot, GNSS and camera are
-removed. \textbf{This is an accepted risk and I state it as one:} a failure of
+removed. \textbf{This is an accepted risk and we state it as one:} a failure of
 any of those three inside the flight-test window costs schedule, and the
 mitigation is procurement lead time rather than inventory.
 
@@ -1185,7 +1193,7 @@ computed rather than estimated, which makes the claim auditable.
 approximately 36\,\% Indian content, down from 58\,\% in the fully specified
 aircraft.} That figure is computed from the per-line Indian fractions of the
 adopted bill of materials rather than estimated; an earlier draft of this
-proposal asserted 45\,\%, which the computation does not support. I report what
+proposal asserted 45\,\%, which the computation does not support. we report what
 applies to what is actually being funded rather than the figure that flatters
 the argument.
 
@@ -1237,14 +1245,11 @@ Inference module & \textbf{No Indian equivalent exists at this class} \\
 \end{tabular}
 \end{table}
 
-The inference accelerator is the one genuinely irreducible import, and I
-declare it plainly rather than obscuring it. Mitigation is confined to what is
-honest: an Indian carrier board, and Indian enclosure and thermal design. I
-regard an explicit gap
-analysis as more credible than a uniformly confident claim, and I note that the
-domestic RISC-V development kit carried on the aircraft is a genuine
-demonstration of Indian silicon in flight, albeit in a monitoring role rather
-than as an accelerator.
+The inference accelerator is the one genuinely irreducible import.
+Mitigation is confined to an Indian carrier board and Indian enclosure and
+thermal design. The domestic RISC-V development kit carried on the aircraft is
+a genuine demonstration of Indian silicon in flight, albeit in a monitoring
+role rather than as an accelerator.
 
 %=============================================================================
 \section{Risk Register}
@@ -1267,8 +1272,8 @@ Detection recall below target on real imagery
 Inference and software video encode contend on one board
 & High & The replacement compute has no hardware H.264 encoder. Benchmark both loads together before design freeze; fallback is a reduced tile count on a centre crop \\
 \addlinespace
-RTK capability unconfirmed on selected receiver
-& High & Supplier confirmation is a gating procurement action; degraded mode already specified and flagged to the operator \\
+Moving-baseline heading unavailable on the selected receiver
+& Medium & \textbf{Downgraded from High.} The supplier has confirmed RTK rover operation on both candidate receivers, closing the primary concern, but reports moving-baseline dual-antenna heading as still under development~\cite{teravoltaeronav}. Heading therefore rests on the magnetometer, which costs 18\,mm in the case-C budget; P6 measures achieved heading accuracy and reinstates a dedicated source if it exceeds 1$^\circ$ \\
 \addlinespace
 Flight-test window compressed by procurement delay
 & High & \textbf{Raised by deferral of the training airframe and of spares.} Lead time is now the only mitigation, so long-lead items are ordered in tranche~1 \\
@@ -1294,7 +1299,7 @@ Flight insurance may be mandatory
 \end{tabular}
 \end{table*}
 
-I draw particular attention to the setup-time risk. It is currently supported
+We draw particular attention to the setup-time risk. It is currently supported
 by a model with a modest margin and no measurement, and it gates the entire
 mission. Timed bench drills are scheduled as the earliest hardware activity in
 the programme for precisely this reason.
@@ -1326,7 +1331,7 @@ the programme for precisely this reason.
 
 The seventh deliverable may prove the most durable. The exercise of sourcing a
 complete airframe domestically, at component granularity and with verified
-prices, produced a map of Indian UAV supply-chain maturity that I have not seen
+prices, produced a map of Indian UAV supply-chain maturity that we have not seen
 published elsewhere, including the specific and narrow point at which it
 currently fails.
 
@@ -1374,7 +1379,7 @@ below the per-aircraft figure quoted here, because the ground segment, test
 equipment and spares are one-off. At production volume the relevant questions
 are different ones --- tooling amortisation, negotiated component pricing, and
 assembly labour --- and none of them can be answered honestly from a
-three-aircraft bill of materials. I decline to extrapolate them.
+three-aircraft bill of materials. We decline to extrapolate them.
 
 \subsection{A route to commercialisation}
 
@@ -1396,7 +1401,7 @@ regardless of what follows it.
 \section{Conclusion}
 %=============================================================================
 
-I propose an autonomous three-aircraft system that addresses the localisation
+We propose an autonomous three-aircraft system that addresses the localisation
 bottleneck in post-flood search and rescue, sourced domestically wherever that
 is achievable, and engineered under a verification discipline that
 distinguishes what has been demonstrated from what has merely been designed.
@@ -1418,12 +1423,10 @@ checkable, and that those not yet measured say so.
 \section*{Acknowledgment}
 %=============================================================================
 
-% Name faculty mentors and any supplier who provided evaluation hardware or
-% engineering support before submitting. The line below is the institutional
-% minimum and is true as written.
-
-I thank the Department of Electronics and Communication Engineering,
-Thapar Institute of Engineering and Technology, for institutional support.
+We thank Dr.~Surbhi Sharma and Dr.~Mamata Gulati for their supervision and
+guidance throughout this work, and the Department of Electronics and
+Communication Engineering, Thapar Institute of Engineering and Technology, for
+institutional support.
 
 % \balance  % optional final-page column balancing; requires the `balance` package
 
@@ -1506,6 +1509,13 @@ Ministry of Civil Aviation, Government of India,
 ArduPilot Development Team,
 ``ArduPilot: open source autopilot software suite,'' 2026.
 [Online]. Available: \url{https://ardupilot.org/}
+
+\bibitem{teravoltaeronav}
+Teravolt,
+``AeroNav-Pro RTK'' and ``AeroNav-X5'' product documentation, 2026.
+[Online]. Available:
+\url{https://teravolt.gitbook.io/teravolt/gps/aeronav-pro-rtk},
+\url{https://teravolt.gitbook.io/teravolt/gps/aeronav-x5}
 
 \bibitem{elrsmavlink}
 ExpressLRS Project,
