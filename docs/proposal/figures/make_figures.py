@@ -115,9 +115,19 @@ def fig_geotag():
     ideal = cep_n[0] / np.sqrt(n)
     ax2.plot(n, ideal, "s--", color=GREY, lw=1.1, ms=3.4,
              label=r"ideal $1/\sqrt{n}$")
-    ax2.axvline(14, color=BLUE, ls=":", lw=1)
-    ax2.text(14.4, 0.74, "~14 frames\navailable per pass", fontsize=6.3,
-             color=BLUE, va="top")
+    # Frames available per pass, derived from the survey geometry rather than
+    # written in. This marker previously read 14, which matched neither the
+    # 40 m design point nor the 60 m altitude the caption cited.
+    PX_H, PITCH_UM, F_MM = 3040, 1.55, 6.0        # Arducam IMX477, 6 mm lens
+    H_SEARCH, V_GND = 40.0, 8.0                   # m AGL, m/s ground speed
+    vfov = 2 * np.arctan((PX_H * PITCH_UM / 1000.0) / (2 * F_MM))
+    dwell = 2 * H_SEARCH * np.tan(vfov / 2) / V_GND      # s a target is in view
+    n_2hz, n_3hz = 2 * dwell, 3 * dwell                  # 7.9 and 11.8
+    ax2.axvspan(n_2hz, n_3hz, color=BLUE, alpha=0.13, lw=0)
+    ax2.axvline(n_2hz, color=BLUE, ls=":", lw=1)
+    ax2.text(n_3hz + 0.5, 0.74,
+             f"{n_2hz:.0f}--{n_3hz:.0f} frames per pass\n(2--3 Hz at 40 m)",
+             fontsize=6.3, color=BLUE, va="top")
     ax2.set_xlabel("Frames fused per target")
     ax2.set_ylabel("CEP50 (m)")
     ax2.set_title("(b) Multi-frame fusion saturates")

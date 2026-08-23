@@ -180,7 +180,9 @@ TEX = r"""%=====================================================================
 
 This section gives the derivations behind the design point rather than only its
 result. Every figure regenerates from
-\texttt{tools/sizing-model/rescueswarm\_sizing\_model.py}; the section itself is
+% \path (url package) rather than \texttt: the path is one unbreakable token
+% and overflows an IEEE column by 27 pt in \texttt. \path breaks at the slashes.
+\path{tools/sizing-model/rescueswarm_sizing_model.py}; the section itself is
 generated, so a constant cannot change in the model without changing here.
 
 \subsection{Constants and where they come from}
@@ -211,12 +213,16 @@ favour the design are the ones that are discovered on the flight line.
 The rotor disk area for @@N@@ rotors of diameter @@Din@@\,in
 ($D=@@Dm@@$\,m) is
 \[
-A = N\pi\left(\frac{D}{2}\right)^{2} = @@A@@~\text{m}^2,
-\qquad
-\text{disk loading} = \frac{m}{A} = @@DL@@~\text{kg/m}^2 .
+\begin{aligned}
+A &= N\pi\left(\frac{D}{2}\right)^{2} = @@A@@~\text{m}^2,\\
+\text{disk loading} &= \frac{m}{A} = @@DL@@~\text{kg/m}^2 .
+\end{aligned}
 \]
-Momentum theory gives the induced power to generate thrust $T$ across that disk.
-Dividing by the figure of merit converts ideal induced power to shaft power:
+Momentum theory gives the induced power required to generate thrust $T$ across
+that disk~\cite{leishman2006helicopter}. Dividing by the figure of merit
+$\mathrm{FM}$ --- the ratio of ideal induced power to actual shaft power, which
+absorbs profile drag and non-uniform inflow --- converts the ideal figure to
+shaft power:
 \[
 P_{\text{shaft}} = \frac{T^{3/2}}{\mathrm{FM}\sqrt{2\rho A}}
 = \frac{(@@That@@)^{3/2}}{@@FM@@\sqrt{2(@@rho@@)(@@A@@)}}
@@ -256,9 +262,10 @@ discharge rate.
 \subsection{Propulsion}
 
 \[
-T_{\text{total}} = (T/W)\,mg = @@Ttot@@~\text{N} = @@Tkgf@@~\text{kgf},
-\qquad
-T_{\text{motor}} = @@Tper@@~\text{kgf}.
+\begin{aligned}
+T_{\text{total}} &= (T/W)\,mg = @@Ttot@@~\text{N} = @@Tkgf@@~\text{kgf},\\
+T_{\text{motor}} &= @@Tper@@~\text{kgf}.
+\end{aligned}
 \]
 Hover demands @@Thovper@@\,kgf per motor, which is \textbf{@@hovfrac@@\,\% of
 maximum} --- inside the 45--55\,\% band where propeller efficiency and thermal
@@ -297,17 +304,21 @@ At @@MTOW@@\,kg per aircraft the fleet is \textbf{@@fleet@@\,kg} against the
 Everything optical follows from three numbers: pixel count, pixel pitch and
 focal length. Active area is count times pitch,
 \[
-w = @@pxw@@ \times @@pitch@@\,\text{\textmu m} = @@sw@@~\text{mm},
-\quad h = @@sh@@~\text{mm}, \quad d = @@sd@@~\text{mm},
+\begin{aligned}
+w &= @@pxw@@ \times @@pitch@@\,\text{\textmu m} = @@sw@@~\text{mm},\\
+h &= @@sh@@~\text{mm}, \qquad d = @@sd@@~\text{mm},
+\end{aligned}
 \]
 and the fields of view are exact arctangents, with no small-angle
 approximation:
 \[
-\theta = 2\arctan\!\left(\frac{s}{2f}\right)
-\Rightarrow
+\begin{aligned}
+\theta &= 2\arctan\!\left(\frac{s}{2f}\right)\\
+&\Rightarrow\;
 \text{HFOV}=@@hfov@@^\circ,\;
 \text{VFOV}=@@vfov@@^\circ,\;
 \text{DFOV}=@@dfov@@^\circ .
+\end{aligned}
 \]
 Sensor and ground are similar triangles about the lens, so ground sample
 distance at altitude $H$ is
@@ -400,7 +411,7 @@ Free-space path loss at the @@R@@\,m design slant range is
 $\text{FSPL} = 20\log_{10}d + 20\log_{10}f + 32.44$:
 
 \begin{center}
-\begin{tabular}{@{}lrp{4.6cm}@{}}
+\begin{tabular}{@{}lr>{\raggedright\arraybackslash}p{4.3cm}@{}}
 \toprule
 \textbf{Link} & \textbf{FSPL} & \textbf{Role} \\
 \midrule

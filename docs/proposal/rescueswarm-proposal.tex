@@ -1,12 +1,13 @@
 %=============================================================================
 %  RescueSwarm -- Technical Design Proposal
-%  IEEEtran conference format.  Compile:  pdflatex -> bibtex (none) -> pdflatex x2
+%  IEEEtran conference format.  Compile:  pdflatex x3 (no bibtex; the
+%  bibliography is a manual thebibliography environment).
 %
-%  TODO BEFORE SUBMISSION
-%    * Expand the Acknowledgment (mentors, suppliers) -- a minimal one is in place
-%    * Confirm the design point: this document uses the 18 in / 6.36 kg baseline.
-%      If the 17 in verified-BOM configuration is adopted, update Table~\ref{tab:designpoint}
-%      together -- see docs/sizing/ for the authority.
+%  Design point: 18 in rotors, 6.36 kg MTOW, 6S3P. Authority for every derived
+%  number in Section V is tools/sizing-model/rescueswarm_sizing_model.py, from
+%  which docs/proposal/generated-sizing.tex is produced. Do not hand-edit that
+%  file. Claims are checked against the model by
+%  tools/proposal/verify_proposal_numbers.py, which runs in CI.
 %=============================================================================
 \documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
@@ -89,11 +90,7 @@ the simulation evidence obtained to date, and a phased work plan. I am explicit 
 about which figures are measured, which are modelled, and which remain assumed;
 no aircraft has yet flown, and the proposal is structured so that a reviewer can
 distinguish demonstrated capability from projected capability without reading
-the source material. \textbf{This document does not contain the funding
-request.} The programme is delivered by four tracks, each carrying its own
-work package and funding request, generated from a single budget model and
-reconciled to the programme total in continuous integration
-(Section~\ref{sec:deferred}).
+the source material.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -157,15 +154,13 @@ eight-week flight-test window, that difference is not a procurement detail --- i
 is the difference between two test campaigns and one. Indigenisation, in this
 programme, buys flying days.
 
-\textbf{That argument cuts against a decision taken later in this document, and
-I would rather confront it than let a reviewer find it.} This build
-defers the Indian autopilot and Indian propulsion on cost, and the imported
-parts replacing them carry the longer lead time this section has just described
-as decisive. The mitigation is structural rather than rhetorical: every
-long-lead item is ordered in tranche~1, in month one, before the software work
-that would normally precede procurement is finished. Cost was traded against
-schedule margin knowingly, and the schedule risk it creates is carried
-explicitly in Table~\ref{tab:risk} rather than assumed away.
+\textbf{This argument cuts against a decision taken later in the document.} The
+build defers the Indian autopilot and Indian propulsion on cost, and the
+imported parts replacing them carry the longer lead time just described as
+decisive. The mitigation is structural: every long-lead item is ordered in
+tranche~1, in month one, ahead of the software work that would normally precede
+procurement. Cost was traded against schedule margin deliberately, and the
+resulting schedule risk is carried in Table~\ref{tab:risk}.
 
 \subsection{Contributions of the proposed work}
 
@@ -220,8 +215,9 @@ omission.
   \item \textbf{Not beyond-visual-line-of-sight certified.} The design operates
         within a bounded geofence; regulatory expansion is future work.
   \item \textbf{Not a night or all-weather system.} The perception stack is
-        visible-band. Thermal imaging is identified as the highest-value future
-        extension but is outside this programme.
+        visible-band. Night capability is future work; Section~\ref{sec:future}
+        argues that near-infrared rather than thermal is the extension matched
+        to a target immersed in water.
   \item \textbf{Not a survivor-triage system.} The system reports position and
         delivers a kit; it makes no medical assessment.
 \end{itemize}
@@ -262,13 +258,23 @@ Small-object detection from altitude is the governing difficulty: a supine adult
 at survey altitude occupies a few tens of pixels. Slicing-aided hyper inference
 (SAHI) and related tiling strategies substantially improve small-object recall by
 running detection on overlapping crops rather than a downsampled full
-frame~\cite{akyon2022sahi}. Purpose-built aerial person datasets such as
-SARD~\cite{sambolek2021sard} and the broader VisDrone
-benchmark~\cite{zhu2021visdrone} provide the transfer-learning base; neither
-contains post-flood Indian terrain. A field data campaign is therefore the
-right answer; it is \emph{deferred} from this build
-(Section~\ref{sec:deferred}), which is why detection recall remains a modelled
-quantity and the leading entry in the risk register.
+frame~\cite{akyon2022sahi}. The difficulty is quantified by the size bands used
+in the standard benchmarks: COCO classifies an object below
+32$^2$\,px$^2$ as small~\cite{lin2014coco}, and TinyPerson introduces finer
+\emph{tiny} bands specifically because aerial person detection falls below even
+that threshold~\cite{yu2020tinyperson}.
+
+Purpose-built aerial person datasets provide the transfer-learning base.
+SARD~\cite{sambolek2021sard} covers land search and rescue and the broader
+VisDrone benchmark~\cite{zhu2021visdrone} covers urban aerial scenes, but the
+closest match to the target condition here is
+SeaDronesSee~\cite{varga2022seadronessee}, which annotates people in open water
+from a UAV and therefore shares both the low-contrast background and the
+head-and-shoulders target signature of a flood scene. None contains post-flood
+Indian terrain. A field data campaign is therefore the right answer; it is
+\emph{deferred} from this build (Section~\ref{sec:deferred}), which is why
+detection recall remains a modelled quantity and the leading entry in the risk
+register.
 
 \subsection{Airborne payload delivery}
 
@@ -321,7 +327,7 @@ Configuration            & Quadrotor \\
 Rotor diameter           & 18\,in \\
 Maximum take-off mass    & 6.36\,kg \\
 Fleet mass (3 aircraft)  & 19.08\,kg \\
-Regulatory fleet cap     & 25\,kg \\
+Regulatory fleet cap     & 25\,kg~\cite{dronerules2021} \\
 Battery                  & 6S3P Li-ion 21700, 292\,Wh \\
 Pack nominal voltage     & 21.6\,V (18.0--25.2\,V) \\
 Pack mass                & 1\,449\,g \\
@@ -341,7 +347,7 @@ Geofence radius          & 600\,m \\
 
 The thrust-to-weight ratio of 2.0 and the hover endurance of 15.3 minutes
 against a 7.7-minute design mission are reserve policies rather than performance
-targets, because the failure mode that ends a competition or a deployment is an
+targets, because the failure mode that ends a sortie is an
 aircraft that does not return. The energy reserve is stated precisely
 in Section~\ref{sec:sizing}; it, and not the design mission, is what sizes the
 pack.
@@ -352,11 +358,10 @@ maximum take-off mass, which is why airframe mass fraction and pack chemistry
 are the two sensitivities carried in the risk register rather than, say, avionics
 choice.
 
-\textbf{The itemisation does not close, and the figure shows the gap rather than
-hiding it.} The model's listed items sum to 6\,061\,g against a 6\,360\,g
-maximum take-off mass, leaving 299\,g --- 4.7\,\% --- unallocated. That residual
-is small enough not to threaten the fleet margin and large enough that it should
-be attributed rather than absorbed silently; closing it is a P1 action. The survivor kits are 800\,g --- 12.6\,\% of MTOW and fixed by the
+\textbf{The itemisation does not close.} The model's listed items sum to
+6\,061\,g against a 6\,360\,g maximum take-off mass, leaving 299\,g ---
+4.7\,\% --- unallocated. The residual does not threaten the fleet margin, but
+it is large enough to require attribution; closing it is a P1 action. The survivor kits are 800\,g --- 12.6\,\% of MTOW and fixed by the
 mission at four kits of exactly 200\,g --- so payload is an input to the sizing
 loop, not an output of it. This is why propulsion and energy resist cost
 reduction in a way that avionics does not: they are
@@ -367,7 +372,7 @@ are available but a smaller aircraft is not.
 \centering
 \includegraphics[width=\columnwidth]{fig-mass.pdf}
 \caption{Mass budget per aircraft. Generated from
-\texttt{docs/sizing/model-output.txt}. \emph{Avionics} includes the wiring
+\protect\path{docs/sizing/model-output.txt}. \emph{Avionics} includes the wiring
 harness and \emph{magazine} the release mechanism. The fleet figure of 19\,081\,g carries
 4\,919\,g of growth allowance against a 24\,kg internal target --- 26\,\% build
 overweight tolerated --- inside the 25\,kg regulatory cap.}
@@ -400,16 +405,15 @@ Section~\ref{sec:deferred}. The decision is therefore made on campaign cost and
 sourcing, not on the electrical argument, and I state it that way because the
 electrical argument points the other way.
 
-\textbf{One correction, recorded rather than absorbed.} The reserve policy was
-previously reported at 159\,Wh. That figure was computed at the sizing solve,
-before the pack was rounded up to a buildable 18 cells and maximum take-off mass
-settled roughly 0.7\,kg heavier; the model checked a constraint against a design
-point it then abandoned. Re-evaluated at the adopted mass the requirement rises
-by roughly a fifth, to the figure given in Section~\ref{sec:sizing}, and the
-chemistry-agnostic nameplate floor rises with it. The pack still passes, on a
-materially smaller margin than the earlier figure implied. The model now
-performs this check at the final design point, and a pack bought against the
-superseded number would have missed the policy.
+\textbf{Where the reserve is evaluated.} A reserve policy is only meaningful at
+the mass the aircraft actually flies. The pack is rounded up to a buildable 18
+cells, which lifts maximum take-off mass roughly 0.7\,kg above the value at
+which the sizing loop converges, so the requirement is re-evaluated at the final
+design point rather than at the solve. Evaluated there it is about a fifth
+higher, and the chemistry-agnostic nameplate floor rises with it. The pack meets
+the policy at the adopted mass, on a margin materially smaller than an
+evaluation at the solve would report --- which is why the check is placed after
+the loop rather than inside it.
 
 \subsection{Segment architecture}
 
@@ -526,11 +530,13 @@ an 0.03\,m penalty, and the reason the deferral is judged affordable.} \\
 \end{tabular}
 \end{table}
 
-Multi-frame fusion is effectively free. At 60\,m altitude and 8\,m/s
-groundspeed, forward overlap yields on the order of fourteen independent
-observations of each target per pass even at a conservative 2\,Hz inference
-rate. Those observations are used both for temporal confirmation, which
-suppresses false positives, and for geolocation averaging.
+Multi-frame fusion is effectively free. At the 40\,m survey altitude the
+along-track footprint is 31.4\,m, so at 8\,m/s groundspeed a target remains in
+view for 3.9\,s. A conservative 2\,Hz inference rate therefore yields
+approximately eight independent observations of each target per pass, and the
+3\,Hz rate assumed for temporal confirmation yields twelve. Those observations
+are used both for temporal confirmation, which suppresses false positives, and
+for geolocation averaging.
 
 Fig.~\ref{fig:geotag} shows both effects quantitatively. Panel (a) makes the
 positioning argument unarguable: losing the RTK fix moves the error by nearly an
@@ -539,8 +545,8 @@ delivery allowance before ballistics or position-hold error are counted. Panel
 (b) shows why fusion is worth having but not worth over-investing in --- it
 divides the random terms by $\sqrt{n}$ and leaves boresight and target extent
 untouched, so the curve departs from the ideal $1/\sqrt{n}$ line and flattens by
-about five frames. Twenty frames is not twice as good as five, and the roughly
-fourteen frames the geometry supplies for free sit comfortably past the knee.
+about five frames. Twenty frames is not twice as good as five, and the eight
+to twelve frames the geometry supplies for free already sit past the knee.
 
 \begin{figure*}[t]
 \centering
@@ -549,8 +555,8 @@ fourteen frames the geometry supplies for free sit comfortably past the knee.
 code the aircraft flies. (a) Single-frame horizontal error against GNSS fix
 quality, typical attitude, on a logarithmic scale; the dashed line is the 5\,m
 delivery requirement. (b) Effect of fusing multiple observations of the same
-target, RTK fixed. Generated by \texttt{figures/make\_figures.py} from
-\texttt{docs/sizing/geotag-accuracy-output.txt}.}
+target, RTK fixed. Generated by \protect\path{figures/make_figures.py} from
+\protect\path{docs/sizing/geotag-accuracy-output.txt}.}
 \label{fig:geotag}
 \end{figure*}
 
@@ -594,23 +600,22 @@ is sized against. A supine adult on a rooftop is four times easier.
 \textbf{The size class, not the pixel count, is the number that matters.}
 Published recall figures report average precision \emph{by} size band, and
 small-object AP is routinely far below medium on the same model. Only the top
-row clears COCO's 32$^2$\,px$^2$ small-object threshold --- which is why the
+row clears the COCO 32$^2$\,px$^2$ small-object threshold --- which is why the
 design point is 40\,m and native tiling, and why the two changes had to be made
 together. Either alone leaves the target in the band where detectors do worst.
 
-\textbf{Two corrections are recorded here rather than absorbed.} Earlier
-revisions quoted 2\,cm/px and 85 pixels at 60\,m, falling to 47 after
-downsampling. Those figures were computed for a 1.82\,\textmu m sensor assumed
-in the sizing chapter --- the same pixel \emph{count} at a different pixel
-\emph{size} --- and not for the sensor the bill of materials buys. And the
-target was taken as a supine adult rather than a person in water, which
-overstated its area fourfold.
+\textbf{Two modelling choices set these figures.} The optics are computed for
+the 1.55\,\textmu m sensor the bill of materials buys, not for a generic sensor
+of the same pixel \emph{count} at a different pixel \emph{size}: it is pitch,
+not count, that fixes ground sample distance. And the target is taken as a
+person in water, presenting head and shoulders, rather than a supine adult --- a
+fourfold difference in apparent area, and the conservative choice for a flood
+mission.
 
-Correcting both is what moved the design point. The sensor substitution cuts two
-ways --- finer ground sampling, narrower field, so coverage costs more transects
---- but at 40\,m the extra transects cost seconds of a mission with minutes to
-spare, and the mission is in fact \emph{shorter} than at 60\,m because the climb
-is lower.
+Together these fix the design point. Finer ground sampling narrows the field, so
+coverage costs more transects; but at 40\,m those transects cost seconds of a
+mission with minutes to spare, and the mission is in fact \emph{shorter} than at
+60\,m because the climb is lower.
 
 This is the single most benchmark-sensitive figure in the design. Published
 throughput for comparable models on comparable hardware spans roughly 24 to 41
@@ -720,7 +725,9 @@ station};
 \draw[flow] (hit.west) -- (fb |- hit) -- node[lbl, left, pos=0.5] {no}
   (fb) -- (cap.west);
 \draw[dflow] (fuse.east) -- (pub.west);
-\draw[flow] (del.east) -- ++(12mm,0) |- node[lbl, pos=0.25, right]
+% font overridden to upright: `lbl` is italic, and Times has no small-caps
+% italic shape, so \textsc here silently fell back to upright small caps.
+\draw[flow] (del.east) -- ++(12mm,0) |- node[lbl, font=\scriptsize, pos=0.25, right]
   {resumes \textsc{auto}} (fc.east);
 
 \end{tikzpicture}}
@@ -1084,7 +1091,7 @@ this is a P4 activity, and it now runs over the 2.4\,GHz ExpressLRS link rather
 than the deferred sub-gigahertz radio --- which is what makes that link
 load-bearing for safety and not merely a control convenience.
 
-\subsection{The honest summary}
+\subsection{Evidence status}
 
 \emph{Nothing in this programme has flown.} Every ``measured'' result above was
 measured in simulation or in software. That rules out whole classes of logical
@@ -1100,7 +1107,7 @@ This document describes an integrated system. \textbf{The funding request is not
 part of it.} The programme is delivered by four tracks, each of which carries
 its own work package and its own funding request, generated from a single budget
 model rather than restated by hand:
-\texttt{docs/proposal/tracks/}. The four track asks reconcile to the programme
+\path{docs/proposal/tracks/}. The four track asks reconcile to the programme
 total exactly, and that reconciliation is asserted in continuous integration.
 
 What belongs here is not what the build costs but \emph{what it does and does
@@ -1159,8 +1166,7 @@ are \emph{better} fabricated: dummy kits can be made to exactly the 200\,g that
 rule C6 fixes, and donated clothing gives wider colour and contrast variety than
 matched bought sets, which is precisely what detection robustness requires.
 
-\textbf{The caveat is recorded rather than glossed.} The calibration markers are
-surveyed using the programme's own RTK rover. That is standard practice and
+The calibration markers are surveyed using the programme's own RTK rover. That is standard practice and
 adequate for the purpose, but it means the ground truth against which
 geolocation accuracy is measured is \emph{itself RTK-derived}. The two error
 sources are therefore correlated, and any measured geotag figure reported in
@@ -1244,12 +1250,14 @@ than as an accelerator.
 \section{Risk Register}
 %=============================================================================
 
-\begin{table}[t]
+% table* (full width): at one-column width this table is taller than a page,
+% so it was deferred past the bibliography and stranded on a page of its own.
+\begin{table*}[t]
 \caption{Principal risks and mitigations}
 \label{tab:risk}
 \centering
 \small
-\begin{tabular}{@{}L{2.7cm}cL{3.8cm}@{}}
+\begin{tabular}{@{}L{5.0cm}cL{10.5cm}@{}}
 \toprule
 \textbf{Risk} & \textbf{Sev.} & \textbf{Mitigation} \\
 \midrule
@@ -1284,7 +1292,7 @@ Flight insurance may be mandatory
 & Medium & Deferred at team direction. To be confirmed against the rulebook and DGCA rules before any flight \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 I draw particular attention to the setup-time risk. It is currently supported
 by a model with a modest margin and no measurement, and it gates the entire
@@ -1327,20 +1335,36 @@ currently fails.
 \label{sec:future}
 %=============================================================================
 
-This proposal deliberately asks for a competition build and nothing more. The
-work has a longer arc, and I set it out here so that the scope of the present
-request is unambiguous by contrast.
+This proposal deliberately scopes a single prototype build and nothing more.
+The work has a longer arc, set out here so that the boundary of the present
+scope is unambiguous by contrast.
 
-\subsection{From a competition entry to a deployable system}
+\subsection{From a prototype to a deployable system}
 
-The entry is not a product. Reaching one requires, in rough order: night and
-all-weather capability through thermal imaging, which is the single
-highest-value sensing extension and is excluded here only because it doubles the
-perception budget; beyond-visual-line-of-sight approval, which is a regulatory
-programme rather than an engineering one; ingress protection and thermal
-qualification for monsoon conditions; and endurance beyond the present 15.3
-minutes, which at this payload means a different airframe class rather than a
-better battery.
+This build is not a product. Reaching one requires, in rough order: night
+capability, discussed below; beyond-visual-line-of-sight approval, which is a
+regulatory programme rather than an engineering one; ingress protection and
+thermal qualification for monsoon conditions; and endurance beyond the present
+15.3 minutes, which at this payload means a different airframe class rather than
+a better battery.
+
+\textbf{The night-sensing route is not the obvious one.} Thermal imaging is the
+default answer, and it is genuinely valuable over rooftops, dry debris and
+open ground. It degrades, however, for precisely the case this system is built
+around. A person immersed in floodwater equilibrates toward water temperature,
+and the skin-to-background contrast a microbolometer depends on largely
+disappears; the residual signal comes from the head and shoulders alone, which
+is the smallest part of an already small target.
+
+Near-infrared is the better-matched extension. Water absorbs strongly beyond
+roughly 900\,nm while skin remains comparatively reflective, so a person
+presents as a bright object against dark water --- the same contrast mechanism
+that makes NIR standard for water-body segmentation in remote sensing. It is
+also an order of magnitude cheaper than a thermal core, since it requires a
+camera with the infrared-cut filter removed rather than a new sensor class, and
+it can be evaluated against public imagery before any hardware is bought. The
+two are complementary rather than alternative: thermal for survivors on dry
+ground at night, near-infrared for survivors in water.
 
 \subsection{Cost at production volume}
 
@@ -1360,13 +1384,13 @@ business requires three things this programme does not attempt: the size and
 refresh rate of the addressable fleet, what a comparable capability is currently
 procured for, and the operating cost per flight hour of the boat or helicopter
 search it would displace. Those are questions for published tender data and
-operator interviews, not for a bill of materials, and I would rather name them
-as open than fill them with plausible figures.
+operator interviews, not for a bill of materials. They are named here as open
+rather than filled with plausible figures.
 
 What this programme does produce toward that end is the seventh deliverable in
 Section~\ref{sec:deliverables}: a component-level map of where Indian UAV supply
-chain capability exists and where it does not. That artefact outlives the
-competition regardless of what follows it.
+chain capability exists and where it does not. That artefact outlives the build
+regardless of what follows it.
 
 %=============================================================================
 \section{Conclusion}
@@ -1386,20 +1410,17 @@ hardware-in-the-loop simulation across three simultaneous autopilots. What
 remains is to build the aircraft, fly them, and replace the modelled and
 assumed quantities in Section~\ref{sec:evidence} with measured ones.
 
-The resources that requires are set out in the four track work packages, not
-here. What this document undertakes is narrower and, I think, more useful: that
-every number in it is checkable, and that the ones which are not yet measured
-say so.
+The resources this requires are set out in the four track work packages, not
+here. What this document undertakes is narrower: that every number in it is
+checkable, and that those not yet measured say so.
 
 %=============================================================================
 \section*{Acknowledgment}
 %=============================================================================
 
-% Commented out rather than left as printing placeholder text. Uncomment and
-% complete before submission -- name faculty mentors, the department, and any
-% supplier who provided evaluation hardware or engineering support.
-%
-% I thank ... for ... .
+% Name faculty mentors and any supplier who provided evaluation hardware or
+% engineering support before submitting. The line below is the institutional
+% minimum and is true as written.
 
 I thank the Department of Electronics and Communication Engineering,
 Thapar Institute of Engineering and Technology, for institutional support.
@@ -1407,6 +1428,10 @@ Thapar Institute of Engineering and Technology, for institutional support.
 % \balance  % optional final-page column balancing; requires the `balance` package
 
 \begin{thebibliography}{00}
+\bibitem{idmc2025grid}
+Internal Displacement Monitoring Centre,
+\emph{Global Report on Internal Displacement 2025}, Geneva, 2025.
+[Online]. Available: \url{https://www.internal-displacement.org/countries/india/}
 
 \bibitem{kapoutsis2017darp}
 A.~C. Kapoutsis, S.~A. Chatzichristofis, and E.~B. Kosmatopoulos,
@@ -1429,6 +1454,19 @@ F.~C. Akyon, S.~O. Altinuc, and A.~Temizel,
 in \emph{Proc. IEEE International Conference on Image Processing (ICIP)}, 2022,
 pp.~966--970.
 
+\bibitem{lin2014coco}
+T.-Y. Lin, M.~Maire, S.~Belongie, J.~Hays, P.~Perona, D.~Ramanan,
+P.~Doll\'{a}r, and C.~L. Zitnick,
+``Microsoft COCO: Common objects in context,''
+in \emph{Proc. European Conference on Computer Vision (ECCV)}, 2014,
+pp.~740--755.
+
+\bibitem{yu2020tinyperson}
+X.~Yu, Y.~Gong, N.~Jiang, Q.~Ye, and Z.~Han,
+``Scale match for tiny person detection,''
+in \emph{Proc. IEEE/CVF Winter Conference on Applications of Computer Vision
+(WACV)}, 2020.
+
 \bibitem{sambolek2021sard}
 S.~Sambolek and M.~Ivasic-Kos,
 ``Automatic person detection in search and rescue operations using deep CNN
@@ -1441,26 +1479,17 @@ P.~Zhu \emph{et al.},
 \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence}, vol.~44,
 no.~11, pp.~7380--7399, 2021.
 
+\bibitem{varga2022seadronessee}
+L.~A. Varga, B.~Kiefer, M.~Messmer, and A.~Zell,
+``SeaDronesSee: A maritime benchmark for detecting humans in open water,''
+in \emph{Proc. IEEE/CVF Winter Conference on Applications of Computer Vision
+(WACV)}, 2022.
+
 \bibitem{mathisen2020airdrop}
 S.~G. Mathisen, F.~S. Leira, H.~H. Helgesen, K.~Gryte, and T.~A. Johansen,
 ``Autonomous ballistic airdrop of objects from a small fixed-wing unmanned
 aerial vehicle,''
 \emph{Autonomous Robots}, vol.~44, pp.~859--875, 2020.
-
-\bibitem{idmc2025grid}
-Internal Displacement Monitoring Centre,
-\emph{Global Report on Internal Displacement 2025}, Geneva, 2025.
-[Online]. Available: \url{https://www.internal-displacement.org/countries/india/}
-
-\bibitem{elrsmavlink}
-ExpressLRS Project,
-``MAVLink,'' ExpressLRS documentation, 2026.
-[Online]. Available: \url{https://www.expresslrs.org/software/mavlink/}
-
-\bibitem{ardupilot}
-ArduPilot Development Team,
-``ArduPilot: open source autopilot software suite,'' 2026.
-[Online]. Available: \url{https://ardupilot.org/}
 
 \bibitem{takasu2009rtklib}
 T.~Takasu and A.~Yasuda,
@@ -1468,6 +1497,25 @@ T.~Takasu and A.~Yasuda,
 package RTKLIB,''
 in \emph{Proc. International Symposium on GPS/GNSS}, 2009.
 
+\bibitem{dronerules2021}
+Ministry of Civil Aviation, Government of India,
+\emph{The Drone Rules, 2021}, Gazette notification G.S.R.~589(E),
+25~August 2021.
+
+\bibitem{ardupilot}
+ArduPilot Development Team,
+``ArduPilot: open source autopilot software suite,'' 2026.
+[Online]. Available: \url{https://ardupilot.org/}
+
+\bibitem{elrsmavlink}
+ExpressLRS Project,
+``MAVLink,'' ExpressLRS documentation, 2026.
+[Online]. Available: \url{https://www.expresslrs.org/software/mavlink/}
+
+\bibitem{leishman2006helicopter}
+J.~G. Leishman,
+\emph{Principles of Helicopter Aerodynamics}, 2nd~ed.
+Cambridge, U.K.: Cambridge University Press, 2006.
 \end{thebibliography}
 
 \end{document}

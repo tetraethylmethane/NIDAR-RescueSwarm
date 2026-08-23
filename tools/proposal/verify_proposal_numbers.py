@@ -256,9 +256,10 @@ print("-" * 92)
 print(f"  {len(results) - fails} passed, {fails} failed")
 
 UNVERIFIED = [
- ("IV-A", "survey altitude 60 m", "Table I says 60 m; every flown simulation "
-  "and the generated Section V use 40 m. This is a DESIGN decision that is "
-  "still open, not an arithmetic error -- but the document states both."),
+ ("IV-A", "survey altitude 40 m", "Table I, the flown simulations and the "
+  "generated Section V now agree on 40 m. Retained here because the altitude "
+  "is a DESIGN decision the detection evaluation may reopen, not because the "
+  "document is inconsistent about it."),
  ("IV-E", "detection recall", "Modelled, never measured. No ground truth "
   "exists to check it against; Section VII says so explicitly."),
  ("IV-A", "thrust-to-weight 2.0", "A requirement, not a measurement. The "
