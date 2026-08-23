@@ -36,10 +36,12 @@ Five questions:
 4. **Base station.** Can one of these serve as the base, or do you supply a
    separate product? If it can, what survey-in time and accuracy should we plan
    for?
-5. **RTCM3.** We intend to inject corrections over the aircraft's existing
-   telemetry link rather than a second radio. Could you confirm the required
-   message set, the correction bandwidth, and the maximum correction age before
-   the receiver drops from fixed to float?
+5. **RTCM3 particulars.** Your documentation covers the injection path — RTCM
+   3.x into UART2, with `GPS_INJECT_TO` forwarding it over telemetry — which is
+   exactly our intended architecture. What it does not give is the message set
+   the receiver expects, the correction bandwidth, and the maximum correction
+   age before it drops from fixed to float. We need those three to size the
+   telemetry link.
 
 With thanks,
 

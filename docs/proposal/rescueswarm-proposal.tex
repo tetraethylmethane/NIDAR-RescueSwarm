@@ -503,6 +503,15 @@ RTK-fixed, and detections made before convergence are geotagged in float and
 re-fused once fixed. This decoupling recovers approximately ninety seconds of
 setup time that a survey-in procedure would otherwise consume.
 
+Corrections reach the aircraft over the existing command link rather than a
+dedicated correction radio. This is a documented mode of both the autopilot and
+the receiver rather than an assumption on our part: ArduPilot's
+\texttt{GPS\_INJECT\_TO} forwards RTCM~3.x received over telemetry to the
+receiver's second serial port, which is the format and port the receiver
+specifies~\cite{teravoltaeronav}. Removing that radio saves mass, a serial port
+and a cost line on every aircraft. The same receiver falls back to SBAS when
+corrections are lost, so the degraded mode needs no additional hardware either.
+
 \subsection{Geolocation error budget}
 \label{sec:geotag}
 
