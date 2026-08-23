@@ -155,25 +155,33 @@ specification; domestic lead times are half those of imports.
 %-----------------------------------------------------------------------------
 \section{Resources needed}
 
-The sequence follows engineering dependency: the motor is measured before eleven
-more are bought, and one aircraft flies a complete mission before either of the
-others is begun.
+Funding is requested in 32 small steps rather than as one grant. Each step buys
+one named set of parts and is released only once the previous step has produced
+a stated result. If a step fails, the programme stops there and nothing beyond
+it has been spent.
+
+The order follows engineering dependency: one motor is measured before the other
+eleven are bought, and the first aircraft flies a complete mission before the
+second is begun.
 
 % No \clearpage here: the longtable defines \endhead, so it repeats its header
 % on every continuation page and can start mid-page. Forcing a fresh page left
 % the lower half of the preceding page blank.
 \subsection{Phase schedule}
 
+The third column is the amount released. The fourth is what must already be
+true before it is released.
+
 \begingroup
 \footnotesize
 \setlength{\extrarowheight}{1.5pt}
 \begin{longtable}{@{}>{\bfseries}r>{\raggedright\arraybackslash}p{7.3cm}r>{\raggedright\arraybackslash}p{5.6cm}@{}}
 \toprule
-\thead{\#} & \thead{Objective} & \thead{INR} & \thead{Released on} \\
+\thead{\#} & \thead{Objective} & \thead{INR} & \thead{Released only after} \\
 \midrule
 \endfirsthead
 \toprule
-\thead{\#} & \thead{Objective} & \thead{INR} & \thead{Released on} \\
+\thead{\#} & \thead{Objective} & \thead{INR} & \thead{Released only after} \\
 \midrule
 \endhead
 \midrule
@@ -183,32 +191,32 @@ others is begun.
 1 & Establish thrust and mass measurement capability & 26,196 & Approval \\
 2 & Verify static thrust against the 3.18\,kgf requirement & 5,175 & Instruments commissioned \\
 3 & Aircraft 1 --- autopilot and control link & 25,990 & \textbf{Thrust verified} \\
-4 & Aircraft 1 --- onboard compute and inference & 21,850 & Autopilot bench-tested \\
-5 & Aircraft 1 --- centimetre positioning & 27,892 & Compute stack operating \\
-6 & Aircraft 1 --- sensing and communications & 29,440 & Position fix acquired \\
+4 & Aircraft 1 --- onboard computer and AI accelerator & 21,850 & Autopilot bench-tested \\
+5 & Aircraft 1 --- centimetre positioning (RTK receiver) & 27,892 & Compute stack operating \\
+6 & Aircraft 1 --- camera and radios & 29,440 & Position fix acquired \\
 7 & Aircraft 1 --- airframe fabrication & 20,144 & Avionics integrated \\
 8 & Aircraft 1 --- battery pack assembly & 29,299 & Airframe fabricated \\
-9 & Aircraft 1 --- drive train and payload mechanism & 27,098 & Pack bench-discharged \\
+9 & Aircraft 1 --- speed controllers, propellers, release servos & 27,098 & Pack bench-discharged \\
 10 & Aircraft 1 --- propulsion completed & 15,525 & Drive train installed \\
 11 & Charging and manual override for flight test & 25,300 & Aircraft assembled and weighed \\
-12 & Field equipment & 17,274 & Charging verified \\
+12 & Field equipment: consumables, sun hood & 17,274 & Charging verified \\
 13 & Aircraft 2 --- autopilot and control link & 25,990 & \textbf{Aircraft 1 flew a full mission} \\
-14 & Aircraft 2 --- onboard compute and inference & 21,850 & Autopilot bench-tested \\
-15 & Aircraft 2 --- centimetre positioning & 27,892 & Compute stack operating \\
-16 & Aircraft 2 --- sensing and communications & 29,440 & Position fix acquired \\
+14 & Aircraft 2 --- onboard computer and AI accelerator & 21,850 & Autopilot bench-tested \\
+15 & Aircraft 2 --- centimetre positioning (RTK receiver) & 27,892 & Compute stack operating \\
+16 & Aircraft 2 --- camera and radios & 29,440 & Position fix acquired \\
 17 & Aircraft 2 --- airframe fabrication & 20,144 & Avionics integrated \\
 18 & Aircraft 2 --- battery pack assembly & 29,299 & Airframe fabricated \\
-19 & Aircraft 2 --- drive train and payload mechanism & 27,098 & Pack bench-discharged \\
+19 & Aircraft 2 --- speed controllers, propellers, release servos & 27,098 & Pack bench-discharged \\
 20 & Aircraft 2 --- propulsion completed & 20,700 & Drive train installed \\
 21 & Aircraft 3 --- autopilot and control link & 25,990 & \textbf{Two aircraft, separation verified} \\
-22 & Aircraft 3 --- onboard compute and inference & 21,850 & Autopilot bench-tested \\
-23 & Aircraft 3 --- centimetre positioning & 27,892 & Compute stack operating \\
-24 & Aircraft 3 --- sensing and communications & 29,440 & Position fix acquired \\
+22 & Aircraft 3 --- onboard computer and AI accelerator & 21,850 & Autopilot bench-tested \\
+23 & Aircraft 3 --- centimetre positioning (RTK receiver) & 27,892 & Compute stack operating \\
+24 & Aircraft 3 --- camera and radios & 29,440 & Position fix acquired \\
 25 & Aircraft 3 --- airframe fabrication & 20,144 & Avionics integrated \\
 26 & Aircraft 3 --- battery pack assembly & 29,299 & Airframe fabricated \\
-27 & Aircraft 3 --- drive train and payload mechanism & 27,098 & Pack bench-discharged \\
+27 & Aircraft 3 --- speed controllers, propellers, release servos & 27,098 & Pack bench-discharged \\
 28 & Aircraft 3 --- propulsion completed & 20,700 & Drive train installed \\
-29 & Correction source for centimetre positioning & 27,892 & First flight completed \\
+29 & Ground base receiver, the source of the corrections & 27,892 & First flight completed \\
 30 & Stable, repeatable base mounting & 4,600 & Base receiver acquired \\
 31 & Deployable ground segment & 28,750 & Base station operating \\
 32 & Statutory registration & 5,750 & Ground segment complete \\
@@ -230,14 +238,15 @@ cost plus 22\,\% customs duty on the imported share, plus 18\,\% GST, plus
 against \rs{7{,}43{,}004} released, a factor of 1.27. Every row below carries
 the phase number that buys it, so any line can be traced to its approval.
 
-Figures marked \textbf{V} are current Indian retail listings from a named
-supplier. The rest are supplier quotations or estimates from comparable parts,
-and are where the total is most likely to move:
+\textbf{Where the prices come from.} The seven lines immediately below are
+current retail listings from named Indian suppliers, so they are firm. Every
+other line in this section is a quotation or an estimate from a comparable
+part, and those are where the total is most likely to move.
 
 \begin{center}\small
 \begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.4cm}l>{\raggedright\arraybackslash}p{9.6cm}@{}}
 \toprule
-\thead{Item} & \thead{Observed} & \thead{Basis} \\
+\thead{Item} & \thead{Price seen} & \thead{Supplier, and what we budgeted} \\
 \midrule
 Propellers & 3,250/pair & Robokits India; budgeted at this figure \\
 Battery charger & 5,836 & Indian Hobby Center, ToolkitRC M6D \\
@@ -256,6 +265,15 @@ are carried at quotation. \textbf{The GNSS line is the one to confirm first.}
 The supplier has confirmed RTK rover operation, which was the open question, but
 neither candidate receiver is publicly priced, so \rs{18{,}000} is an estimate
 and phases 5, 15, 23 and 29 move with it.
+
+\needspace{7\baselineskip}
+\textbf{Terms used below.} \emph{RTK}: satellite positioning corrected against
+a second receiver on a surveyed point, giving centimetre rather than metre
+accuracy. \emph{6S3P}: eighteen cells, six in series for voltage and three in
+parallel for capacity. \emph{kgf}: thrust written as the weight it would lift.
+\emph{TOPS}: trillion operations per second, the accelerator's throughput.
+\emph{ESC}: the electronic speed controller between battery and motor.
+\emph{BMS}: the board that balances and protects the cells.
 
 \subsubsection*{Measurement instruments --- phases 1--2 \quad \rs{24{,}500} of parts}
 
@@ -296,25 +314,31 @@ throttle where efficiency peaks. \\
 \midrule
 \endhead
 3, 13, 21 & Flight controller & Holybro Pixhawk 6C~Mini & 22,600 &
-Two isolated inertial units; runs ArduPilot, which our simulation is built on.
-F4 boards at \rs{6{,}000} lack memory for the logging and failsafe set. \\
+Two independent motion sensors, so one sensor failure does not end the flight.
+Runs ArduPilot, which our simulation already targets. Cheaper boards at
+\rs{6{,}000} lack the memory for our logging and failsafe configuration. \\
 5, 15, 23 & GNSS receiver & RTK-capable, RTCM3, $\leq$3\,cm CEP & 18,000 &
-The largest single error term: 3.9\,m on standard GNSS against 0.75\,m with RTK. \\
+The largest single source of position error: 3.9\,m on ordinary satellite
+positioning against 0.75\,m with RTK. Survivor coordinates are the system's
+output, so this is not a line to economise on. \\
 6, 16, 24 & Camera and lens & Arducam IMX477, 6\,mm CS, fixed focus & 11,100 &
-1.03\,cm/px at 40\,m, or 39 pixels on a person in water. Hyperfocal 4.15\,m, so
-fixed focus is sharp above 30\,m; a focus motor can drift unnoticed. \\
+At 40\,m each pixel covers 1.03\,cm of ground, putting 39 pixels across a person
+in water --- enough to detect. Focus is fixed because everything beyond 4.15\,m
+is already sharp, and a focus motor is one more part that can drift unnoticed. \\
 4, 14, 22 & AI accelerator & Pi AI~HAT+ 26~TOPS (Hailo-8) & 11,000 &
-130--160\,FPS measured against a 96 requirement. The 13~TOPS variant saves
-\rs{4{,}000} but reaches only 60--80. \\
+Runs the detector at 130--160 frames per second against the 96 the search needs.
+The half-speed variant saves \rs{4{,}000} but manages only 60--80, below
+requirement. \\
 6, 16, 24 & Radio and storage & ExpressLRS 2.4\,GHz, firmware 3.5+ & 8,500 &
-Native mode carries control and telemetry on one port, removing a
-\rs{19{,}000} second radio. Earlier firmware consumes the link. \\
+Carries pilot control and aircraft data over one link, which removes a second
+radio costing \rs{19{,}000}. Needs firmware 3.5 or later; earlier versions
+cannot share the link. \\
 4, 14, 22 & Onboard computer & Raspberry Pi~5, 8\,GB & 8,000 &
-Hosts planner, routing, mesh and delivery logic. The only board in class
-exposing PCIe, which the accelerator requires. \\
+Runs the mission planner, the radio mesh and the delivery logic. The only board
+in its class with the PCIe connector the accelerator plugs into. \\
 6, 16, 24 & Mesh radio & 5.8\,GHz node and antennas & 6,000 &
-Three video streams. 2.5\,Mbps offered on a 20\,Mbps channel; the constraint is
-link margin, not bandwidth. \\
+Carries three video streams. They need 2.5\,Mbps of a 20\,Mbps channel, so the
+limit is radio range, not data rate. \\
 \bottomrule
 \end{longtable}
 \endgroup
@@ -335,16 +359,17 @@ link margin, not bandwidth. \\
 3.18\,kgf each, giving twice the aircraft weight in thrust. 340\,KV suits an
 18\,in propeller at this pack voltage. \\
 7, 17, 25 & Airframe & 25\,$\times$\,23\,mm carbon tube, machined clamps, in-house & 13,000 &
-Bending stress is 4\,\% of capability. Bending is not the failure mode; clamp
-design and vibration fatigue are, so joints are machined. \\
+The carbon tube is loaded to 4\,\% of what it can take, so bending is not the
+risk. The joints are, so clamps are machined rather than printed. \\
 8, 18, 26 & Battery cells & Molicel P45B 21700, 4500\,mAh, 18 off & 12,600 &
-6S3P, 292\,Wh: the mission plus a full second search plus four minutes loiter.
-Peak 38.3\,A per cell, so a 40\,A cell sits at 96\,\% of rating. \\
+292\,Wh, covering the mission, a full second search and four minutes of holding.
+Each cell peaks at 38.3\,A, so a 40\,A cell runs at 96\,\% of rating --- which is
+why a lower-rated cell will not do. \\
 8, 18, 26 & Pack assembly & 6S 60\,A BMS, distribution board, regulator & 8,500 &
 Cells arrive loose; covers welding, fusing, balancing and monitoring. \\
 9, 19, 27 & Speed controllers & 50--60\,A continuous, 6S, 4 off & 7,200 &
-Peak 29\,A per motor, so these run near half rating. Undersizing here is a
-known cause of in-flight failure. \\
+Each motor peaks at 29\,A, so these run at about half their rating.
+Undersizing here is a known cause of in-flight failure. \\
 9, 19, 27 & Propellers & Tarot 1855 carbon, CW/CCW, 4 off & 6,500 &
 18\,in carbon at \rs{3{,}250} per pair. The most frequently replaced item in a
 flight campaign. \\
@@ -352,8 +377,8 @@ flight campaign. \\
 Detents rather than holding torque, so a power interruption cannot release a
 kit. \\
 9, 19, 27 & Wiring & 10\,AWG silicone, XT90-S, JST-GH & 2,400 &
-Gauge set by the 115\,A peak; anti-spark prevents contact pitting on a 292\,Wh
-pack. \\
+Cable thickness is set by the 115\,A peak. The anti-spark connector stops the
+contacts pitting when a 292\,Wh pack is plugged in. \\
 9, 19, 27 & Propeller adapters & 6\,mm self-tightening hubs, 4 off & 1,400 &
 Rotation seats the nut rather than loosening it; a released propeller loses the
 aircraft. \\
@@ -405,8 +430,8 @@ Laptop displays are illegible in direct sun. \\
 Corrections travel over the existing telemetry link, so no separate radio is
 needed. \\
 29 & Base station & Second GNSS receiver, airborne class & 18,000 &
-Compares the aircraft against a stationary receiver on a known point; without
-it positions degrade to 3.9\,m. \\
+A second receiver, kept still on a surveyed point. It is what makes RTK work;
+without it survivor positions degrade to 3.9\,m. \\
 32 & Registration & Statutory, three aircraft & 5,000 &
 At 6.36\,kg these are Small category under the Drone Rules 2021. \\
 30 & Survey tripod & Photographic tripod and adapter & 4,000 &
@@ -416,7 +441,7 @@ accuracy is unnecessary. \\
 \end{longtable}
 \endgroup
 
-\subsection{Structural cost of this arrangement}
+\subsection{What this arrangement costs us}
 
 Thirty-two approvals is a material administrative overhead, and buying one
 aircraft at a time places the same imported order three times --- roughly eight
