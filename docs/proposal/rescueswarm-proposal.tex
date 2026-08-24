@@ -586,7 +586,7 @@ adopted 2\,Hz that is \textbf{96 inferences per second}, against the 130--160
 frames per second this accelerator is measured at for the same model and input
 size. It fits, with margin.
 
-\textbf{An earlier revision downsampled by two before tiling}, cutting 48 crops
+An earlier revision downsampled by two before tiling, cutting 48 crops
 to 12. That decision was taken against a different accelerator --- one with
 roughly a quarter of the throughput, and not the part in this bill of materials
 --- and it discarded half the linear resolution the sensor had already
@@ -652,7 +652,7 @@ no camera input, no image signal processor and no general-purpose cores; it
 executes a compiled graph on tensors a host hands it. The sensor emits a raw
 Bayer-mosaic stream, which is not an image until something demosaics, white
 balances and scales it. And the tiling that the whole detection approach rests
-on --- cutting each frame into twelve overlapping crops, submitting them, and
+on --- cutting each frame into 48 overlapping crops, submitting them, and
 reassembling detections back into frame coordinates --- is host work by
 construction, as is every other thing the aircraft does: the phase machine,
 MAVLink routing, the mesh, survivor claim and release, the delivery excursion
@@ -669,7 +669,7 @@ detections instead of pixels, at roughly 40\,\% lower power than a discrete
 accelerator, and it would delete the accelerator line entirely. It does not fit
 this mission: on-sensor engines carry a model of a few megabytes and perform a
 \emph{single} inference per capture at a fixed input size. This design needs
-\textbf{twelve} inferences per frame, because a survivor occupies a few tens of
+\textbf{48} inferences per frame, because a survivor occupies a few tens of
 pixels in a 12\,MP frame and tiled inference is the only thing that makes that
 target detectable at all (Section~\ref{sec:pipeline}). An imager that cannot
 tile its own output is being asked to do the one thing the architecture exists

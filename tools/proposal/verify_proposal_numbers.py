@@ -115,6 +115,16 @@ def tiles_for(w, h):
 
 nw, nh = tiles_for(CO.SPECIFIED["px_w"], CO.SPECIFIED["px_h"])
 check("IV-E", "tiles per frame, NATIVE", 48, nw * nh)
+# Section IV-C describes the same tiling in prose and had drifted: it still said
+# "twelve overlapping crops", the count from the abandoned 2x-downsample
+# revision that Section IV-E itself records as replaced. Two sections of one
+# document disagreed about how many times the detector runs. Guard both phrasings.
+results.append((("into %d overlapping crops" % (nw * nh)) in TEX, "IV-E",
+                "IV-C prose tile count matches the tiling", 1, 1, 0.0, "",
+                f"expects 'into {nw*nh} overlapping crops'"))
+results.append((("\\textbf{%d} inferences per frame" % (nw * nh)) in TEX, "IV-E",
+                "on-sensor rebuttal quotes the tiling count", 1, 1, 0.0, "",
+                f"expects '{nw*nh} inferences per frame'"))
 check("IV-E", "inferences/s at 2 Hz, native", 96, nw * nh * 2.0, unit="/s")
 # It has to fit the accelerator, or native tiling is not affordable and the
 # whole change is wrong. 130 FPS is the LOW end of the measured range.
