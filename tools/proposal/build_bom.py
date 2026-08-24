@@ -97,7 +97,8 @@ PARTS = {
  "Motors": ("Tarot TL96020, 5008, 340 KV", "Robokits India / IndiaMART", S),
  "ESCs": ("50-60 A continuous, 6S", "Robokits India / Robu.in", S),
  "Propellers": ("Tarot 1855 carbon, 18 in, CW/CCW", "Robokits India", S),
- "Prop adapters": ("6 mm self-tightening hubs", "Robokits India / Robu.in", S),
+ "Prop adapters": ("4 mm bore self-tightening hubs (Tarot TL96020 shaft is 4 mm)",
+                   "Robokits India / Robu.in", S),
  "Li-ion cells": (
    "Molicel P45B 21700, 4500 mAh, 45 A", "Robokits India (imported listing)", S),
  "Pack, BMS, PDB, BEC": ("6S 60 A BMS, distribution board, regulator",

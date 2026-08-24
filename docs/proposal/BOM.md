@@ -29,7 +29,7 @@ in-house or locally. Links are never invented to fill the column.
 | 9, 19, 27 | Payload system | Four metal-gear servos, mechanical detents | 4,500 | 3 | 13,500 | Robu.in / Robokits India | supplier |
 | 9, 19, 27 | Propellers | Tarot 1855 carbon, 18 in, CW/CCW | 1,625 | 12 | 19,500 | Robokits India | supplier |
 | 9, 19, 27 | Wiring, connectors | 10 AWG silicone, XT90-S, JST-GH | 2,400 | 3 | 7,200 | Robu.in / IndiaMART | supplier |
-| 9, 19, 27 | Prop adapters | 6 mm self-tightening hubs | 350 | 12 | 4,200 | Robokits India / Robu.in | supplier |
+| 9, 19, 27 | Prop adapters | 4 mm bore self-tightening hubs (Tarot TL96020 shaft is 4 mm) | 350 | 12 | 4,200 | Robokits India / Robu.in | supplier |
 | 9, 19, 27 | VEGA co-processor | VEGA RISC-V development kit (no cost line) | 0 | 3 | 0 | C-DAC VEGA processor programme | supplier |
 | 29 | RTK base receiver | Second Teravolt AeroNav unit, base station | 18,000 | 1 | 18,000 | [teravolt.gitbook.io](https://teravolt.gitbook.io/teravolt/gps/aeronav-x5) | quote |
 | 30 | Survey tripod + tribrach | Photographic tripod and adapter | 4,000 | 1 | 4,000 | IndiaMART / local survey supplier | supplier |

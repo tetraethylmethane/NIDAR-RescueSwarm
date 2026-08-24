@@ -122,6 +122,13 @@ def fspl(f_mhz, d_m):
 # overlap, applied to the NATIVE frame. WATER_FRAC is an assumption, not a
 # measurement -- it is the fraction of tiles expected to be open water, and the
 # gate figure below is only as good as it is.
+# --- selected motor, from the supplier datasheet ----------------------------
+# Tarot TL96020, 5008, 340 KV. These are the two numbers the datasheet gives
+# that the sizing loop can be checked against; it does NOT publish a thrust
+# curve, which is the whole reason P2 exists.
+DS_MOTOR_CONT_A = 26.5
+DS_MOTOR_MASS_G = 168.0
+
 TILE, STRIDE, GATE_PX = 640, 512, 96
 WATER_FRAC = 0.87
 n_tiles = ((math.ceil((CO.SPECIFIED["px_w"] - TILE) / STRIDE) + 1)
@@ -142,6 +149,17 @@ V = {
  "TW": f"{M.T_W:.1f}", "Ttot": f"{M.T_W*T_hov:.0f}", "Tkgf": f"{M.T_W*T_hov/g:.2f}",
  "Tper": f"{T_per/g:.2f}", "Thovper": f"{T_hov/M.N_rot/g:.2f}",
  "hovfrac": f"{100*(T_hov/M.N_rot)/T_per:.0f}",
+ # Tarot TL96020 datasheet: 26.5 A max continuous, 168 g. Both are supplier
+ # figures, not measurements; the motor still publishes no thrust curve, which
+ # is why P2 measures thrust and current together.
+ "dscont": f"{DS_MOTOR_CONT_A:.1f}",
+ "Ihovm": f"{I_hov/M.N_rot:.1f}",
+ "hovpct": f"{100*(I_hov/M.N_rot)/DS_MOTOR_CONT_A:.0f}",
+ "Ipkm": f"{I_pk/M.N_rot:.1f}",
+ "pkpct": f"{100*(I_pk/M.N_rot)/DS_MOTOR_CONT_A:.0f}",
+ "dsmass": f"{DS_MOTOR_MASS_G:.0f}",
+ "modmass": f"{M.bd['motors']/M.N_rot*1000:.0f}",
+ "dmass": f"{DS_MOTOR_MASS_G*M.N_rot - M.bd['motors']*1000:+.0f}",
  "DL": f"{M.MTOW/A:.2f}", "PL": f"{M.MTOW*1000/P_elec:.1f}",
  "Epack": f"{M.E_pack:.0f}", "Ah": f"{M.Ah_pack:.1f}", "mpack": f"{M.m_pack*1000:.0f}",
  "ncell": f"{M.n_cells}", "S": f"{M.S_cells}", "P": f"{M.P_par}",
@@ -288,6 +306,21 @@ maximum} --- inside the 45--55\,\% band where propeller efficiency and thermal
 margin are both reasonable. Sitting far below that band means an oversized and
 heavy propulsion system; far above it means no authority left for attitude
 control in gusts.
+
+\textbf{Against the selected motor, hover is comfortable and the peak is not.}
+The Tarot TL96020 publishes a maximum continuous current of @@dscont@@\,A. The
+hover draw of @@Ihovm@@\,A per motor is @@hovpct@@\,\% of that, with wide
+margin. The peak at the design thrust-to-weight is @@Ipkm@@\,A, or
+\textbf{@@pkpct@@\,\%} --- above continuous rating. That is acceptable only
+because $T/W = @@TW@@$ is a transient authority reserve rather than a flight
+condition: the aircraft hovers at half throttle and reaches this current only
+in a gust recovery or an aggressive manoeuvre, for seconds. It is recorded here
+because it is the tightest margin in the propulsion chain, and because the P2
+thrust stand measures current alongside thrust and will settle whether the
+motor reaches @@Tper@@\,kgf before that rating rather than after it. The
+datasheet also gives a motor mass of @@dsmass@@\,g against the @@modmass@@\,g
+the sizing loop assumes, a difference of @@dmass@@\,g per aircraft that the P5
+weigh-in resolves.
 
 \subsection{The coupled mass and energy solve}
 
