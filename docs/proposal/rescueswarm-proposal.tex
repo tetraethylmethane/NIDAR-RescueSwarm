@@ -1018,9 +1018,11 @@ implicit cannot be.
         1.22\,m between airframes (Fig.~\ref{fig:pad}). Separation while stacked
         in the air over the pad improves by the same mechanism.
   \item \textbf{Ground station.} All eight required operator displays were
-        verified against three simultaneous autopilots, carrying three
-        concurrent H.264 streams within the link budget, with offline map tiles
-        (Fig.~\ref{fig:gcs}).
+        verified against three simultaneous autopilots, with offline map tiles
+        (Fig.~\ref{fig:gcs}). Three concurrent H.264 streams within the link
+        budget were verified in a separate run with the media server active;
+        the capture in Fig.~\ref{fig:gcs} was taken without it, which is why
+        the panes there read offline.
 \end{itemize}
 
 \subsubsection{Pad containment has exactly zero margin}
@@ -1086,22 +1088,24 @@ the lowest state of charge of the flight.}
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.94\textwidth]{gcs-running.png}
-\caption{Ground control station, captured unretouched from the running system.
-The interface carries mission status, per-aircraft mode, RTK fix state and
-battery, the shared map, kit-delivery count, and three concurrent H.264 feeds
-within the 2.5\,Mbps link budget. Map tiles are served from a local cache, so
-nothing here depends on a network. The 15:00 counter is the \texttt{SYS-35}
-fast-completion threshold, half the permitted window, rather than the
-flight-time limit.
-This is a bench capture, not a mission. No mission file is loaded, which is why
-all three aircraft read \textsc{stabilize} at 100\,\% charge, why no assigned
-search areas or survivor markers are drawn, and why the video panes carry test
-patterns; no camera has yet flown. The safety panel is shown uncropped
-deliberately: it states that abort and recall are \emph{not implemented}, that
-they record operator intent in the mission log and transmit nothing, and that
-recovery is by the safety pilot's transmitter --- because no downlink command
-path is yet wired. See Section~\ref{sec:notimpl}.}
+\includegraphics[width=0.94\textwidth]{gcs-dark.png}
+\caption{Ground control station, captured unretouched from the running client
+and backend. \textbf{The telemetry is synthetic}: a mission driver
+(\protect\path{scripts/sim_mission.py}) emits MAVLink and 5\,Hz mission-state
+documents for three aircraft, so every display can be exercised before an
+aircraft exists. No aircraft, autopilot or radio is involved.
+Visible here: the three assigned search regions on a satellite basemap served
+from a local tile cache, so nothing depends on a network; three aircraft armed
+and in \textsc{auto}, two with an RTK-fixed solution and the third in float,
+which is the degraded case the display must distinguish; and the mission
+counters, where the 15:00 figure is the \texttt{SYS-35} fast-completion
+threshold rather than the flight-time limit.
+The safety panel is shown uncropped deliberately. It states that abort and
+recall are \emph{not implemented}, that they record operator intent in the
+mission log and transmit nothing, and that recovery is by the safety pilot's
+transmitter --- because no downlink command path is yet wired
+(Section~\ref{sec:notimpl}). The video panes read offline because the media
+server is not running in this capture; no camera has yet flown.}
 \label{fig:gcs}
 \end{figure*}
 
