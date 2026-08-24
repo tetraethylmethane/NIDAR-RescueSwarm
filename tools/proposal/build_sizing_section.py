@@ -117,6 +117,19 @@ def fspl(f_mhz, d_m):
     return 20 * math.log10(d_m / 1000) + 20 * math.log10(f_mhz) + 32.44
 
 
+# --- tiling, and what a two-stage gate would buy back ------------------------
+# Tile geometry is the design's own: 640 px tiles on a 512 px stride, i.e. 20 %
+# overlap, applied to the NATIVE frame. WATER_FRAC is an assumption, not a
+# measurement -- it is the fraction of tiles expected to be open water, and the
+# gate figure below is only as good as it is.
+TILE, STRIDE, GATE_PX = 640, 512, 96
+WATER_FRAC = 0.87
+n_tiles = ((math.ceil((CO.SPECIFIED["px_w"] - TILE) / STRIDE) + 1)
+           * (math.ceil((CO.SPECIFIED["px_h"] - TILE) / STRIDE) + 1))
+inf_rate = n_tiles * need_hz
+gate_ratio = (TILE / GATE_PX) ** 2
+gate_equiv = inf_rate / gate_ratio + inf_rate * (1.0 - WATER_FRAC)
+
 # ---------------------------------------------------------------------- emit
 V = {
  "N": f"{M.N_rot}", "Din": f"{M.D/0.0254:.0f}", "Dm": f"{M.D:.4f}",
@@ -154,6 +167,9 @@ V = {
  "rsms": f"{CO.READOUT_MS:.0f}", "rsm": f"{rs['shift_m']:.2f}",
  "rspx": f"{rs['shift_px']:.0f}",
  "looks": f"{looks['frames']:.1f}", "needhz": f"{need_hz:.2f}",
+ "ntile": f"{n_tiles}", "infreq": f"{inf_rate:.0f}",
+ "gatepx": f"${GATE_PX}" + r"\times" + f"{GATE_PX}$",
+ "gateratio": f"{gate_ratio:.0f}", "gateequiv": f"{gate_equiv:.0f}",
  "fusion": f"{CO.FUSION_MIN_FRAMES}", "vg": f"{CO.GROUNDSPEED:.0f}",
  "blur": f"{blur40*1000:.2f}", "blurinv": f"{1/blur40:.0f}",
  # ballistics
@@ -359,8 +375,25 @@ multi-frame fusion requires. Meeting that count needs
 \[
 r \ge \frac{n\,v}{D} = @@needhz@@~\text{Hz},
 \]
-and the trade --- higher capture rate, lower ground speed, higher altitude, or a
-relaxed look count --- is open and recorded as such.
+Of the available levers --- higher capture rate, lower ground speed, higher
+altitude, or a relaxed look count --- raising the capture rate is the cheapest,
+because lowering altitude shrinks the along-track footprint faster than it
+shortens the pass and therefore \emph{raises} the required rate, while raising
+altitude coarsens ground sampling and reducing ground speed lengthens every
+transect.
+
+The cost of that lever is throughput, not energy. At @@ntile@@ tiles per frame
+the required rate is @@infreq@@ inferences per second, against the
+130--160\,FPS measured for the accelerator: at or beyond the limit. This is
+what a two-stage gate would buy back. A gate answering only whether a tile is
+homogeneous open water is a texture discrimination rather than a person
+detection, so it survives the downsampling that Section~\ref{sec:perception}
+shows would destroy a person; at @@gatepx@@ input it costs roughly
+@@gateratio@@ times fewer pixels than a detector pass, and discarding the open
+water would leave of order @@gateequiv@@ full-inference equivalents. On that
+argument the gate belongs on the accelerator already carried, not on an
+additional processor: the saving is in inferences, not in watts, and the
+aircraft's compute power is under one per cent of its hover power.
 
 \subsection{Payload release ballistics}
 

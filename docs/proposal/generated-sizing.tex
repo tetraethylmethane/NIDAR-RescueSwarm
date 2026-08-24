@@ -188,8 +188,25 @@ multi-frame fusion requires. Meeting that count needs
 \[
 r \ge \frac{n\,v}{D} = 3.06~\text{Hz},
 \]
-and the trade --- higher capture rate, lower ground speed, higher altitude, or a
-relaxed look count --- is open and recorded as such.
+Of the available levers --- higher capture rate, lower ground speed, higher
+altitude, or a relaxed look count --- raising the capture rate is the cheapest,
+because lowering altitude shrinks the along-track footprint faster than it
+shortens the pass and therefore \emph{raises} the required rate, while raising
+altitude coarsens ground sampling and reducing ground speed lengthens every
+transect.
+
+The cost of that lever is throughput, not energy. At 48 tiles per frame
+the required rate is 147 inferences per second, against the
+130--160\,FPS measured for the accelerator: at or beyond the limit. This is
+what a two-stage gate would buy back. A gate answering only whether a tile is
+homogeneous open water is a texture discrimination rather than a person
+detection, so it survives the downsampling that Section~\ref{sec:perception}
+shows would destroy a person; at $96\times96$ input it costs roughly
+44 times fewer pixels than a detector pass, and discarding the open
+water would leave of order 22 full-inference equivalents. On that
+argument the gate belongs on the accelerator already carried, not on an
+additional processor: the saving is in inferences, not in watts, and the
+aircraft's compute power is under one per cent of its hover power.
 
 \subsection{Payload release ballistics}
 
