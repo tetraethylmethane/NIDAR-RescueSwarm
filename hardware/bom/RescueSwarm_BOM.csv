@@ -2,7 +2,7 @@ Phase,Item,Model,Unit INR,Qty,Line INR,Link,Link status
 "3, 13, 21",Flight controller,Holybro Pixhawk 6C Mini,22600,3,67800,https://robu.in/product/holybro-pixhawk-6c-mini-flight-controller/,product
 "4, 14, 22",Companion computer,"Raspberry Pi 5, 8 GB",8000,3,24000,Robu.in / Silverline / Element14 India,supplier
 "4, 14, 22",AI accelerator,"Raspberry Pi AI HAT+, 26 TOPS (Hailo-8)",11000,3,33000,Robu.in / Silverline; multiple Indian retailers,supplier
-"5, 15, 23",GNSS RTK primary,Teravolt AeroNav-Pro RTK (or AeroNav-X5),18000,3,54000,https://teravolt.gitbook.io/teravolt/gps/aeronav-pro-rtk,quote
+"5, 15, 23",GNSS RTK primary,Teravolt AeroNav-Pro RTK (or AeroNav-X5),25000,3,75000,https://teravolt.gitbook.io/teravolt/gps/aeronav-pro-rtk,quote
 "2, 10, 20, 28",Motors,"Tarot TL96020, 5008, 340 KV",4500,12,54000,Robokits India / IndiaMART,supplier
 "8, 18, 26",Li-ion cells,"Molicel P45B 21700, 4500 mAh, 45 A",700,54,37800,Robokits India (imported listing),supplier
 "7, 17, 25",Structure,"25 x 23 mm carbon tube, machined clamps",13000,3,39000,in-house / local machine shop,fabricate
@@ -16,7 +16,7 @@ Phase,Item,Model,Unit INR,Qty,Line INR,Link,Link status
 "9, 19, 27","Wiring, connectors","10 AWG silicone, XT90-S, JST-GH",2400,3,7200,Robu.in / IndiaMART,supplier
 "9, 19, 27",Prop adapters,4 mm bore self-tightening hubs (Tarot TL96020 shaft is 4 mm),350,12,4200,Robokits India / Robu.in,supplier
 "9, 19, 27",VEGA co-processor,VEGA RISC-V development kit (no cost line),0,3,0,C-DAC VEGA processor programme,supplier
-29,RTK base receiver,"Second Teravolt AeroNav unit, base station",18000,1,18000,https://teravolt.gitbook.io/teravolt/gps/aeronav-x5,quote
+29,RTK base receiver,"Second Teravolt AeroNav unit, base station",25000,1,25000,https://teravolt.gitbook.io/teravolt/gps/aeronav-x5,quote
 30,Survey tripod + tribrach,Photographic tripod and adapter,4000,1,4000,IndiaMART / local survey supplier,supplier
 11,Safety-pilot transmitter,"RadioMaster Boxer, ExpressLRS",8000,1,8000,IndiaMART / Robu.in,supplier
 12,Sun hood + observer monitor,"Fabricated hood, second-hand monitor",1500,1,1500,fabricated; monitor sourced locally,fabricate
@@ -26,4 +26,4 @@ Phase,Item,Model,Unit INR,Qty,Line INR,Link,Link status
 1,Calibrated scale + remaining,"Bench scale, 30 kg, 1 g, certified",12000,1,12000,IndiaMART (calibration certificate required),supplier
 12,"Fasteners, tape, connectors, filament",Consumables,13000,1,13000,local / Robu.in,supplier
 32,DGCA registration,"Statutory fee, three aircraft",5000,1,5000,https://digitalsky.dgca.gov.in/,verified
-,PARTS TOTAL,,,,586400,,
+,PARTS TOTAL,,,,614400,,

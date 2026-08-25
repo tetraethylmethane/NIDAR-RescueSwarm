@@ -487,18 +487,37 @@ A team-owned RTK base station, positioned and set to a fixed reference from its
 first three-dimensional fix within the setup window. Launch is gated on a
 three-dimensional fix rather than an RTK fix; the first geotag is gated on
 RTK-fixed, and detections made before convergence are geotagged in float and
-re-fused once fixed. This decoupling recovers approximately ninety seconds of
-setup time that a survey-in procedure would otherwise consume.
+re-fused once fixed.
 
-A second receiver from the same supplier, the AeroNav-X5, is under evaluation
-against the baseline part. It is built on a Septentrio GNSS+ core with 448
-tracking channels and specifies 0.6\,cm~$+$~0.5\,ppm horizontal RTK against the
-baseline's 1\,cm~$+$~1\,ppm, a seven-second RTK initialisation, and AIM+
-interference mitigation, which is a relevant property for an asset intended to
-operate in a degraded radio environment. It tracks NavIC on L5 where the
-baseline part carries NavIC across more bands. Selection between the two is
-pending quotation; neither is publicly priced, and the geolocation budget in
-Section~\ref{sec:geotag} is met by either.
+\emph{What that decoupling costs and buys is now a supplier figure rather than
+an estimate.} The supplier specifies a survey-in of ten to twenty minutes to
+place the base to $\pm$5\,cm~\cite{teravoltaeronav}. Skipping it removes that
+entire block from the setup window, which is a far larger saving than the
+ninety seconds previously claimed here. It is not free: a base set from its own
+first three-dimensional fix inherits that fix's \emph{absolute} error, of order
+a metre, and every reported survivor coordinate is offset by the same amount.
+What RTK preserves is the \emph{relative} accuracy in Table~\ref{tab:geotag} ---
+the aircraft is centimetric with respect to the base wherever the base happens
+to think it is.
+
+For this mission that trade is the right way round. A recovery crew navigates
+to the reported coordinate on its own metre-class receiver, so a shared
+sub-metre offset on every target is absorbed by the crew's own positioning,
+whereas twenty minutes of survey-in comes out of the flying window. The survey
+is worth running whenever the base can be set up before the window opens, and
+P7--P8 use it, because a measured accuracy figure must be referenced to
+something better than the system being measured.
+
+A second receiver from the same supplier, the AeroNav-X5, was evaluated
+against the baseline part and rejected on cost.
+It is built on a Septentrio GNSS+ core with 448 tracking channels and
+specifies 0.6\,cm~$+$~0.5\,ppm horizontal RTK against the baseline part's
+1\,cm~$+$~1\,ppm, with AIM+ interference mitigation. The supplier quotes it at
+six times the price of the baseline receiver, so the four units this programme
+needs would consume the greater part of the whole budget. The geolocation
+budget in Section~\ref{sec:geotag} is met by the baseline part, and a
+four-millimetre improvement in a term that is not dominant does not justify
+that. The baseline receiver is adopted.
 
 Corrections reach the aircraft over the existing command link rather than a
 dedicated correction radio. This is a documented mode of both the autopilot and

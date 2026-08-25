@@ -47,14 +47,14 @@ AIRCRAFT = [
      "26 TOPS is retained as MARGIN on the one budget that already fails, not "
      "as a floor; 13 TOPS is a legitimate saving if the look count is settled "
      "at <=3 Hz first."),
-    ("GNSS RTK primary",       1, 18_000, "KEEP",
-     "Governs 125 of 200 geotag points -- the step from 3.88 m to 0.75 m is "
-     "RTK and nothing else in the budget moves the number comparably. "
-     "WARNING: the part currently carried against this line is specified by "
-     "its supplier as SBAS-corrected at <1.5 m CEP, which is assisted GNSS, "
-     "NOT RTK. If that is the part bought, the system sits in the 3.88 m row "
-     "and 125 points go with it. Resolve at P1: confirm the part, substitute "
-     "a true RTK receiver, or restate the geotagging expectation."),
+    ("GNSS RTK primary",       1, 25_000, "KEEP",
+     "Teravolt AeroNav-Pro RTK. QUOTED 2026-08-25 at Rs 25,000/unit, "
+     "build-to-order, 3-4 week lead. Supplier specifies 0.01 m + 1 ppm CEP in "
+     "RTK and native NavIC, which closes the earlier warning on this line -- "
+     "the part is a true RTK receiver, not the SBAS-corrected unit previously "
+     "carried here. The AeroNav-X5 was evaluated and REJECTED on price: at "
+     "Rs 1,50,000/unit, four units are Rs 6,00,000, which is 80 % of the whole "
+     "programme for a 0.4 cm accuracy gain the error budget does not need."),
     ("Motors",                 4,  4_500, "hobby",
      "5008-class, 340 KV, 6S, 18 in. Requirement is 3.18 kgf per motor at "
      "T/W 2.0 with hover at 1.59 kgf (50% of max). NO PUBLISHED THRUST -- "
@@ -128,9 +128,10 @@ GROUND = [
     ("GCS laptop", 85_000, 0, "R1: team-supplied."),
     ("Backup GCS laptop", 55_000, 0, "R1: team-supplied."),
     ("Portable power station", 55_000, 0, "R1: institute field power."),
-    ("RTK base receiver", 38_000, 18_000,
-     "A second AeroNav-1. A base needs a good antenna and a stable mount, not a "
-     "different class of receiver."),
+    ("RTK base receiver", 38_000, 25_000,
+     "A fourth AeroNav-Pro RTK. Supplier confirms the same receiver serves as "
+     "base under a standard survey-in. A base needs a good antenna and a "
+     "stable mount, not a different class of receiver."),
     ("Survey tripod + tribrach", 9_500, 4_000, "Photographic tripod and adapter."),
     ("Equipment cases", 44_000, 0,
      "R1: CONFIRMED HELD by the institute, 2026-08-18. Department stores."),

@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1787582047.99063 "c:/Users/swast/OneDrive/Desktop/Drikr-NIDAR/docs/proposal/rescueswarm-proposal.tex" "rescueswarm-proposal.pdf" "rescueswarm-proposal" 1787582054.02915 0
+["pdflatex"] 1787680510.65061 "c:/Users/swast/OneDrive/Desktop/Drikr-NIDAR/docs/proposal/rescueswarm-proposal.tex" "rescueswarm-proposal.pdf" "rescueswarm-proposal" 1787680531.23149 0
   "../../ground-station/gcs-dark.png" 1787556026 978266 28b4c6f4ef5e1c996efc9e4feada7653 ""
   "C:/Program Files/MiKTeX/fonts/enc/dvips/base/8r.enc" 1458473887 4993 80dc9bab7f31fb78a000ccfed0e27cab ""
   "C:/Program Files/MiKTeX/fonts/tfm/adobe/courier/pcrr7t.tfm" 1136765053 960 379cc0019370a9e0208a0a3f949f847a ""
@@ -191,7 +191,7 @@
   "C:/Users/swast/AppData/Roaming/MiKTeX/tex/latex/psnfss/ts1ptm.fd" 1585253778 653 96f56dc5d1ef1fe1121f1cfeec70ee0c ""
   "C:/Users/swast/AppData/Roaming/MiKTeX/tex/latex/refcount/refcount.sty" 1576433952 9878 9e94e8fa600d95f9c7731bb21dfb67a4 ""
   "C:/Users/swast/AppData/Roaming/MiKTeX/tex/latex/rerunfilecheck/rerunfilecheck.sty" 1751104012 9684 a33a14b82ce60d6e77cb9be689d79ee6 ""
-  "c:/Users/swast/OneDrive/Desktop/Drikr-NIDAR/docs/proposal/rescueswarm-proposal.tex" 1787557982 78847 62226f750f02b9e8958c3254a9c8d986 ""
+  "c:/Users/swast/OneDrive/Desktop/Drikr-NIDAR/docs/proposal/rescueswarm-proposal.tex" 1787680357 79983 dc9e6c54482637a8371fefc04b64bcbb ""
   "figures/fig-geotag.pdf" 1787521874 30690 e96e5e0c4f42d0bbcdc1c210a97ddd24 ""
   "figures/fig-launch.pdf" 1787521917 33141 91effd0eec2630731d522725764bac05 ""
   "figures/fig-mass.pdf" 1787521880 25491 79401c00ac32cbbf7fe3ed7b07a13e39 ""
@@ -200,9 +200,9 @@
   "generated-sizing.tex" 1787581933 13335 5db2dfe9486cf32dcf36ad633c5ebb9c ""
   "images/brainwave.pdf" 1787428564 11755 0eaf90766efc0947a08af3fe03d2dec5 ""
   "images/thapar_logo.png" 1787427721 23946 8c2759499559c34cb68bd1242459e300 ""
-  "rescueswarm-proposal.aux" 1787582053 22490 e6779c87c49c5a44b0d1b2d1b9ea59e4 "pdflatex"
-  "rescueswarm-proposal.out" 1787582053 11337 6de72cd29d5798609d361843b1ed7336 "pdflatex"
-  "rescueswarm-proposal.tex" 1787557982 78847 62226f750f02b9e8958c3254a9c8d986 ""
+  "rescueswarm-proposal.aux" 1787680514 22517 ff6efdcd6150ce7625d116e5da2ef5b5 "pdflatex"
+  "rescueswarm-proposal.out" 1787680517 11337 6de72cd29d5798609d361843b1ed7336 "pdflatex"
+  "rescueswarm-proposal.tex" 1787680357 79983 dc9e6c54482637a8371fefc04b64bcbb ""
   (generated)
   "rescueswarm-proposal.aux"
   "rescueswarm-proposal.log"

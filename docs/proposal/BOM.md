@@ -17,7 +17,7 @@ in-house or locally. Links are never invented to fill the column.
 | 3, 13, 21 | Flight controller | Holybro Pixhawk 6C Mini | 22,600 | 3 | 67,800 | [robu.in](https://robu.in/product/holybro-pixhawk-6c-mini-flight-controller/) | product |
 | 4, 14, 22 | Companion computer | Raspberry Pi 5, 8 GB | 8,000 | 3 | 24,000 | Robu.in / Silverline / Element14 India | supplier |
 | 4, 14, 22 | AI accelerator | Raspberry Pi AI HAT+, 26 TOPS (Hailo-8) | 11,000 | 3 | 33,000 | Robu.in / Silverline; multiple Indian retailers | supplier |
-| 5, 15, 23 | GNSS RTK primary | Teravolt AeroNav-Pro RTK (or AeroNav-X5) | 18,000 | 3 | 54,000 | [teravolt.gitbook.io](https://teravolt.gitbook.io/teravolt/gps/aeronav-pro-rtk) | quote |
+| 5, 15, 23 | GNSS RTK primary | Teravolt AeroNav-Pro RTK (or AeroNav-X5) | 25,000 | 3 | 75,000 | [teravolt.gitbook.io](https://teravolt.gitbook.io/teravolt/gps/aeronav-pro-rtk) | quote |
 | 2, 10, 20, 28 | Motors | Tarot TL96020, 5008, 340 KV | 4,500 | 12 | 54,000 | Robokits India / IndiaMART | supplier |
 | 8, 18, 26 | Li-ion cells | Molicel P45B 21700, 4500 mAh, 45 A | 700 | 54 | 37,800 | Robokits India (imported listing) | supplier |
 | 7, 17, 25 | Structure | 25 x 23 mm carbon tube, machined clamps | 13,000 | 3 | 39,000 | in-house / local machine shop | fabricate |
@@ -31,7 +31,7 @@ in-house or locally. Links are never invented to fill the column.
 | 9, 19, 27 | Wiring, connectors | 10 AWG silicone, XT90-S, JST-GH | 2,400 | 3 | 7,200 | Robu.in / IndiaMART | supplier |
 | 9, 19, 27 | Prop adapters | 4 mm bore self-tightening hubs (Tarot TL96020 shaft is 4 mm) | 350 | 12 | 4,200 | Robokits India / Robu.in | supplier |
 | 9, 19, 27 | VEGA co-processor | VEGA RISC-V development kit (no cost line) | 0 | 3 | 0 | C-DAC VEGA processor programme | supplier |
-| 29 | RTK base receiver | Second Teravolt AeroNav unit, base station | 18,000 | 1 | 18,000 | [teravolt.gitbook.io](https://teravolt.gitbook.io/teravolt/gps/aeronav-x5) | quote |
+| 29 | RTK base receiver | Second Teravolt AeroNav unit, base station | 25,000 | 1 | 25,000 | [teravolt.gitbook.io](https://teravolt.gitbook.io/teravolt/gps/aeronav-x5) | quote |
 | 30 | Survey tripod + tribrach | Photographic tripod and adapter | 4,000 | 1 | 4,000 | IndiaMART / local survey supplier | supplier |
 | 11 | Safety-pilot transmitter | RadioMaster Boxer, ExpressLRS | 8,000 | 1 | 8,000 | IndiaMART / Robu.in | supplier |
 | 12 | Sun hood + observer monitor | Fabricated hood, second-hand monitor | 1,500 | 1 | 1,500 | fabricated; monitor sourced locally | fabricate |
@@ -42,6 +42,6 @@ in-house or locally. Links are never invented to fill the column.
 | 12 | Fasteners, tape, connectors, filament | Consumables | 13,000 | 1 | 13,000 | local / Robu.in | supplier |
 | 32 | DGCA registration | Statutory fee, three aircraft | 5,000 | 1 | 5,000 | [digitalsky.dgca.gov.in](https://digitalsky.dgca.gov.in/) | verified |
 
-**Parts total: INR 586,400**
+**Parts total: INR 614,400**
 
-Landed programme total, after 22% duty on the imported share, 18% GST and 15% contingency: **INR 743,004**
+Landed programme total, after 22% duty on the imported share, 18% GST and 15% contingency: **INR 786,392**
