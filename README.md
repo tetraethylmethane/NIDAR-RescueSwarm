@@ -206,3 +206,4 @@ python3 simulations/sitl/proof_figures.py                # redraw §3 from telem
 | [Development plan](docs/development-plan.md) | Schedule, critical path, risk and de-scope order |
 | [Implementation plan](docs/implementation-plan.md) | What to build for autonomy, perception and failsafes — and what can be skipped |
 | [Frame design constraints](docs/frame-design-constraints.md) | What CAD needs before the first part is cut |
+| [Questions to lead](docs/questions-to-lead.md) | Internal blockers waiting on a decision — currently, which camera we are buying |

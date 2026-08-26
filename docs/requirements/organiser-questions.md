@@ -1,7 +1,7 @@
 # Questions for the NIDAR Organising Team
 ### Team RescueSwarm · Track 1 · Mission 1
 
-Ready to send. Four questions remain open; the answered ones are recorded at the
+Ready to send. Five questions remain open; the answered ones are recorded at the
 end so the thread stays self-contained. Each question states why it matters, so
 the organisers can see it is a design question rather than a request for an
 advantage.
@@ -70,6 +70,28 @@ accuracy is judged against surveyed truth. In that case, knowing the pad's preci
 coordinates in advance would let our RTK base start from an accurate absolute
 position without consuming any of the 5-minute setup window. If Q1 is judged on
 the map instead, Q4 does not matter and can be disregarded.
+
+---
+
+## Q5 — Which point on the survivor dummy is the measurement datum?
+
+It is already confirmed that delivery is measured **from the survivor** rather
+than from our tagged position, and that survivors are **human-looking dummies**.
+
+**Question:** is the distance measured from a specific point on the dummy — a
+marked spot, the torso centre, the head — or from the dummy as a whole? And will
+the dummies be marked in a way we can see from the air?
+
+**Why it matters:** a prone adult form is about 1.7 m long, so head, torso centre
+and feet differ by up to **0.85 m**. Zone A, the highest-scoring band, has a 1 m
+radius. A detector's bounding-box centre naturally lands on the torso; if the
+datum is the head or a marked point, we must bias our centroid toward it in
+software. That bias is a one-line change if we know the answer, and impossible to
+apply on the day if we do not. The same 0.5 m target-extent term is already the
+second-largest contributor to our geolocation error budget.
+
+We are not asking where the dummies will be placed, or for any advance sight of
+the layout — only for the convention used to measure.
 
 ---
 
@@ -165,15 +187,29 @@ Fully covered by Action 1 and Action 2. Q4 only ever mattered as a route to a
 better absolute position, and survey-in plus GAGAN gets most of the way there
 independently. **If Q4 comes back "no", nothing changes.**
 
-### Summary: three actions, no regrets
+### Q5 worst case — the datum is a marked point at one end of the dummy
+
+The correction itself is a constant: shift the reported centroid along the body
+axis. The part that cannot be recovered later is **knowing which end is which**
+in our own imagery.
+
+**Action 4 — annotate head-end during the dummy field campaign.** One extra
+click per frame on top of the bounding box, while the dummy is in front of you
+and its orientation is obvious. Without it, the fine-tuning set records a box and
+nothing else, and no amount of later software can tell a head from a pair of
+feet in a 47-pixel blob. With it, any datum convention the organisers name
+becomes a one-line offset.
+
+### Summary: four actions, no regrets
 
 | # | Action | Cost if the answers are good |
 |---|---|---|
 | 1 | 90 s base survey-in in the setup procedure | None — zero launch time either way |
 | 2 | Configure the base for GAGAN/SBAS | None — better absolute position regardless |
 | 3 | Dual-pattern centre plate + order 18 motors/ESCs | ~40 g and six spare motors that get used anyway |
+| 4 | Annotate head-end on dummy imagery | One extra click per frame, during annotation we are doing anyway |
 
-Taking all three now means **no answer can cost more than about a week**, and the
+Taking all four now means **no answer can cost more than about a week**, and the
 combined worst case — tight tolerance, no site access, hex required, canopy scored
 as a crash — degrades geotag absolute accuracy from 0.91 m to 1.15 m and adds
 roughly a week of assembly. That is a survivable outcome from the worst branch of

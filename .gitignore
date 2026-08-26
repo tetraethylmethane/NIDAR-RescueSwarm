@@ -32,3 +32,18 @@ dist/
 *.ulg
 logs/
 datasets/field-campaign/
+
+# Perception corpora and weights (GB-scale; keep out of git).
+# datasets/boxes.csv is the committed provenance record and is NOT ignored --
+# it is the only thing audit.py reads, which is what lets CI regenerate the
+# audit on a fresh checkout where the imagery will never exist.
+datasets/raw/
+datasets/unified/
+runs/
+*.pt
+
+# Personal learning notes -- never pushed. Working production code and team
+# documents go in the repo proper; anything written to understand a topic
+# lives here.
+learning/
+diary.txt
