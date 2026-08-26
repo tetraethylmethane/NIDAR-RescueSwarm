@@ -40,7 +40,12 @@ from geotag import (  # noqa: E402
     m_per_deg_lon, project,
 )
 
-CAM = Camera(width_px=4056, height_px=3040, hfov_deg=63.3, vfov_deg=50.0)
+# Arducam IMX477, type 1/2.3, 4056x3040 on a 1.55 um pitch, 6 mm S-mount.
+# Active area 6.287 x 4.712 mm ->  HFOV 55.3 deg, VFOV 42.9 deg.
+# NOT the 1/1.8 in / 1.82 um sensor sizing-calculations.md section 8 assumes.
+# Same pixel count, different pixel SIZE, so the field of view is narrower and
+# every ray cast from a pixel is correspondingly tighter. Confirmed 2026-08-25.
+CAM = Camera(width_px=4056, height_px=3040, hfov_deg=55.3, vfov_deg=42.9)
 LAT0, LON0 = 13.0, 80.0
 SEED = 20260809
 W = 78

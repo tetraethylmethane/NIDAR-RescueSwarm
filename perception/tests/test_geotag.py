@@ -19,8 +19,8 @@ from geotag import (  # noqa: E402
     m_per_deg_lon, project, sigma_for,
 )
 
-# The sizing model's camera: 63.3 deg HFOV, 50.0 deg VFOV.
-CAM = Camera(width_px=4056, height_px=3040, hfov_deg=63.3, vfov_deg=50.0)
+# The real camera: Arducam IMX477, 55.3 deg HFOV, 42.9 deg VFOV.
+CAM = Camera(width_px=4056, height_px=3040, hfov_deg=55.3, vfov_deg=42.9)
 LAT0, LON0 = 13.0, 80.0
 AGL = 60.0
 
