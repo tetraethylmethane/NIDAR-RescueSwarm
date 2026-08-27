@@ -1,0 +1,49 @@
+{
+ "segs": [
+  [
+   "Arm, spin-up, launch queue",
+   45,
+   319.4
+  ],
+  [
+   "Climb to 40 m",
+   13.33,
+   1152.8
+  ],
+  [
+   "Transit to sub-region",
+   10.0,
+   852.5
+  ],
+  [
+   "Area sweep",
+   130.67,
+   852.5
+  ],
+  [
+   "Delivery (3.3 drops)",
+   147.0,
+   835.5
+  ],
+  [
+   "RTH transit ~250 m",
+   20.83,
+   852.5
+  ],
+  [
+   "Recovery hold, descend, land",
+   90,
+   912.6
+  ]
+ ],
+ "V_nom": 21.6,
+ "V_max": 25.200000000000003,
+ "V_min": 18.0,
+ "Ah": 13.5,
+ "E_pack": 291.6,
+ "DOD": 0.8,
+ "S": 6,
+ "P": 3,
+ "I_max": 114.83985876880963,
+ "I_hov": 42.24806605025099
+}

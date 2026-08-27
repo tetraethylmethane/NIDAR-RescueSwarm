@@ -22,7 +22,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import FuncFormatter
 
+import contextlib
+import io as _io
+import sys as _sys
+
 OUT = os.path.dirname(os.path.abspath(__file__))
+
+# The figures that carry the design's own numbers read them from the model
+# rather than repeating them, so a constant change moves the figure too.
+_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(OUT)))
+_sys.path.insert(0, os.path.join(_ROOT, 'tools', 'sizing-model'))
+with contextlib.redirect_stdout(_io.StringIO()):
+    import rescueswarm_sizing_model as M
+    import camera_optics as CO
+WATER_M = 0.40      # a person in floodwater presents head and shoulders
 
 # IEEEtran geometry. Figures are produced at final size so \includegraphics
 # never rescales them -- rescaling is how axis labels end up unreadable.
@@ -532,6 +545,160 @@ def fig_sweep():
     save_exact(fig, "fig-sweep.pdf")
 
 
+
+# ===========================================================================
+# 6. Detection geometry -- the paper's central claim.  Source: camera_optics.py
+# ===========================================================================
+def fig_detect():
+    """Target size against altitude and downsample, versus the COCO threshold.
+
+    This is the argument the whole perception design rests on and it had no
+    figure. The target is a person in WATER (0.4 m across), which is the
+    worst-case posture and the one the document is sized against -- not a
+    supine adult, which overstates the area fourfold.
+    """
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(FULL, 2.6))
+    h = np.linspace(20, 80, 200)
+    gsd = CO.SPECIFIED["pitch_um"] * h / CO.SPECIFIED["f_mm"] / 10.0   # cm/px
+    for ds, col, lbl in ((1, BLUE, "native tiling"),
+                         (2, ORANGE, r"$2\times$ downsample")):
+        area = (WATER_M / (gsd * ds / 100.0)) ** 2
+        ax1.plot(h, area, color=col, lw=1.6, label=lbl)
+    ax1.axhline(CO.COCO_SMALL_PX2, color=RED, ls="--", lw=1)
+    ax1.text(56, CO.COCO_SMALL_PX2 * 1.28, "COCO small-object threshold",
+             color=RED, fontsize=6.5, ha="left")
+    # Mark the adopted operating point on the curve it actually sits on.
+    g40 = CO.SPECIFIED["pitch_um"] * 40 / CO.SPECIFIED["f_mm"] / 10.0
+    a40 = (WATER_M / (g40 / 100.0)) ** 2
+    ax1.axvline(40, color=GREY, ls=":", lw=0.9)
+    ax1.plot([40], [a40], "o", color=BLUE, ms=5.5, zorder=5)
+    ax1.annotate(f"adopted: 40 m native\n{a40:.0f}" + r" px$^2$",
+                 xy=(40, a40), xytext=(44, 2600), fontsize=6.5, color=BLUE,
+                 arrowprops=dict(arrowstyle="->", color=BLUE, lw=0.7))
+    ax1.set_yscale("log")
+    ax1.set_xlabel("Survey altitude (m AGL)")
+    ax1.set_ylabel(r"Target area (px$^2$)")
+    ax1.set_title("(a) Only 40 m + native clears the threshold")
+    ax1.legend(frameon=False, loc="upper right")
+    ax1.set_xlim(20, 80)
+
+    # (b) the four operating points as bars, which is how the text states it
+    pts = [("40 m\nnative", 1, 40, BLUE), ("60 m\nnative", 1, 60, GREY),
+           ("40 m\n2x", 2, 40, ORANGE), ("60 m\n2x", 2, 60, LIGHT)]
+    xs, vals, cols = [], [], []
+    for i, (lbl, ds, hh, c) in enumerate(pts):
+        g = CO.SPECIFIED["pitch_um"] * hh / CO.SPECIFIED["f_mm"] / 10.0 * ds
+        vals.append((WATER_M / (g / 100.0)) ** 2); xs.append(lbl); cols.append(c)
+    b = ax2.bar(range(4), vals, color=cols, width=0.62)
+    ax2.axhline(CO.COCO_SMALL_PX2, color=RED, ls="--", lw=1)
+    for r, v in zip(b, vals):
+        ax2.text(r.get_x() + r.get_width() / 2, v * 1.06, f"{v:.0f}",
+                 ha="center", fontsize=6.8)
+    ax2.set_xticks(range(4)); ax2.set_xticklabels(xs)
+    ax2.set_ylabel(r"Target area (px$^2$)")
+    ax2.set_title("(b) The four operating points")
+    ax2.set_ylim(0, max(vals) * 1.25)
+    fig.tight_layout()
+    save(fig, "fig-detect.pdf")
+
+
+# ===========================================================================
+# 7. Temporal sampling -- the shortfall and what closes it
+# ===========================================================================
+def fig_looks():
+    """Looks per target against capture rate, and the inference cost of each."""
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(FULL, 2.5))
+    rates = np.linspace(1, 5, 200)
+    for hh, col in ((30, LIGHT), (40, BLUE), (60, ORANGE)):
+        D = 2 * hh * np.tan(np.radians(CO.optics(CO.SPECIFIED)["vfov"]) / 2)
+        ax1.plot(rates, D / CO.GROUNDSPEED * rates, color=col, lw=1.6,
+                 label=f"{hh} m")
+    ax1.axhline(CO.FUSION_MIN_FRAMES, color=RED, ls="--", lw=1)
+    ax1.text(1.05, CO.FUSION_MIN_FRAMES + 0.6, "fusion requires 12 looks",
+             color=RED, fontsize=6.5)
+    ax1.plot([2.0], [7.9], "o", color=BLUE, ms=5)
+    ax1.annotate("2 Hz today, 7.9 looks", xy=(2.0, 7.9), xytext=(2.35, 3.2),
+                 fontsize=6.5, color=BLUE,
+                 arrowprops=dict(arrowstyle="->", color=BLUE, lw=0.7))
+    ax1.plot([3.06], [12], "s", color=GREEN, ms=5)
+    ax1.annotate("3.06 Hz closes it", xy=(3.06, 12), xytext=(3.45, 7.6),
+                 fontsize=6.5, color=GREEN,
+                 arrowprops=dict(arrowstyle="->", color=GREEN, lw=0.7))
+    ax1.set_xlabel("Capture rate (Hz)")
+    ax1.set_ylabel("Looks per target per pass")
+    ax1.set_title("(a) The shortfall, and the rate that closes it")
+    ax1.legend(frameon=False, title="altitude", loc="upper left")
+    ax1.set_xlim(1, 5); ax1.set_ylim(0, 24)
+
+    # (b) what that costs in inferences, against the accelerator
+    n_tiles = 48
+    ax2.plot(rates, n_tiles * rates, color=BLUE, lw=1.6, label="48 native tiles")
+    ax2.axhspan(130, 160, color=GREEN, alpha=0.16)
+    ax2.text(1.05, 145, "accelerator, measured", color=GREEN, fontsize=6.5,
+             va="center")
+    ax2.axvline(2.0, color=GREY, ls=":", lw=1)
+    ax2.axvline(3.06, color=RED, ls=":", lw=1)
+    ax2.text(3.12, 40, "3.06 Hz needs\n147 inf/s", fontsize=6.5, color=RED)
+    ax2.plot([3.06], [22], "*", color=GREEN, ms=10)
+    ax2.text(3.12, 5, "with a water gate: ~22", fontsize=6.5, color=GREEN)
+    ax2.set_xlabel("Capture rate (Hz)")
+    ax2.set_ylabel("Inferences per second")
+    ax2.set_title("(b) Why the gate is a throughput argument")
+    ax2.set_xlim(1, 5); ax2.set_ylim(0, 250)
+    fig.tight_layout()
+    save(fig, "fig-looks.pdf")
+
+
+# ===========================================================================
+# 8. Energy: the reserve policy, and the motor operating point
+# ===========================================================================
+def fig_energy():
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(FULL, 2.5))
+
+    # (a) reserve stack against what the pack actually delivers
+    # Read all three from the model's own reserve function. An earlier draft
+    # of this figure retyped two of them from a previous PDF and disagreed
+    # with the document by 9 Wh.
+    _, _, e_nom, e_rsw, e_lo = M.required_pack(M.MTOW)
+    parts = [("Nominal mission", e_nom, BLUE),
+             ("Full re-sweep", e_rsw, ORANGE),
+             ("4 min loiter", e_lo, GREEN)]
+    bottom = 0
+    for lbl, v, c in parts:
+        ax1.bar(0, v, bottom=bottom, color=c, width=0.5, label=f"{lbl} ({v:.1f} Wh)")
+        bottom += v
+    ax1.bar(1, M.E_pack * M.DOD, color=LIGHT, width=0.5,
+            label=f"Usable at {M.DOD:.0%} DoD ({M.E_pack*M.DOD:.1f} Wh)")
+    ax1.axhline(bottom, color=RED, ls="--", lw=1)
+    ax1.text(1.3, bottom + 4, f"required {bottom:.1f} Wh", color=RED, fontsize=6.8)
+    ax1.text(1.0, M.E_pack * M.DOD + 6,
+             f"+{100*(M.E_pack*M.DOD/bottom-1):.0f} % margin",
+             ha="center", fontsize=7, color=GREY)
+    ax1.set_xticks([0, 1]); ax1.set_xticklabels(["Required", "Available"])
+    ax1.set_ylabel("Energy (Wh)")
+    ax1.set_title("(a) Reserve policy against pack capacity")
+    ax1.legend(frameon=False, fontsize=6.4, loc="upper left")
+    ax1.set_ylim(0, 280)
+
+    # (b) motor operating point against the datasheet rating
+    DS = 26.5
+    lbls = ["Idle", "Hover", "Peak at T/W 2"]
+    vals = [1.1, M.I_hov / M.N_rot, M.I_max / M.N_rot]
+    cols = [LIGHT, GREEN, ORANGE]
+    b = ax2.bar(range(3), vals, color=cols, width=0.6)
+    ax2.axhline(DS, color=RED, ls="--", lw=1.2)
+    ax2.text(-0.42, DS + 1.0, f"datasheet max continuous {DS} A",
+             color=RED, fontsize=6.5)
+    for r, v in zip(b, vals):
+        ax2.text(r.get_x() + r.get_width() / 2, v + 0.8,
+                 f"{v:.1f} A\n{100*v/DS:.0f} %", ha="center", fontsize=6.8)
+    ax2.set_xticks(range(3)); ax2.set_xticklabels(lbls)
+    ax2.set_ylabel("Current per motor (A)")
+    ax2.set_title("(b) Tarot TL96020 operating point")
+    ax2.set_ylim(0, 36)
+    fig.tight_layout()
+    save(fig, "fig-motor.pdf")
+
 if __name__ == "__main__":
     print("Generating proposal figures...")
     fig_geotag()
@@ -542,4 +709,7 @@ if __name__ == "__main__":
     fig_launch()
     fig_pad()
     fig_sweep()
+    fig_detect()
+    fig_looks()
+    fig_energy()
     print("Done.")
