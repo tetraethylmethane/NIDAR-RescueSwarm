@@ -180,6 +180,9 @@ V = {
  "hfov": f"{o['hfov']:.1f}", "vfov": f"{o['vfov']:.1f}", "dfov": f"{o['dfov']:.1f}",
  "ifov": f"{o['ifov_mdeg']:.2f}",
  "gsd40": f"{a40['gsd_cm']:.2f}", "ppl40": f"{a40['person_px']:.0f}",
+ "ppl40a": f"{a40['person_px2']:,.0f}",
+ "wat40": f"{a40['water_px']:.0f}", "wat40a": f"{a40['water_px2']:,.0f}",
+ "waterm": f"{CO.WATER_M:.1f}",
  "sww": f"{a40['swath_w']:.1f}", "swh": f"{a40['swath_h']:.1f}",
  "hyp": f"{hyp:.2f}", "hyphalf": f"{hyp/2:.2f}",
  "rsms": f"{CO.READOUT_MS:.0f}", "rsm": f"{rs['shift_m']:.2f}",
@@ -376,8 +379,18 @@ distance at altitude $H$ is
 = \frac{@@pitch@@\,\text{\textmu m}\times 40\,\text{m}}{@@f@@\,\text{mm}}
 = @@gsd40@@~\text{cm/px},
 \]
-giving a @@sww@@\,$\times$\,@@swh@@\,m footprint and a 1.7\,m supine adult
-subtending \textbf{@@ppl40@@\,px} at 40\,m. One pixel subtends @@ifov@@\,mdeg.
+giving a @@sww@@\,$\times$\,@@swh@@\,m footprint. One pixel subtends
+@@ifov@@\,mdeg.
+
+Two target sizes follow, and the design is sized on the smaller.
+A 1.7\,m supine adult --- a survivor on a rooftop or dry ground --- subtends
+@@ppl40@@\,px, or @@ppl40a@@\,px$^2$. A person \emph{in water} presents head
+and shoulders only, about @@waterm@@\,m across, and subtends
+\textbf{@@wat40@@\,px}, or @@wat40a@@\,px$^2$ --- roughly a quarter of the
+apparent area. \textbf{The second is the design target}, because this is a
+flood system and immersion is the expected posture; the first is the
+optimistic case and is quoted here only so the two are not confused.
+Section~\ref{sec:perception} argues the tiling decision on the water figure.
 
 \textbf{Focus.} This is not a design problem, and the arithmetic says so. The
 hyperfocal distance,

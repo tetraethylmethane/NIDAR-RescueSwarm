@@ -104,7 +104,9 @@ check("IV-B", "survivor kits share of MTOW", 12.6, 100 * KITS / mtow,
 # Perception. The design is NATIVE tiling at 40 m -- no downsample -- and the
 # target is a person in WATER (0.4 m across), which is the worst posture and
 # the one the document is now sized against.
-WATER_M = 0.40
+# The 0.40 m target is now a first-class constant in camera_optics, so this
+# reads it rather than keeping a second copy of the number.
+WATER_M = CO.WATER_M
 spec40 = CO.at_altitude(CO.SPECIFIED, 40.0)
 spec60 = CO.at_altitude(CO.SPECIFIED, 60.0)
 
@@ -162,6 +164,20 @@ results.append((A40n >= CO.COCO_SMALL_PX2 and A60n < CO.COCO_SMALL_PX2
                 f"40m downsampled {A40d:.0f}, threshold {CO.COCO_SMALL_PX2}"))
 check("IV-E", "sensor pitch stated in text", 1.55, CO.SPECIFIED["pitch_um"],
       unit="um")
+# Section V used to publish only the 165 px supine adult while Section IV-E
+# argued the design on 39 px in water. Both were correct arithmetic for their
+# own target and neither referenced the other, so a reader of the optics output
+# got the optimistic case. Guard that the generated section states both and
+# says which one the design is sized on.
+GEN = io.open(os.path.join(ROOT, "docs", "proposal", "generated-sizing.tex"),
+              encoding="utf-8").read()
+results.append(("The second is the design target" in GEN, "V",
+                "generated section names WHICH target it is sized on",
+                1, 1, 0.0, "", "supine adult vs person in water"))
+results.append(("165" in GEN and "39" in GEN, "V",
+                "both target sizes appear in the generated section",
+                1, 1, 0.0, "", "165 px supine adult, 39 px in water"))
+
 results.append(("Survey altitude          & 40\\,m AGL" in TEX, "IV-E",
                 "design point table says 40 m", 1, 1, 0.0, "",
                 "the altitude decision is now taken, not open"))

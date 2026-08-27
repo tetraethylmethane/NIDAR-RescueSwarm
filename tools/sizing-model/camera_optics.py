@@ -32,8 +32,22 @@ MODELLED = {                       # what sizing-calculations.md 8 assumed
     "f_mm": 6.0,
 }
 
+# TWO TARGETS, AND THE DIFFERENCE MATTERS.
+#
+# This module used to expose only the supine adult, so every consumer reported
+# 165 px at 40 m while Section IV-E of the proposal argued the design on a
+# person in water at 39 px. Both numbers were published, neither referenced the
+# other, and a reader picking up the optics output got the easy case. That is
+# the same defect this repository keeps finding elsewhere, and it was ours.
+#
+# WATER is the design target: a person in floodwater presents head and
+# shoulders only, and this system exists for flooding. PERSON is the supine
+# adult -- a survivor on a rooftop or dry ground, which is roughly four times
+# easier in apparent area and is the OPTIMISTIC case, not the design case.
 PERSON_M = 1.7                     # supine adult, long axis
 PERSON_W = 0.5                     # supine adult, across the shoulders
+WATER_M = 0.40                     # person in water, head and shoulders
+WATER_W = 0.40                     # near-square from nadir
 # COCO area thresholds, which is how detection papers report AP and therefore
 # how any published recall number we compare against was measured.
 COCO_SMALL_PX2 = 32 ** 2           # below this an object is "small"
@@ -78,7 +92,12 @@ def at_altitude(c, h_m):
     sweep_s = path_m / GROUNDSPEED + TURN_S * (n_lines - 1)
     return {
         "gsd_cm": gsd_m * 100,
+        # person_* is the supine adult (optimistic); water_* is the design
+        # target. Callers that report only one must say which.
         "person_px": PERSON_M / gsd_m,
+        "person_px2": (PERSON_M / gsd_m) * (PERSON_W / gsd_m),
+        "water_px": WATER_M / gsd_m,
+        "water_px2": (WATER_M / gsd_m) * (WATER_W / gsd_m),
         "swath_w": swath_w, "swath_h": swath_h,
         "spacing": spacing,
         "n_lines": n_lines, "sweep_s": sweep_s,
