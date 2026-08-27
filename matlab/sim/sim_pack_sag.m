@@ -1,4 +1,4 @@
-%% pack_sag.m -- dynamic pack voltage over the RescueSwarm mission
+%% sim_pack_sag.m -- dynamic pack voltage over the RescueSwarm mission
 %
 % WHY THIS EXISTS, AND WHY IT IS NOT PYTHON.
 % The Python model treats the pack statically: one DC-IR figure applied to a
@@ -22,15 +22,20 @@
 % assumes, which makes this a consistency check on that assumption rather than
 % an independent measurement of it. P2 replaces R0 with a measured value.
 %
-% Run:  matlab -batch "run('tools/sim/pack_sag.m')"
+% Run:  matlab -batch "cd matlab; run_all('sim')"
 % Emits: docs/proposal/figures/fig-sag.pdf
-%        tools/sim/pack_sag_results.json
+%        matlab/data/pack_sag_results.json
 
-clear; close all;
+function sim_pack_sag()
+close all;
 
 here = fileparts(mfilename('fullpath'));
-root = fileparts(fileparts(here));
-prof = jsondecode(fileread(fullfile(root,'tools','sizing-model','mission-profile.json')));
+J = rs_model();
+prof = struct(); prof.S = J.primitives.S_cells; prof.P = J.primitives.P_par;
+prof.Ah = J.derived.Ah_pack; prof.V_nom = J.primitives.V_nom;
+prof.V_min = J.primitives.V_min; prof.DOD = J.primitives.DOD;
+prof.I_max = J.derived.I_max_A;
+prof.segs = J.mission_segments;
 
 S = prof.S; P = prof.P;                 % 6S3P
 Qcell = prof.Ah / P;                    % Ah per cell
@@ -52,8 +57,7 @@ OCV = @(z) interp1(zt, ocv, min(max(z,0),1), 'pchip');
 dt = 0.05;
 t = []; i_pack = [];
 for k = 1:numel(prof.segs)
-    seg = prof.segs{k};
-    dur = seg{2};  W = seg{3};
+    dur = prof.segs(k).duration_s;  W = prof.segs(k).power_W;
     n = max(1, round(dur/dt));
     t = [t, numel(t)*dt + (0:n-1)*dt];               %#ok<AGROW>
     i_pack = [i_pack, repmat(W/Vnom, 1, n)];         %#ok<AGROW>
@@ -97,7 +101,7 @@ fprintf('  margin                 %+.2f V\n', vmin_sim - Vmin);
 fprintf('  SOC at landing         %.1f %%\n', 100*z);
 fprintf('  sag at first gust      %.2f V (static model assumes 4.60)\n', sag_peak);
 
-fid = fopen(fullfile(here,'pack_sag_results.json'),'w');
+fid = fopen(fullfile(fileparts(here),'data','pack_sag_results.json'),'w');
 fwrite(fid, jsonencode(res, 'PrettyPrint', true)); fclose(fid);
 
 %% -- figure --------------------------------------------------------------
@@ -136,6 +140,5 @@ xlabel('Mission time (s)','FontSize',8);
 title('(b) Current draw and state of charge','FontSize',8.5,'FontWeight','normal');
 xlim([0 t(end)]);
 
-out = fullfile(root,'docs','proposal','figures','fig-sag.pdf');
-exportgraphics(f, out, 'ContentType','vector');
-fprintf('  wrote %s\n\n', out);
+rs_save(f, 'fig-sag.pdf');
+end

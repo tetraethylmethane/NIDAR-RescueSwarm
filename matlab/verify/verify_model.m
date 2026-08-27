@@ -17,7 +17,7 @@ function verify_model()
 close all;
 here = fileparts(mfilename('fullpath'));
 root = fileparts(fileparts(here));
-J = jsondecode(fileread(fullfile(here,'model.json')));
+J = rs_model();
 p = J.primitives; d = J.derived;
 
 pass = 0; fail = 0; rows = {};
@@ -130,7 +130,7 @@ fprintf('%s\n', repmat('-',1,78));
 fprintf(' %d passed, %d failed\n\n', pass, fail);
 
 res = struct('passed',pass,'failed',fail);
-fid = fopen(fullfile(here,'verify_results.json'),'w');
+fid = fopen(fullfile(fileparts(here),'data','verify_results.json'),'w');
 fwrite(fid, jsonencode(res,'PrettyPrint',true)); fclose(fid);
 
 if fail > 0

@@ -14,8 +14,8 @@ asserts against the DERIVED values exported here. That is not duplication, it
 is cross-validation -- two implementations, two languages, and a failing
 assertion if they ever disagree.
 
-Run:  python tools/sim/export_model.py
-Emits: tools/sim/model.json
+Run:  python matlab/export_model.py
+Emits: matlab/data/model.json
 """
 from __future__ import annotations
 
@@ -26,13 +26,13 @@ import math
 import os
 import sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools", "sizing-model"))
 with contextlib.redirect_stdout(io.StringIO()):
     import rescueswarm_sizing_model as M
     import camera_optics as CO
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "model.json")
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "model.json")
 
 
 def main() -> None:

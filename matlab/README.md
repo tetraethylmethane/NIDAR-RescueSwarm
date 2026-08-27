@@ -19,21 +19,38 @@ diverge, and the divergence is silent.
 ## Pipeline
 
 ```
-python tools/sim/export_model.py          # Python -> model.json
-matlab -batch "addpath('tools/sim'); verify_model"
-matlab -batch "run('tools/sim/pack_sag.m')"
+python matlab/export_model.py             # Python -> data/model.json
+matlab -batch "cd matlab; run_all"          # verify + figures + simulations
+matlab -batch "cd matlab; run_all('verify')"   # or one stage at a time
 ```
 
 ## What each part does
 
-**`export_model.py`** writes `model.json`: 38 primitives, 34 derived values, the
+See CHECKLIST.md for the status of every figure, calculation, verification and
+simulation.
+
+## Layout
+
+```
+matlab/
+  run_all.m          verify + figures + simulations, one entry point
+  export_model.py    Python -> data/model.json
+  lib/               rs_model, rs_style, rs_axes, rs_save
+  calc/              (reserved)
+  verify/            verify_model.m -- 28 independent cross-checks
+  figures/           fig_detect, fig_looks, fig_energy
+  sim/               sim_pack_sag
+  data/              model.json and results
+```
+
+**`export_model.py`** writes `data/model.json`: 38 primitives, 34 derived values, the
 mass statement and the mission profile.
 
 **`verify_model.m`** is the cross-validation. The Python model asserts each
 derivation against its own result, which catches an inconsistent edit but *not*
 a mistake in the derivation itself — the same expression sits on both sides.
 This re-derives all of it independently, in another language, from primitives
-only. **28 checks, currently all passing.**
+only. **28 checks, currently all passing** -- most to machine precision.
 
 Two of those are deliberately redundant: pack energy is computed both from the
 cell arithmetic (exact identity) and from mass times specific energy (agrees to
