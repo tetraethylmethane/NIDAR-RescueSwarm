@@ -44,6 +44,25 @@ jobs:
           # the failure mode that put a 12-cell bay in a 18-cell design.
           python tools/sizing-model/cad_equations.py            > /tmp/cad-equations-output.txt
           python tools/sizing-model/cost_model.py               > /tmp/cost-model-output.txt
+          # Partitions the competition ask across the four delivery tracks and
+          # ASSERTS that the four track asks plus the shared pool reconcile to
+          # the master figure to the paisa. If a budget line is added without a
+          # track assignment, or the split stops summing, this fails here rather
+          # than in a review where four documents quietly disagree.
+          python docs/proposal/figures/track_budget.py           > /tmp/track-budget-output.txt
+          # Regenerates the proposal's sizing section IN PLACE from the model.
+          # The proposal claims none of its numbers are transcribed by hand;
+          # this is what makes that true for section V. The generator also
+          # asserts its own derivations against the model's results, so a
+          # constant cannot change in one place and not the other.
+          python tools/proposal/build_sizing_section.py
+          # Section V is generated and therefore cannot drift. Sections I-IV and
+          # VI-XII are hand-written and were checked by nothing until this. It
+          # re-derives each numeric claim from the model that owns it and exits
+          # non-zero on any mismatch. It caught three: the perception section
+          # quoted a sensor the BOM does not buy, which also made the capture
+          # gate's angular-blur threshold wrong.
+          python tools/proposal/verify_proposal_numbers.py
           # Not a sizing model -- a Monte Carlo through the real projection code
           # in perception/. It cross-checks section 11 of sizing-calculations.md
           # against an independently written forward model, and exits non-zero if
@@ -78,6 +97,12 @@ jobs:
           if ! git diff --quiet -- hardware/cad/rescueswarm-frame-equations.txt; then
             echo "DRIFT hardware/cad/rescueswarm-frame-equations.txt"
             git diff -- hardware/cad/rescueswarm-frame-equations.txt | head -30
+            fail=1
+          fi
+          if ! git diff --quiet -- docs/proposal/generated-sizing.tex; then
+            echo "DRIFT docs/proposal/generated-sizing.tex — the proposal's"
+            echo "sizing section does not match the model it claims to come from."
+            git diff -- docs/proposal/generated-sizing.tex | head -40
             fail=1
           fi
           if [ "$fail" = "1" ]; then

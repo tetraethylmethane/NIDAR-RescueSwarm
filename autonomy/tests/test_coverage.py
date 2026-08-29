@@ -8,6 +8,7 @@ nowhere near equal-width.
 import math
 import os
 import sys
+import warnings
 
 import pytest
 
@@ -324,3 +325,206 @@ def test_plan_is_fast_enough_for_the_setup_window():
         plan_mission(TEN_HA, HOME, 3)
     per = (time.perf_counter() - t0) / 20
     assert per < 0.5, f"{per*1000:.0f} ms per plan"
+
+
+# ---------------------------------------------------------------------------
+# Where the sweep is allowed to be, on an arbitrary boundary.
+#
+# Measured with a 1 m tolerance, because transect ends land on the boundary and
+# float rounding puts them a couple of centimetres past it. A knife-edge test
+# reports 54 % of waypoints "outside" for a rectangle that flies perfectly.
+# ---------------------------------------------------------------------------
+
+TOL_M = 1.0
+SEARCH_ALT = 40.0
+
+
+def _inside(poly, pt):
+    x, y = pt
+    c = False
+    for i in range(len(poly)):
+        x1, y1 = poly[i]
+        x2, y2 = poly[(i + 1) % len(poly)]
+        if ((y1 > y) != (y2 > y)) and \
+           (x < (x2 - x1) * (y - y1) / (y2 - y1 + 1e-12) + x1):
+            c = not c
+    return c
+
+
+def _metres_outside(poly, pt):
+    """0 if inside, else distance to the nearest edge."""
+    if _inside(poly, pt):
+        return 0.0
+    x, y = pt
+    best = float("inf")
+    for i in range(len(poly)):
+        x1, y1 = poly[i]
+        x2, y2 = poly[(i + 1) % len(poly)]
+        dx, dy = x2 - x1, y2 - y1
+        L2 = dx * dx + dy * dy
+        t = 0.0 if L2 == 0 else max(0.0, min(1.0,
+                                             ((x - x1) * dx + (y - y1) * dy) / L2))
+        best = min(best, math.hypot(x - (x1 + t * dx), y - (y1 + t * dy)))
+    return best
+
+
+def _worst_excursion(poly_xy, a, b, n=40):
+    return max(_metres_outside(poly_xy, (a[0] + (b[0] - a[0]) * j / n,
+                                         a[1] + (b[1] - a[1]) * j / n))
+               for j in range(n + 1))
+
+
+def _search_points(plan, frame):
+    """Per drone, the waypoints flown at search altitude, in order."""
+    for dr in plan.drones:
+        yield [frame.to_xy(it.lat, it.lon) for it in dr.items
+               if abs(it.lat) > 1 and abs(it.alt - SEARCH_ALT) < 0.5]
+
+
+L_SHAPE = [(LAT0, LON0), (LAT0, LON0 + 0.0027), (LAT0 + 0.0016, LON0 + 0.0027),
+           (LAT0 + 0.0016, LON0 + 0.0045), (LAT0 + 0.0036, LON0 + 0.0045),
+           (LAT0 + 0.0036, LON0)]
+
+def _poly(*pts_m, lat0=LAT0, lon0=LON0):
+    """(east, north) metres -> (lat, lon), for writing shapes readably."""
+    f = Frame(lat0, lon0)
+    return [f.to_latlon(e, n) for e, n in pts_m]
+
+
+# The shapes an organiser could plausibly hand over, including the ones that
+# break a naive lawnmower: notches of several depths, a slot narrower than the
+# line spacing, and interleaved fingers.
+HARD_SHAPES = {
+    "L notch 100 m": _poly((-200, 0), (100, 0), (100, 100), (200, 100),
+                           (200, 400), (-200, 400)),
+    "L notch 300 m": _poly((-200, 0), (100, 0), (100, 300), (200, 300),
+                           (200, 400), (-200, 400)),
+    "U-shape": _poly((-200, 0), (-60, 0), (-60, 260), (60, 260), (60, 0),
+                     (200, 0), (200, 400), (-200, 400)),
+    "deep narrow slot": _poly((-200, 0), (200, 0), (200, 400), (20, 400),
+                              (20, 60), (-20, 60), (-20, 400), (-200, 400)),
+    "plus / cross": _poly((-70, 0), (70, 0), (70, 130), (200, 130),
+                          (200, 270), (70, 270), (70, 400), (-70, 400),
+                          (-70, 270), (-200, 270), (-200, 130), (-70, 130)),
+    "zigzag comb": _poly((-200, 0), (200, 0), (200, 400), (120, 400),
+                         (120, 150), (40, 150), (40, 400), (-40, 400),
+                         (-40, 150), (-120, 150), (-120, 400), (-200, 400)),
+}
+
+ARBITRARY = {
+    "rectangle": rect(300, 400),
+    "rotated 30": rect(300, 400, rot_deg=30),
+    "long thin": rect(120, 700),
+    "triangle": _poly((-180, 0), (180, 0), (0, 400)),
+    "convex pentagon": _poly((-150, 0), (150, 0), (200, 250), (0, 420),
+                             (-200, 250)),
+    "24-gon": _poly(*[(200 * math.cos(2 * math.pi * i / 24),
+                       200 * math.sin(2 * math.pi * i / 24) + 220)
+                      for i in range(24)]),
+    "L-shape (concave)": L_SHAPE,
+    **HARD_SHAPES,
+}
+
+
+@pytest.mark.parametrize("name", list(ARBITRARY))
+def test_transects_stay_inside_any_boundary(name):
+    """The SEARCH LINES never leave the search area, whatever its shape.
+
+    This is the load-bearing one. A transect outside the boundary is the
+    aircraft sweeping ground the organisers excluded.
+    """
+    poly = ARBITRARY[name]
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        plan = plan_mission(poly, HOME, 3)
+    f = Frame.from_points(poly)
+    bxy = f.poly_to_xy(poly)
+    worst = 0.0
+    for pts in _search_points(plan, f):
+        # even-indexed legs are transects; odd are the turns between them
+        for i in range(0, len(pts) - 1, 2):
+            worst = max(worst, _worst_excursion(bxy, pts[i], pts[i + 1]))
+    assert worst <= TOL_M, f"{name}: transect ran {worst:.1f} m outside"
+
+
+def test_turn_legs_stay_inside_a_concave_boundary():
+    """The hop between coverage cells is routed around a notch, not across it.
+
+    This test used to assert the OPPOSITE. Cell decomposition stops the sweep
+    crossing a notch, but the aircraft still has to get from the last transect
+    of one cell to the first of the next, and a straight line between two lobes
+    cuts the corner -- 10 m on a shallow notch, 49 m on a deep one. That was
+    pinned here as a known limit until the hop was routed with a visibility
+    graph, at which point this assertion inverted.
+    """
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        plan = plan_mission(L_SHAPE, HOME, 3)
+    f = Frame.from_points(L_SHAPE)
+    bxy = f.poly_to_xy(L_SHAPE)
+    worst = 0.0
+    for pts in _search_points(plan, f):
+        for i in range(len(pts) - 1):
+            worst = max(worst, _worst_excursion(bxy, pts[i], pts[i + 1]))
+    assert worst <= TOL_M, f"a leg ran {worst:.1f} m outside the search area"
+
+
+def test_scanline_pairs_crossings_rather_than_spanning_them():
+    """A concave strip must give two runs on a line, not one bridging span.
+
+    The clipper used to return (min, max) of the crossings, which on a concave
+    strip hands back a segment straight across the notch.
+    """
+    notched = [(-100.0, -50.0), (100.0, -50.0), (100.0, 50.0),
+               (10.0, 50.0), (10.0, -10.0), (-10.0, -10.0),
+               (-10.0, 50.0), (-100.0, 50.0)]
+    runs = bou._clip_segment_to_poly(notched, 20.0)
+    assert len(runs) == 2, f"expected two runs across the notch, got {runs}"
+    (a0, a1), (b0, b1) = runs
+    assert a1 <= -10.0 + 1e-6 and b0 >= 10.0 - 1e-6
+
+
+@pytest.mark.parametrize("name", list(HARD_SHAPES))
+def test_every_leg_stays_inside_a_concave_boundary(name):
+    """No leg of the sweep leaves the search area, on any of these.
+
+    Transects are clipped to the boundary, the sweep is split into cells so it
+    never crosses a notch mid-pattern, and the hop between cells is routed
+    around rather than straight through. Before that chain existed these shapes
+    put 10-49 m of flight path outside the area the organisers gave us.
+    """
+    poly = HARD_SHAPES[name]
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        plan = plan_mission(poly, HOME, 3)
+    f = Frame.from_points(poly)
+    bxy = f.poly_to_xy(poly)
+    worst = 0.0
+    for pts in _search_points(plan, f):
+        for i in range(len(pts) - 1):
+            worst = max(worst, _worst_excursion(bxy, pts[i], pts[i + 1]))
+    assert worst <= TOL_M, f"{name}: a leg ran {worst:.1f} m outside"
+
+
+@pytest.mark.parametrize("name", list(HARD_SHAPES))
+def test_concave_areas_still_split_evenly(name):
+    """Routing around notches must not cost the equal-area guarantee."""
+    poly = HARD_SHAPES[name]
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        plan = plan_mission(poly, HOME, 3)
+    assert plan.balance["max_imbalance"] < 0.02
+
+
+def test_routing_is_a_no_op_on_a_convex_boundary():
+    """Convex missions must be untouched by any of this.
+
+    The flown configuration is a rectangle. If routing inserted so much as one
+    waypoint there, every verified separation and endurance number would be
+    describing a different flight.
+    """
+    poly = rect(300, 400)
+    lines = [[(LAT0, LON0), (LAT0 + 0.001, LON0)],
+             [(LAT0 + 0.001, LON0 + 0.001), (LAT0, LON0 + 0.001)]]
+    routed = bou.route_legs(lines, poly)
+    assert routed == [list(ln) for ln in lines]

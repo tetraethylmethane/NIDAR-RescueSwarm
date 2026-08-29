@@ -1,0 +1,330 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage[scaled=0.88]{helvet}
+\usepackage{microtype}
+\usepackage[margin=24mm,top=22mm,bottom=24mm]{geometry}
+\usepackage{amsmath,booktabs,array,xcolor,titlesec}
+
+\definecolor{ink}{HTML}{1A1A1A}
+\definecolor{dim}{HTML}{6B6B72}
+\definecolor{rule}{HTML}{B9B9C0}
+\definecolor{warn}{HTML}{8C2B20}
+
+\color{ink}
+\setlength{\parskip}{0pt}
+\setlength{\parindent}{1.2em}
+\renewcommand{\arraystretch}{1.22}
+\pagestyle{plain}
+
+\titleformat{\section}{\normalfont\bfseries\large}{\thesection.}{0.6em}{}
+\titlespacing*{\section}{0pt}{16pt plus 3pt}{6pt}
+
+\newcommand{\lead}[1]{{\itshape\color{dim} #1}\par\vspace{6pt}}
+
+\begin{document}
+
+\vspace*{-6mm}
+
+\section{What the model actually receives}
+
+You asked what the detector is being handed, so this starts there and works
+backwards to the optics. Short version: the numbers in
+\texttt{sizing-calculations.md}~\S8 were computed for a different sensor than
+the one we are buying, and the difference matters more to you than to anyone
+else on the team.
+
+We are buying an \textbf{Arducam IMX477} with a 6\,mm S-mount lens. Sony
+specifies it as type 1/2.3: $4056\times3040$ on a \textbf{1.55\,\textmu m}
+pitch. The sizing chapter assumes ``1/1.8\,in\ldots\ \textbf{1.82\,\textmu m}
+pitch''. Same pixel \emph{count}, different pixel \emph{size} --- so
+resolution on target is not what the chapter says.
+
+Here is the target through the pipeline, at the 40\,m search altitude, taking a
+supine adult as 1.7\,m by 0.5\,m:
+
+\begin{center}
+\begin{tabular}{l r c r r l}
+\toprule
+ & \textbf{GSD} & \textbf{Target} & \textbf{Area} &
+\textbf{Of a 640 tile} & \textbf{COCO class} \\
+ & (cm/px) & (px) & (px$^2$) & & \\
+\midrule
+Sensor, native & 1.03 & 165$\,\times\,$48 & 7960 & 26\,\% & medium \\
+After $2\times$ downsample & 2.07 & 82$\,\times\,$24 & 1990 & 13\,\% & medium \\
+Chapter figure, 60\,m, $2\times$ & 3.64 & 47$\,\times\,$14 & 642 & 7\,\% & \textcolor{warn}{\textbf{small}} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{The last row is the one to look at.} The 47\,px figure currently in
+the proposal puts the target at 642\,px$^2$, which is
+\emph{below} COCO's small-object threshold of 1024\,px$^2$. On the
+sensor we are actually buying, at 40\,m, it sits at
+1990\,px$^2$ --- comfortably in the \emph{medium} band.
+
+That is not a cosmetic difference. Any published recall figure you benchmark
+against reports AP by that size class, and small-object AP is routinely a large
+fraction below medium on the same model. If we quote the 47\,px number we are
+implicitly promising small-object performance we do not have to accept.
+
+\section{Where those numbers come from}
+
+Everything follows from three quantities: pixel count, pixel pitch, focal
+length. Active area is count times pitch,
+\[
+w = 4056 \times 1.55\,\text{\textmu m} = 6.287\,\text{mm},
+\qquad
+h = 4.712\,\text{mm},
+\qquad
+d = 7.86\,\text{mm},
+\]
+which is the type 1/2.3 format Sony quotes. Half-fields are arctangents of half
+the sensor over $f$, exactly, with no small-angle approximation:
+\[
+\theta = 2\arctan\!\left(\frac{s}{2f}\right)
+\;\Longrightarrow\;
+\text{HFOV} = 55.3^\circ,\quad
+\text{VFOV} = 42.9^\circ,\quad
+\text{DFOV} = 66.4^\circ .
+\]
+Sensor and ground are similar triangles about the lens, so ground sample
+distance is just
+\[
+\text{GSD} = \frac{p\,H}{f}
+= \frac{1.55\,\text{\textmu m} \times 40\,\text{m}}{6\,\text{mm}}
+= 1.03\,\text{cm/px} .
+\]
+One pixel subtends 14.80\,mdeg, which is what sets the blur
+tolerance in~\S4.
+
+\begin{center}
+\begin{tabular}{r r r c r}
+\toprule
+\textbf{AGL} (m) & \textbf{GSD} (cm/px) & \textbf{Target} (px) &
+\textbf{Footprint} (m) & \textbf{Frames/target} \\
+\midrule
+30 & 0.78 & 219 & 31.4$\,\times\,$23.6 & 6 \\
+40 & 1.03 & 165 & 41.9$\,\times\,$31.4 & 8 \\
+60 & 1.55 & 110 & 62.9$\,\times\,$47.1 & 12 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Tiling, and one property worth checking}
+
+Tile count depends on pixel count, which did not change, so the inference
+budget is untouched: at $2\times$ downsample and 2\,Hz we still get
+12 tiles per frame and 24 inferences per second.
+
+\begin{center}
+\begin{tabular}{c c r r r r}
+\toprule
+\textbf{Downsample} & \textbf{Frame} & \textbf{Tiles} &
+\textbf{Inferences/s} & \textbf{GSD} (cm/px) & \textbf{Target} (px) \\
+\midrule
+$1\times$ & 4056$\,\times\,$3040 & 48 & 240 & 1.03 & 165 \\
+$2\times$ & 2028$\,\times\,$1520 & 12 & 24 & 2.07 & 82 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The property worth checking is the overlap. At 640\,px tiles and
+20\,\% overlap the shared margin is
+128\,px, and the target at 40\,m is
+82\,px along its long axis. \textbf{The overlap is wider than
+the target}, so no survivor can be cut by a tile boundary without appearing
+whole in the neighbouring tile. That holds at every altitude in the table
+above, and it is the reason the overlap is 20\,\% rather than something
+smaller.
+
+\section{Blur, which turns out not to bind}
+
+Forward motion smears the image by $v\,t_{\text{exp}}$ on the ground, so
+holding smear under one pixel means $t_{\text{exp}} \le \text{GSD}/v$. At
+8\,m/s:
+
+\begin{center}
+\begin{tabular}{r r l}
+\toprule
+\textbf{AGL} (m) & \textbf{Longest exposure} (ms) & \textbf{Shutter} \\
+\midrule
+30 & 0.97 & 1/1032 \\
+40 & 1.29 & 1/774 \\
+60 & 1.94 & 1/516 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\texttt{SYS-45} already mandates $1/1000$\,s or faster, which clears every
+altitude. In Indian daylight that pushes ISO down rather than exposure up, so
+it costs nothing in noise either. Blur is not what will limit recall; target
+size is.
+
+\section{Sampling in time: how many looks the fusion gets}
+
+This is the section I would read first, because it does not currently close.
+
+A target sits in frame for as long as the along-track footprint takes to pass
+over it. The along-track footprint is the vertical field of view projected on
+the ground, so
+\[
+D = 2H\tan\frac{\text{VFOV}}{2},
+\qquad
+t_{\text{dwell}} = \frac{D}{v},
+\qquad
+n_{\text{looks}} = t_{\text{dwell}}\, r ,
+\]
+for capture rate $r$ and ground speed $v = 8$\,m/s. Forward
+overlap between consecutive frames is $1 - (v/r)/D$.
+
+\begin{center}
+\begin{tabular}{r r r r r r}
+\toprule
+\textbf{AGL} & \textbf{Along-track} & \textbf{Dwell} & \textbf{Rate} &
+\textbf{Looks} & \textbf{Fwd overlap} \\
+(m) & (m) & (s) & (Hz) & & (\%) \\
+\midrule
+30 & 23.6 & 2.94 & 2 & \textcolor{warn}{\textbf{5.9}} & 83 \\
+30 & 23.6 & 2.94 & 3 & \textcolor{warn}{\textbf{8.8}} & 89 \\
+30 & 23.6 & 2.94 & 5 & 14.7 & 93 \\
+40 & 31.4 & 3.93 & 2 & \textcolor{warn}{\textbf{7.9}} & 87 \\
+40 & 31.4 & 3.93 & 3 & \textcolor{warn}{\textbf{11.8}} & 92 \\
+40 & 31.4 & 3.93 & 5 & 19.6 & 95 \\
+60 & 47.1 & 5.89 & 2 & \textcolor{warn}{\textbf{11.8}} & 92 \\
+60 & 47.1 & 5.89 & 3 & 17.7 & 94 \\
+60 & 47.1 & 5.89 & 5 & 29.4 & 97 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\texttt{SYS-46} requires at least 12 looks per target per
+pass, so that multi-frame fusion has enough independent observations to
+converge. \textcolor{warn}{\textbf{At 40\,m and 2\,Hz we get
+7.9.}} That is a 35\,\% shortfall, and it is not a
+rounding argument.
+
+The figure quoted elsewhere --- about 14 looks at 2\,Hz --- is correct for
+60\,m on the wider sensor the sizing chapter assumed. On the sensor we are
+buying, at the altitude the simulations fly, it does not hold. Meeting
+12 looks at 40\,m needs
+\[
+r \ge \frac{n\,v}{D} = \frac{12 \times 8}{31.4}
+= 3.06\,\text{Hz},
+\]
+which at 12 tiles per frame is 37 inferences per second rather than
+24. That is the trade in front of us: raise the capture rate and pay
+about half again in inference load, fly slower, fly higher, or relax the look
+count. I do not think it should be decided by whoever notices it last.
+
+\section{Focus and rolling shutter}
+
+Two things worth ruling in or out before they surprise us.
+
+\textbf{Focus is not a concern.} The hyperfocal distance for this lens is
+\[
+H_{\text{hyp}} = \frac{f^2}{N\,c} + f
+= \frac{(6\,\text{mm})^2}{2.8 \times 0.0031\,\text{mm}} + 6\,\text{mm}
+= 4.15\,\text{m},
+\]
+taking the circle of confusion as 2 pixels rather than a film-era
+constant, since the sensor is what resolves. Focused at that distance
+everything from about 2.1\,m to infinity is acceptably sharp, and we
+operate at 30--60\,m. Nothing to do.
+
+\textbf{Rolling shutter is small but not zero.} The IMX477 reads out row by
+row over roughly 25\,ms at full frame, during which the aircraft
+moves $v\,t_{\text{ro}} = 0.20$\,m. Top to bottom that is
+\textbf{19\,px} of skew at 40\,m.
+
+For detection this is negligible: a target spans only part of the frame height,
+so the skew \emph{within} one target is about 1.0\,px --- less than
+the blur budget. For geolocation it is not negligible, because a detection's
+row position now carries up to 20\,cm of along-track bias
+depending on where in the frame it landed. If the geotag pipeline does not
+already correct for readout row, that is a systematic error sitting inside our
+budget rather than a random one.
+
+\section{Imagery volume}
+
+Relevant because we still need training data, and because the storage line in
+the parts list has to hold a mission.
+
+One frame is $4056 \times 3040$ at 12-bit packed, so
+18\,MB raw or about 2\,MB compressed. A single
+196\,s sweep at 2\,Hz is 392 frames:
+\textbf{7.2\,GB raw, 0.8\,GB compressed} per aircraft, per
+sweep. Three aircraft over a full mission with retries will comfortably fill
+the 256\,GB module if we record raw, and will not come close if we record JPEG.
+
+That is a decision worth making deliberately rather than discovering on the
+day: raw gives you the data to retrain against, JPEG gives you the endurance to
+keep recording. If we want a dataset out of the competition itself, raw on at
+least one aircraft is the way to get it.
+
+\section{What it costs the flight side}
+
+For completeness, since the same substitution moves the coverage numbers in the
+opposite direction. A smaller pixel behind the same lens narrows the field and
+finens the GSD in the same proportion, so at 40\,m:
+
+\begin{center}
+\begin{tabular}{l r r r}
+\toprule
+At 40\,m AGL & \textbf{IMX477} & \textbf{Sizing chapter} & \textbf{Change, \%} \\
+\midrule
+Horizontal field of view, $^\circ$ & 55.30 & 63.20 & -12.5 \\
+Ground sample distance, cm/px & 1.03 & 1.21 & -14.8 \\
+Survivor along the long axis, px & 164.52 & 140.11 & +17.4 \\
+Swath width, m & 41.91 & 49.21 & -14.8 \\
+Line spacing, m & 29.34 & 34.45 & -14.8 \\
+Transects per drone & 7.00 & 6.00 & +16.7 \\
+Sweep time per drone, s & 195.75 & 166.93 & +17.3 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+We gain 17\,\% more pixels on target and pay 17\,\% more
+sweep time --- seven transects per drone instead of six. Against 250 marks for
+detection and an 1800\,s budget I think that favours the sensor we are buying,
+but it was never a decision anyone made.
+
+\section{Where to start}
+
+\begin{itemize}\itemsep3pt
+
+\item \textbf{Train across scales, then fine-tune towards
+82\,px.} That is the target size at 40\,m after downsampling,
+but it is a centre rather than a fixed point --- ground sample distance is
+proportional to altitude, so any altitude error moves it. A $\pm$5\,m band about
+40\,m puts the same person anywhere between 73 and 94\,px,
+and terrain relief widens that further. A model trained only at
+82\,px would be brittle to exactly the variation the aircraft
+guarantees, so keep normal scale augmentation and bias the fine-tuning towards
+the operating point.
+
+\item \textbf{Check the size band when you read a published number.} Detection
+papers report average precision separately for small, medium and large targets,
+using the pixel-area thresholds in \S1. A headline figure quoted without its
+band is not comparable to anything we are doing --- ours sits in
+\emph{medium}, and small-object numbers are usually much worse.
+
+\item \textbf{HERIDAL and SARD are the obvious starting datasets.} When you
+benchmark on either, record which band the result came from, so we can tell
+whether it transfers.
+
+\item \textbf{The measurement that unblocks a real decision is recall against
+target size.} If you can say what recall looks like at
+82\,px versus 47\,px, that settles an argument
+nobody can currently settle: the design point says survey at 60\,m, every
+simulation we have flown uses 40\,m, and the sizing chapter proposes 40\,m
+pending exactly this measurement.
+
+\item \textbf{It does not have to be precise to be useful.} Even a rough curve
+of recall against pixel height, on whatever data you have, decides the altitude
+and lets the documents be corrected once instead of twice.
+
+\end{itemize}
+
+
+\end{document}

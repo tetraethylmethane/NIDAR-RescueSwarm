@@ -20,10 +20,10 @@
 | Hover endurance @ 80 % DoD | **15.3 min** (≈2.0× the mission — **at the reserve limit**) |
 | Design mission duration | **7.7 min** (26 % of the 30 min allowance) |
 | Design mission energy | 95 Wh = **41 % of usable** → lands at ~68 % SoC |
-| Thrust-to-weight (static, SL) | 2.0 → 2.94 kgf per motor |
+| Thrust-to-weight (static, SL) | 2.0 → **3.18 kgf per motor** |
 | Hover throttle point | 50 % of max motor thrust |
 | Search altitude / speed | 60 m AGL / 8 m/s **groundspeed** |
-| GSD at 60 m | 1.82 cm/px → person ≈ 93 px long |
+| GSD at 60 m | **1.55 cm/px → person ≈ 110 px long** |
 | Sweep time (10 ha, 3 drones) | ~93 s per drone including turns |
 | Geotag accuracy (design target) | **CEP50 ≤ 0.75 m** with RTK — scoring-derived, see `../requirements/rulebook-compliance.md` |
 | Delivery accuracy (design target) | **≥ 60 % within 2 m, ≥ 30 % within 1 m** of the survivor, from a 6 m hover-and-drop |
@@ -180,14 +180,20 @@ Rounded **up** to a buildable configuration — **6S2P of 21700 4500 mAh 45 A ce
 
 | Quantity | Value |
 |---|---|
-| Static thrust required at T/W = 2.0 | 99 N (10.1 kgf) total → **2.53 kgf per motor** |
-| Motor class | ~5008/5010, 300–400 KV, 6S, 20 in prop |
-| Hover thrust per motor | 1.26 kgf = **50 % of max** |
-| Hover current | 27.8 A (3.1 C) |
-| Peak current at T/W = 2 | **74 A** (8.2 C), 1601 W |
-| Pack burst capability (2P × 45 A) | 90 A → **21 % margin** |
-| ESC | 19 A peak per motor → specify **50–60 A** ESC (≥ 2.5× margin) |
-| Main power leads | 74 A peak → **10 AWG**; motor leads 14 AWG |
+| Static thrust required at T/W = 2.0 | 125 N (12.72 kgf) total → **3.18 kgf per motor** |
+| Motor class | ~5008-class, 300–400 KV, 6S, **18 in prop** |
+| Hover thrust per motor | 1.59 kgf = **50 % of max** |
+| Hover current | 42.2 A (3.13 C) |
+| Peak current at T/W = 2 | **115 A** (8.51 C), 2481 W |
+| Pack burst capability (3P × 45 A) | 135 A → **18 % margin** |
+| ESC | 29 A peak per motor → specify **50–60 A** ESC |
+| Main power leads | 115 A peak → **10 AWG**; motor leads 14 AWG |
+
+> **This table was stale.** Every row above previously carried the 6S2P /
+> 20 in / 5.05 kg design point: 99 N total, 2.53 kgf per motor, 74 A peak,
+> a 2P pack. The design moved to 6S3P on 18 in props and this section did not
+> move with it, so it understated required motor thrust by 26 % and peak
+> current by 55 %. Regenerate from `model-output.txt`, never by hand.
 
 The **50 % hover throttle point** is the number to check on any propulsion trade. Below ~40 % the motors are oversized (dead mass); above ~60 % you lose control authority and thermal margin. 50 % is the centre of the good band.
 
@@ -213,22 +219,24 @@ A quadrotor **has no motor-out tolerance** — losing one rotor means losing yaw
 
 ## 8. Camera and optics
 
-**Baseline sensor:** 1/1.8 in, 4056 × 3040 (12.3 MP), 7.4 × 5.6 mm, 1.82 µm pitch, **f = 6.0 mm** → HFOV 63.3°, VFOV 50.0°.
+**Sensor:** Arducam IMX477, type 1/2.3, 4056 × 3040 (12.3 MP), 6.287 × 4.712 mm, **1.55 µm pitch**, **f = 6.0 mm** → HFOV 55.3°, VFOV 42.9°.
+
+> **Corrected.** This section previously specified a 1/1.8 in sensor at 1.82 µm — the same pixel *count* on a larger pixel — which is not the part the bill of materials buys. Every row below was recomputed. The substitution cuts both ways: finer ground sampling and more pixels on target, but a narrower field, so coverage costs an extra transect at every altitude.
 
 | AGL | Swath | Along-track | GSD | Person (1.7 m) | Transects | Total track | Sweep/drone |
 |---|---|---|---|---|---|---|---|
-| 30 m | 37.0 m | 28.0 m | 0.91 cm | 186 px | 10 | 4000 m | 187 s |
-| 40 m | 49.3 m | 37.3 m | 1.22 cm | 140 px | 8 | 3200 m | 149 s |
-| 50 m | 61.7 m | 46.7 m | 1.52 cm | 112 px | 6 | 2400 m | 112 s |
-| **60 m** | **74.0 m** | **56.0 m** | **1.82 cm** | **93 px** | **5** | **2000 m** | **93 s** |
-| 70 m | 86.3 m | 65.3 m | 2.13 cm | 80 px | 5 | 2000 m | 93 s |
-| 80 m | 98.7 m | 74.7 m | 2.43 cm | 70 px | 4 | 1600 m | 75 s |
+| 30 m | 31.4 m | 23.6 m | 0.78 cm | 219 px | 12 | 4800 m | 224 s |
+| 40 m | 41.9 m | 31.4 m | 1.03 cm | 165 px | 9 | 3600 m | 168 s |
+| 50 m | 52.4 m | 39.3 m | 1.29 cm | 132 px | 7 | 2800 m | 131 s |
+| **60 m** | **62.9 m** | **47.1 m** | **1.55 cm** | **110 px** | **6** | **2400 m** | **112 s** |
+| 70 m | 73.3 m | 55.0 m | 1.81 cm | 94 px | 5 | 2000 m | 93 s |
+| 80 m | 83.8 m | 62.8 m | 2.07 cm | 82 px | 5 | 2000 m | 93 s |
 
 *(10 ha as 400 × 250 m, 30 % sidelap, 3 drones, 8 m/s, ~6 s per 180° turn.)*
 
 Aerial search-and-rescue targets in HERIDAL/SARD occupy roughly **0.1 % of frame area**, and CNN detectors need on the order of 20–30 px on target for reliable small-object recall. Every row above clears that by more than 2×.
 
-**60 m selected.** Going from 60 m to 80 m saves 18 seconds of a 30-minute allowance and costs 25 % of the pixels on target. That is a bad trade. **Altitude is chosen for detection margin, because coverage is not the binding constraint.**
+**60 m selected, but the decision is now contested and should be re-taken.** Going from 60 m to 80 m saves 19 seconds of a 30-minute allowance and costs 25 % of the pixels on target, which is a bad trade in that direction. The open question is the other direction: every flown simulation uses **40 m**, and after a 2× downsample the target is 1 990 px² at 40 m against 884 px² at 60 m — **medium against small in COCO terms**, which is the band boundary published recall figures are reported across. Coverage is not the binding constraint; detection recall is, and that measurement has not been made.
 
 ### 8.1 Motion blur and exposure
 
@@ -427,7 +435,7 @@ Worst-case slant range: field diagonal 472 m + GCS offset → **design to 600 m*
 
 ## 13. Geometry, structure and CG
 
-**Footprint.** 20 in prop with 30 mm tip clearance → 761 mm motor-to-motor diagonal, ~1.05 m overall square footprint. Three aircraft fit inside the 3.66 m launch box simultaneously (3 per row).
+**Footprint.** 18 in prop with 30 mm tip clearance → **689 mm** motor-to-motor diagonal, **~944 mm** overall square footprint. Three aircraft fit inside the 3.66 m launch box simultaneously (3 per row). *(Previously stated for a 20 in prop, which the bill of materials does not buy.)*
 
 **But sequence the launches anyway.** At under one rotor diameter of separation, downwash interaction is a real upset risk during the transition to climb. The rules require you to launch from the box; they do not require you to launch simultaneously.
 
@@ -530,7 +538,7 @@ With two people and aggressive overlapping (boots, GNSS/RTK convergence and maga
 | SYS-06 | Peak current capability ≥ 90 A; ESC ≥ 50 A each; 10 AWG mains | §6 |
 | SYS-14 | Hover endurance ≥ 15 min at MTOW; land with ≥ 25 % SoC | §4, §9.1 |
 | SYS-44 | Search altitude held to ±5 m; GSD ≤ 2.0 cm/px ⚠ *altitude under review* | §8 |
-| SYS-45 | Shutter ≤ 1/1000 s; inference gated at body rate < 15 °/s | §8.1 |
+| SYS-45 | Shutter ≤ 1/1000 s; inference gated at body rate < 13 °/s | §8.1 |
 | SYS-46 | Detection at ≥ 2 Hz with ≥ 12 frames per target per pass | §8.2 |
 | SYS-47 | Constant groundspeed 8 m/s during sweep, wind-compensated | §9.2 |
 | SYS-48 | Boresight and lever-arm calibration before any accuracy claim | §11 |

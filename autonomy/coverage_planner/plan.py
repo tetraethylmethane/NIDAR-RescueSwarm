@@ -48,6 +48,7 @@ each other and all turning for home at once.
 from __future__ import annotations
 
 import math
+import warnings
 from dataclasses import dataclass, field
 
 from . import boustrophedon as bou
@@ -185,7 +186,10 @@ def _repeat(lines, passes: int):
         raise ValueError("passes must be >= 1")
     out = list(lines)
     for p in range(1, passes):
-        out += [[b, a] for a, b in reversed(out[-len(lines):])]
+        # An entry is normally the two ends of a transect, but carries extra
+        # detour waypoints when the sweep had to route around a concave notch.
+        # Reverse whatever length it is rather than unpacking two.
+        out += [list(reversed(ln)) for ln in reversed(out[-len(lines):])]
     return out
 
 
@@ -301,17 +305,24 @@ def plan_mission(boundary: list[tuple[float, float]], home: tuple[float, float],
         slot_xy = frame.to_xy(*slots[i])
         best = None
         for far in (False, True):
+            # Clip to the mission boundary as well as the strip. On a concave
+            # boundary the equal-area split can overhang the notch, and without
+            # this the sweep legs run over excluded ground.
             base = bou.transects(strip, alt, hfov_deg, sidelap, frame=frame,
-                                 start_far_side=far)
+                                 start_far_side=far, clip_to=boundary)
             if not base:
                 continue
             for flip in (False, True):
                 cand = [[b, a] for a, b in base] if flip else base
                 cand = _repeat(cand, passes)
-                d_end = math.dist(slot_xy, frame.to_xy(*cand[-1][1]))
+                d_end = math.dist(slot_xy, frame.to_xy(*cand[-1][-1]))
                 if best is None or d_end < best[0]:
                     best = (d_end, cand)
         lines = best[1] if best else []
+        # Route the hops LAST, once the sweep order is settled. Doing it any
+        # earlier means the flip above reverses entries that already carry
+        # detours, putting them on the wrong side of their transect.
+        lines = bou.route_legs(lines, boundary, frame=frame)
 
         items = mis.build(slots[i], lines, alt, speed_ms=speed_ms,
                           takeoff_alt_m=transit, transit_alt_m=transit,
@@ -330,9 +341,72 @@ def plan_mission(boundary: list[tuple[float, float]], home: tuple[float, float],
             problems=mis.validate(items),
         ))
 
+    _warn_on_turn_excursion(boundary, drones, frame, alt)
+
     return MissionPlan(
         drones=drones,
         balance=bal,
         total_ha=bal["total_ha"],
         longest_sweep_s=max(d.sweep_s for d in drones) if drones else 0.0,
     )
+
+
+def _point_outside_m(poly_xy, pt):
+    """Metres outside the polygon; 0.0 if inside."""
+    x, y = pt
+    c = False
+    for i in range(len(poly_xy)):
+        x1, y1 = poly_xy[i]
+        x2, y2 = poly_xy[(i + 1) % len(poly_xy)]
+        if ((y1 > y) != (y2 > y)) and \
+           (x < (x2 - x1) * (y - y1) / (y2 - y1 + 1e-12) + x1):
+            c = not c
+    if c:
+        return 0.0
+    best = float("inf")
+    for i in range(len(poly_xy)):
+        x1, y1 = poly_xy[i]
+        x2, y2 = poly_xy[(i + 1) % len(poly_xy)]
+        dx, dy = x2 - x1, y2 - y1
+        L2 = dx * dx + dy * dy
+        t = 0.0 if L2 == 0 else max(0.0, min(1.0,
+                                             ((x - x1) * dx + (y - y1) * dy) / L2))
+        best = min(best, math.hypot(x - (x1 + t * dx), y - (y1 + t * dy)))
+    return best
+
+
+def _warn_on_turn_excursion(boundary, drones, frame, alt, tol_m: float = 5.0):
+    """Warn if a TURN between transects leaves the search area.
+
+    Transects themselves are clipped to the boundary, so the swept ground is
+    always inside. The turn between two of them is a straight line, and across
+    a concave notch that line can cut the corner -- measured from 9.6 m on a
+    shallow notch to 48.7 m on a deep one, scaling with notch depth.
+
+    Closing it properly needs boustrophedon cell decomposition: cover one side
+    of the notch completely before crossing. That is a real piece of work, so
+    until it exists this at least refuses to let the excursion be a surprise
+    discovered from a flight log. Convex boundaries never trigger it.
+    """
+    bxy = frame.poly_to_xy(boundary)
+    worst = 0.0
+    for d in drones:
+        pts = [frame.to_xy(it.lat, it.lon) for it in d.items
+               if abs(it.lat) > 1 and abs(it.alt - alt) < 0.5]
+        # transects are even-indexed legs; the odd ones are the turns
+        for i in range(1, len(pts) - 1, 2):
+            a, b = pts[i], pts[i + 1]
+            n = max(2, int(math.dist(a, b) / 5.0))
+            for j in range(n + 1):
+                t = j / n
+                worst = max(worst, _point_outside_m(
+                    bxy, (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)))
+    if worst > tol_m:
+        warnings.warn(
+            f"turn legs between transects leave the search area by up to "
+            f"{worst:.0f} m. The swept transects are inside; it is the "
+            f"straight turn across a concave notch that cuts the corner. "
+            f"Verify on the GCS, or use a convex boundary.",
+            stacklevel=3,
+        )
+    return worst

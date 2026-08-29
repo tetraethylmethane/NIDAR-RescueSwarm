@@ -115,7 +115,7 @@ document now points at these IDs rather than defining its own.
 | SYS-06 | Peak current capability ≥ 90 A; ESC ≥ 50 A each; 10 AWG mains | sizing §6 | T | P5 |
 | SYS-14 | Hover endurance ≥ 15 min at MTOW; land with ≥ 25 % SoC | sizing §4, §9.1 | T | P6 |
 | SYS-44 | Search altitude held to ±5 m; GSD ≤ 2.0 cm/px ⚠ *altitude under review — 40 m recommended* | sizing §8 | T | P7 |
-| SYS-45 | Shutter ≤ 1/1000 s; inference gated at body rate < 15 °/s | sizing §8.1 | T | P7 |
+| SYS-45 | Shutter ≤ 1/1000 s; inference gated at body rate < 13 °/s | sizing §8.1 | T | P7 |
 | SYS-46 | Detection at ≥ 2 Hz with ≥ 12 frames per target per pass | sizing §8.2 | T | P7 |
 | SYS-47 | Constant **groundspeed** 8 m/s during sweep, wind-compensated | sizing §9.2 | T | P6 |
 | SYS-48 | Boresight and lever-arm calibration completed before any accuracy claim | sizing §11 | I + T | P7 |

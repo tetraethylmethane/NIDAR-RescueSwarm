@@ -92,7 +92,11 @@ CONT = (SUB + DUTY + GST) * CB.CONTINGENCY
 ASK = round(SUB + DUTY + GST + CONT)
 LOADING = ASK - SUB
 
-INSTITUTIONAL = [(l, a) for _, rows in CB.GROUPS for l, a, b, n in rows
+# Newly confirmed items are credited at what the request had budgeted for them,
+# not at the original-programme price -- see CONFIRMED_HELD. Overstating the
+# institute's own contribution in a document the institute audits is a bad trade.
+INSTITUTIONAL = [(l, CB.CONFIRMED_HELD.get(l, a))
+                 for _, rows in CB.GROUPS for l, a, b, n in rows
                  if b == 0 and n.startswith("R1")]
 INST_TOTAL = sum(a for _, a in INSTITUTIONAL)
 
@@ -142,7 +146,26 @@ VERIFY = [
      "corrections at 1 Hz to a third-party rover, and is it free during the "
      "flight window? A total station is not a substitute."),
 ]
+# Drop anything already confirmed held, so tab 02 cannot offer a reduction
+# that has already been banked. CONFIRMED_HELD is the single source for this.
+VERIFY = [row for row in VERIFY if row[0] not in CB.CONFIRMED_HELD]
 VERIFY_TOTAL = sum(v for _, v, _, _, _ in VERIFY)
+
+
+def ask_if_verified():
+    """The ask if every remaining tab-02 item turns out to be held on campus.
+
+    The RTK base receiver is quoted ex-GST, so removing it shrinks the duty and
+    GST base as well as the subtotal -- a flat subtraction understates it.
+    """
+    cut = VERIFY_TOTAL
+    excl = SP["excl"] - sum(v for l, v, _, _, _ in VERIFY
+                            if CB.TAX_STATUS.get(l, ("incl",))[0] == "excl")
+    d = excl * (1 - CB.INDIG) * CB.DUTY
+    g = (excl + d) * CB.GST
+    base = (SUB - cut) + d + g
+    return base + base * CB.CONTINGENCY
+
 
 TRANCHES = [
     (1, "Months 1-2", "P1-P4", 2.90,
@@ -161,15 +184,32 @@ TRANCHES = [
 # These are supplier LEADS at the adopted specification, not held quotations.
 SUPPLIER = {
     "Flight controller": ("Holybro Pixhawk 6C Mini", "Indian distributor (Robu / ElectroPi)", "https://robu.in/"),
-    "AI accelerator": ("Edge AI module, >=20 TOPS", "e-con Systems (Chennai)", "https://www.e-consystems.com/"),
-    "GNSS RTK primary": ("AeroNav-series NavIC L1+L5 RTK", "Teravolt Labs (India)", "https://teravoltlabs.com/"),
-    "Motors": ("5008-class, 340 KV", "Reflex Drive (Lucknow) or equivalent", "https://reflexdrive.in/"),
-    "Li-ion cells": ("21700 NMC, >=4000 mAh, 40-45 A", "GODI India (Hyderabad)", "https://godiindia.com/"),
+    "AI accelerator": ("Edge AI module. REQUIREMENT IS THROUGHPUT, NOT TOPS: "
+                       ">=37 inferences/s at 640x640 INT8 (12 tiles at 3.06 Hz). "
+                       "PCIe attach; USB accelerators do not reach it.",
+                       "e-con Systems (Chennai)", "https://www.e-consystems.com/"),
+    "GNSS RTK primary": ("RTK-capable receiver: must accept RTCM3 corrections "
+                        "and report an RTK FIXED solution at <=3 cm CEP. "
+                        "SBAS-corrected receivers at ~1.5 m CEP DO NOT MEET "
+                        "THIS regardless of what the part is named -- confirm "
+                        "against the datasheet, not the product title.",
+                        "Teravolt Labs (India)", "https://teravoltlabs.com/"),
+    "Motors": ("5008-class, 340 KV, 6S, 18 in prop. MUST deliver >=3.18 kgf "
+               "static per motor with hover at 1.59 kgf (50% of max); "
+               "published thrust curve required, or thrust-stand verified "
+               "before fleet commitment. <=175 g.",
+               "Reflex Drive (Lucknow) or equivalent", "https://reflexdrive.in/"),
+    "Li-ion cells": ("21700 NMC, 4500 mAh min, 45 A continuous unrestricted "
+                     "(no 80C cut-off), DC-IR <=15 mOhm @50% SoC 25C, <=72 g", "GODI India (Hyderabad)", "https://godiindia.com/"),
     "Structure": ("CF tube, plate and machined clamps", "Kineco Kaman (Goa) + institute machine shop", "https://www.kineco.in/"),
-    "Camera + lens": ("Arducam IMX477 + 6 mm S-mount", "Indian distributor", "https://robu.in/"),
+    "Camera + lens": ("Arducam IMX477 (type 1/2.3, 1.55 um) + 6 mm CS lens, "
+                     "FIXED FOCUS. Hyperfocal is 4.15 m against a 30 m "
+                     "minimum altitude, so a focus motor buys nothing and "
+                     "adds a moving part.", "Indian distributor", "https://robu.in/"),
     "Pack, BMS, PDB, BEC": ("6S3P pack, BMS, PDB, BEC", "Flameback Tech (Baddi, HP)", "https://www.flamebacktech.com/"),
     "RC rx, storage, cooling, mounts": ("ExpressLRS 2.4 GHz rx (3.5+, native MAVLink)", "Zerodrag (India)", "https://zerodrag.in/"),
-    "ESCs": ("60 A, field-oriented", "Reflex Drive (Lucknow)", "https://reflexdrive.in/"),
+    "ESCs": ("50-60 A continuous, field-oriented, 6S. Peak demand is 29 A "
+            "per motor at T/W 2.0.", "Reflex Drive (Lucknow)", "https://reflexdrive.in/"),
     "Mesh node + antennas": ("5.8 GHz mesh node", "FxUAV Technologies (Burla)", "https://fxuav.in/"),
     "Payload system": ("Servo release, 4 stations", "Zerodrag + in-house", "https://zerodrag.in/"),
     "Propellers": ("18 in carbon", "Reflex Drive / UAV Garage", "https://uavgarage.com/"),
@@ -201,7 +241,8 @@ r = put(ws, r, ["  of which capital — asset retained by the institute", None, 
 r = put(ws, r, ["  of which genuinely consumed", None, "", "", ""], (2,))
 r += 1
 
-ws.cell(r, 1, "WHY THIS IS NOT AN 8.24 LAKH EXPENSE").font = Font(bold=True, size=12, color=NAVY)
+ws.cell(r, 1, f"WHY THIS IS NOT A {ASK/1e5:.2f} LAKH EXPENSE").font = Font(
+    bold=True, size=12, color=NAVY)
 r += 1
 for line in (
     "1.  Most of it becomes permanent institute property. Three UAV platforms, an RTK "
@@ -210,7 +251,7 @@ for line in (
     "2.  The institute already contributes 30% of the programme. GPUs, laptops, the 3D "
     "printer, the machine shop and lab instruments are already committed, at no new "
     "cost. See tab 01.",
-    "3.  The first decision is 2.90 L, not 8.24 L. Release is gated on demonstrated "
+    f"3.  The first decision is {TRANCHES[0][3]:.2f} L, not {ASK/1e5:.2f} L. Release is gated on demonstrated "
     "milestones, and the committee re-decides at each gate. See tab 06.",
     "4.  We audited your existing assets before asking. Tab 02 lists 70,500 of "
     "equipment that may already be on campus, with the exact question to settle each. "
@@ -280,8 +321,10 @@ for lbl, amt, conf, who, q in VERIFY:
     r = put(ws, r, [lbl, amt, conf, who, q], (2,), fill, wrap_cols=(4, 5))
     ws.row_dimensions[r - 1].height = 42
 r = put(ws, r, ["MAXIMUM REDUCTION IF ALL ARE HELD", VERIFY_TOTAL, "", "",
-                "Request falls from 8.24 L to about 7.43 L, and the institutional "
-                "contribution rises correspondingly."], (2,), LIGHT, True, (5,))
+                f"Would take the request from {ASK/1e5:.2f} L to about "
+                f"{ask_if_verified()/1e5:.2f} L. Items already confirmed held are NOT "
+                f"listed above -- that reduction is already inside the "
+                f"{ASK/1e5:.2f} L figure."], (2,), LIGHT, True, (5,))
 ws.row_dimensions[r - 1].height = 34
 r += 1
 ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=5)
@@ -492,6 +535,6 @@ print(f"  capital retained   {cap_full:>10,.0f}   {cap_full/ASK:.1%}")
 print(f"  consumed           {con_full:>10,.0f}   {con_full/ASK:.1%}")
 print(f"  institute provides {INST_TOTAL:>10,}   {INST_TOTAL/(ASK+INST_TOTAL):.1%} of programme")
 print(f"  to verify on campus{VERIFY_TOTAL:>10,}   would take the ask to "
-      f"{(ASK-VERIFY_TOTAL*(1+CB.CONTINGENCY))/1e5:.2f} L")
+      f"{ask_if_verified()/1e5:.2f} L")
 print(f"  deferred           {sum(a for _, a, _ in DEFERRED):>10,}")
 print(f"  tabs: {' | '.join(s.title for s in wb.worksheets)}")

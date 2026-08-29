@@ -28,18 +28,56 @@ from __future__ import annotations
 AIRCRAFT = [
     ("Flight controller",      1, 22_600, "KEEP",
      "Holybro Pixhawk 6C Mini. Dual IMU, Pixhawk standard, ArduPilot native."),
-    ("AI accelerator",         1, 20_000, "KEEP",
-     "26 TOPS. The specification floor, not a preference."),
-    ("GNSS RTK primary",       1, 18_000, "KEEP",
-     "No cheaper RTK-capable part exists. Governs 125 of 200 geotag points."),
+    ("Companion computer",     1,  8_000, "KEEP",
+     "Raspberry Pi 5 8 GB. THE HOST THE AUTONOMY RUNS ON -- Linux, ROS 2, the "
+     "coverage planner, MAVLink routing, the mesh link and the delivery logic. "
+     "It was missing: the accelerator below is a Pi AI HAT+, which communicates "
+     "over the Pi 5's PCIe and is an M.2 card with nothing to plug into "
+     "without it, and the camera is a CSI module with nothing to connect to. "
+     "The verified BOM carried a 55,000 module WITH an integrated host; the "
+     "cost pass swapped in a 20,000 accelerator -- since repriced to 11,000 -- "
+     "and did not put the host back."),
+    ("AI accelerator",         1, 11_000, "KEEP",
+     "Pi AI HAT+ (Hailo-8, 26 TOPS) -- an NPU, not a computer; needs the host "
+     "above, and PCIe, which only the Pi 5 exposes. PRICE CORRECTED from "
+     "20,000: the part lists at 9,950-11,309 in India. THE '26 TOPS IS THE "
+     "SPECIFICATION FLOOR' CLAIM WAS WRONG and is withdrawn -- the requirement "
+     "is 37 inferences/s at 640 (12 tiles at the 3.06 Hz SYS-46 needs), and "
+     "the 13 TOPS Hailo-8L does 60-80 FPS on that workload, clearing it 1.6x. "
+     "26 TOPS is retained as MARGIN on the one budget that already fails, not "
+     "as a floor; 13 TOPS is a legitimate saving if the look count is settled "
+     "at <=3 Hz first."),
+    ("GNSS RTK primary",       1, 25_000, "KEEP",
+     "Teravolt AeroNav-Pro RTK. QUOTED 2026-08-25 at Rs 25,000/unit, "
+     "build-to-order, 3-4 week lead. Supplier specifies 0.01 m + 1 ppm CEP in "
+     "RTK and native NavIC, which closes the earlier warning on this line -- "
+     "the part is a true RTK receiver, not the SBAS-corrected unit previously "
+     "carried here. The AeroNav-X5 was evaluated and REJECTED on price: at "
+     "Rs 1,50,000/unit, four units are Rs 6,00,000, which is 80 % of the whole "
+     "programme for a 0.4 cm accuracy gain the error budget does not need."),
     ("Motors",                 4,  4_500, "hobby",
-     "Generic 5008-class. NO PUBLISHED THRUST -- verify on the thrust stand."),
+     "5008-class, 340 KV, 6S, 18 in. Requirement is 3.18 kgf per motor at "
+     "T/W 2.0 with hover at 1.59 kgf (50% of max). NO PUBLISHED THRUST -- "
+     "this is why the thrust stand is funded as an instrument rather than a "
+     "convenience. Named parts that meet it: Tarot TL96020 at ~3,378 "
+     "(marginal, 'over 3 kg' is a marketing figure not a curve) and T-Motor "
+     "MN5008 at ~10,836 (4.215 kgf published, 135 g). Buy ONE and measure "
+     "before committing the fleet."),
     ("Li-ion cells",          18,    700, "KEEP",
-     "Capacity- and IR-matched. One weak cell defines the whole pack."),
+     "4500 mAh / 45 A continuous, DC-IR <=15 mOhm. Peak draw is 38.3 A/cell, "
+      "so a 40 A cell leaves 4.5% margin and a Samsung 40T is a 35 A cell "
+      "once the 80C cut-off is excluded. Capacity- and IR-matched: one weak "
+      "cell defines the whole pack."),
     ("Structure",              1, 13_000, "KEEP",
      "In-house fabrication; institute machine shop confirmed."),
     ("Camera + lens",          1, 11_100, "KEEP",
-     "Arducam IMX477 + 6 mm. Pi-compatible; GSD drives detection."),
+     "Arducam IMX477 + 6 mm CS, FIXED FOCUS -- buy the bundled B0240-class "
+     "part, not a motorised-focus module and not a separate lens on top of "
+     "one. Hyperfocal distance is 4.15 m and the aircraft never flies below "
+     "30 m, so focus set once is correct at every altitude; a focus motor "
+     "buys nothing, adds a moving part on a vibrating airframe, and fails in "
+     "a way that cannot be seen from the air. Sensor is 1.55 um, type 1/2.3 "
+     "-- NOT the 1.82 um part the sizing chapter once assumed."),
     ("Pack, BMS, PDB, BEC",    1,  8_500, "hobby", ""),
     ("RC rx, storage, cooling, mounts", 1, 8_500, "hobby",
      "ExpressLRS receiver MUST run 3.5+ in NATIVE MAVLink mode. That mode "
@@ -52,7 +90,11 @@ AIRCRAFT = [
     ("Mesh node + antennas",   1,  6_000, "hobby", "Rule 8.14: three concurrent feeds."),
     ("Payload system",         1,  4_500, "hobby",
      "Metal detents retained -- a brownout must not drop a kit."),
-    ("Propellers",             4,  1_000, "hobby", "Generic 18 in CF. Balance every one."),
+    ("Propellers",             4,  1_625, "hobby",
+     "Tarot 1855 CF, CW/CCW. PRICE CORRECTED from 1,000: the verified "
+     "Indian listing is 3,250 per counter-rotating PAIR, so four is 6,500 "
+     "per aircraft. Balance every one; this is the most frequently "
+     "destroyed item in a flight-test campaign."),
     ("Wiring, connectors",     1,  2_400, "hobby", ""),
     ("Prop adapters",          4,    350, "hobby", ""),
     ("VEGA co-processor",       1,      0, "KEEP",
@@ -70,11 +112,13 @@ AIR = [
      PER_AIRCRAFT * N_AIRCRAFT,
      "R4. Hobby-grade propulsion and ancillaries; autopilot, RTK, accelerator, "
      "camera and cells held professional."),
-    ("Relief kits (14)", 5_600, 5_600, "Rule C6 fixes the kit at 200 g."),
-    ("Ground-truth apparatus", 35_280, 4_860,
-     "R5. Mannequins, mats, markers, clothing and dummy kits all fabricated. "
-     "Dummy kits and clothing are BETTER made than bought -- exact 200 g mass, "
-     "and wider colour variety than matched sets."),
+    ("Relief kits (14)", 5_600, 0,
+     "DEFERRED AT TEAM DIRECTION 2026-08-18. Rule C6 fixes the kit at 200 g. "
+     "THIS IS THE DELIVERED PAYLOAD -- see the note in the deferred register."),
+    ("Ground-truth apparatus", 35_280, 0,
+     "DEFERRED AT TEAM DIRECTION 2026-08-18. Was R5, fabricated. Removing it "
+     "means detection has no target to be measured against, so recall stays "
+     "modelled -- the field-data campaign is deferred too."),
     ("Recovery parachutes, 3", 0, 0,
      "DEFERRED. PERMITTED, not required (rulebook-compliance 6.2). A crash is "
      "-50 against -10 for landing outside the zone: a ~40-point bet."),
@@ -84,14 +128,18 @@ GROUND = [
     ("GCS laptop", 85_000, 0, "R1: team-supplied."),
     ("Backup GCS laptop", 55_000, 0, "R1: team-supplied."),
     ("Portable power station", 55_000, 0, "R1: institute field power."),
-    ("RTK base receiver", 38_000, 18_000,
-     "A second AeroNav-1. A base needs a good antenna and a stable mount, not a "
-     "different class of receiver."),
+    ("RTK base receiver", 38_000, 25_000,
+     "A fourth AeroNav-Pro RTK. Supplier confirms the same receiver serves as "
+     "base under a standard survey-in. A base needs a good antenna and a "
+     "stable mount, not a different class of receiver."),
     ("Survey tripod + tribrach", 9_500, 4_000, "Photographic tripod and adapter."),
-    ("Equipment cases", 44_000, 9_000, "One aircraft case, two foam-lined crates."),
-    ("Fire extinguisher, sand, charging bags", 11_000, 4_000,
-     "KEEP THE CAPABILITY, correct the price. 54 Li-ion cells are cycled across "
-     "this programme; thermal runaway is a real failure mode."),
+    ("Equipment cases", 44_000, 0,
+     "R1: CONFIRMED HELD by the institute, 2026-08-18. Department stores."),
+    ("Fire extinguisher, sand, charging bags", 11_000, 0,
+     "R1: CONFIRMED HELD by the institute, 2026-08-18. Safety office. The "
+     "capability is still required -- 54 Li-ion cells are cycled across this "
+     "programme and thermal runaway is a real failure mode -- it is simply "
+     "no longer being bought."),
     ("Safety-pilot transmitter", 16_000, 8_000, "ELRS set."),
     ("Sun hood + observer monitor", 12_000, 1_500, "R2: hood fabricated."),
     ("Remaining ground items", 62_800, 25_000,
@@ -111,14 +159,18 @@ TEST = [
     ("Rotary tool + CF extraction", 8_500, 0, "R1: department facility."),
     ("Bench power supply", 8_500, 0, "R1: department facility."),
     ("Multimeters", 8_000, 0, "R1: department facility."),
-    ("Charger PSU", 8_000, 1_500, "Used 12 V server supply."),
+    ("Charger PSU", 8_000, 0,
+     "R1: CONFIRMED HELD by the institute, 2026-08-18."),
     ("Calibrated scale + remaining", 47_700, 12_000,
      "KEEP the calibrated scale -- it decides the rule C2 weigh-in."),
 ]
 
 SPARES = [
-    ("Spare airframe structure set", 25_000, 25_000, "KEEP. What a crash consumes."),
-    ("Spare propellers, plate and tube stock", 26_200, 21_400, "KEEP. Consumables."),
+    ("Spare airframe structure set", 25_000, 0,
+     "DEFERRED AT TEAM DIRECTION 2026-08-18. This was the crash cover."),
+    ("Spare propellers, plate and tube stock", 26_200, 0,
+     "DEFERRED AT TEAM DIRECTION 2026-08-18. Propellers are the most "
+     "frequently consumed item in a flight-test campaign."),
     ("Fasteners, tape, connectors, filament", 37_800, 13_000, "KEEP."),
     ("Spare battery packs", 57_000, 0, "DEFERRED."),
     ("Spare motors", 28_000, 0, "DEFERRED. 2-3 week domestic lead time is the mitigation."),
@@ -156,7 +208,10 @@ GROUPS = [("Air vehicle and payload", AIR), ("Ground segment", GROUND),
 TAX_STATUS = {
     # -- air vehicle: the quoted and fabricated lines --------------------
     "GNSS RTK primary":  ("excl", "Teravolt quote; RFQ, not a listing"),
-    "Li-ion cells":      ("excl", "GODI quote; no public price exists"),
+    "Li-ion cells":      ("excl", "GODI quote. A public benchmark DOES now "
+                              "exist: Molicel P45B -- the cell the pack is "
+                              "sized on -- lists at Rs 405 at Robokits India. "
+                              "Hold the GODI quote against that number."),
     "Structure":         ("excl", "in-house fabrication; machine-shop service"),
     "Payload system":    ("excl", "in-house fabrication"),
     # -- ground segment --------------------------------------------------
@@ -195,6 +250,17 @@ def tax_split():
             out[status] += new
     return out
 
+# Confirmed held by the institute on 2026-08-18, with the amount the request
+# had ACTUALLY BUDGETED for each. The institutional contribution is credited at
+# this figure rather than at the original-programme price: we would have spent
+# 14,500 on these, not 63,000, and claiming the larger number would overstate
+# the institute's share of a document the institute itself will audit.
+CONFIRMED_HELD = {
+    "Equipment cases": 9_000,
+    "Fire extinguisher, sand, charging bags": 4_000,
+    "Charger PSU": 1_500,
+}
+
 DUTY, GST, CONTINGENCY = 0.22, 0.18, 0.15
 INDIG = 0.355         # COMPUTED, not estimated, from the per-line Indian
                       # fractions of the adopted configuration. Falls from 0.58
@@ -225,7 +291,10 @@ def main():
         for lbl, a, b, note in rows:
             if a != b:
                 if b == 0 and note.startswith("R1"):
-                    inst += a
+                    # Credit newly confirmed items at what we would have SPENT,
+                    # not at the original-programme price, so this agrees with
+                    # the university workbook instead of quietly diverging.
+                    inst += CONFIRMED_HELD.get(lbl, a)
                     tag = "  <-- institutional"
                 elif b == 0:
                     tag = "  <-- deferred/removed"

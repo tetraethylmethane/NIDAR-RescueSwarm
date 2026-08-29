@@ -1,0 +1,306 @@
+%=============================================================================
+% GENERATED FILE -- do not edit.
+% Produced by tools/proposal/build_sizing_section.py from the sizing model.
+% Every number here is read from rescueswarm_sizing_model or derived from its
+% constants and asserted against its result. Edit the model, not this file.
+%=============================================================================
+\section{Sizing and Analysis}
+\label{sec:sizing}
+
+This section gives the derivations behind the design point rather than only its
+result. Every figure regenerates from
+% \path (url package) rather than \texttt: the path is one unbreakable token
+% and overflows an IEEE column by 27 pt in \texttt. \path breaks at the slashes.
+\path{tools/sizing-model/rescueswarm_sizing_model.py}; the section itself is
+generated, so a constant cannot change in the model without changing here.
+
+\subsection{Constants and where they come from}
+
+\begin{center}
+\begin{tabular}{@{}llp{4.2cm}@{}}
+\toprule
+\textbf{Symbol} & \textbf{Value} & \textbf{Basis} \\
+\midrule
+$\rho$ & 1.150\,kg/m$^3$ & $\sim$30\,\textdegree C at 300\,m density altitude; an Indian summer field, not sea level \\
+$\mathrm{FM}$ & 0.60 & Rotor figure of merit, mid-range of the 0.5--0.7 literature band \\
+$\eta_{\text{mot}}$ & 0.82 & BLDC efficiency near the hover operating point \\
+$\eta_{\text{esc}}$ & 0.95 & Electronic speed controller \\
+$P_{\text{avio}}$ & 55\,W & Companion computer, autopilot, GNSS, camera, radios, servos \\
+$\mathrm{DoD}$ & 80\% & Usable depth of discharge; land at 20\,\% state of charge \\
+$T/W$ & 2.0 & Static thrust-to-weight, a reserve policy \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Two of these are deliberately unflattering. Air density is taken at a hot-day
+altitude rather than sea level, which \emph{increases} the power required; and
+the figure of merit is mid-band rather than optimistic. Sizing errors that
+favour the design are the ones that are discovered on the flight line.
+
+\subsection{Hover power, from momentum theory}
+
+The rotor disk area for 4 rotors of diameter 18\,in
+($D=0.4572$\,m) is
+\[
+\begin{aligned}
+A &= N\pi\left(\frac{D}{2}\right)^{2} = 0.6567~\text{m}^2,\\
+\text{disk loading} &= \frac{m}{A} = 9.69~\text{kg/m}^2 .
+\end{aligned}
+\]
+Momentum theory gives the induced power required to generate thrust $T$ across
+that disk~\cite{leishman2006helicopter}. Dividing by the figure of merit
+$\mathrm{FM}$ --- the ratio of ideal induced power to actual shaft power, which
+absorbs profile drag and non-uniform inflow --- converts the ideal figure to
+shaft power:
+\[
+P_{\text{shaft}} = \frac{T^{3/2}}{\mathrm{FM}\sqrt{2\rho A}}
+= \frac{(62.4)^{3/2}}{0.60\sqrt{2(1.150)(0.6567)}}
+= 668~\text{W},
+\]
+where $T = mg = 62.4$\,N at the 6.36\,kg maximum take-off mass. Adding
+the drivetrain and the avionics load,
+\[
+P_{\text{elec}} = \frac{P_{\text{shaft}}}{\eta_{\text{mot}}\eta_{\text{esc}}}
++ P_{\text{avio}}
+= \frac{668}{0.779} + 55 = 913~\text{W},
+\]
+which at the 21.6\,V pack nominal is a hover current of
+$I = P/V = 42.2$\,A. Power loading is 7.0\,g/W.
+
+\subsection{Peak power and the current the pack must supply}
+
+Induced power scales as $T^{3/2}$, so at the design thrust-to-weight of
+2.0 the shaft power rises by $2.0^{3/2}$:
+\[
+P_{\text{peak}} = \frac{(2.0\,T)^{3/2}}{\mathrm{FM}\sqrt{2\rho A}\,\eta}
++ P_{\text{avio}} = 2481~\text{W}
+\;\Longrightarrow\;
+I_{\text{peak}} = 114.8~\text{A}.
+\]
+That current, not the energy, is what disqualifies most candidate
+packs. It is a continuous requirement rather than a burst rating: the aircraft
+must be able to hold 2.0 $\times$ weight, not pulse it. The adopted pack
+supplies 135\,A, a margin of 18\,\%, and the per-motor share sets
+the controller rating at 29\,A peak.
+
+This is also where a smaller pack fails. At 13.5\,Ah the peak is
+8.51\,C and hover is 3.13\,C; a pack half the size would need twice the
+C-rate to deliver the same amperes. Capacity is how the design buys down
+discharge rate.
+
+\subsection{Propulsion}
+
+\[
+\begin{aligned}
+T_{\text{total}} &= (T/W)\,mg = 125~\text{N} = 12.72~\text{kgf},\\
+T_{\text{motor}} &= 3.18~\text{kgf}.
+\end{aligned}
+\]
+Hover demands 1.59\,kgf per motor, which is \textbf{50\,\% of
+maximum} --- inside the 45--55\,\% band where propeller efficiency and thermal
+margin are both reasonable. Sitting far below that band means an oversized and
+heavy propulsion system; far above it means no authority left for attitude
+control in gusts.
+
+\textbf{Against the selected motor, hover is comfortable and the peak is not.}
+The Tarot TL96020 publishes a maximum continuous current of 26.5\,A. The
+hover draw of 10.6\,A per motor is 40\,\% of that, with wide
+margin. The peak at the design thrust-to-weight is 28.7\,A, or
+\textbf{108\,\%} --- above continuous rating. That is acceptable only
+because $T/W = 2.0$ is a transient authority reserve rather than a flight
+condition: the aircraft hovers at half throttle and reaches this current only
+in a gust recovery or an aggressive manoeuvre, for seconds. It is recorded here
+because it is the tightest margin in the propulsion chain, and because the P2
+thrust stand measures current alongside thrust and will settle whether the
+motor reaches 3.18\,kgf before that rating rather than after it. The
+datasheet also gives a motor mass of 168\,g against the 160\,g
+the sizing loop assumes, a difference of +32\,g per aircraft that the P5
+weigh-in resolves.
+
+\subsection{The coupled mass and energy solve}
+
+Pack mass, take-off mass and mission energy are mutually dependent: a heavier
+pack raises hover power, which raises the energy required, which raises pack
+mass. The model iterates to a fixed point rather than assuming one.
+
+The reserve policy is what closes it. The pack must carry the nominal mission,
+one complete re-sweep of the search area, and four minutes of loiter, inside the
+usable window:
+\[
+\underbrace{103.4}_{\text{nominal}} + \underbrace{30.9}_{\text{re-sweep}}
++ \underbrace{60.8}_{\text{loiter}} = 195.2~\text{Wh usable},
+\]
+against 233.3\,Wh available at 80\% depth of discharge --- a margin of
+\textbf{19\,\%}. Expressed independently of chemistry, any candidate
+pack must therefore provide \textbf{244\,Wh} nameplate at \textbf{6S}
+and \textbf{114.8\,A continuous}.
+
+The adopted implementation is 18 cells in 6S3P:
+292\,Wh, 13.5\,Ah, 1449\,g, 21.6\,V nominal
+(18--25.2\,V). Hover endurance is 15.3\,min against a
+7.6\,min design mission consuming 103.4\,Wh.
+
+At 6.36\,kg per aircraft the fleet is \textbf{19.08\,kg} against the
+25.0\,kg regulatory cap, leaving 24\,\% margin.
+
+\subsection{Camera and optics}
+
+Everything optical follows from three numbers: pixel count, pixel pitch and
+focal length. Active area is count times pitch,
+\[
+\begin{aligned}
+w &= 4056 \times 1.55\,\text{\textmu m} = 6.287~\text{mm},\\
+h &= 4.712~\text{mm}, \qquad d = 7.86~\text{mm},
+\end{aligned}
+\]
+and the fields of view are exact arctangents, with no small-angle
+approximation:
+\[
+\begin{aligned}
+\theta &= 2\arctan\!\left(\frac{s}{2f}\right)\\
+&\Rightarrow\;
+\text{HFOV}=55.3^\circ,\;
+\text{VFOV}=42.9^\circ,\;
+\text{DFOV}=66.4^\circ .
+\end{aligned}
+\]
+Sensor and ground are similar triangles about the lens, so ground sample
+distance at altitude $H$ is
+\[
+\text{GSD} = \frac{p\,H}{f}
+= \frac{1.55\,\text{\textmu m}\times 40\,\text{m}}{6\,\text{mm}}
+= 1.03~\text{cm/px},
+\]
+giving a 41.9\,$\times$\,31.4\,m footprint. One pixel subtends
+14.80\,mdeg.
+
+Two target sizes follow, and the design is sized on the smaller.
+A 1.7\,m supine adult --- a survivor on a rooftop or dry ground --- subtends
+165\,px, or 7,960\,px$^2$. A person \emph{in water} presents head
+and shoulders only, about 0.4\,m across, and subtends
+\textbf{39\,px}, or 1,498\,px$^2$ --- roughly a quarter of the
+apparent area. \textbf{The second is the design target}, because this is a
+flood system and immersion is the expected posture; the first is the
+optimistic case and is quoted here only so the two are not confused.
+Section~\ref{sec:perception} argues the tiling decision on the water figure.
+
+\textbf{Focus.} This is not a design problem, and the arithmetic says so. The
+hyperfocal distance,
+\[
+H_{\text{hyp}} = \frac{f^{2}}{Nc} + f = 4.15~\text{m},
+\]
+taking the circle of confusion as two pixels rather than a film-era constant,
+puts everything from 2.08\,m to infinity in acceptable focus. The
+aircraft never operates below 30\,m. A fixed lens set once is correct at every
+altitude flown, and a focus mechanism would add a moving part, a power draw and
+a failure mode that cannot be detected from the air.
+
+\textbf{Motion blur.} This does not bind either. Holding smear under one pixel
+requires $t_{\text{exp}} \le \text{GSD}/v$, which at 8\,m/s is
+1.29\,ms --- a shutter of $1/774$\,s. The requirement already
+mandates $1/1000$\,s or faster.
+
+\textbf{Rolling shutter.} Small but not zero. Reading the frame out over
+25\,ms while the aircraft moves gives 0.20\,m of top-to-bottom skew,
+about 19\,px. Negligible for detection; \emph{not} negligible for
+geolocation, where a detection's row position carries an along-track bias unless
+the pipeline corrects for readout row.
+
+\textbf{Temporal sampling.} This is where the budget does not close. A target is in
+frame for the along-track footprint divided by ground speed, so at 40\,m and
+2\,Hz it receives \textbf{7.9 looks} against the 12 that
+multi-frame fusion requires. Meeting that count needs
+\[
+r \ge \frac{n\,v}{D} = 3.06~\text{Hz},
+\]
+Of the available levers --- higher capture rate, lower ground speed, higher
+altitude, or a relaxed look count --- raising the capture rate is the cheapest,
+because lowering altitude shrinks the along-track footprint faster than it
+shortens the pass and therefore \emph{raises} the required rate, while raising
+altitude coarsens ground sampling and reducing ground speed lengthens every
+transect.
+
+The cost of that lever is throughput, not energy. At 48 tiles per frame
+the required rate is 147 inferences per second, against the
+130--160\,FPS measured for the accelerator: at or beyond the limit. This is
+what a two-stage gate would buy back. A gate answering only whether a tile is
+homogeneous open water is a texture discrimination rather than a person
+detection, so it survives the downsampling that Section~\ref{sec:perception}
+shows would destroy a person; at $96\times96$ input it costs roughly
+44 times fewer pixels than a detector pass, and discarding the open
+water would leave of order 22 full-inference equivalents. On that
+argument the gate belongs on the accelerator already carried, not on an
+additional processor: the saving is in inferences, not in watts, and the
+aircraft's compute power is under one per cent of its hover power.
+
+\subsection{Payload release ballistics}
+
+A kit of 200\,g tumbling with drag coefficient 1.05 and reference area
+117\,cm$^2$ has ballistic coefficient
+$\beta = m/(C_dA) = 16.3$\,kg/m$^2$ and terminal velocity
+\[
+v_{\text{term}} = \sqrt{\frac{2mg}{\rho C_d A}} = 16.2~\text{m/s}.
+\]
+Integrating the fall with quadratic drag from a 6\,m release gives
+1.15\,s to impact at 9.7\,m/s, with a crosswind drift of 3.24\,m at
+3\,m/s and 6.13\,m at 6\,m/s.
+
+The governing sensitivity is release velocity, not release height. A
+residual ground speed of 0.5\,m/s displaces the impact point by about 0.53\,m,
+whereas a full metre of altitude error contributes under 4\,cm. This is the
+whole argument for hover-and-drop: a multirotor can null its ground speed before
+release and a fixed-wing cannot.
+
+\subsection{Structure, geometry and control authority}
+
+Tip clearance of 30\,mm between adjacent 18\,in rotors sets a diagonal
+wheelbase of 689\,mm and an arm length of 0.345\,m. At the design
+thrust-to-weight the root bending moment is
+\[
+\mathcal{M} = T_{\text{motor}}\,L = 10.7~\text{N}\,\text{m}.
+\]
+For a 25\,$\times$\,23\,mm carbon tube,
+$I = \pi(D_o^4 - D_i^4)/64 = 5438$\,mm$^4$, so the bending stress is
+$\sigma = \mathcal{M}c/I = 25$\,MPa against roughly 600\,MPa for
+unidirectional carbon --- a safety factor of about \textbf{24}.
+
+\textbf{Bending is therefore not the structural driver, and the design should
+not be optimised as though it were.} Joint and clamp design, and vibration
+fatigue at the arm root, are what actually govern; a tube chosen to satisfy the
+bending case by a factor of 24 is being chosen for stiffness and handling,
+not strength.
+
+Releasing one kit from a magazine offset from the centreline shifts the centre
+of gravity by under 2\,mm, requiring a few tens of grams of differential thrust
+to trim --- trivial in magnitude, but a \emph{step} change that excites the
+attitude loop. The mitigation is to mount the magazine on the centre-of-gravity
+axis and hold position briefly after release rather than to trim harder.
+
+\subsection{Radio link budget}
+
+Free-space path loss at the 600\,m design slant range is
+$\text{FSPL} = 20\log_{10}d + 20\log_{10}f + 32.44$:
+
+\begin{center}
+\begin{tabular}{@{}lr>{\raggedright\arraybackslash}p{4.3cm}@{}}
+\toprule
+\textbf{Link} & \textbf{FSPL} & \textbf{Role} \\
+\midrule
+5.8\,GHz mesh & 103.3\,dB & Data and video; margin is thin and degrades first \\
+2.4\,GHz mesh & 95.6\,dB & Fallback \\
+868\,MHz safety & 86.8\,dB & Command of last resort; large margin by design \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The ordering is the design intent: the highest-rate link is the one permitted to
+fail, and the lowest-rate link is the one that must not. Video degrades before
+telemetry, and telemetry before command.
+
+\subsection{What this section does not establish}
+
+Every figure above is \emph{modelled}. The thrust figures assume a motor that
+publishes no thrust curve, and the detection figures assume a recall that has
+not been measured. The sizing is internally consistent and its arithmetic is
+checkable; that is a different claim from saying the aircraft has been shown to
+do these things, and this document does not make the second claim anywhere.

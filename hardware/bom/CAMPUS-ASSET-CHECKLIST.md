@@ -19,18 +19,26 @@ total station.
 
 | | Value | Effect if confirmed |
 |---|--:|---|
-| **A · Equipment we have budgeted** | **₹70,500** | Leaves the request. Ask falls to ~₹7,43,000 |
+| **A · Equipment we have budgeted** | **₹56,000** remaining | Leaves the request. Ask falls to ~₹6,66,000 |
+| · *already confirmed 2026-08-18* | *₹14,500 done* | *ask 8,24,072 → **7,37,829** (with the deferrals below)* |
 | **B · Stock and consumables** | up to ~₹15,000 | Partial reductions |
 | **C · Questions that remove risk** | ₹25,000 + travel | Resolves the insurance flag |
-| **D · Assets already assumed** | **₹3,54,000** | **Confirm, or the ask goes UP** |
+| **D · Assets already assumed** | **₹3,54,000** | ✅ **all nine confirmed** — ask is safe |
 
-> **D is as important as A.** The budget already assumes ₹3,54,000 of institute
-> equipment is available to us. If it is not, that money comes back into the
-> request. Confirming it protects the number you are submitting.
+> **D was as important as A, and it is now settled.** The budget assumes
+> ₹3,54,000 of institute equipment is available to us. All nine items were
+> confirmed on 2026-08-18, so none of that comes back into the request and the
+> ₹7,37,829 figure holds.
 
 ---
 
-## A · Equipment that would leave the budget — ₹70,500
+## A · Equipment that would leave the budget — ₹56,000 remaining
+
+> **Confirmed held 2026-08-18** and already removed from the request:
+> equipment cases (₹9,000), lithium fire kit (₹4,000), charger PSU (₹1,500).
+> A further review then deferred the remaining spares, the relief kits and
+> the ground-truth apparatus. **The ask is now ₹7,37,829.** The items below
+> are still open.
 
 ### → Civil Engineering, survey laboratory
 
@@ -104,11 +112,11 @@ total station.
 
 ### → Departmental stores
 
-**☐ Equipment cases — ₹9,000** · foam-lined crates that survive transport to the venue
+**☑ Equipment cases — ₹9,000** · **CONFIRMED HELD, removed from the request**
 
 - Answer: ______________________________________________
 
-**☐ Charger PSU — ₹1,500** · 12 V at 20 A or better, usable in the field
+**☑ Charger PSU — ₹1,500** · **CONFIRMED HELD, removed from the request**
 
 - Answer: ______________________________________________
 
@@ -116,7 +124,7 @@ total station.
 
 ### → Institute safety office
 
-**☐ Fire extinguisher, sand, lithium charging bags — ₹4,000**
+**☑ Fire extinguisher, sand, lithium charging bags — ₹4,000** · **CONFIRMED HELD**
 
 > "A **CO₂ or Class D** extinguisher and lithium charging bags that can be
 > **signed out to a field site**?"
@@ -195,8 +203,9 @@ washers** we can draw against?
 
 ## D · Confirm what the budget already assumes — ₹3,54,000
 
-**These are already counted as institutional contribution and removed from the
-request. If any is not actually available, that money comes back into the ask.**
+**✅ ALL NINE CONFIRMED AVAILABLE, 2026-08-18.** These are counted as
+institutional contribution and removed from the request. Confirming them means
+no money comes back into the ask — the ₹8,07,397 figure is safe.
 Confirming them protects the figure being submitted.
 
 | ☐ | Item | Assumed value | Confirmed available? |

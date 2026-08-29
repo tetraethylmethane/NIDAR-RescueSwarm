@@ -119,6 +119,15 @@ DEFERRED = [
     ("Spare packs and motors", 74_396, "Survives a crash mid-campaign"),
     ("Field data campaign", 15_000, "Detection recall measured rather than modelled"),
     ("Spare compute module", 20_000, "Removes a single point of failure"),
+    ("Spare airframe structure set", 25_000,
+     "Deferred 2026-08-18. Was the crash cover; one hard landing now ends the campaign"),
+    ("Spare propellers and stock", 21_400,
+     "Deferred 2026-08-18. Propellers are the most consumed item in flight test"),
+    ("Relief kits (14)", 5_600,
+     "Deferred 2026-08-18. THE DELIVERED PAYLOAD. Rule C6 fixes it at 200 g; "
+     "without kits there is nothing to release and the delivery task scores nothing"),
+    ("Ground-truth apparatus", 4_860,
+     "Deferred 2026-08-18. Detection recall now has no target to be measured against"),
 ]
 
 EVIDENCE = [

@@ -160,3 +160,115 @@ def is_convex(poly, tol: float = 1e-9) -> bool:
         elif s != sign:
             return False
     return True
+
+
+def point_in_poly(poly, pt, tol: float = 1e-9) -> bool:
+    """Even-odd test, counting a point ON an edge as inside.
+
+    The tolerance is not decoration. Transect ends land exactly on the boundary
+    and float rounding puts them a couple of centimetres past it; a knife-edge
+    test then reports most of a perfectly good rectangle sweep as out of area.
+    """
+    x, y = pt
+    for i in range(len(poly)):
+        ax, ay = poly[i]
+        bx, by = poly[(i + 1) % len(poly)]
+        # on this edge?
+        cross = (bx - ax) * (y - ay) - (by - ay) * (x - ax)
+        if abs(cross) <= tol * max(1.0, abs(bx - ax) + abs(by - ay)):
+            if min(ax, bx) - tol <= x <= max(ax, bx) + tol and \
+               min(ay, by) - tol <= y <= max(ay, by) + tol:
+                return True
+    c = False
+    for i in range(len(poly)):
+        ax, ay = poly[i]
+        bx, by = poly[(i + 1) % len(poly)]
+        if ((ay > y) != (by > y)) and \
+           (x < (bx - ax) * (y - ay) / (by - ay + 1e-18) + ax):
+            c = not c
+    return c
+
+
+def _segments_properly_cross(p1, p2, p3, p4) -> bool:
+    """True only if the two segments cross at an interior point of both."""
+    def o(a, b, c):
+        v = (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
+        return 0 if abs(v) < 1e-9 else (1 if v > 0 else -1)
+    d1, d2 = o(p3, p4, p1), o(p3, p4, p2)
+    d3, d4 = o(p1, p2, p3), o(p1, p2, p4)
+    return d1 * d2 < 0 and d3 * d4 < 0
+
+
+def segment_inside(poly, a, b, samples: int = 24) -> bool:
+    """Does the straight segment a-b stay within `poly`?
+
+    Rejects a segment that properly crosses any edge, then samples the interior
+    to catch the case where both ends sit on the boundary but the middle spans
+    a notch -- exactly what the cell-to-cell hop does.
+    """
+    for i in range(len(poly)):
+        c = poly[i]
+        d = poly[(i + 1) % len(poly)]
+        if _segments_properly_cross(a, b, c, d):
+            return False
+    for j in range(1, samples):
+        t = j / samples
+        if not point_in_poly(poly, (a[0] + (b[0] - a[0]) * t,
+                                    a[1] + (b[1] - a[1]) * t)):
+            return False
+    return True
+
+
+def shortest_path_inside(poly, a, b):
+    """Waypoints strictly between a and b keeping the path inside `poly`.
+
+    Returns [] when a straight line already works, which is always the case on
+    a convex boundary. Otherwise a visibility graph over the polygon vertices,
+    nudged a hair inward so a vertex is reachable, and Dijkstra across it.
+    Returns None if no interior route exists.
+    """
+    if segment_inside(poly, a, b):
+        return []
+
+    # Use the vertices as they are. An earlier version nudged each one toward
+    # the vertex average to make it "reachable", which is wrong on a concave
+    # polygon: for a slotted boundary that average lands INSIDE the excluded
+    # slot, so the nudge pushed the very corners we need to route around out of
+    # the polygon, and the search detoured all the way round the outside.
+    # point_in_poly counts a point on an edge as inside, so no nudge is needed.
+    nodes = [a, b] + list(poly)
+
+    n = len(nodes)
+    adj = [[] for _ in range(n)]
+    for i in range(n):
+        for j in range(i + 1, n):
+            if segment_inside(poly, nodes[i], nodes[j]):
+                d = math.dist(nodes[i], nodes[j])
+                adj[i].append((j, d))
+                adj[j].append((i, d))
+
+    import heapq
+    dist = [float("inf")] * n
+    prev = [None] * n
+    dist[0] = 0.0
+    pq = [(0.0, 0)]
+    while pq:
+        du, u = heapq.heappop(pq)
+        if du > dist[u]:
+            continue
+        if u == 1:
+            break
+        for v, w in adj[u]:
+            if du + w < dist[v]:
+                dist[v] = du + w
+                prev[v] = u
+                heapq.heappush(pq, (dist[v], v))
+    if dist[1] == float("inf"):
+        return None
+
+    path, cur = [], 1
+    while cur is not None:
+        path.append(cur)
+        cur = prev[cur]
+    path.reverse()
+    return [nodes[i] for i in path[1:-1]]

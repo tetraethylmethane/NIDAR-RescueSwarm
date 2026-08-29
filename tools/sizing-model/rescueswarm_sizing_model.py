@@ -17,10 +17,17 @@ FM        = 0.60    # rotor figure of merit, momentum theory (lit. range 0.5-0.7
 eta_mot   = 0.82    # BLDC motor efficiency near hover operating point
 eta_esc   = 0.95
 eta_prop_chain = eta_mot*eta_esc
-P_avio    = 55.0    # W: Jetson (~15) + FC/GNSS (~5) + camera (~3) + mesh radio (~8) + servos/misc, w/ margin -> use 55 W
+# W: Pi 5 + Hailo-8 (~15) + FC/GNSS (~5) + camera (~3) + mesh radio (~8)
+# + servos/misc, with margin -> 55 W. (The breakdown used to say "Jetson",
+# which is not the compute this programme buys; the total is unchanged
+# because the Pi 5 + accelerator pair lands in the same 13-17 W band.)
+P_avio    = 55.0
 DOD       = 0.80    # usable depth of discharge (land at 20%)
-e_lipo    = 175.0   # Wh/kg pack-level, 6S LiPo (high C)
-e_liion   = 225.0   # Wh/kg pack-level, 21700 Li-ion (e.g. P42A/50S class)
+# NOTE: e_lipo and e_liion were ALSO defined here, at 175 and 225 Wh/kg, and
+# then redefined ~70 lines below at the conservative 165 and 200 that actually
+# run. Python takes the later binding, so the output was always correct and
+# the first pair was a trap for anyone reading the constants block. Removed;
+# the single definition lives with the pack sizing where it is used.
 
 # fixed (non-battery, non-structure, non-propulsion) masses, kg
 avionics = {
@@ -98,7 +105,11 @@ e_liion = 200.0   # 21700 Li-ion (Molicel P45B class), pack level incl. holders/
 
 D = 18*0.0254
 v_climb, v_desc = 3.0, 2.5
-h_search, h_transit, h_drop = 60.0, 40.0, 6.0
+# 40 m, not 60. At 60 m a person in water is 25.8 px natively and 12.9 px
+# after the old downsample; at 40 m natively they are 38.7 px, which is 2.2x
+# the area and out of the small-object band where detectors do worst. The
+# extra transects cost ~56 s of a mission that has minutes to spare.
+h_search, h_transit, h_drop = 40.0, 30.0, 6.0
 v_search, v_transit = 8.0, 12.0
 k_cruise = 0.93
 
@@ -117,7 +128,7 @@ per_del_t = 150/v_transit + (h_search-h_drop)/v_desc + 8 + 2 + (h_transit-h_drop
 def mission(m):
     Ph,_ = hover_power_elec(m,D)
     segs=[('Arm, spin-up, launch queue',45, Ph*0.35),
-          ('Climb to 60 m', h_search/v_climb, P_climb(m,v_climb)),
+          (f'Climb to {h_search:.0f} m', h_search/v_climb, P_climb(m,v_climb)),
           ('Transit to sub-region', 120/v_transit, P_cruise(m)),
           ('Area sweep', L_per/v_search + t_turns, P_cruise(m)),
           ('Delivery (%.1f drops)'%n_del, n_del*per_del_t, P_cruise(m)*0.98),
@@ -187,12 +198,36 @@ print(f"  Hover endurance (80% DoD): {t_hov:.1f} min")
 print(f"  Design mission         : {T/60:.1f} min, {E:.0f} Wh = {E/(E_pack*DOD):.0%} of usable energy")
 print(f"  Land-with SoC          : {100*(1-E/E_pack):.0f} %")
 
+# The reserve policy is what SIZES the pack, so it has to be re-checked at the
+# MTOW we actually adopted. STEP 3b evaluates it at the sizing solve, before the
+# pack was rounded up to a buildable 18 cells and MTOW settled ~0.7 kg heavier.
+# Reporting the solve-point figure as the requirement understates it by ~18%.
+E_req_np, _, E_nom, E_rsw, E_lo = required_pack(MTOW)
+E_need_use = E_nom + E_rsw + E_lo
+print("\n  RESERVE POLICY  (re-evaluated at THIS MTOW, not at the sizing solve)")
+print(f"    nominal {E_nom:.1f} Wh + re-sweep {E_rsw:.1f} Wh + loiter {E_lo:.1f} Wh"
+      f" = {E_need_use:.1f} Wh usable")
+print(f"    pack provides            {E_pack*DOD:.1f} Wh usable"
+      f"  -> margin {E_pack*DOD/E_need_use-1:+.0%}"
+      f"  {'PASS' if E_pack*DOD >= E_need_use else 'FAIL'}")
+_I_pk = (P_shaft*(T_W**1.5)/eta_prop_chain + P_avio)/V_nom   # I_max, defined below
+print(f"    minimum nameplate, ANY chemistry: {E_req_np:.0f} Wh"
+      f"  (6S, >={_I_pk:.0f} A continuous)")
+
 print("\n  MASS STATEMENT (per aircraft)")
+# The parachute line was missing here while being present in payload_system,
+# so the printed statement fell 300 g short of MTOW and the gap read as an
+# unattributed residual. Rows are now built from the dict rather than retyped,
+# which is why the assertion below can be made at all.
 rows=[('Structure: frame, arms, landing gear, hardware',bd['struct']),
       ('Motors (4)',bd['motors']),('ESCs (4)',bd['esc']),('Propellers (4)',bd['props']),
-      ('Battery pack',bd['battery']),('Avionics + wiring harness',bd['avionics']),
-      ('Payload magazine + release',0.240),('Survivor kits (4 x 200 g)',0.800)]
+      ('Battery pack',bd['battery']),('Avionics + wiring harness',bd['avionics'])] \
+     + [(k[0].upper()+k[1:], v) for k,v in payload_system.items()]
 for n,v in rows: print(f"    {n:<48}{v*1000:7.0f} g  {v/MTOW:6.1%}")
+_listed = sum(v for _,v in rows)
+assert abs(_listed - MTOW) < 1e-9, (
+    f"mass statement does not close: {_listed*1000:.1f} g listed "
+    f"against {MTOW*1000:.1f} g MTOW")
 print(f"    {'MTOW':<48}{MTOW*1000:7.0f} g")
 print(f"    {'Fleet of 3 (weigh-in figure)':<48}{3*MTOW*1000:7.0f} g")
 print(f"    {'Growth allowance to 24.0 kg fleet target':<48}{(24-3*MTOW)*1000:7.0f} g  "
@@ -242,11 +277,20 @@ print("  Both fit the 25 kg fleet cap with >30% margin -> redundancy is affordab
 
 # ---------------------------------------------------------------- OPTICS
 print("\n"+"="*80); print("STEP 7  CAMERA / OPTICS SIZING"); print("="*80)
-sensor_w, sensor_h = 7.4, 5.6            # mm, 1/1.8" (approx 4:3)
+# THE SENSOR IS THE ONE THE BOM BUYS. This block hardcoded 7.4 x 5.6 mm -- a
+# 1/1.8" sensor on a 1.82 um pitch that nothing in this programme purchases.
+# The Arducam IMX477 is type 1/2.3 at 1.55 um: the same pixel COUNT on a
+# smaller pixel, so every GSD, field of view and transect count computed from
+# the old numbers was for the wrong part. Deriving the sensor from its pitch
+# rather than stating its dimensions makes that substitution impossible to
+# make silently a second time.
 px_w, px_h = 4056, 3040                  # 12.3 MP
+pitch_um = 1.55                          # Arducam IMX477, type 1/2.3
 f_mm = 6.0
+sensor_w, sensor_h = px_w*pitch_um/1000.0, px_h*pitch_um/1000.0
 HFOV = 2*np.arctan(sensor_w/(2*f_mm)); VFOV = 2*np.arctan(sensor_h/(2*f_mm))
-print(f"  Sensor 1/1.8\" {px_w}x{px_h} ({px_w*px_h/1e6:.1f} MP), f = {f_mm} mm")
+print(f"  Sensor type 1/2.3 {px_w}x{px_h} ({px_w*px_h/1e6:.1f} MP) at "
+      f"{pitch_um} um, {sensor_w:.3f} x {sensor_h:.3f} mm, f = {f_mm} mm")
 print(f"  HFOV {np.rad2deg(HFOV):.1f} deg, VFOV {np.rad2deg(VFOV):.1f} deg, pixel pitch {sensor_w*1000/px_w:.2f} um")
 print(f"\n  {'AGL':>5}{'swath':>8}{'along':>8}{'GSD':>9}{'person px':>11}{'lines':>7}{'track':>8}{'t/drone':>9}")
 res={}
@@ -259,9 +303,9 @@ for h in [30,40,50,60,70,80]:
     print(f"  {h:4.0f}m{W:7.1f}m{Lalong:7.1f}m{gsd*100:7.2f}cm{ppl:10.0f}{n:7.0f}{trk:7.0f}m{t:8.0f}s")
 print("\n  Detection floor: CNN detectors need >~20-30 px on target for reliable small-object recall")
 print("  (HERIDAL/SARD targets are ~0.1% of frame area). All rows above clear that by >2x.")
-h=60; W,gsd,ppl,n,trk,t = res[h]
+h=40; W,gsd,ppl,n,trk,t = res[h]
 print(f"\n  SELECTED: {h} m AGL -> GSD {gsd*100:.2f} cm/px, person = {ppl:.0f} px long, swath {W:.0f} m")
-print(f"           chosen for detection margin, not for coverage speed (coverage is not the constraint)")
+print(f"           chosen for detection margin. Coverage is not the constraint: the extra\n           transects cost seconds of a mission with minutes to spare")
 
 # blur & shutter
 print("\n  MOTION BLUR / EXPOSURE")
@@ -286,14 +330,28 @@ print(f"    -> run detection at 5 Hz: {5/ (8.0/Lalong):.0f}x redundant coverage 
 tile=640; ov_t=0.2
 nt_w=np.ceil(px_w/(tile*(1-ov_t))); nt_h=np.ceil(px_h/(tile*(1-ov_t)))
 print(f"\n  TILED INFERENCE (SAHI-style, {tile}px tiles, {ov_t:.0%} overlap)")
-print(f"    full-res tiling = {nt_w:.0f}x{nt_h:.0f} = {nt_w*nt_h:.0f} tiles/frame -> "
-      f"{nt_w*nt_h*5:.0f} tile-inferences/s at 5 Hz  [too much for Orin Nano ~30-40 FPS]")
-dsf=2
-print(f"    downsample {dsf}x first ({px_w//dsf}x{px_h//dsf}, GSD {gsd*dsf*100:.2f} cm, person {ppl/dsf:.0f} px) ->"
-      f" {np.ceil(px_w/dsf/(tile*(1-ov_t)))*np.ceil(px_h/dsf/(tile*(1-ov_t))):.0f} tiles = "
-      f"{np.ceil(px_w/dsf/(tile*(1-ov_t)))*np.ceil(px_h/dsf/(tile*(1-ov_t)))*5:.0f} inferences/s")
-print(f"    Orin Nano TensorRT FP16 YOLO @640: ~24-40 FPS measured in literature -> "
-      f"run 2 Hz full tiling or 5 Hz on 3x3 tiles. Budget-check on hardware in P5.")
+print(f"    NATIVE tiling = {nt_w:.0f}x{nt_h:.0f} = {nt_w*nt_h:.0f} tiles/frame")
+# The accelerator is a Hailo-8, not the Orin Nano this block used to cite --
+# that part is not in the bill of materials and its 30-40 FPS is what made
+# native tiling look unaffordable in the first place.
+for _hz in (2.0, 3.06):
+    _need = nt_w * nt_h * _hz
+    print(f"      at {_hz:.2f} Hz -> {_need:5.0f} inf/s   "
+          f"Hailo-8 (130-160 FPS): {'FITS' if _need <= 130 else 'EXCEEDS':7}  "
+          f"Hailo-8L (60-80): {'fits' if _need <= 60 else 'exceeds'}")
+print(f"    2 Hz is the adopted rate and fits with margin. 3.06 Hz -- the rate")
+print(f"    SYS-46's 12-look requirement needs -- does NOT, and is the open item")
+print(f"    the two-stage gate in perception/cascade/ exists to buy back.")
+# NATIVE tiling: dsf=1. The old 2x downsample was adopted because 48 crops
+# looked unaffordable against an Orin Nano's 24-40 FPS -- a part that is not in
+# the bill of materials. On the accelerator we actually buy, 48 tiles at 2 Hz
+# fits. The downsample was discarding resolution we had already paid for, and
+# it cost 4x the target area on the ground.
+dsf=1
+print(f"    what the detector is handed: {px_w//dsf}x{px_h//dsf}, "
+      f"GSD {gsd*dsf*100:.2f} cm/px, a supine adult {ppl/dsf:.0f} px long")
+print(f"    a person in WATER (0.4 m across) is {0.4/(gsd*dsf):.0f} px -- the size that")
+print(f"    the design must be checked against, and the reason for 40 m over 60 m.")
 
 # ---------------------------------------------------------------- BALLISTICS
 print("\n"+"="*80); print("STEP 8  PAYLOAD DROP BALLISTICS"); print("="*80)
@@ -328,8 +386,8 @@ print("  -> release velocity dominates, exactly as in the fixed-wing airdrop lit
 print("     A multirotor can null groundspeed; a fixed-wing cannot. Hover-and-drop wins.")
 
 # ---------------------------------------------------------------- GEOLOCATION
-print("\n"+"="*80); print("STEP 9  GEOTAG ERROR BUDGET (RSS, 1-sigma, target at 60 m AGL)"); print("="*80)
-h=60.0; r_edge=W/2
+print("\n"+"="*80); print("STEP 9  GEOTAG ERROR BUDGET (RSS, 1-sigma, target at 40 m AGL)"); print("="*80)
+h=40.0; r_edge=W/2
 def budget(gnss_h, gnss_v, att_deg, boresight_deg, terr_m, tsync, v, npx, gsd_):
     e_gnss=gnss_h
     e_att=h*np.tan(np.deg2rad(att_deg))
@@ -417,8 +475,12 @@ print(f"       feed a mass-change event to the controller / hold position 2 s af
 # ==================== from sizing5.py ====================
 # D and m_pack carry over from the final design point above (see note at STEP 6).
 MTOW,bd=converge(m_pack,D); Ph,_=hover_power_elec(MTOW,D)
-sensor_w,px_w,f_mm=7.4,4056,6.0
-HFOV=2*np.arctan(sensor_w/(2*f_mm)); h=60.0
+# Same correction as STEP 7: this re-derived the sensor as 7.4 mm wide, which
+# is not the part being bought. The angular pixel scale it produced (15.6
+# mdeg/px) is what put the capture gate at 15 deg/s; on the real sensor one
+# pixel is 13.6 mdeg and the gate has to come down with it.
+sensor_w,px_w,f_mm = 4056*1.55/1000.0, 4056, 6.0
+HFOV=2*np.arctan(sensor_w/(2*f_mm)); h=40.0
 W=2*h*np.tan(HFOV/2); gsd=W/px_w
 
 print("="*80); print("CORRECTION 1  ANGULAR MOTION BLUR (previous run had a unit error)"); print("="*80)
@@ -429,9 +491,14 @@ for rate in [5,10,20,45]:
         print(f"    body rate {rate:2.0f} deg/s, 1/{1/texp:.0f} s -> {rate*texp/ang_per_px:5.2f} px angular smear"
               + ("   <-- exceeds 1 px" if rate*texp/ang_per_px>1 else ""))
     print()
+# The gate follows from the pixel scale, so it is derived rather than asserted:
+# one pixel of smear at 1/1000 s occurs at exactly ang_per_px/texp deg/s. The
+# stated rule rounds that down to a whole degree.
+_gate = np.floor(ang_per_px / (1 / 1000.0))
 print("  Translational smear at 8 m/s, 1/1000 s = 0.44 px. Angular smear dominates only in")
-print("  aggressive turns. Rule: gate detections on |body rate| < 15 deg/s, and use 1/1000 s or")
-print("  faster. Both are easily met on straight transects; suppress inference in the turn arcs.")
+print(f"  aggressive turns. At 1/1000 s, 1 px of smear occurs at {ang_per_px/(1/1000.0):.2f} deg/s, so the")
+print(f"  rule is: gate detections on |body rate| < {_gate:.0f} deg/s and use 1/1000 s or faster.")
+print("  Both are easily met on straight transects; suppress inference in the turn arcs.")
 
 print("\n"+"="*80); print("CORRECTION 2  RF LINK BUDGET WITH LEGAL POWER AND REAL ANTENNAS"); print("="*80)
 print("  India, 5.825-5.875 GHz delicensed for drones: up to 1 W (30 dBm) Tx, 4 W (36 dBm) EIRP.")

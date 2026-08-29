@@ -1,0 +1,207 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage[margin=25mm]{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{microtype}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\titleformat{\section}{\large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\bfseries}{\thesubsection}{0.6em}{}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+\pagestyle{fancy}\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\newcommand{\inr}[1]{INR~#1}
+
+\fancyhead[L]{RescueSwarm --- Track D: Perception}
+\fancyhead[R]{\thepage}
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Track D --- Perception}\\[3mm]
+{\large RescueSwarm: work package and funding request}\\[2mm]
+NIDAR 2026--27 $\cdot$ Track 1 $\cdot$ Mission 1\\[1mm]
+\textbf{Ask: \inr{76,245}} $\cdot$ 1--2 students $\cdot$ Detector, tiling, geotagging, calibration, dataset
+\end{center}
+\vspace{2mm}\hrule\vspace{4mm}
+
+
+This track owns the 250 marks available for detection. It also owns the
+programme's most honest weakness: with the ground-truth apparatus and the field
+dataset both deferred, detection recall is a \emph{modelled} quantity and there
+is currently no funded route to measuring it.
+
+\section{Scope and ownership}
+
+This track owns \textbf{detector, tiling, geotagging, calibration, dataset}. It is one of four delivery tracks defined in
+\texttt{docs/development-plan.md}~\S1.3; the integrated system argument lives in
+the master proposal, \texttt{docs/proposal/rescueswarm-proposal.pdf}, which this
+document does not restate.
+
+\section{What the detector actually receives}
+
+The sensor is a 12.3\,MP module at $4056\times3040$ on a \textbf{1.55\,\textmu m}
+pixel pitch behind a 6\,mm lens. The sizing chapter assumed a
+\textbf{1.82\,\textmu m} pitch --- the same pixel \emph{count} at a different
+pixel \emph{size}, which means resolution on target is not what that chapter
+states.
+
+At the 40\,m search altitude, taking a supine adult as 1.7\,m by 0.5\,m:
+
+\begin{center}
+\begin{tabular}{@{}lrrl@{}}
+\toprule
+\textbf{Stage} & \textbf{GSD} & \textbf{Target} & \textbf{COCO class} \\
+ & (cm/px) & (px$^2$) & \\
+\midrule
+Sensor, native & 1.03 & 13\,600 & large \\
+After $2\times$ downsample & 2.07 & 3\,400 & medium \\
+Sizing chapter, 60\,m, $2\times$ & 3.65 & 640 & \textbf{small} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The last row matters more than it looks. Published recall figures report average
+precision \emph{by size class}, and small-object AP is routinely far below
+medium on the same model. Quoting the 47-pixel figure implicitly promises
+small-object performance the programme does not need to accept.
+
+\section{The inference budget, and where it does not close}
+
+Tiling is 640\,px tiles at 20\,\% overlap. At $2\times$ downsample that is 12
+tiles per frame, and at 2\,Hz, \textbf{24 inferences per second} --- inside the
+accelerator's capability.
+
+\textbf{The temporal budget does not close.} Requirement SYS-46 asks for at
+least 12 looks per target per pass so that multi-frame fusion has enough
+independent observations. At 40\,m and 2\,Hz the target is in frame for
+\textbf{7.9 looks} --- a 34\,\% shortfall. Meeting 12 looks needs
+\[
+r \geq \frac{n\,v}{D} = 3.06~\text{Hz},
+\]
+which is 37 inferences per second rather than 24. The trade is real and
+unresolved: raise the capture rate and pay about half again in inference load,
+fly slower, fly higher, or relax the look count. It should be decided
+deliberately rather than discovered.
+
+The overlap geometry does hold: at 128\,px of shared margin against an 82\,px
+target, no survivor can be cut by a tile boundary without appearing whole in the
+neighbouring tile.
+
+\section{Geolocation: calibrate before fusing}
+
+The error budget makes an ordering argument that this track should follow
+literally. Random terms fall as $1/\sqrt{N}$ with frame count; systematic terms
+do not fall at all. Boresight calibration and a ground-plane height fix
+therefore matter \emph{more} than additional frames, and fusion is worth having
+but not worth over-investing in --- it moves the total from 0.75\,m to 0.66\,m,
+while calibration moves it from 4.57\,m to 3.88\,m before RTK is even applied.
+
+Calibrate, then fuse. Not the other way round.
+
+\section{The honest position on recall}
+
+Detection recall is modelled and will remain modelled unless the deferred lines
+are restored. The ground-truth apparatus would have given detections something
+to be measured against; the field dataset would have given the detector Indian
+terrain to be trained on. Both were deferred at team direction to reach the
+requested figure.
+
+This track should state that plainly in every review rather than presenting
+modelled recall as though it were measured. If any single deferred line is
+restored, this is the one with the largest effect on a scored outcome.
+
+\section{Funding request}
+
+Every figure below is generated from
+\texttt{docs/proposal/figures/track\_budget.py}, which partitions the master
+competition budget. The four track asks plus the shared pool reconcile to the
+master figure exactly; that reconciliation is asserted in code and fails the
+build if it ever stops holding. \textbf{K} marks a line held at professional
+grade on purpose.
+
+
+\begin{center}
+\begin{tabular}{@{}p{88mm}cr@{}}
+\toprule
+\textbf{Item} & & \textbf{\inr{}} \\
+\midrule
+Camera + lens (1 x 11,100 x 3 ac) & \textbf{K} & 33,300 \\
+AI accelerator (1 x 11,000 x 3 ac) & \textbf{K} & 33,000 \\
+\midrule
+Subtotal & & 66,300 \\
+Customs duty and freight & & 0 \\
+GST & & 0 \\
+Contingency at 15\% & & 9,945 \\
+\midrule
+\textbf{TRACK D ASK} & & \textbf{76,245} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+
+\textbf{Deferred or institutionally held, and therefore not requested:}
+Ground-truth apparatus, Indian SAR field dataset, Spare camera + lens, Training compute. These remain capabilities the track requires; they are simply not being
+bought. Where a deferral carries a technical consequence it is stated in the
+risk table below rather than left implicit.
+
+\section{Deliverables by phase}
+
+\begin{center}
+\begin{tabular}{@{}llp{88mm}@{}}
+\toprule
+\textbf{Phase} & \textbf{Dates} & \textbf{This track delivers} \\
+\midrule
+\textbf{P1} & 24 Aug -- 13 Sep & Camera and accelerator ordered. Survey-altitude position stated with its evidence. \\
+\textbf{P2} & 14 Sep -- 4 Oct & Detector running on the accelerator at the budgeted rate. Boresight calibration procedure defined. \\
+\textbf{P3} & 5 Oct -- 18 Oct & First airborne imagery at the flown altitude. \\
+\textbf{P5} & 9 Nov -- 22 Nov & Detection and geotagging in the loop, end to end. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Risks owned by this track}
+
+\begin{center}
+\begin{tabular}{@{}p{50mm}lp{70mm}@{}}
+\toprule
+\textbf{Risk} & \textbf{Sev.} & \textbf{Mitigation} \\
+\midrule
+Recall is unmeasured & High & Ground truth and dataset both deferred. Mitigation is honesty in review plus opportunistic collection during flight tests; the real fix costs money and is a restoration decision. \\
+Fusion look count fails SYS-46 at the flown altitude & High & 7.9 looks against 12 required. Needs a decision on capture rate, groundspeed or altitude. Shared with Track C. \\
+Fine-tuning at the wrong target scale & Medium & Altitude error changes pixels on target, so the detector should be fine-tuned across a band around 82\,px rather than trained at a single scale. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Interfaces to other tracks}
+
+\begin{center}
+\begin{tabular}{@{}lp{110mm}@{}}
+\toprule
+\textbf{With} & \textbf{Dependency} \\
+\midrule
+Track A & Depends on a stable camera mounting plane. Boresight drift is a systematic error that no amount of frame fusion removes. \\
+Track B & Depends on the accelerator, the camera interface, and on time and attitude being accurate enough that a geotag means something. \\
+Track C & Supplies detections; consumes aircraft state. Shares the unresolved survey-altitude decision. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Interfaces are where student programmes fail, because each side assumes the
+other owns the gap. Every row above is a two-way commitment and should be
+recorded as an interface control document at P1.
+
+
+\vfill
+\hrule\vspace{2mm}
+{\small Generated by \texttt{tools/proposal/build\_track\_proposals.py} from
+\texttt{docs/proposal/figures/track\_budget.py}. Financial figures are not
+maintained in this document and must not be edited here: change the master
+budget and regenerate. Technical claims cite the model or document that
+produced them.}
+\end{document}

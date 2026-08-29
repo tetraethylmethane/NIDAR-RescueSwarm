@@ -2,8 +2,7 @@
 ### NIDAR 2026–27 · Track 1 · Mission 1 · Registered August 2026
 
 **This is the single schedule authority.** Where anything else disagrees, this
-governs. *What* to build and how simple it can be is in
-[`implementation-plan.md`](implementation-plan.md). Requirements live in
+governs. Requirements live in
 [`requirements/requirements-baseline.md`](requirements/requirements-baseline.md);
 architecture rationale lives in [`system-overview.md`](system-overview.md); this
 document is *when* and *in what order*.
@@ -266,6 +265,29 @@ Those are 450 points and the pass/fail gate respectively.
   fix the document.
 - **Weekly**: one 30-minute cross-track sync. Track D reports recall; track B
   reports setup time. Those two numbers are the programme's health.
+- **Price every part against a written requirement, never against its
+  description.** Every cost decision that went wrong here failed the same way:
+  the part was judged on what it was *called* rather than what it had to *do*.
+  The BOM asked for cells at "≥4000 mAh, 40–45 A" — a band that admits a cell
+  which is 35 A once its 80 °C cut-off is excluded, against a 38.3 A peak. It
+  called 26 TOPS "the specification floor" when 13 TOPS clears the real
+  37 inferences/s by 1.6×. It carried a motorised-focus lens on an aircraft
+  whose hyperfocal distance is 4.15 m and which never flies below 30 m. Write
+  the number down first — **115 A continuous, 236 Wh, 3.18 kgf per motor,
+  37 inferences/s** — and the buy decision follows in *both* directions: some
+  things are safe to cheapen and some are not, and the requirement is what tells
+  you which. An adjective is not a requirement; "professional", "A grade",
+  "high quality" and "specification floor" are all things a purchase order
+  cannot be checked against.
+  - **A saving that spends another requirement's margin is not a saving.** A
+    tile classifier costs 18× fewer FLOPs and moves geolocation from 0.75 m to
+    1.24 m — wasting most of the RTK receiver sitting behind it. Cost the
+    system, not the line. Track budgets make this easier to see, not harder:
+    a cut that moves spend into another track has not saved the programme
+    anything.
+  - **Check for a public price before accepting a quoted one.** The cell line
+    read "no public price exists" while an equivalent listed openly at ₹405
+    against the ₹700 carried. A quote you cannot benchmark is an estimate.
 
 ---
 

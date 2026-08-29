@@ -1,0 +1,492 @@
+%=============================================================================
+%  Programme brief for the faculty mentor. Build: pdflatex mentor-brief x3
+%=============================================================================
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage[margin=19mm,top=22mm,bottom=22mm]{geometry}
+% array must precede longtable: >{...} specifiers in a longtable preamble
+% are otherwise undefined.
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{needspace}
+\usepackage{microtype}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+% brainwave.pdf is the society mark, converted from SVG by
+% tools/proposal/svg_logo_to_pdf.py -- pdflatex cannot read SVG, and this
+% machine has no inkscape or ImageMagick.
+\graphicspath{{images/}}
+
+\newcommand{\rs}[1]{\mbox{INR~#1}}
+% Table furniture, defined once so every table matches.
+\newcommand{\thead}[1]{\textbf{#1}}
+\setlength{\tabcolsep}{5pt}
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\setlength{\extrarowheight}{2pt}
+\renewcommand{\arraystretch}{1.12}
+
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.6em}{}
+\titlespacing*{\section}{0pt}{12pt}{4pt}
+\titleformat{\subsection}{\bfseries}{}{0pt}{}
+\titlespacing*{\subsection}{0pt}{10pt}{3pt}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small Autonomous multi-UAV search and delivery}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\begin{document}
+
+\thispagestyle{empty}
+
+% ---- letterhead ------------------------------------------------------------
+\noindent
+\raisebox{-0.5\height}{\includegraphics[height=16mm]{brainwave.pdf}}%
+\hfill
+\raisebox{-0.5\height}{\includegraphics[height=15mm]{thapar_logo.png}}
+
+\vspace{3mm}\hrule\vspace{6mm}
+
+\begin{center}
+{\LARGE\bfseries An Autonomous Multi-UAV System for\\[1.5mm]
+Post-Disaster Search, Localisation and Payload Delivery}
+\end{center}
+
+\vspace{1mm}\hrule\vspace{4mm}
+
+%-----------------------------------------------------------------------------
+\section{Executive summary}
+
+Floods displace millions of people in India each year. The limiting factor in a
+rescue is locating survivors, not reaching them.
+
+Three one-metre, 6.4\,kg multirotor aircraft search flooded ground as a
+coordinated group under one operator, identify people from the air, report their
+position to a metre, and deliver a relief kit to each. No mobile network or
+internet is required.
+
+Sizing, error budgets and flight software are complete; coordination is
+demonstrated across three simulated autopilots. No aircraft has flown, so the
+figures here are calculated.
+
+%-----------------------------------------------------------------------------
+\section{The problem}
+
+Boat teams search slowly, at risk, and cannot see rooftops. Helicopters are
+scarce and committed to evacuation. Conventional drones need one pilot each,
+depend on infrastructure the flood has removed, and cannot assist a survivor
+once found.
+
+Detection is the harder problem. A person in floodwater presents head and
+shoulders, 40\,cm across. Detection models take a fixed, small input, so the
+usual approach shrinks the image and the target with it, to a size at which
+published accuracy is 29--61\,\%. A smaller model is worse: smaller models take
+smaller inputs.
+
+No dataset annotates people in flood imagery. Thermal imaging fails in water,
+where skin equilibrates toward water temperature.
+
+%-----------------------------------------------------------------------------
+\section{Our solution}
+
+\textbf{System.} The operator draws a search region of any shape. The software
+splits it into three balanced sub-regions and plans a path over each, verified
+on thirteen non-convex shapes with no path leaving the region and imbalance
+below 0.02\,\%. The aircraft fly autonomously; the test harness shows
+structurally that no command is sent after the mission begins. Detection and
+geolocation run on board. Each aircraft carries four kits, descends, nulls its
+groundspeed over a survivor and releases one. Link loss, low battery and
+operator abort converge on a single return-and-land behaviour.
+
+\textbf{Detection.} The image is not shrunk. Each frame is divided into 48
+overlapping tiles at native resolution, and the survey altitude is 40\,m rather
+than 60\,m. The target becomes \textbf{39 pixels} rather than 13, nine times the
+area, outside the band where detector performance collapses. Either change alone
+leaves it inside.
+
+The cost is four times the computation: 48 tiles at 2\,Hz is 96 inferences per
+second, against 130--160 measured for the accelerator. Mission duration is
+shorter than at 60\,m, the lower climb outweighing the extra transects.
+
+\textbf{Open question.} Confirming a survivor across twelve frames needs
+3\,Hz, which exceeds that capacity. A two-stage filter, discarding the 87\,\% of
+tiles that are open water, would recover it. A filter that discards a tile
+containing a person fails without indication, so it will be evaluated against
+public data before adoption.
+
+%-----------------------------------------------------------------------------
+\section{Deliverables}
+
+\begin{enumerate}\itemsep0pt
+\item Three aircraft operating as a coordinated group under one operator.
+\item A ground station that displays mission state and is architecturally
+incapable of commanding the aircraft.
+\item Autonomy software --- partitioning, path planning, allocation, failsafes ---
+with an automated test suite.
+\item Measured detection accuracy and a verdict on the two-stage filter.
+\item A publication: tiling, aerial person detection and low-power onboard
+inference have not been combined for flood conditions.
+\item Source code and results, published in either outcome.
+\end{enumerate}
+
+%-----------------------------------------------------------------------------
+\section{Benefits}
+
+% Four parallel items, so they are set as a list -- the same way Deliverables
+% above sets its parallel items. As running paragraphs the labels did not hang
+% and the block read as one mass of text.
+\begin{itemize}\itemsep2pt
+\item \textbf{Operational.} Ten hectares in under eight minutes, returning
+coordinates rather than a video feed needing continuous attention.
+\item \textbf{Economic.} The complete system costs less than one hour of
+helicopter search time, travels by road, and is operated by two people.
+\item \textbf{Institutional.} A thrust stand, certified scale, ground station,
+tested codebase and trained students remain with the department.
+\item \textbf{Strategic.} Indian suppliers wherever they meet the
+specification; domestic lead times are half those of imports.
+\end{itemize}
+
+%-----------------------------------------------------------------------------
+\section{Resources needed}
+
+Funding is requested in 32 small steps rather than as one grant. Each step buys
+one named set of parts and is released only once the previous step has produced
+a stated result. If a step fails, the programme stops there and nothing beyond
+it has been spent.
+
+The order follows engineering dependency: one motor is measured before the other
+eleven are bought, and the first aircraft flies a complete mission before the
+second is begun.
+
+% No \clearpage here: the longtable defines \endhead, so it repeats its header
+% on every continuation page and can start mid-page. Forcing a fresh page left
+% the lower half of the preceding page blank.
+\subsection{Phase schedule}
+
+The third column is the amount released. The fourth is what must already be
+true before it is released.
+
+\begingroup
+\footnotesize
+\setlength{\extrarowheight}{1.5pt}
+\begin{longtable}{@{}>{\bfseries}r>{\raggedright\arraybackslash}p{7.3cm}r>{\raggedright\arraybackslash}p{5.6cm}@{}}
+\toprule
+\thead{\#} & \thead{Objective} & \thead{INR} & \thead{Released only after} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{\#} & \thead{Objective} & \thead{INR} & \thead{Released only after} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{@{}r}{\thead{Total}} & \thead{7,43,004} & \\
+\bottomrule
+\endlastfoot
+1 & Establish thrust and mass measurement capability & 26,196 & Approval \\
+2 & Verify static thrust against the 3.18\,kgf requirement & 5,175 & Instruments commissioned \\
+3 & Aircraft 1 --- autopilot and control link & 25,990 & \textbf{Thrust verified} \\
+4 & Aircraft 1 --- onboard computer and AI accelerator & 21,850 & Autopilot bench-tested \\
+5 & Aircraft 1 --- centimetre positioning (RTK receiver) & 27,892 & Compute stack operating \\
+6 & Aircraft 1 --- camera and radios & 29,440 & Position fix acquired \\
+7 & Aircraft 1 --- airframe fabrication & 20,144 & Avionics integrated \\
+8 & Aircraft 1 --- battery pack assembly & 29,299 & Airframe fabricated \\
+9 & Aircraft 1 --- speed controllers, propellers, release servos & 27,098 & Pack bench-discharged \\
+10 & Aircraft 1 --- propulsion completed & 15,525 & Drive train installed \\
+11 & Charging and manual override for flight test & 25,300 & Aircraft assembled and weighed \\
+12 & Field equipment: consumables, sun hood & 17,274 & Charging verified \\
+13 & Aircraft 2 --- autopilot and control link & 25,990 & \textbf{Aircraft 1 flew a full mission} \\
+14 & Aircraft 2 --- onboard computer and AI accelerator & 21,850 & Autopilot bench-tested \\
+15 & Aircraft 2 --- centimetre positioning (RTK receiver) & 27,892 & Compute stack operating \\
+16 & Aircraft 2 --- camera and radios & 29,440 & Position fix acquired \\
+17 & Aircraft 2 --- airframe fabrication & 20,144 & Avionics integrated \\
+18 & Aircraft 2 --- battery pack assembly & 29,299 & Airframe fabricated \\
+19 & Aircraft 2 --- speed controllers, propellers, release servos & 27,098 & Pack bench-discharged \\
+20 & Aircraft 2 --- propulsion completed & 20,700 & Drive train installed \\
+21 & Aircraft 3 --- autopilot and control link & 25,990 & \textbf{Two aircraft, separation verified} \\
+22 & Aircraft 3 --- onboard computer and AI accelerator & 21,850 & Autopilot bench-tested \\
+23 & Aircraft 3 --- centimetre positioning (RTK receiver) & 27,892 & Compute stack operating \\
+24 & Aircraft 3 --- camera and radios & 29,440 & Position fix acquired \\
+25 & Aircraft 3 --- airframe fabrication & 20,144 & Avionics integrated \\
+26 & Aircraft 3 --- battery pack assembly & 29,299 & Airframe fabricated \\
+27 & Aircraft 3 --- speed controllers, propellers, release servos & 27,098 & Pack bench-discharged \\
+28 & Aircraft 3 --- propulsion completed & 20,700 & Drive train installed \\
+29 & Ground base receiver, the source of the corrections & 27,892 & First flight completed \\
+30 & Stable, repeatable base mounting & 4,600 & Base receiver acquired \\
+31 & Deployable ground segment & 28,750 & Base station operating \\
+32 & Statutory registration & 5,750 & Ground segment complete \\
+\end{longtable}
+\endgroup
+
+Phase 3 commits the first significant expenditure and is released only on a
+measured thrust figure. Phase 13 begins the second aircraft only after the first
+has flown a complete mission, so the largest blocks of expenditure fund
+replication of a demonstrated configuration rather than a projection.
+
+\subsection{Component selection}
+
+The schedule gives the amount
+\emph{released} per phase. The tables below give the parts each phase
+\emph{buys}. The two differ by a fixed rule: a released amount is the parts
+cost plus 22\,\% customs duty on the imported share, plus 18\,\% GST, plus
+15\,\% contingency. Across the programme that is \rs{5{,}86{,}400} of parts
+against \rs{7{,}43{,}004} released, a factor of 1.27. Every row below carries
+the phase number that buys it, so any line can be traced to its approval.
+
+The seven lines immediately below are
+current retail listings from named Indian suppliers, so they are firm. Every
+other line in this section is a quotation or an estimate from a comparable
+part, and those are where the total is most likely to move.
+
+\begin{center}\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.4cm}l>{\raggedright\arraybackslash}p{9.6cm}@{}}
+\toprule
+\thead{Item} & \thead{Price seen} & \thead{Supplier, and what we budgeted} \\
+\midrule
+Propellers & 3,250/pair & Robokits India; budgeted at this figure \\
+Battery charger & 5,836 & Indian Hobby Center, ToolkitRC M6D \\
+Safety-pilot radio & 6,955 & IndiaMART, RadioMaster Boxer ELRS \\
+AI accelerator & 9,950--11,309 & multiple Indian retailers; budgeted 11,000 \\
+Motor & 3,378--6,690 & Robokits to IndiaMART; budgeted 4,500 mid-range \\
+Battery cells & 405 imported & Robokits, Molicel P45B. \textbf{Budgeted 700} for
+the domestic supplier, which keeps one of four Indian-sourced lines \\
+Onboard computer & 6,955--8,530 & several Indian retailers; budgeted 8,000 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The flight controller, GNSS receiver, camera, speed controllers and mesh radio
+are carried at quotation. The GNSS line is the one to confirm first: the
+supplier has confirmed RTK rover operation, which was the open question, but
+neither candidate receiver is publicly priced, so \rs{18{,}000} is an estimate
+and phases 5, 15, 23 and 29 move with it.
+
+\needspace{7\baselineskip}
+Terms used below. \emph{RTK}: satellite positioning corrected against
+a second receiver on a surveyed point, giving centimetre rather than metre
+accuracy. \emph{6S3P}: eighteen cells, six in series for voltage and three in
+parallel for capacity. \emph{kgf}: thrust written as the weight it would lift.
+\emph{TOPS}: trillion operations per second, the accelerator's throughput.
+\emph{ESC}: the electronic speed controller between battery and motor.
+\emph{BMS}: the board that balances and protects the cells.
+
+\subsubsection*{Measurement instruments --- phases 1--2 \quad \rs{24{,}500} of parts}
+
+\begingroup\small
+\begin{longtable}{@{}l>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{3.3cm}r>{\raggedright\arraybackslash}p{7.9cm}@{}}
+\toprule
+\thead{Ph.} & \thead{Item} & \thead{Model} & \thead{INR} & \thead{Rationale} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Ph.} & \thead{Item} & \thead{Model} & \thead{INR} & \thead{Rationale} \\
+\midrule
+\endhead
+1 & Calibrated scale & Bench scale, 30\,kg, 1\,g resolution, certified & 12,000 &
+Mass is a hard limit; 1\,g resolves 0.02\,\% of the aircraft, so build-up is
+tracked per component. Certified, so the figure is defensible. \\
+1 & Thrust stand & 20\,kg load cell, HX711 amplifier, power meter, frame in-house &
+8,000 &
+The motors ship without a thrust curve. Measuring thrust and current together
+gives thrust per watt. Commercial stands start near \rs{45{,}000}. \\
+2 & Motor (one) & Tarot TL96020, 5008, 340\,KV & 4,500 &
+One measured before eleven are committed. Requirement 3.18\,kgf, hover at half
+throttle where efficiency peaks. \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\subsubsection*{Per aircraft, avionics and sensing --- phases 3--6, repeated at 13--16 and 21--24 \quad \rs{85{,}200} of parts per aircraft}
+
+\begingroup\small
+\begin{longtable}{@{}l>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{3.3cm}r>{\raggedright\arraybackslash}p{7.2cm}@{}}
+\toprule
+\thead{Ph.} & \thead{Item} & \thead{Model} & \thead{INR} & \thead{Rationale} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Ph.} & \thead{Item} & \thead{Model} & \thead{INR} & \thead{Rationale} \\
+\midrule
+\endhead
+3, 13, 21 & Flight controller & Holybro Pixhawk 6C~Mini & 22,600 &
+Two independent motion sensors, so one sensor failure does not end the flight.
+Runs ArduPilot, which our simulation already targets. Cheaper boards at
+\rs{6{,}000} lack the memory for our logging and failsafe configuration. \\
+5, 15, 23 & GNSS receiver & RTK-capable, RTCM3, $\leq$3\,cm CEP & 18,000 &
+The largest single source of position error: 3.9\,m on ordinary satellite
+positioning against 0.75\,m with RTK. Survivor coordinates are the system's
+output, so this is not a line to economise on. \\
+6, 16, 24 & Camera and lens & Arducam IMX477, 6\,mm CS, fixed focus & 11,100 &
+At 40\,m each pixel covers 1.03\,cm of ground, putting 39 pixels across a person
+in water --- enough to detect. Focus is fixed because everything beyond 4.15\,m
+is already sharp, and a focus motor is one more part that can drift unnoticed. \\
+4, 14, 22 & AI accelerator & Pi AI~HAT+ 26~TOPS (Hailo-8) & 11,000 &
+Runs the detector at 130--160 frames per second against the 96 the search needs.
+The half-speed variant saves \rs{4{,}000} but manages only 60--80, below
+requirement. \\
+6, 16, 24 & Radio and storage & ExpressLRS 2.4\,GHz, firmware 3.5+ & 8,500 &
+Carries pilot control and aircraft data over one link, which removes a second
+radio costing \rs{19{,}000}. Needs firmware 3.5 or later; earlier versions
+cannot share the link. \\
+4, 14, 22 & Onboard computer & Raspberry Pi~5, 8\,GB & 8,000 &
+Runs the mission planner, the radio mesh and the delivery logic. The only board
+in its class with the PCIe connector the accelerator plugs into. \\
+6, 16, 24 & Mesh radio & 5.8\,GHz node and antennas & 6,000 &
+Carries three video streams. They need 2.5\,Mbps of a 20\,Mbps channel, so the
+limit is radio range, not data rate. \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\subsubsection*{Per aircraft, airframe and drive --- phases 7--10, repeated at 17--20 and 25--28 \quad \rs{74{,}100} of parts per aircraft}
+
+\begingroup\small
+\begin{longtable}{@{}l>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{3.3cm}r>{\raggedright\arraybackslash}p{7.2cm}@{}}
+\toprule
+\thead{Ph.} & \thead{Item} & \thead{Model} & \thead{INR} & \thead{Rationale} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Ph.} & \thead{Item} & \thead{Model} & \thead{INR} & \thead{Rationale} \\
+\midrule
+\endhead
+10, 20, 28 & Motors & Tarot TL96020, 340\,KV, 4 off & 18,000 &
+3.18\,kgf each, giving twice the aircraft weight in thrust. 340\,KV suits an
+18\,in propeller at this pack voltage. \\
+7, 17, 25 & Airframe & 25\,$\times$\,23\,mm carbon tube, machined clamps, in-house & 13,000 &
+The carbon tube is loaded to 4\,\% of what it can take, so bending is not the
+risk. The joints are, so clamps are machined rather than printed. \\
+8, 18, 26 & Battery cells & Molicel P45B 21700, 4500\,mAh, 18 off & 12,600 &
+292\,Wh, covering the mission, a full second search and four minutes of holding.
+Each cell peaks at 38.3\,A, so a 40\,A cell runs at 96\,\% of rating --- which is
+why a lower-rated cell will not do. \\
+8, 18, 26 & Pack assembly & 6S 60\,A BMS, distribution board, regulator & 8,500 &
+Cells arrive loose; covers welding, fusing, balancing and monitoring. \\
+9, 19, 27 & Speed controllers & 50--60\,A continuous, 6S, 4 off & 7,200 &
+Each motor peaks at 29\,A, so these run at about half their rating.
+Undersizing here is a known cause of in-flight failure. \\
+9, 19, 27 & Propellers & Tarot 1855 carbon, CW/CCW, 4 off & 6,500 &
+18\,in carbon at \rs{3{,}250} per pair. The most frequently replaced item in a
+flight campaign. \\
+9, 19, 27 & Payload release & Four metal-gear servos, mechanical detents & 4,500 &
+Detents rather than holding torque, so a power interruption cannot release a
+kit. \\
+9, 19, 27 & Wiring & 10\,AWG silicone, XT90-S, JST-GH & 2,400 &
+Cable thickness is set by the 115\,A peak. The anti-spark connector stops the
+contacts pitting when a 292\,Wh pack is plugged in. \\
+9, 19, 27 & Propeller adapters & 4\,mm bore self-tightening hubs, 4 off & 1,400 &
+Rotation seats the nut rather than loosening it; a released propeller loses the
+aircraft. \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\subsubsection*{Flight-test support --- phases 11--12 \quad \rs{36{,}500} of parts}
+
+\begingroup\small
+\begin{longtable}{@{}l>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{3.3cm}r>{\raggedright\arraybackslash}p{7.9cm}@{}}
+\toprule
+\thead{Ph.} & \thead{Item} & \thead{Model} & \thead{INR} & \thead{Rationale} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Ph.} & \thead{Item} & \thead{Model} & \thead{INR} & \thead{Rationale} \\
+\midrule
+\endhead
+11 & Battery chargers & ToolkitRC M6D, 500\,W, 25\,A, dual, 2 off & 11,672 &
+A 13.5\,Ah pack needs about 340\,W to charge in an hour. The usual HOTA D6~Pro
+(\rs{10{,}499}--\rs{13{,}500}) gives 325\,W per channel and would run at its
+limit; the M6D gives 500\,W at \rs{5{,}836} and needs only a supply the
+department holds. Four channels charge the fleet at once. \\
+12 & Consumables & Fasteners, thread-lock, tape, filament & 13,000 &
+Consumed continuously in assembly and repair. \\
+11 & Safety-pilot radio & RadioMaster Boxer, ExpressLRS & 6,955 &
+Manual override, required every flight. Full-size gimbals: taking control of a
+6.4\,kg aircraft under fault conditions demands precise input. \\
+12 & Sun hood and monitor & Fabricated hood, second-hand monitor & 1,500 &
+Laptop displays are illegible in direct sun. \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\subsubsection*{Ground segment and statutory --- phases 29--32 \quad \rs{52{,}000} of parts}
+
+\begingroup\small
+\begin{longtable}{@{}l>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{3.3cm}r>{\raggedright\arraybackslash}p{7.9cm}@{}}
+\toprule
+\thead{Ph.} & \thead{Item} & \thead{Model} & \thead{INR} & \thead{Rationale} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Ph.} & \thead{Item} & \thead{Model} & \thead{INR} & \thead{Rationale} \\
+\midrule
+\endhead
+31 & Field consumables & Cables, mounts, spares, transport protection & 25,000 &
+Corrections travel over the existing telemetry link, so no separate radio is
+needed. \\
+29 & Base station & Second GNSS receiver, airborne class & 18,000 &
+A second receiver, kept still on a surveyed point. It is what makes RTK work;
+without it survivor positions degrade to 3.9\,m. \\
+32 & Registration & Statutory, three aircraft & 5,000 &
+At 6.36\,kg these are Small category under the Drone Rules 2021. \\
+30 & Survey tripod & Photographic tripod and adapter & 4,000 &
+A stable, repeatable mount; the corrections are relative, so survey-grade
+accuracy is unnecessary. \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\subsection{What this arrangement costs us}
+
+Thirty-two approvals is a material administrative overhead, and buying one
+aircraft at a time places the same imported order three times --- roughly eight
+to twelve weeks of schedule. Consolidating the per-aircraft phases into one
+order is available if schedule becomes binding.
+
+\textbf{The detection evaluation needs no procurement:} about a week on a
+departmental GPU and 30\,GB of storage, against a public dataset.
+
+%-----------------------------------------------------------------------------
+\section{Future work}
+
+\textbf{Near term.} Measure what is currently calculated: detection accuracy,
+motor thrust, setup time. Evaluate near-infrared sensing --- water absorbs
+strongly and skin does not, so a person appears bright against dark water. A
+camera without its infrared filter costs \rs{3{,}000}, and a public dataset
+allows evaluation before purchase. Only the training data is flood-specific; the
+same system suits earthquake, wildfire and avalanche search.
+
+\textbf{Longer term.} A capable aircraft deciding for itself within a small
+power budget is a hard requirement in planetary aviation. \emph{Ingenuity} flew
+72 times on Mars from a 1.8\,kg airframe in an atmosphere under one per cent of
+Earth's density; \emph{Dragonfly} launches in 2028 for Titan. A command takes
+minutes to arrive, so every decision is made on board. What transfers is what is
+not flood-specific: onboard survey planning, perception run to an energy budget,
+and safe behaviour without a link. Microcontroller-class processors, often
+proposed for such missions, cannot resolve targets of this size, so a planetary
+configuration needs a different operating point.
+
+%-----------------------------------------------------------------------------
+\section{Conclusion}
+
+Three aircraft, one operator, no network: survivors located in flooded terrain
+and reached with a relief kit. Eight minutes for ten hectares, returning
+coordinates a rescue coordinator can act on. The design is specified; what
+remains is to build it and measure it.
+
+Exposure is never more than one phase. The first is \rs{31{,}371} and settles
+whether these motors lift this aircraft; if they do not, the programme stops
+there and the department keeps a thrust stand and a certified scale. Every later
+release is backed by the previous result, and the two largest come only after a
+complete aircraft has flown.
+
+Floods recur every monsoon, and no capability of this kind exists at a scale two
+people can deploy. The whole system costs less than an hour of helicopter search
+time. We ask the department to release Phase 1.
+
+\end{document}

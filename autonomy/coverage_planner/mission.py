@@ -144,15 +144,18 @@ def build(home: tuple[float, float], lines, altitude_m: float,
                       alt=transit))
     seq += 1
 
-    for a, b in lines:
-        items.append(Item(seq, NAV_WAYPOINT, lat=a[0], lon=a[1], alt=altitude_m))
-        seq += 1
-        items.append(Item(seq, NAV_WAYPOINT, lat=b[0], lon=b[1], alt=altitude_m))
-        seq += 1
+    # A transect is two points. It can carry MORE when the sweep had to route
+    # around a concave notch to reach the next cell -- those detour waypoints
+    # ride on the end of the transect they follow. Emit whatever is there.
+    for ln in lines:
+        for pt in ln:
+            items.append(Item(seq, NAV_WAYPOINT, lat=pt[0], lon=pt[1],
+                              alt=altitude_m))
+            seq += 1
 
     # EGRESS: drop back into the transit band before going anywhere, so the
     # aircraft leaves its strip at its own altitude rather than the search deck.
-    last = lines[-1][1]
+    last = lines[-1][-1]
     items.append(Item(seq, NAV_WAYPOINT, lat=last[0], lon=last[1], alt=transit))
     seq += 1
 

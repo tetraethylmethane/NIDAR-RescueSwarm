@@ -1,0 +1,217 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage[margin=25mm]{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{microtype}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\titleformat{\section}{\large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\bfseries}{\thesubsection}{0.6em}{}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+\pagestyle{fancy}\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\newcommand{\inr}[1]{INR~#1}
+
+\fancyhead[L]{RescueSwarm --- Track B: Avionics and Communications}
+\fancyhead[R]{\thepage}
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Track B --- Avionics and Communications}\\[3mm]
+{\large RescueSwarm: work package and funding request}\\[2mm]
+NIDAR 2026--27 $\cdot$ Track 1 $\cdot$ Mission 1\\[1mm]
+\textbf{Ask: \inr{280,963}} $\cdot$ 1--2 students $\cdot$ Flight controller, companion computer, GNSS/RTK, mesh, safety link, video
+\end{center}
+\vspace{2mm}\hrule\vspace{4mm}
+
+
+This track owns everything electrical between the airframe and the autonomy.
+It carries the second-largest ask in the programme, and it carries the single
+component whose specification is currently in doubt.
+
+\section{Scope and ownership}
+
+This track owns \textbf{flight controller, companion computer, gnss/rtk, mesh, safety link, video}. It is one of four delivery tracks defined in
+\texttt{docs/development-plan.md}~\S1.3; the integrated system argument lives in
+the master proposal, \texttt{docs/proposal/rescueswarm-proposal.pdf}, which this
+document does not restate.
+
+\section{Compute, and why it is three parts rather than one}
+
+The stack is a flight controller, a companion computer and an accelerator, and
+the division is not arbitrary. The accelerator is an M.2 class device whose only
+interface is \textbf{PCIe}; it is a neural processing unit, not a computer, and
+it cannot boot, hold a filesystem or terminate a camera link. The camera is a
+CSI module producing a Bayer-mosaic stream that is not an image until something
+demosaics and scales it. The companion computer is what both plug into.
+
+\textbf{This has a hard consequence for procurement.} The accelerator requires a
+host that exposes PCIe. That rules out the previous-generation single-board
+computer entirely --- its PCIe lane is committed internally to a USB controller
+and is never broken out. There is no adapter and no workaround. The host
+generation is a dependency of the accelerator, not a performance preference,
+and any cost pass that treats it as one produces a bill of materials that cannot
+be assembled.
+
+\section{Positioning: the item this track must resolve first}
+
+Geolocation accuracy governs \textbf{125 of 200} available geotagging points, and
+the error budget is unambiguous about what drives it:
+
+\begin{center}
+\begin{tabular}{@{}lr@{}}
+\toprule
+\textbf{Configuration} & \textbf{RSS error} \\
+\midrule
+Standard GNSS, uncalibrated boresight & 4.57\,m \\
+Standard GNSS, calibrated boresight & 3.88\,m \\
+RTK + dual-antenna heading + calibration & 0.75\,m \\
+\quad + 20-frame fusion & 0.66\,m \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The step from 3.88\,m to 0.75\,m is RTK. Nothing else in the budget moves the
+number comparably, which is why the receiver and its base station survive every
+cost-reduction pass.
+
+\textbf{The open item.} The receiver currently carried against this line is
+specified by its supplier as supporting SBAS correction services with a CEP
+below 1.5\,m. That is assisted GNSS, not RTK, and it lands the system in the
+3.88\,m row rather than the 0.75\,m row. Resolving this --- by confirming the
+part, substituting a genuine RTK receiver, or re-scoring the geotagging
+expectation --- is this track's first P1 action, because 125 points depend on
+which row is true.
+
+\section{The radio link, and a deferral that depends on a configuration}
+
+The sub-GHz safety radio is deferred on the strength of a specific claim: that
+the primary radio link runs in a firmware mode carrying both control and MAVLink
+telemetry on one link and one autopilot serial port. The older transparent-serial
+mode \emph{consumes} that link --- configured that way the aircraft has telemetry
+and no control, and the deferred radio is required again.
+
+\textbf{This is not a preference, it is the precondition of a deferral}, and it
+must be verified on the bench in P2 rather than assumed.
+
+The mesh link budget is thin and this track should say so plainly: 5.8\,GHz
+carries \textbf{1.7\,dB} of margin at the 600\,m design range against a 15\,dB
+target for a mobile airborne link. The mitigation is architectural rather than
+financial --- keep the ground antenna elevated, stream one switched video feed
+rather than three, and accept that video degrades before command does. Total
+offered load is 2.5\,Mbps against a 20\,Mbps channel, so the constraint is
+margin, not bandwidth.
+
+\section{Failsafe configuration}
+
+The battery failsafe thresholds are derived quantities, not chosen ones:
+\texttt{BATT\_LOW\_VOLT} 18.48\,V and \texttt{BATT\_CRT\_VOLT} 17.18\,V follow
+from the cell's resting curve and a pack resistance of
+\texttt{BATT\_RESISTANCE}~=~0.0400\,$\Omega$. A previous configuration set the
+sag-compensated voltage source while leaving pack resistance unset, so the
+compensation did nothing and a loaded voltage was compared against a threshold
+taken from the resting curve. That class of defect --- a correct-looking
+configuration that nothing actually applies --- is what this track's bench
+verification exists to catch.
+
+\section{Funding request}
+
+Every figure below is generated from
+\texttt{docs/proposal/figures/track\_budget.py}, which partitions the master
+competition budget. The four track asks plus the shared pool reconcile to the
+master figure exactly; that reconciliation is asserted in code and fails the
+build if it ever stops holding. \textbf{K} marks a line held at professional
+grade on purpose.
+
+
+\begin{center}
+\begin{tabular}{@{}p{88mm}cr@{}}
+\toprule
+\textbf{Item} & & \textbf{\inr{}} \\
+\midrule
+Flight controller (1 x 22,600 x 3 ac) & \textbf{K} & 67,800 \\
+GNSS RTK primary (1 x 18,000 x 3 ac) & \textbf{K} & 54,000 \\
+RC rx, storage, cooling, mounts (1 x 8,500 x 3 ac) &  & 25,500 \\
+Companion computer (1 x 8,000 x 3 ac) & \textbf{K} & 24,000 \\
+Mesh node + antennas (1 x 6,000 x 3 ac) &  & 18,000 \\
+RTK base receiver &  & 18,000 \\
+Safety-pilot transmitter &  & 8,000 \\
+Survey tripod + tribrach &  & 4,000 \\
+\midrule
+Subtotal & & 219,300 \\
+Customs duty and freight & & 10,217 \\
+GST & & 14,799 \\
+Contingency at 15\% & & 36,647 \\
+\midrule
+\textbf{TRACK B ASK} & & \textbf{280,963} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+
+\textbf{Deferred or institutionally held, and therefore not requested:}
+Spare GNSS, Spare compute module, Spare flight controller, VEGA co-processor (1 x 0 x 3 ac), WPC / ETA licensing. These remain capabilities the track requires; they are simply not being
+bought. Where a deferral carries a technical consequence it is stated in the
+risk table below rather than left implicit.
+
+\section{Deliverables by phase}
+
+\begin{center}
+\begin{tabular}{@{}llp{88mm}@{}}
+\toprule
+\textbf{Phase} & \textbf{Dates} & \textbf{This track delivers} \\
+\midrule
+\textbf{P1} & 24 Aug -- 13 Sep & GNSS specification resolved. Long-lead orders: compute, camera, radios, GNSS. Interface control documents agreed. \\
+\textbf{P2} & 14 Sep -- 4 Oct & Radio mode verified on the bench. Failsafe thresholds validated against a real pack discharge. \\
+\textbf{P3} & 5 Oct -- 18 Oct & Link range verified in the field. RTK fix demonstrated. \\
+\textbf{P5} & 9 Nov -- 22 Nov & All links exercised under mission load. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Risks owned by this track}
+
+\begin{center}
+\begin{tabular}{@{}p{50mm}lp{70mm}@{}}
+\toprule
+\textbf{Risk} & \textbf{Sev.} & \textbf{Mitigation} \\
+\midrule
+Primary GNSS is not RTK-capable & High & Resolve at P1. If confirmed, either substitute a true RTK receiver or restate the geotagging expectation. 125 points ride on this. \\
+Radio mode does not carry control and telemetry together & High & Verify on the bench at P2. If it does not, the deferred sub-GHz safety radio must be restored, which is a budget event. \\
+5.8\,GHz margin is 1.7\,dB against a 15\,dB target & Medium & Elevated ground antenna, single switched video feed. Command link is on a separate budget with 12.2\,dB. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Interfaces to other tracks}
+
+\begin{center}
+\begin{tabular}{@{}lp{110mm}@{}}
+\toprule
+\textbf{With} & \textbf{Dependency} \\
+\midrule
+Track A & Depends on regulated power and on vibration-isolated mounting. \\
+Track C & Supplies the companion computer the autonomy runs on, and the MAVLink routing it commands through. \\
+Track D & Supplies the camera interface, the accelerator, and the time and attitude reference every geotag is computed against. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Interfaces are where student programmes fail, because each side assumes the
+other owns the gap. Every row above is a two-way commitment and should be
+recorded as an interface control document at P1.
+
+
+\vfill
+\hrule\vspace{2mm}
+{\small Generated by \texttt{tools/proposal/build\_track\_proposals.py} from
+\texttt{docs/proposal/figures/track\_budget.py}. Financial figures are not
+maintained in this document and must not be edited here: change the master
+budget and regenerate. Technical claims cite the model or document that
+produced them.}
+\end{document}
