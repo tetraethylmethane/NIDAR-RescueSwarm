@@ -379,6 +379,36 @@ overweight tolerated --- inside the 25\,kg regulatory cap.}
 \subsection{Energy: the decisions behind the pack}
 \label{sec:energy}
 
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig-motor.pdf}
+\caption{(a) The reserve policy against what the pack delivers: the nominal
+mission, a full second sweep of the search area and four minutes of loiter, all
+inside the 80\,\% usable window. (b) The selected motor against its own
+datasheet. Hover sits at 40\,\% of rated continuous current with wide margin;
+the peak at the design thrust-to-weight sits at 108\,\%, which is acceptable
+only because $T/W=2$ is a transient authority reserve rather than a flight
+condition. It is the tightest margin in the propulsion chain, and P2 measures
+current alongside thrust to settle it.}
+\label{fig:motor}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig-sag.pdf}
+\caption{Pack voltage under the mission profile, simulated with a second-order
+Thevenin cell model driven by the flight's own current trace and two
+gust-recovery transients at $T/W=2$. The pack reaches 17.05\,V --- below its own
+18.0\,V failsafe floor --- at two-thirds state of charge, long before the 80\,\%
+depth-of-discharge limit the reserve policy is built around, and the dynamic sag
+exceeds the static estimate by 1.2\,V because the diffusion terms add to the
+instantaneous ohmic drop. A failsafe set on instantaneous pack voltage would
+therefore command a return-to-land on a healthy pack mid-search. The internal
+resistance is calibrated to the static assumption rather than measured; P2
+replaces it with a measured value.}
+\label{fig:sag}
+\end{figure*}
+
 Section~\ref{sec:sizing} derives the pack requirement in full --- the reserve
 policy that sizes it, the nameplate energy floor, and the continuous current
 figure that disqualifies most candidate packs. The re-sweep term in that policy
@@ -450,7 +480,7 @@ The system comprises three segments, shown in Fig.~\ref{fig:arch}.
 
 \draw[flow] (rad.east) -- ++(5mm,0) |- (gcs.east)
       node[lbl, pos=0.25, right, align=left]
-      {telemetry\\3$\times$H.264\\detections};
+      {mission data (LoRa)\\3 analog video\\detections};
 \draw[dflow] (gcs.north) -- (gcs.north|-gnd.north) -- ++(0,3mm)
       node[lbl, above, align=center] {abort / recall only};
 \draw[flow] (rtk.west) -- ++(-5mm,0) |- (air.west)
@@ -470,9 +500,10 @@ ArduPilot~\cite{ardupilot}, a multi-band NavIC/GNSS receiver providing RTK
 position (Teravolt AeroNav-Pro RTK, tracking NavIC, GPS, GLONASS, Galileo,
 BeiDou and QZSS on L1/L2/L5/L6 at 25\,Hz, specified at
 1\,cm~$+$~1\,ppm in RTK~\cite{teravoltaeronav}), a nadir-mounted 12\,MP camera, an edge inference module, a four-station
-kit magazine with positive-lock detents, a 5.8\,GHz mesh radio for telemetry and
-video, and a 2.4\,GHz ExpressLRS link carrying safety-pilot control and abort
-independently of the autonomy stack.
+kit magazine with positive-lock detents, a 5.8\,GHz analog video transmitter,
+an 865\,MHz LoRa module for mission data, and a 2.4\,GHz ExpressLRS link
+carrying safety-pilot control, abort and RTK corrections independently of the
+autonomy stack.
 
 \subsubsection{Ground segment}
 A single ground control station presenting one unified operator interface. The
@@ -640,6 +671,18 @@ row clears the COCO 32$^2$\,px$^2$ small-object threshold --- which is why the
 design point is 40\,m and native tiling, and why the two changes had to be made
 together. Either alone leaves the target in the band where detectors do worst.
 
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig-detect.pdf}
+\caption{Target area against survey altitude, for a person in water presenting
+head and shoulders. (a) Only the adopted point --- 40\,m with native-resolution
+tiling --- sits above the COCO small-object threshold; downsampling by two drops
+it below at every altitude. (b) The four candidate operating points. The two
+changes are not independent: either one alone leaves the target in the size band
+where published detector accuracy collapses.}
+\label{fig:detect}
+\end{figure*}
+
 Two modelling choices set these figures. The optics are computed for
 the 1.55\,\textmu m sensor the bill of materials buys, not for a generic sensor
 of the same pixel \emph{count} at a different pixel \emph{size}: it is pitch,
@@ -652,6 +695,20 @@ Together these fix the design point. Finer ground sampling narrows the field, so
 coverage costs more transects; but at 40\,m those transects cost seconds of a
 mission with minutes to spare, and the mission is in fact \emph{shorter} than at
 60\,m because the climb is lower.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig-looks.pdf}
+\caption{(a) Looks per target per pass against capture rate. Multi-frame fusion
+requires twelve; the adopted 2\,Hz supplies 7.9, and 3.06\,Hz closes the gap.
+Lowering altitude worsens the shortfall rather than easing it, because the
+along-track footprint shrinks faster than the pass shortens. (b) What that rate
+costs. At 48 native tiles, 3.06\,Hz is 147 inferences per second against the
+130--160 measured for the accelerator --- at or beyond the limit. A gate
+discarding the tiles that are open water is what buys it back, which makes the
+cascade a throughput argument rather than an accuracy one.}
+\label{fig:looks}
+\end{figure*}
 
 This is the single most benchmark-sensitive figure in the design. Published
 throughput for comparable models on comparable hardware spans roughly 24 to 41
@@ -674,7 +731,7 @@ balances and scales it. And the tiling that the whole detection approach rests
 on --- cutting each frame into 48 overlapping crops, submitting them, and
 reassembling detections back into frame coordinates --- is host work by
 construction, as is every other thing the aircraft does: the phase machine,
-MAVLink routing, the mesh, survivor claim and release, the delivery excursion
+MAVLink routing, the data link, survivor claim and release, the delivery excursion
 and the telemetry the ground station consumes.
 
 So the three parts are a sensor, an image pipeline with a CPU, and a matrix
@@ -797,33 +854,75 @@ freeze. Table~\ref{tab:risk} carries this rather than the text implying the
 figure is settled.
 
 \subsection{Communications}
+\label{sec:comms}
 
-Regulatory rules require the ground station to display a live camera feed from
-\emph{each} aircraft. Three independent MJPEG streams would demand 4.5--6\,Mbps
-against a link budget of approximately 2.5\,Mbps. The system therefore uses
-H.264 encoding served through a media gateway, carrying three concurrent
-WebRTC streams in approximately 2.7\,Mbps, with per-feed rate reduction under
-congestion rather than feed switching. Detection runs onboard; the downlink
-serves the operator, not the algorithm.
+Rules require the ground station to display a live camera feed from
+\emph{each} aircraft, and the system must run with no external network. Three
+links carry that traffic, each in a different band and each sized so that the
+band it occupies is not the one that fails first.
 
-Band diversity is provided without a third radio. The 5.8\,GHz mesh carries
-video, telemetry and coordination; a 2.4\,GHz ExpressLRS link carries
-safety-pilot control and abort, and is independent of the autonomy stack. Both
-operate in delicensed bands and both comfortably cover the 600\,m geofence.
+\begin{table}[t]
+\caption{Link budget at the 600\,m geofence}
+\label{tab:links}
+\centering
+\small
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{Link} & \textbf{Received} & \textbf{Margin} \\
+\midrule
+Analog video, 5.8\,GHz, 600\,mW & $-61.5$\,dBm & 28.5\,dB \\
+ExpressLRS, 2.4\,GHz            & $-71.6$\,dBm & 36.4\,dB \\
+LoRa, 865\,MHz, SF7             & $-68.7$\,dBm & \textbf{54.3\,dB} \\
+\midrule
+\emph{802.11 data link, 5.8\,GHz} & $-73.3$\,dBm & \emph{8.7\,dB} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\emph{The abort path is not an assumption about the link; it is a documented
-mode of it.} ExpressLRS carries MAVLink natively from version~3.5, so the same
-receiver that gives the safety pilot manual control also carries the autopilot's
-command and telemetry stream --- the ArduPilot side is a serial port set to
-MAVLink v2, nothing more~\cite{elrsmavlink}. The earlier AirPort mode achieves
-the same thing as a transparent serial bridge and is no longer the recommended
-route for MAVLink. Naming the mechanism matters here: deferring the
-sub-gigahertz radio (Section~\ref{sec:deferred}) rests entirely on this link
-being able to do both jobs. A
-further link in the 865--867\,MHz short-range-device band would add a third
-independent path and is the correct extension when funding allows; it is
-deferred rather than fitted, and Section~\ref{sec:deferred} records the
-reasoning.
+\textbf{Video: analog, 5.8\,GHz, one channel per aircraft.} Three transmitters
+on separate channels, three receivers at the ground station, and no shared
+medium to contend for. This is a downlink only --- there is no return path and
+nothing to negotiate --- and it removes video from the data network entirely.
+
+The decisive argument is not the radio but the processor behind it. The
+companion computer has no hardware video encoder, so three H.264 streams would
+be encoded in software on the same board that runs tiled inference. Those two
+loads contend, and the documented fallback was a reduced tile count on a centre
+crop --- which would undo the perception argument in
+Section~\ref{sec:perception}. Analog video removes the encode load rather than
+scheduling it.
+
+\textbf{Mission data: LoRa, 865--867\,MHz.} Position, mode, battery, fix
+quality, survivor tags and delivery state, as a compact binary record rather
+than raw MAVLink. Three aircraft at 2\,Hz is approximately 1.0\,kbps against
+5.5\,kbps available at SF7, and the band is delicensed in India for
+short-range devices. Its 54\,dB margin is the largest in the system, which is
+the right place for the link that carries the survivor coordinates.
+
+\textbf{Command and abort: ExpressLRS, 2.4\,GHz.} The only path that can
+command the aircraft, and it reaches the flight controller directly rather than
+through the autonomy stack. If the companion computer hangs or is compromised,
+the safety pilot still has control --- an isolation property that follows from
+the topology rather than from any access control.
+
+\emph{The abort path is a documented mode of the link, not an assumption about
+it.} ExpressLRS carries MAVLink natively from version~3.5, so the same receiver
+that gives the safety pilot manual control also carries the autopilot's command
+and telemetry stream, and the ArduPilot side is a serial port set to MAVLink
+v2~\cite{elrsmavlink}. RTK corrections ride the same path by MAVLink injection,
+which the receiver supplier confirms as its documented
+route~\cite{teravoltaeronav}.
+
+\emph{An 802.11 mesh was the original design and was withdrawn on the link
+budget.} At the geofence it had 8.7\,dB of margin --- the thinnest path in the
+system, and the one carrying video, telemetry and coordination together. A mesh
+does not repair that, because a relay hop is the same weak link. Rule~8.17
+forbids relying on an \emph{external} network for inter-drone coordination; it
+does not require direct aircraft-to-aircraft links, and coordination routed
+through the team's own ground station is a locally deployed system under
+rule~8.5. What the topology gives up is relay when an aircraft is shadowed,
+which the link-loss failsafe already handles; what it gains is that no single
+band carries more than one job.
 
 \subsection{Payload delivery}
 \label{sec:delivery}
@@ -1038,8 +1137,8 @@ implicit cannot be.
         in the air over the pad improves by the same mechanism.
   \item \textbf{Ground station.} All eight required operator displays were
         verified against three simultaneous autopilots, with offline map tiles
-        (Fig.~\ref{fig:gcs}). Three concurrent H.264 streams within the link
-        budget were verified in a separate run with the media server active;
+        (Fig.~\ref{fig:gcs}). The video wall was verified against three
+        simultaneous streams in a separate run with the media server active;
         the capture in Fig.~\ref{fig:gcs} was taken without it, which is why
         the panes there read offline.
 \end{itemize}
@@ -1239,6 +1338,76 @@ P7--P8 will be slightly optimistic against an independently surveyed datum. Any
 accuracy claim arising from those phases will state this.
 
 %=============================================================================
+\section{Security and Data Protection}
+\label{sec:security}
+%=============================================================================
+
+Three properties of the architecture are security properties, and were designed
+in rather than added.
+
+\emph{The ground station cannot command the aircraft.} In a mission build the
+command routes are not registered on the server at all, so the operator
+interface is structurally incapable of issuing a waypoint, a mode change or a
+release. That is a stronger guarantee than access control, because there is no
+control to bypass.
+
+\emph{Command authority is isolated from the autonomy stack.} ExpressLRS
+reaches the flight controller directly, not through the companion computer. If
+that computer hangs, is compromised, or runs a model that behaves unexpectedly,
+the safety pilot retains control. The isolation follows from the topology.
+
+\emph{Nothing depends on an external network.} Section~\ref{sec:comms} places
+all three links in delicensed bands with no infrastructure between them and the
+ground station, which removes remote attack surface entirely rather than
+defending it.
+
+\subsection{What the links require}
+
+The mission data link carries survivor coordinates, so it is encrypted:
+WPA3-SAE on the data path, and a per-programme ExpressLRS binding phrase that is
+not committed to the repository and is not shared across airframes. Neither
+costs measurable latency. An unencrypted data link would also weaken the
+regulatory position, since rule~8.4 prohibits public networks and an open link
+is harder to distinguish from one.
+
+The realistic positioning threat in a disaster area is interference, not a
+targeted spoofer: congested spectrum, other responders, and multipath off water
+and structures. NavIC gives constellation diversity if GPS degrades, and the
+launch gate gives the operator an explicit fix-quality check before the mission
+starts. Integrity monitoring on the receiver is an open procurement question
+recorded in Section~\ref{sec:deferred}.
+
+\subsection{Survivor data is personal data}
+
+This system produces precise geographic locations of identifiable individuals in
+distress, together with aerial imagery of them. Under the Digital Personal Data
+Protection Act 2023 that is personal data, and the people concerned are in no
+position to give or withhold consent at the moment of collection.
+
+The programme therefore adopts four rules, and states them because a system that
+locates people should say what it does with the record afterwards:
+
+\begin{enumerate}\itemsep2pt
+  \item Coordinates are transmitted to the operator and retained only for the
+        duration of the operation. They are not retained after handover to the
+        recovery authority.
+  \item Imagery is retained only where it is needed as evidence for a stated
+        measurement, and is held on the aircraft rather than transmitted.
+  \item No imagery containing an identifiable person is published --- in this
+        document, in any release of results, or in any dataset --- without
+        irreversible obscuration of the face and body.
+  \item Detection models are trained on public datasets whose subjects consented
+        to that use, not on imagery collected from real casualties.
+\end{enumerate}
+
+The fourth rule has a cost worth naming: it is part of why detection recall
+remains modelled rather than measured, and why the perception evaluation in
+Section~\ref{sec:evidence} uses fabricated targets and public maritime imagery
+instead of the flood imagery that would suit it better. That is a deliberate
+trade of measurement quality against a category of data the programme should not
+be collecting.
+
+%=============================================================================
 \section{Risk Register}
 %=============================================================================
 
@@ -1256,8 +1425,8 @@ accuracy claim arising from those phases will state this.
 Detection recall below target on real imagery
 & High & \textbf{Raised by deferral of the field data campaign.} Public aerial-person datasets carry the model; tiling and fusion parameters remain tunable without hardware change \\
 \addlinespace
-Inference and software video encode contend on one board
-& High & The replacement compute has no hardware H.264 encoder. Benchmark both loads together before design freeze; fallback is a reduced tile count on a centre crop \\
+Inference and video encode contend on one board
+& \emph{Retired} & The compute has no hardware H.264 encoder, and the stated fallback was a reduced tile count -- which would have undone the perception argument. Moving video to an analog downlink removes the encode load entirely rather than scheduling it \\
 \addlinespace
 Moving-baseline heading unavailable on the selected receiver
 & Medium & \textbf{Downgraded from High.} The supplier has confirmed RTK rover operation on both candidate receivers, closing the primary concern, but reports moving-baseline dual-antenna heading as still under development~\cite{teravoltaeronav}. Heading therefore rests on the magnetometer, which costs 18\,mm in the case-C budget; P6 measures achieved heading accuracy and reinstates a dedicated source if it exceeds 1$^\circ$ \\

@@ -28,7 +28,7 @@ from __future__ import annotations
 AIRCRAFT = [
     ("Flight controller",      1, 22_600, "KEEP",
      "Holybro Pixhawk 6C Mini. Dual IMU, Pixhawk standard, ArduPilot native."),
-    ("Companion computer",     1,  8_000, "KEEP",
+    ("Companion computer",     1, 19_999, "KEEP",
      "Raspberry Pi 5 8 GB. THE HOST THE AUTONOMY RUNS ON -- Linux, ROS 2, the "
      "coverage planner, MAVLink routing, the mesh link and the delivery logic. "
      "It was missing: the accelerator below is a Pi AI HAT+, which communicates "
