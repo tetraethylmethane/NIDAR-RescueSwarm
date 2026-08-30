@@ -217,6 +217,32 @@ def is_ex_gst(url):
     return any(f in url for f in EX_GST_SUPPLIERS) or url == ""
 
 
+def _alloc(r):
+    """{phase: quantity} for one BOM row, by the allocation rule above."""
+    _, item, _model, _unit, qty, ac, _url = r
+    ph = PHASE_OF[item]
+    ov = PHASE_QTY_OVERRIDE.get(item)
+    if ov:
+        alloc = dict(ov)
+    else:
+        each = ac if ac else qty // len(ph)
+        alloc = {p: each for p in ph}
+        alloc[ph[-1]] += qty - each * len(ph)
+    assert sum(alloc.values()) == qty, f"{item}: {alloc} != {qty}"
+    return alloc
+
+
+def phase_lines():
+    """{phase: [(item, model, qty, unit, line_total)]} -- what each phase buys."""
+    out = {}
+    for r in BOM:
+        _, item, model, unit, _qty, _ac, _url = r
+        for p, q in _alloc(r).items():
+            if q:
+                out.setdefault(p, []).append((item, model, q, unit, unit * q))
+    return {p: sorted(v, key=lambda x: -x[4]) for p, v in sorted(out.items())}
+
+
 def phase_alloc():
     """{phase: INR of parts}, from PHASE_OF and the allocation rule."""
     out = {}
