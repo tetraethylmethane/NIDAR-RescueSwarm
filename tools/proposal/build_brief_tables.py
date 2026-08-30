@@ -31,12 +31,6 @@ REPEATS = {"avionics": "repeated at 13--16 and 21--24",
 # The reasoning a reader is being asked to accept. Lines without an entry are
 # self-evident from the model column and get the supplier only.
 RATIONALE = {
- "Calibrated bench scale":
-   "Mass is a hard limit: 19.08\\,kg predicted against a 25\\,kg fleet cap, so "
-   "1\\,g resolves 0.02\\,\\% of an aircraft and build-up is tracked per "
-   "component. Ships with a Legal Metrology seal and calibration certificate, "
-   "which is what makes the weigh-in figure defensible. Budgeted "
-   "\\rs{12{,}000}.",
  "Load cell":
    "The motors ship without a thrust curve. Measuring thrust and current "
    "together gives thrust per watt, which is the number the whole sizing loop "
@@ -89,11 +83,6 @@ RATIONALE = {
  "Cells":
    "Molicel P45B, 6S3P, 292\\,Wh. Covers the mission, a full second search and "
    "four minutes of holding within an 80\\,\\% depth of discharge.",
- "Cell monitor":
-   "There is no BMS in this build and that is deliberate --- see the note "
-   "below. This sits on the balance connector rather than in the 115\\,A "
-   "discharge path, and closes the one real gap: the flight controller's "
-   "failsafe watches PACK volts, so a single sagging cell is invisible to it.",
  "Pack fusing":
    "150\\,A ANL fuse per pack. Short-circuit protection that cannot nuisance-"
    "trip at the 115\\,A thrust peak.",

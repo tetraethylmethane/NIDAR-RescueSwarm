@@ -146,8 +146,8 @@ inference have not been combined for flood conditions.
 coordinates rather than a video feed needing continuous attention.
 \item \textbf{Economic.} The complete system costs less than one hour of
 helicopter search time, travels by road, and is operated by two people.
-\item \textbf{Institutional.} A thrust stand, certified scale, ground station,
-tested codebase and trained students remain with the department.
+\item \textbf{Institutional.} A thrust stand, ground station, tested codebase and
+trained students remain with the department.
 \item \textbf{Strategic.} Indian suppliers wherever they meet the
 specification; domestic lead times are half those of imports.
 \end{itemize}
@@ -234,8 +234,8 @@ The schedule gives the amount
 \emph{released} per phase. The tables below give the parts each phase
 \emph{buys}. The two differ by a fixed rule: a released amount is the parts
 cost plus 22\,\% customs duty on the imported share, plus 18\,\% GST, plus
-15\,\% contingency. Across the programme that is \rs{5{,}99{,}167} of parts
-against \rs{7{,}43{,}004} released, a factor of 1.24.
+15\,\% contingency. Across the programme that is \rs{5{,}95{,}168} of parts
+against \rs{7{,}43{,}004} released, a factor of 1.25.
 
 \textbf{Every line in the tables below is now a live listing from a named
 supplier, priced and linked.} An earlier revision of this brief said the
@@ -251,10 +251,10 @@ rather than transcribed, so they cannot drift from it.
 Three consequences worth stating plainly, because they move the figure in both
 directions. The onboard computer was budgeted at \rs{8{,}000} against a real
 price of \rs{19{,}999}, which is the single largest correction in the
-programme. The certified scale was budgeted at \rs{12{,}000} and the part that
-meets the requirement --- Legal Metrology stamped, 30\,kg at 1\,g --- costs
-\rs{3{,}249}. And the parts that were to buy a 5.8\,GHz mesh now buy three
-separate radios, because the mesh was withdrawn on its link budget.
+programme. The certified scale, budgeted at \rs{12{,}000}, is not in the ask at
+all: the department already holds one, so it is an institutional contribution
+rather than a purchase. And the parts that were to buy a 5.8\,GHz mesh now buy
+three separate radios, because the mesh was withdrawn on its link budget.
 
 \needspace{7\baselineskip}
 Terms used below. \emph{RTK}: satellite positioning corrected against
@@ -284,9 +284,11 @@ adding resistance and heat exactly where the pack already reaches its
 low-voltage floor. So the protection is distributed across parts that are in
 the tables: a 150\,A fuse for short circuits, the flight controller's
 low-voltage failsafe for over-discharge, balance leads charged on the bench,
-and the PM07 for current and voltage telemetry. The cell monitor added to the
-airframe table closes the one real gap --- the failsafe watches pack volts, so
-a single sagging cell would otherwise be invisible to it.
+and the PM07 for current and voltage telemetry. Per-cell voltage is read on the
+charger, which sees all six cells through the balance lead on every charge ---
+which is when a diverging group shows up. What this build does not have is
+per-cell protection \emph{in flight}, and that is a stated consequence of not
+fitting a series board rather than an oversight.
 
 
 \subsection{What this arrangement costs us}
@@ -329,7 +331,7 @@ remains is to build it and measure it.
 
 Exposure is never more than one phase. The first is \rs{31{,}371} and settles
 whether these motors lift this aircraft; if they do not, the programme stops
-there and the department keeps a thrust stand and a certified scale. Every later
+there and the department keeps a thrust stand. Every later
 release is backed by the previous result, and the two largest come only after a
 complete aircraft has flown.
 

@@ -3,7 +3,7 @@
 % Produced by tools/proposal/build_brief_tables.py from
 % hardware/bom/sourced_bom.py. Edit the BOM, not this file.
 %============================================================================
-\subsubsection*{Measurement instruments --- phases 1--2 \quad \rs{6{,}384} of parts}
+\subsubsection*{Measurement instruments --- phases 1--2 \quad \rs{3{,}135} of parts}
 
 \begingroup\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
@@ -20,7 +20,6 @@ Load cell & REES52 20 kg load cell + HX711 breakout & 854 & The motors ship with
 Thrust-stand mast & SURYAKUSH metal 2.1 m tripod & 373 & \textit{Flipkart} \\
 Fasteners & Hex socket-head assortment M3/M4/M5, SS304 & 1{,}140 & \textit{OnlyScrews} \\
 Threadlocker & Loctite 243, 50 ml & 664 & \textit{Amazon India} \\
-Calibrated bench scale & iScale i-01, 30 kg x 1 g, Legal Metrology stamped and certified & 3{,}249 & Mass is a hard limit: 19.08\,kg predicted against a 25\,kg fleet cap, so 1\,g resolves 0.02\,\% of an aircraft and build-up is tracked per component. Ships with a Legal Metrology seal and calibration certificate, which is what makes the weigh-in figure defensible. Budgeted \rs{12{,}000}. \textit{iScale} \\
 \bottomrule
 \end{longtable}
 \endgroup
@@ -55,7 +54,7 @@ BEC, secondary & ReadytoSky 2-6S 5V/3A + 12V/3A switchable UBEC, 3 off & 837 & \
 \end{longtable}
 \endgroup
 
-\subsubsection*{Per aircraft, airframe and drive --- phases 7--10, repeated at 17--20 and 25--28 \quad \rs{58{,}521} per aircraft, \rs{1{,}90{,}225} in all}
+\subsubsection*{Per aircraft, airframe and drive --- phases 7--10, repeated at 17--20 and 25--28 \quad \rs{58{,}271} per aircraft, \rs{1{,}89{,}475} in all}
 
 \begingroup\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
@@ -82,7 +81,6 @@ Pack interconnect & Pure nickel strip, 0.15 x 27 mm & 6{,}500 & \textit{IndiaMAR
 Group interconnect & Tinned copper braided jumper & 500 & \textit{IndiaMART} \\
 Balance leads & JST-XH 6S, 200 mm, 22 AWG, 3 off & 372 & \textit{zBotic} \\
 Pack fusing & ANL fuse holder + 150 A ANL fuses, 3 off & 9{,}000 & 150\,A ANL fuse per pack. Short-circuit protection that cannot nuisance-trip at the 115\,A thrust peak. \textit{Njour} \\
-Cell monitor & 1S-8S per-cell voltage checker + low-voltage alarm, 3 off & 750 & There is no BMS in this build and that is deliberate --- see the note below. This sits on the balance connector rather than in the 115\,A discharge path, and closes the one real gap: the flight controller's failsafe watches PACK volts, so a single sagging cell is invisible to it. \textit{Robu} \\
 Pack retention & 300 mm LiPo strap, reusable, 6 off & 372 & \textit{Robu} \\
 Main leads & 10 AWG ultra-flexible silicone wire & 149 & \textit{Robu} \\
 Power connectors & Amass XT90S anti-spark, M/F pair, 12 off & 2{,}160 & \textit{Robokits} \\

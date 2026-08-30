@@ -39,13 +39,6 @@ BOM = [
   "https://onlyscrews.in/products/hexallen-socket-head-assorted-screw-pack-ss304"),
  ("instruments", "Threadlocker", "Loctite 243, 50 ml", 664, 1, 0,
   "https://www.amazon.in/Loctite-243-Threadlocker-Pack-Size/dp/B014MMG3AM"),
- # Added after the source sheet: the sheet had no scale, and mass is a hard
- # limit (19.08 kg predicted against a 25 kg fleet cap). This model ships with
- # a Legal Metrology seal and calibration certificate, which is what makes the
- # weigh-in figure defensible; the brief had budgeted 12,000 for it.
- ("instruments", "Calibrated bench scale",
-  "iScale i-01, 30 kg x 1 g, Legal Metrology stamped and certified", 3249, 1, 0,
-  "https://iscaleindia.com/product/iscale-i-01-weight-capacity-30kg-x-1g-electronic-weighing-machineweighing-scale-with-front-and-pole-double-display-red-with-ss-pan-for-shop-kitchen-and-commercial-purposes-10x12-inches-silver/"),
 
  # ---- per aircraft, avionics and sensing, phases 3-6 --------------------
  ("avionics", "Flight controller", "Holybro Pixhawk 6C Mini", 22049, 3, 1,
@@ -108,11 +101,6 @@ BOM = [
   "http://zbotic.in/product/jst-xh-6s-20cm-22awg-balance-charge-wire/"),
  ("airframe", "Pack fusing", "ANL fuse holder + 150 A ANL fuses", 3000.08, 3, 1,
   "https://njour.com/categories/tools-and-home-improvement/PC61p6RfDup2b7A"),
- # Added after the source sheet, in place of the 6S BMS the brief funded. See
- # PACK_PROTECTION below for why a series BMS is the wrong device here: this
- # sits on the balance connector, not in the 115 A discharge path.
- ("airframe", "Cell monitor", "1S-8S per-cell voltage checker + low-voltage alarm",
-  250, 3, 1, "https://robu.in/product/lipo-battery-voltage-checker-1s-8s-with-buzzer/"),
  ("airframe", "Pack retention", "300 mm LiPo strap, reusable", 62, 6, 2,
   "https://robu.in/product/30cm-lipo-battery-strap-belt-reusable-cable-tie-wrap/"),
  ("airframe", "Main leads", "10 AWG ultra-flexible silicone wire", 149, 1, 0,
@@ -168,7 +156,7 @@ GST = 0.18
 # What the source sheet stated for itself, kept so the discrepancy stays visible.
 SHEET_STATED_TOTAL = 592572.09
 SHEET_OMITTED = 549 * 3 + 949          # the two landing-gear rows
-ADDED_AFTER_SHEET = 3249 + 250 * 3     # calibrated scale, cell monitors
+ADDED_AFTER_SHEET = 0                  # nothing added; the scale is institutional
 
 PACK_PROTECTION = """Why there is no BMS in this BOM.
 
