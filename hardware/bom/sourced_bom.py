@@ -16,9 +16,11 @@ per-aircraft lines already carry their factor of three.
 
 TWO ARITHMETIC NOTES ON THE SOURCE SHEET, both preserved rather than silently
 corrected elsewhere:
-  1. Its stated total of 592,572.09 is 2,596 short of the sum of its own rows.
-     The gap is exactly the two landing-gear lines, which sit above the first
-     phase-numbered row and fall outside the SUM range.
+  1. Its stated total of 592,572.09 is 2,660 short of the sum of its own rows.
+     The gap is exactly the three landing-gear lines -- skid, springs and
+     filament -- which sit above the first phase-numbered row and fall outside
+     the SUM range. Adding the spring row did not move the stated total, which
+     is what confirms the range and not the arithmetic is at fault.
   2. Its cost-per-drone column multiplies the 4-in-1 speed controller by four.
      One 4-in-1 ESC drives all four motors, so the correct figure is one.
 
@@ -85,6 +87,10 @@ BOM = [
   "https://www.amazon.in/T-Bolt-Clamps-Adjust-23-25mm-Stainless/dp/B0BHW1SCDL"),
  ("airframe", "Landing gear", "F450/F550 landing skid", 549, 3, 1,
   "http://robu.in/product/f450-f550-frame-landing-gear-landing-skid/"),
+ # 30 fitted, 2 spare. Bought as a bulk lot, so the programme quantity is not
+ # a multiple of three.
+ ("airframe", "Suspension springs", "5 mm stainless double torsion spring", 2, 32, 10,
+  "https://www.indiamart.com/proddetail/5mm-ss-double-torsion-spring-18969709097.html"),
  ("airframe", "Printed parts", "Pro-Range PETG-CF filament, 1.75 mm, 1 kg", 949, 1, 0,
   "https://robu.in/product/pro-range-petg-cf-filament-1-75mm-1-kg-spool-black/"),
  ("airframe", "Release servos", "MG90S mini servo, 180 deg", 149, 12, 4,
@@ -155,7 +161,7 @@ GST = 0.18
 
 # What the source sheet stated for itself, kept so the discrepancy stays visible.
 SHEET_STATED_TOTAL = 592572.09
-SHEET_OMITTED = 549 * 3 + 949          # the two landing-gear rows
+SHEET_OMITTED = 549 * 3 + 2 * 32 + 949  # landing gear, springs, filament
 ADDED_AFTER_SHEET = 0                  # nothing added; the scale is institutional
 
 PACK_PROTECTION = """Why there is no BMS in this BOM.
