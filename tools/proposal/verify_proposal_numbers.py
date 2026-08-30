@@ -28,6 +28,7 @@ sys.path.insert(0, os.path.join(ROOT, "tools", "sizing-model"))
 with contextlib.redirect_stdout(io.StringIO()):
     import rescueswarm_sizing_model as M
     import camera_optics as CO
+    import radio_links as RL
 
 TEX = io.open(os.path.join(ROOT, "docs", "proposal", "rescueswarm-proposal.tex"),
               encoding="utf-8").read()
@@ -203,10 +204,42 @@ for k in ("attitude", "centroid", "time"):
 rssD = math.sqrt(sum(v * v for v in caseD.values()))
 check("IV-D", "case D RSS (20-frame fusion)", 0.66, rssD, tol=0.05, unit="m")
 
-# =====================================================================  IV-G
-# Communications
-check("IV-G", "total offered load", 2.5,
-      (235 * 3 + 1800) / 1000.0, tol=0.02, unit="Mbps")
+# =====================================================================  IV-H
+# Communications.
+#
+# The old check here re-derived a 2.5 Mbps offered load for the 802.11 mesh.
+# That architecture was withdrawn and the figure appears nowhere in the
+# document any more, so the check was passing against nothing. What matters
+# now is that the margins hand-typed into the Section IV-H table still equal
+# what radio_links.py computes, and that the generated Section V agrees.
+for _label, _stated in (("Analog video, 5.8 GHz", 28.5),
+                        ("ExpressLRS, 2.4 GHz", 36.4),
+                        ("LoRa, 865 MHz SF7", 54.3),
+                        ("802.11, 5.8 GHz (withdrawn)", 8.7)):
+    _k = next(x for x in RL.LINKS if x["name"] == _label)
+    check("IV-H", f"margin, {_label}", _stated,
+          RL.margin_db(_k), tol=0.01, unit="dB")
+    assert f"{_stated}\\,dB" in TEX, f"IV-H no longer states {_stated} dB"
+
+# The coordination channel. The point of these two is that the adopted mode
+# fits and the fallback does not have headroom -- if an edit ever made LoRa
+# SF7 look comfortable, the argument in Section V would be wrong.
+check("IV-H", "GFSK channel occupancy", 2.3,
+      100 * RL.occupancy("gfsk"), tol=0.05, unit="%")
+check("IV-H", "LoRa SF7 channel occupancy", 25.3,
+      100 * RL.occupancy("lora"), tol=0.02, unit="%")
+check("IV-H", "GFSK margin at the geofence", 35.3,
+      RL.gfsk_margin_db(), tol=0.01, unit="dB")
+assert RL.occupancy("gfsk") < RL.OCCUPANCY_CEILING, "adopted mode no longer fits"
+assert RL.occupancy("lora") > RL.occupancy("gfsk"), "fallback is not the slower mode"
+
+# The defect this section was written to fix: the document specifies radios
+# that nothing in the BOM buys. The line is now named for what it must
+# purchase, so at minimum the name has to survive.
+_bom = io.open(os.path.join(ROOT, "hardware", "bom", "RescueSwarm_BOM.csv"),
+               encoding="utf-8").read()
+check("IV-H", "BOM funds the adopted radios, not the mesh",
+      1, 0 if "Mesh node" in _bom else 1, note="amount still needs quotation")
 
 # ================================================================  formatting
 # A MANGLED control sequence is invisible to LaTeX's own warnings. When the

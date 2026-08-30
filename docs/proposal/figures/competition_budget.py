@@ -87,7 +87,13 @@ AIRCRAFT = [
      "that way the aircraft has telemetry and no control, and needs the second "
      "radio back. Not a preference; the deferral depends on it."),
     ("ESCs",                   4,  1_800, "hobby", "Generic 60 A. Rating is easy to verify."),
-    ("Mesh node + antennas",   1,  6_000, "hobby", "Rule 8.14: three concurrent feeds."),
+    ("Video and coordination radios",   1,  6_000, "hobby",
+     "THE AMOUNT IS THE WITHDRAWN MESH NODE'S, CARRIED FORWARD. It is not a "
+     "quotation for what replaced it. Section IV-H now specifies three analog "
+     "5.8 GHz transmitters, three ground receivers with a patch antenna, and "
+     "four SX1262 modules for the 865 MHz coordination link. Rule 8.14 still "
+     "requires three concurrent feeds; nothing in this BOM currently buys the "
+     "radios that carry them. Needs quotation before P6."),
     ("Payload system",         1,  4_500, "hobby",
      "Metal detents retained -- a brownout must not drop a kit."),
     ("Propellers",             4,  1_625, "hobby",

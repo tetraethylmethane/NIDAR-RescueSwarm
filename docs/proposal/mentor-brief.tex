@@ -334,11 +334,14 @@ Carries pilot control and aircraft data over one link, which removes a second
 radio costing \rs{19{,}000}. Needs firmware 3.5 or later; earlier versions
 cannot share the link. \\
 4, 14, 22 & Onboard computer & Raspberry Pi~5, 8\,GB & 8,000 &
-Runs the mission planner, the radio mesh and the delivery logic. The only board
-in its class with the PCIe connector the accelerator plugs into. \\
-6, 16, 24 & Mesh radio & 5.8\,GHz node and antennas & 6,000 &
-Carries three video streams. They need 2.5\,Mbps of a 20\,Mbps channel, so the
-limit is radio range, not data rate. \\
+Runs the mission planner, the coverage logic and the delivery logic. The only
+board in its class with the PCIe connector the accelerator plugs into. \\
+6, 16, 24 & Video and coordination radios & Analog 5.8\,GHz video set, SX1262
+865\,MHz modules & 6,000 &
+\textbf{Open item.} The mesh this replaced had 8.7\,dB of margin at 600\,m ---
+the weakest link in the system carrying the most data --- so it was dropped for
+three separate radios. This amount is the old mesh node's price carried
+forward, not a quote for the replacement. Needs pricing before phase~6. \\
 \bottomrule
 \end{longtable}
 \endgroup

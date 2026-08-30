@@ -10,7 +10,7 @@ Phase,Item,Model,Unit INR,Qty,Line INR,Link,Link status
 "8, 18, 26","Pack, BMS, PDB, BEC","6S 60 A BMS, distribution board, regulator",8500,3,25500,Robu.in / IndiaMART,supplier
 "6, 16, 24","RC rx, storage, cooling, mounts","ExpressLRS 2.4 GHz receiver, storage, cooling, mounts",8500,3,25500,Robu.in / IndiaMART,supplier
 "9, 19, 27",ESCs,"50-60 A continuous, 6S",1800,12,21600,Robokits India / Robu.in,supplier
-"6, 16, 24",Mesh node + antennas,5.8 GHz mesh node and antennas,6000,3,18000,supplier quotation,quote
+"6, 16, 24",Video and coordination radios,"3x analog 5.8 GHz VTX, 3x GCS receiver + patch, 4x SX1262 865 MHz",6000,3,18000,supplier quotation,quote
 "9, 19, 27",Payload system,"Four metal-gear servos, mechanical detents",4500,3,13500,Robu.in / Robokits India,supplier
 "9, 19, 27",Propellers,"Tarot 1855 carbon, 18 in, CW/CCW",1625,12,19500,Robokits India,supplier
 "9, 19, 27","Wiring, connectors","10 AWG silicone, XT90-S, JST-GH",2400,3,7200,Robu.in / IndiaMART,supplier
