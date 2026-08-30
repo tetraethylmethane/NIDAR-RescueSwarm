@@ -151,6 +151,117 @@ BOM = [
   "https://www.amazon.in/Amazon-Basics-Tripod-Camera-Operating/dp/B0CX5DSRCQ"),
 ]
 
+# ---------------------------------------------------------------------------
+# WHICH PHASE BUYS WHAT
+#
+# The sheet's phase column encodes a ten-phase per-aircraft cycle offset by ten
+# -- "3, 13, 21" is the same step for aircraft 1, 2 and 3 -- plus instruments
+# at the front and the ground segment at the back. That is the structure the
+# schedule already had, so it is kept and only the amounts are re-derived.
+#
+# ALLOCATION RULE. A per-aircraft line gives each of its phases ac_qty, and any
+# remainder (spares) falls to the last phase. A shared line splits evenly. The
+# one exception is the motors, where the whole point of the schedule is that
+# ONE is measured before the other eleven are committed.
+PHASE_OF = {
+    "Load-cell amplifier": (1,), "Load cell": (1,), "Thrust-stand mast": (1,),
+    "Fasteners": (1,), "Threadlocker": (1,),
+    "Motors": (2, 10, 20, 28), "Propellers": (10, 20, 28),
+    "Flight controller": (3, 13, 21), "FC vibration mount": (3, 13, 21),
+    "Companion computer": (4, 14, 22), "AI accelerator": (4, 14, 22),
+    "Compute cooling": (4, 14, 22), "Storage": (4, 14, 22),
+    "GNSS RTK receiver": (5, 15, 23, 29),
+    "Camera + lens": (6, 16, 24), "Video transmitter": (6, 16, 24),
+    "Command receiver": (6, 16, 24), "Coordination radio": (6, 16, 24),
+    "Arm tube": (7, 17, 25), "Motor mounts": (7, 17, 25),
+    "Arm clamps": (7, 17, 25), "Landing gear": (7, 17, 25),
+    "Suspension springs": (7, 17, 25), "Printed parts": (7,),
+    "Cells": (8, 18, 26), "Cell holders": (8, 18, 26),
+    "Balance leads": (8, 18, 26), "Pack fusing": (8, 18, 26),
+    "Pack retention": (8, 18, 26), "Pack interconnect": (8,),
+    "Group interconnect": (8,), "Power module": (8, 18, 26),
+    "BEC, primary": (8, 18, 26), "BEC, secondary": (8, 18, 26),
+    "Speed controllers": (9, 19, 27), "Release servos": (9, 19, 27),
+    "Power connectors": (9, 19, 27), "Signal connectors": (9, 19, 27),
+    "Antenna feeders": (9, 19, 27), "Insulation": (9, 19, 27),
+    "Main leads": (9,),
+    "Safety-pilot transmitter": (11,), "Battery charger": (11,),
+    "Pack health monitor": (11,),
+    "Cable management": (12,), "Heat-shrink kit": (12,),
+    "Mounting tape": (12,), "Hook and loop": (12,), "Consumables": (12,),
+    "Video receivers": (30,), "Receive antennas": (30,), "Video capture": (30,),
+    "Coordination base": (30,), "Base station mount": (30,),
+}
+
+# One measured, then three to finish aircraft 1, then four per aircraft.
+PHASE_QTY_OVERRIDE = {"Motors": {2: 1, 10: 3, 20: 4, 28: 4}}
+
+# ---------------------------------------------------------------------------
+# TAX TREATMENT
+#
+# The earlier cost model added 22 % customs duty and 18 % GST to everything.
+# That was right when most lines were quotations for parts not yet sourced. It
+# is wrong now: these are Indian retail listings, and a listed retail price in
+# India is GST-inclusive. Adding 18 % on top of an MRP overstates the ask by
+# roughly a lakh, and the duty line is obsolete outright because the importer
+# has already paid it before the part reaches a domestic shelf.
+#
+# What remains taxable is the genuinely ex-tax share: supplier quotations and
+# B2B listings, which quote before GST.
+EX_GST_SUPPLIERS = ("teravolt", "indiamart", "njour")
+GST = 0.18
+CONTINGENCY = 0.15
+
+
+def is_ex_gst(url):
+    return any(f in url for f in EX_GST_SUPPLIERS) or url == ""
+
+
+def phase_alloc():
+    """{phase: INR of parts}, from PHASE_OF and the allocation rule."""
+    out = {}
+    for r in BOM:
+        _, item, _model, unit, qty, ac, _url = r
+        ph = PHASE_OF[item]
+        ov = PHASE_QTY_OVERRIDE.get(item)
+        if ov:
+            alloc = ov
+        else:
+            each = ac if ac else qty // len(ph)
+            alloc = {p: each for p in ph}
+            alloc[ph[-1]] += qty - each * len(ph)
+        assert sum(alloc.values()) == qty, f"{item}: {alloc} != {qty}"
+        for p, q in alloc.items():
+            out[p] = out.get(p, 0.0) + unit * q
+    return out
+
+
+def released(parts_incl, parts_ex):
+    """The stated rule, corrected: retail is already GST-paid, quotations are
+    not, and contingency applies to both."""
+    return (parts_incl + parts_ex * (1 + GST)) * (1 + CONTINGENCY)
+
+
+def phase_released():
+    """{phase: INR released}, applying the rule phase by phase."""
+    incl, ex = {}, {}
+    for r in BOM:
+        _, item, _m, unit, qty, ac, url = r
+        ph = PHASE_OF[item]
+        ov = PHASE_QTY_OVERRIDE.get(item)
+        if ov:
+            alloc = ov
+        else:
+            each = ac if ac else qty // len(ph)
+            alloc = {p: each for p in ph}
+            alloc[ph[-1]] += qty - each * len(ph)
+        tgt = ex if is_ex_gst(url) else incl
+        for p, q in alloc.items():
+            tgt[p] = tgt.get(p, 0.0) + unit * q
+    phases = sorted(set(incl) | set(ex))
+    return {p: released(incl.get(p, 0.0), ex.get(p, 0.0)) for p in phases}
+
+
 GROUPS = [("instruments", "Measurement instruments", "1--2"),
           ("avionics",    "Per aircraft, avionics and sensing", "3--6"),
           ("airframe",    "Per aircraft, airframe and drive", "7--10"),

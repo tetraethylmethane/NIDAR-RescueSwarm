@@ -21,6 +21,7 @@ sys.path.insert(0, os.path.join(ROOT, "hardware", "bom"))
 import sourced_bom as S  # noqa: E402
 
 OUT = os.path.join(ROOT, "docs", "proposal", "generated-brief-tables.tex")
+OUT_SCHED = os.path.join(ROOT, "docs", "proposal", "generated-brief-schedule.tex")
 
 # Phase numbers per group, as the schedule allocates them.
 PHASES = {"instruments": "1--2", "avionics": "3--6", "airframe": "7--10",
@@ -161,6 +162,53 @@ def rows(key):
     return "\n".join(out)
 
 
+
+# The objective and the gate for each phase. Amounts are NOT here -- they are
+# derived from the BOM by sourced_bom.phase_released(), so a price change moves
+# the schedule instead of silently contradicting it.
+SCHEDULE = [
+ (1,  "Establish thrust and mass measurement capability", "Approval"),
+ (2,  "Verify static thrust against the 3.18 kgf requirement", "Instruments commissioned"),
+ (3,  "Aircraft 1 --- autopilot and control link", r"\textbf{Thrust verified}"),
+ (4,  "Aircraft 1 --- onboard computer and AI accelerator", "Autopilot bench-tested"),
+ (5,  "Aircraft 1 --- centimetre positioning (RTK rover)", "Compute stack operating"),
+ (6,  "Aircraft 1 --- camera and the three radios", "Position fix acquired"),
+ (7,  "Aircraft 1 --- airframe fabrication", "Avionics integrated"),
+ (8,  "Aircraft 1 --- battery pack and power distribution", "Airframe fabricated"),
+ (9,  "Aircraft 1 --- speed controllers, release servos, wiring", "Pack bench-discharged"),
+ (10, "Aircraft 1 --- propulsion completed", "Drive train installed"),
+ (11, "Charging, pack instrumentation and manual override", "Aircraft assembled and weighed"),
+ (12, "Field consumables and assembly materials", "Charging verified"),
+ (13, "Aircraft 2 --- autopilot and control link", r"\textbf{Aircraft 1 flew a full mission}"),
+ (14, "Aircraft 2 --- onboard computer and AI accelerator", "Autopilot bench-tested"),
+ (15, "Aircraft 2 --- centimetre positioning (RTK rover)", "Compute stack operating"),
+ (16, "Aircraft 2 --- camera and the three radios", "Position fix acquired"),
+ (17, "Aircraft 2 --- airframe fabrication", "Avionics integrated"),
+ (18, "Aircraft 2 --- battery pack and power distribution", "Airframe fabricated"),
+ (19, "Aircraft 2 --- speed controllers, release servos, wiring", "Pack bench-discharged"),
+ (20, "Aircraft 2 --- propulsion completed", "Drive train installed"),
+ (21, "Aircraft 3 --- autopilot and control link", r"\textbf{Two aircraft, separation verified}"),
+ (22, "Aircraft 3 --- onboard computer and AI accelerator", "Autopilot bench-tested"),
+ (23, "Aircraft 3 --- centimetre positioning (RTK rover)", "Compute stack operating"),
+ (24, "Aircraft 3 --- camera and the three radios", "Position fix acquired"),
+ (25, "Aircraft 3 --- airframe fabrication", "Avionics integrated"),
+ (26, "Aircraft 3 --- battery pack and power distribution", "Airframe fabricated"),
+ (27, "Aircraft 3 --- speed controllers, release servos, wiring", "Pack bench-discharged"),
+ (28, "Aircraft 3 --- propulsion completed", "Drive train installed"),
+ (29, "RTK base receiver, the source of the corrections", "Third aircraft flying"),
+ (30, "Ground station: three video feeds, data link, base mount", "Base receiver acquired"),
+]
+
+
+def schedule_table():
+    rel = S.phase_released()
+    assert set(rel) == {p for p, _, _ in SCHEDULE}, "phase set disagrees with BOM"
+    out = []
+    for ph, obj, gate in SCHEDULE:
+        out.append(f"{ph} & {obj} & {money(rel[ph])} & {gate} \\\\")
+    return "\n".join(out), sum(rel.values())
+
+
 def main():
     parts = []
     for key, label, _ph in S.GROUPS:
@@ -204,6 +252,34 @@ def main():
     assert "@@" not in body
 
     io.open(OUT, "w", encoding="utf-8", newline="\n").write(header + body)
+
+    sched, sched_total = schedule_table()
+    assert sched.count("\\textbf") == 3, "schedule: lost a backslash"
+    assert not any(ord(c) < 32 and c != "\n" for c in sched), "schedule: control char"
+    pre = (r"""\begingroup
+\footnotesize
+\setlength{\extrarowheight}{1.5pt}
+\begin{longtable}{@{}>{\bfseries}r>{\raggedright\arraybackslash}p{7.3cm}r>{\raggedright\arraybackslash}p{5.6cm}@{}}
+\toprule
+\thead{\#} & \thead{Objective} & \thead{INR} & \thead{Released only after} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{\#} & \thead{Objective} & \thead{INR} & \thead{Released only after} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{2}{@{}r}{\thead{Total}} & \thead{""" + money(sched_total)
+           + r"""} & \\
+\bottomrule
+\endlastfoot
+""")
+    post = "\n" + r"""\end{longtable}
+\endgroup""" + "\n"
+    io.open(OUT_SCHED, "w", encoding="utf-8", newline="\n").write(
+        header + pre + sched + post)
+    print(f"  wrote {os.path.relpath(OUT_SCHED, ROOT)}  "
+          f"({len(SCHEDULE)} phases, {sched_total:,.0f} released)")
     n = sum(1 for _ in S.BOM)
     print(f"  wrote {os.path.relpath(OUT, ROOT)}  ({n} rows, "
           f"{len(RATIONALE)} with a stated rationale)")
