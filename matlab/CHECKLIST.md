@@ -74,8 +74,8 @@ mission duration and energy · mass closure.
 | F12 | `fig-funding` | — | matplotlib | **todo** — orphaned (funding is out of the paper) |
 | F13 | `fig-geobudget` | Variance share; error CDF by receiver class | MATLAB | **wired** |
 
-**Open:** F1–F4 exist but no `\begin{figure}` block references them. F5–F9 are
-still matplotlib; porting them completes the move to one toolchain.
+**Open:** F5–F9 are still matplotlib. Porting them completes the move to one
+toolchain; nothing else depends on it.
 
 **Run:** `matlab -batch "cd matlab; run_all('figs')"`
 
