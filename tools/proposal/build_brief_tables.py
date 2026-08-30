@@ -32,6 +32,126 @@ REPEATS = {"avionics": "repeated at 13--16 and 21--24",
 # The reasoning a reader is being asked to accept. Lines without an entry are
 # self-evident from the model column and get the supplier only.
 RATIONALE = {
+ "Load-cell amplifier":
+   "24-bit conversion on a 20\\,kg cell resolves about a gram, so the same "
+   "stand that measures 3.18\\,kgf of thrust also weighs components to the "
+   "tolerance the mass budget needs.",
+ "Thrust-stand mast":
+   "A light stand rather than a camera tripod: it holds the motor clear of the "
+   "bench so its wake is not recirculated into the propeller, which is the "
+   "usual way a home-built thrust measurement reads high.",
+ "Fasteners":
+   "M3 to M5 stainless, assorted. A carbon airframe is bolted rather than "
+   "bonded, and the sizes are not settled until the printed mounts are fitted.",
+ "Threadlocker":
+   "Medium strength, so a joint can still be undone. Every fastener in the "
+   "drive train sees the motor's vibration spectrum, and this is the cheapest "
+   "insurance against a motor mount backing out in flight.",
+ "FC vibration mount":
+   "The autopilot's state estimate is only as good as its accelerometers, and "
+   "an 18\\,in propeller puts its blade-pass frequency close to the band the "
+   "filter cares about. Isolating the board is cheaper than tuning around it.",
+ "Compute cooling":
+   "The worst thermal case is on the ground, not in flight: the five-minute "
+   "setup boots Linux and loads the model with the propellers stopped and no "
+   "downwash. This keeps the accelerator off its thermal limit in that window.",
+ "Storage":
+   "High-endurance rather than ordinary. The card takes continuous 12\\,MP "
+   "frame logging plus detection metadata for a whole mission, a sustained "
+   "write pattern that retires consumer cards quickly.",
+ "Power module":
+   "Feeds the autopilot its pack voltage and current, which is what the "
+   "low-voltage failsafe acts on. With no board in the discharge path this is "
+   "the only current measurement on the aircraft.",
+ "BEC, primary":
+   "8\\,A at 5\\,V for the computer and accelerator, which together draw about "
+   "25\\,W. Sized well above that because a brownout on the compute rail "
+   "during a delivery is the failure this line exists to prevent.",
+ "BEC, secondary":
+   "A separate, smaller regulator for the servos and receiver, so a stalled "
+   "release servo cannot drag down the rail the autopilot shares.",
+ "Motor mounts":
+   "Clamps a 25\\,mm arm and takes the motor's bolt pattern directly, so the "
+   "tube needs no machining. This is the joint the bending analysis assumes, "
+   "and the part the safety factor of 24 does \\emph{not} cover --- clamp and "
+   "joint design is what actually governs.",
+ "Arm clamps":
+   "Stainless T-bolt clamps at the arm-to-body joint, bolted rather than "
+   "bonded, so an arm damaged in a heavy landing is replaced in the field "
+   "instead of scrapping the centre plate.",
+ "Landing gear":
+   "Skids rather than legs, for the clearance the payload magazine needs "
+   "beneath the airframe and a stance wide enough to absorb an off-nominal "
+   "touchdown.",
+ "Suspension springs":
+   "Torsion springs in the skid, so a hard landing is absorbed by the gear "
+   "rather than transmitted into the arms and the battery pack.",
+ "Printed parts":
+   "PETG with chopped carbon for the magazine, mounts and compute bay. "
+   "Stiffer than PLA and far less prone to creep at the temperature a dark "
+   "airframe reaches standing in the sun.",
+ "Release servos":
+   "Metal-gear, one per kit station. Metal because the detent holds a 200\\,g "
+   "kit against flight loads, and a stripped nylon gear drops a kit with no "
+   "indication that it has happened.",
+ "Cell holders":
+   "Fixes the 18 cells in a known geometry so the nickel is welded to a "
+   "repeatable pattern, and keeps the cases apart, which is what stops one "
+   "failing cell taking its neighbours with it.",
+ "Pack interconnect":
+   "0.15\\,$\\times$\\,27\\,mm pure nickel, multi-layer, sized for 38\\,A per "
+   "parallel group at the 115\\,A pack peak. Pure rather than nickel-plated "
+   "steel, which carries several times the resistance for the same section.",
+ "Group interconnect":
+   "Braided copper between parallel groups, where the current is highest and "
+   "the joint has to tolerate the pack flexing in flight.",
+ "Balance leads":
+   "How the charger reads all six cells. With no board on the aircraft this is "
+   "the only per-cell measurement in the system, and it is taken every charge.",
+ "Pack retention":
+   "The pack is a fifth of the aircraft's mass. A strap that lets go during a "
+   "manoeuvre shifts the centre of gravity further than the attitude loop can "
+   "trim.",
+ "Main leads":
+   "10\\,AWG, sized for the 115\\,A peak rather than the 42\\,A hover, because "
+   "the peak is what sets conductor temperature during a gust recovery.",
+ "Power connectors":
+   "XT90 with anti-spark pre-charge. Connecting a 292\\,Wh pack without it "
+   "arcs the contacts and eventually welds them shut.",
+ "Signal connectors":
+   "Keyed throughout, so the loom can only be reassembled one way after a "
+   "repair --- which is when miswiring actually happens.",
+ "Antenna feeders":
+   "RG316 with a bulkhead fitting, so the antenna mounts on the airframe skin "
+   "rather than hanging off the radio, and the run stays short enough not to "
+   "eat into the link margin.",
+ "Insulation":
+   "Sleeving over the pack and the high-current joints --- the only places on "
+   "the aircraft where a chafed conductor is an immediate fire rather than a "
+   "fault.",
+ "Cable management":
+   "Ties long enough to dress a loom around a 690\\,mm wheelbase.",
+ "Heat-shrink kit":
+   "Assorted sizes for the signal side, where joints are made once during "
+   "integration and thereafter inspected rather than re-made.",
+ "Mounting tape":
+   "VHB for the receivers, radios and compute-bay damping. Holds against "
+   "vibration where a screw would need a boss the printed part cannot carry.",
+ "Hook and loop":
+   "For the pack and anything else that has to come out between sorties "
+   "without tools, inside the five-minute setup window.",
+ "Consumables":
+   "One line for what a build actually consumes: solder, flux, abrasives, "
+   "spare hardware, filament. Held at a round figure because itemising it "
+   "would be false precision.",
+ "Video capture":
+   "Presents the three analog receivers to the ground station as three USB "
+   "video devices, which is what lets one operator watch three feeds on one "
+   "screen.",
+ "Base station mount":
+   "A stable, repeatable mount for the base receiver. The corrections are "
+   "relative, so survey-grade accuracy is unnecessary; what matters is that "
+   "the antenna does not move during the mission.",
  "Load cell":
    "The motors ship without a thrust curve. Measuring thrust and current "
    "together gives thrust per watt, which is the number the whole sizing loop "
@@ -152,9 +272,11 @@ def rows(key):
         if r[0] != key:
             continue
         _, item, model, unit, qty, ac, url = r
-        note = RATIONALE.get(item, "")
+        # The column header promises "why this part". A row with no rationale
+        # answers only "from whom", which is how 33 of these once shipped.
+        note = RATIONALE[item]
         sup = supplier_of(url)
-        note = (note + " " if note else "") + (
+        note = note + " " + (
             f"\\textit{{{sup}}}" if sup != "in-house" else "\\textit{in-house}")
         qtytxt = f", {qty} off" if qty > 1 else ""
         out.append(f"{esc(item)} & {esc(model)}{qtytxt} "
@@ -240,6 +362,13 @@ def main():
         parts.append("")
 
     body = "\n".join(parts)
+
+    # rows() indexes RATIONALE directly, so a row without an argument already
+    # fails the build. This catches the other direction: a rationale left
+    # behind for a part that is no longer bought.
+    items = {r[1] for r in S.BOM}
+    orphans = sorted(set(RATIONALE) - items)
+    assert not orphans, f"rationale for parts no longer in the BOM: {orphans}"
     header = ("%" + "=" * 76 + "\n"
               "% GENERATED FILE -- do not edit.\n"
               "% Produced by tools/proposal/build_brief_tables.py from\n"
