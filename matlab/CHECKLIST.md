@@ -16,7 +16,7 @@ derivation. MATLAB re-derives independently from primitives only.
 
 | # | Check | Tool | Status |
 |---|---|---|---|
-| V1 | Proposal claims vs models — 48 checks | Python | **done** |
+| V1 | Proposal claims vs models — 55 checks | Python | **done** |
 | V2 | Independent re-derivation — 28 checks | MATLAB | **done** |
 | V3 | Mass statement closes to MTOW | both | **done** |
 | V4 | Generated §V asserts against model | Python | **done** |
@@ -49,7 +49,8 @@ mission duration and energy · mass closure.
 | C8 | Geolocation RSS error budget | Python + MATLAB | V1, S4 | **done** |
 | C9 | Payload ballistics with drag | Python | V1 | **done** |
 | C10 | Structural bending in the arm | Python | V1 | **done** |
-| C11 | Link budget (5.8 GHz, 2.4 GHz) | Python | V1 | **done** |
+| C11 | Link margin, four radios | Python + MATLAB | V1 | **done** |
+| C15 | LoRa/GFSK airtime and channel occupancy | Python | V1 | **done** |
 | C12 | Motor operating point vs datasheet | MATLAB | V2 | **done** |
 | C13 | Nickel/copper interconnect sizing | ad hoc | — | **partial** — computed in conversation, not in any model |
 | C14 | Thermal rise in cells and interconnects | — | — | **todo** — the I²t argument is asserted, not tested |
@@ -73,6 +74,7 @@ mission duration and energy · mass closure.
 | F11 | `fig-subsystem` | — | matplotlib | **todo** — orphaned (was for the deleted §VIII) |
 | F12 | `fig-funding` | — | matplotlib | **todo** — orphaned (funding is out of the paper) |
 | F13 | `fig-geobudget` | Variance share; error CDF by receiver class | MATLAB | **wired** |
+| F14 | `fig-links` | Margin at the geofence; margin vs range | MATLAB | **wired** |
 
 **Open:** F5–F9 are still matplotlib. Porting them completes the move to one
 toolchain; nothing else depends on it.
@@ -145,6 +147,7 @@ publishing if they diverge.
 | Detection recall | SeaDronesSee download + GPU |
 | Receiver decision | Teravolt quotation, and whether funding supports RTK |
 | Phase structure | Seven phases now exceed the ₹30 k cap after the Pi 5 reprice |
+| Radio purchase | The 6,000 BOM line is the withdrawn mesh node's price carried forward; the analog video set and the SX1262 modules need quotation before P6 |
 
 ---
 
