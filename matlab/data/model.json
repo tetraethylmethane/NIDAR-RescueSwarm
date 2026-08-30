@@ -103,6 +103,45 @@
   "wiring harness + connectors": 190.0,
   "buzzer, LEDs, switches, mounts": 60.0
  },
+ "links": [
+  {
+   "name": "Analog video, 5.8 GHz",
+   "f_mhz": 5800,
+   "tx_dbm": 27.8,
+   "g_tx_dbi": 2,
+   "g_rx_dbi": 12,
+   "sens_dbm": -90,
+   "role": "Video downlink, one channel per aircraft"
+  },
+  {
+   "name": "ExpressLRS, 2.4 GHz",
+   "f_mhz": 2400,
+   "tx_dbm": 20,
+   "g_tx_dbi": 2,
+   "g_rx_dbi": 2,
+   "sens_dbm": -108,
+   "role": "Command, abort, and RTK corrections"
+  },
+  {
+   "name": "LoRa, 865 MHz SF7",
+   "f_mhz": 865,
+   "tx_dbm": 14,
+   "g_tx_dbi": 2,
+   "g_rx_dbi": 2,
+   "sens_dbm": -123,
+   "role": "Mission data, detections, and swarm coordination"
+  },
+  {
+   "name": "802.11, 5.8 GHz (withdrawn)",
+   "f_mhz": 5800,
+   "tx_dbm": 20,
+   "g_tx_dbi": 5,
+   "g_rx_dbi": 5,
+   "sens_dbm": -82,
+   "role": "Original single-mesh design; withdrawn on margin"
+  }
+ ],
+ "geofence_m": 600.0,
  "geotag_terms_m": [
   {
    "name": "unmodelled",

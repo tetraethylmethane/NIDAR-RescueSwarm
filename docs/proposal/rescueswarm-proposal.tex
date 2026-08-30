@@ -455,7 +455,7 @@ The system comprises three segments, shown in Fig.~\ref{fig:arch}.
 \node[blk, right=8mm of cam] (gnss) {GNSS receiver\\RTK position};
 \node[blk, below=4mm of cam] (inf) {Edge inference\\tile $\cdot$ detect $\cdot$ fuse};
 \node[blk, below=8mm of inf] (fc) {Autopilot (ArduPilot)\\nav $\cdot$ failsafe $\cdot$ arming};
-\node[blk, right=8mm of fc] (rad) {Mesh radio 5.8\,GHz\\+ ELRS 2.4\,GHz};
+\node[blk, right=8mm of fc] (rad) {Three radios\\865\,MHz $\cdot$ 2.4\,GHz $\cdot$ 5.8\,GHz};
 \node[blk, below=4mm of fc] (mag) {Kit magazine, 4 stations\\positive-lock detents};
 
 \draw[flow] (cam) -- (inf);
@@ -925,7 +925,7 @@ band it occupies is not the one that fails first.
 
 \begin{table}[t]
 \caption{Link budget at the 600\,m geofence}
-\label{tab:links}
+\label{tab:linkbudget}
 \centering
 \small
 \begin{tabular}{@{}lrr@{}}
@@ -954,12 +954,20 @@ crop --- which would undo the perception argument in
 Section~\ref{sec:perception}. Analog video removes the encode load rather than
 scheduling it.
 
-\textbf{Mission data: LoRa, 865--867\,MHz.} Position, mode, battery, fix
-quality, survivor tags and delivery state, as a compact binary record rather
-than raw MAVLink. Three aircraft at 2\,Hz is approximately 1.0\,kbps against
-5.5\,kbps available at SF7, and the band is delicensed in India for
-short-range devices. Its 54\,dB margin is the largest in the system, which is
-the right place for the link that carries the survivor coordinates.
+\textbf{Mission data and coordination: SX1262, 865--867\,MHz.} Position, mode,
+battery, fix quality, survivor tags and delivery state, as one compact binary
+frame per aircraft per second rather than raw MAVLink. The band is delicensed
+in India for short-range devices, and its 54\,dB margin at SF7 is the largest
+in the system --- the right place for the link that carries the survivor
+coordinates.
+
+That margin is also what pays for the operating mode. Sizing this channel by
+payload against bit rate is wrong, because LoRa's preamble and coded header
+dominate short packets: at SF7 the fleet's frames occupy a quarter of the
+channel, not the few per cent the bit rate suggests. The same radio runs GFSK
+at 50\,kbps for 19\,dB of the SF7 surplus, which is the adopted mode, with SF7
+kept as a fallback at a reduced frame rate. Section~\ref{sec:links} derives
+both, and Table~\ref{tab:coord} is the result.
 
 \textbf{Command and abort: ExpressLRS, 2.4\,GHz.} The only path that can
 command the aircraft, and it reaches the flight controller directly rather than

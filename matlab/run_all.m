@@ -33,7 +33,7 @@ end
 
 if any(strcmp(what, {'all','figs'}))
     fprintf('\n>> FIGURES\n');
-    for fn = {@fig_detect, @fig_looks, @fig_energy}
+    for fn = {@fig_detect, @fig_looks, @fig_energy, @fig_links}
         try
             fn{1}();
         catch ME

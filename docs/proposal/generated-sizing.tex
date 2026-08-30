@@ -276,26 +276,173 @@ to trim --- trivial in magnitude, but a \emph{step} change that excites the
 attitude loop. The mitigation is to mount the magazine on the centre-of-gravity
 axis and hold position briefly after release rather than to trim harder.
 
-\subsection{Radio link budget}
+\subsection{Radio links}
+\label{sec:links}
 
-Free-space path loss at the 600\,m design slant range is
-$\text{FSPL} = 20\log_{10}d + 20\log_{10}f + 32.44$:
+Three things have to cross the air gap, and they have almost nothing in common:
+video, which is high-rate and may be lost; command and abort, which are
+low-rate and may not; and mission data and swarm coordination, which are
+low-rate and must survive whatever the other two do not. An earlier revision of
+this design carried all three on one 5.8\,GHz 802.11 mesh. The link budget is
+what withdrew it.
 
-\begin{center}
-\begin{tabular}{@{}lr>{\raggedright\arraybackslash}p{4.3cm}@{}}
+\subsubsection{Margin, not path loss}
+
+Free-space path loss at the 600\,m design slant range follows Friis,
+\begin{equation}
+\mathrm{FSPL} = 20\log_{10}\!\left(\frac{d}{1\,\text{km}}\right)
+              + 20\log_{10}\!\left(\frac{f}{1\,\text{MHz}}\right) + 32.44 ,
+\label{eq:fspl}
+\end{equation}
+but path loss on its own decides nothing --- it is larger at 5.8\,GHz than at
+865\,MHz for every link ever built, and says only that higher frequencies
+spread more. What decides whether a link closes is the \emph{margin} left after
+it,
+\begin{equation}
+M = P_{\mathrm{tx}} + G_{\mathrm{tx}} + G_{\mathrm{rx}}
+    - \mathrm{FSPL}(f,d) - S_{\mathrm{rx}} ,
+\label{eq:margin}
+\end{equation}
+where $S_{\mathrm{rx}}$ is the sensitivity for the modulation actually used, not
+the best figure on the datasheet. Table~\ref{tab:links} evaluates
+(\ref{eq:margin}) at the geofence for the three adopted links.
+
+\begin{table}[t]
+\caption{Adopted radio links, evaluated at the 600\,m geofence}
+\label{tab:links}
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrrr@{}}
 \toprule
-\textbf{Link} & \textbf{FSPL} & \textbf{Role} \\
+ & $P_{\mathrm{tx}}$ & $\Sigma G$ & $S_{\mathrm{rx}}$ & FSPL & $M$ \\
+\textbf{Link} & (dBm) & (dBi) & (dBm) & (dB) & (dB) \\
 \midrule
-5.8\,GHz mesh & 103.3\,dB & Data and video; margin is thin and degrades first \\
-2.4\,GHz mesh & 95.6\,dB & Fallback \\
-868\,MHz safety & 86.8\,dB & Command of last resort; large margin by design \\
+Analog video, 5.8\,GHz & 27.8 & 14 & $-90$ & 103.3 & \textbf{28.5} \\
+ExpressLRS, 2.4\,GHz & 20.0 & 4 & $-108$ & 95.6 & \textbf{36.4} \\
+LoRa, 865\,MHz SF7 & 14.0 & 4 & $-123$ & 86.7 & \textbf{54.3} \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{table}
 
-The ordering is the design intent: the highest-rate link is the one permitted to
-fail, and the lowest-rate link is the one that must not. Video degrades before
-telemetry, and telemetry before command.
+\subsubsection{Why the single mesh was withdrawn}
+
+Run (\ref{eq:margin}) on the 802.11 configuration it replaced --- 20\,dBm into
+5\,dBi at each end, MCS0 sensitivity $-82$\,dBm --- and the same 103.3\,dB
+of path loss leaves \textbf{8.7\,dB}. That is the thinnest path in the
+system and simultaneously the one carrying the most data, which is the worst
+possible pairing: the link most likely to break is the one whose loss costs
+most. The three-radio split leaves every remaining path above 28.5\,dB, an
+improvement of 19.8\,dB on the video path alone (Fig.~\ref{fig:links}a).
+
+Meshing does not repair this, and the reason is worth stating because it is the
+argument that was originally made for the mesh. A relay hop through a second
+aircraft replaces one 600\,m link with two shorter ones, which buys back path
+loss --- but each hop is the same radio, the same antennas and the same
+sensitivity, so the relay is only as reliable as the aircraft carrying it, and
+the failure that takes out the direct path (a banked airframe, a body between
+the antennas, rain) is largely common to both. A mesh raises average throughput
+and does not raise the floor; here it is the floor that was the problem.
+
+The withdrawn link is not useless --- it reaches its sensitivity floor at
+1.64\,km, and would work perfectly on a calm day
+(Fig.~\ref{fig:links}b). Margin is not headroom, though. Rain, body blocking, a
+banked airframe and antenna misalignment all draw on it, none of them is in
+(\ref{eq:margin}), and 8.7\,dB does not cover them. The adopted video link
+carries 28.5\,dB to the same geofence and reaches zero only at
+16.0\,km.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig-links.pdf}
+\caption{(a) Link margin at the 600\,m geofence, from (\ref{eq:margin}). The
+withdrawn 802.11 mesh is retained in the figure because the withdrawal is an
+argument and the margin column is that argument. (b) Margin against slant
+range. Every adopted link is flown at a small fraction of the range at which it
+runs out; the withdrawn one is not.}
+\label{fig:links}
+\end{figure*}
+
+\subsubsection{Sizing the coordination channel}
+
+The split has a consequence the margin table does not show. The mesh offered
+roughly 235\,kbps per aircraft of non-video traffic; LoRa at SF7 over a
+125\,kHz channel carries 5469\,bps for the \emph{entire fleet}, a factor
+of 129 less. The two architectures had never been costed against the
+same traffic, so this had gone unnoticed.
+
+Airtime, not bit rate, is the currency. For the short packets this mission
+sends, LoRa's preamble and coded header dominate: the number of symbols in a
+packet of $\mathit{PL}$ bytes is
+\begin{equation}
+n_{\mathrm{sym}} = n_{\mathrm{pre}} + 4.25 + 8 +
+\left\lceil \frac{8\mathit{PL} - 4\mathrm{SF} + 44}{4\,\mathrm{SF}} \right\rceil
+(\mathrm{CR}+4),
+\label{eq:airtime}
+\end{equation}
+each of duration $2^{\mathrm{SF}}/\mathrm{BW}$. A 36-byte frame
+therefore costs 77.1\,ms on air, against the 52.7\,ms its payload
+alone would imply --- the overhead is not a correction here, it is a third of
+the cost.
+
+The first allocation --- aircraft state, task consensus and detection reports as
+three separate messages at their natural rates --- paid three preambles and
+three coded headers per aircraft per second and consumed
+28.4\,\% of the channel, over the 25\,\% ceiling adopted for a
+slotted channel with retries and a fourth node to accommodate. Consolidating
+them into one 36\,byte frame per aircraft per second, with a detection
+appended when there is one, brings it to 25.3\,\% --- which still leaves
+essentially no headroom, at 1.0\,Hz maximum frame rate against the
+1\,Hz needed.
+
+What resolves it is already in Table~\ref{tab:links}. The 865\,MHz link closes
+the geofence with 54.3\,dB, and nothing in this mission needs anything like
+that much --- the spreading factor that buys it is being spent on range the
+geofence does not use. The SX1262 supports GFSK on the same silicon, the same
+antennas and the same 14\,dBm; at 50\,kbps its sensitivity is
+$-104$\,dBm rather than $-123$\,dBm, which trades 19\,dB of that
+surplus for a 9.1$\times$ rate increase. The frame falls to
+7.8\,ms, occupancy to 2.3\,\%, and the margin is still
+35.3\,dB --- more than the video link has, on a tenth of the
+channel.
+
+\begin{table}[t]
+\caption{Coordination channel, three aircraft, one 36\,B frame each at 1\,Hz}
+\label{tab:coord}
+\centering
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Mode} & \textbf{Rate} & \textbf{Frame} & \textbf{Occupancy} & \textbf{Margin} \\
+\midrule
+GFSK 50\,kbps      & 50\,kbps & 7.8\,ms & \textbf{2.3\,\%} & 35.3\,dB \\
+LoRa SF7, 125\,kHz & 5.5\,kbps & 84.2\,ms & 25.3\,\% & 54.3\,dB \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+So GFSK is the operating mode and LoRa SF7 is the fallback, selected on the same
+radio without a hardware change. The fallback is genuinely degraded and the
+model says so: at 25.3\,\% it sustains 1.0\,Hz, so entering it
+sheds the frame rate rather than pretending the channel is unchanged.
+
+\subsubsection{What degrades first, by construction}
+
+The ordering is deliberate and follows the margins. Video is analog, so it
+degrades continuously into noise rather than dropping a digital link, and it is
+the path permitted to fail. Coordination degrades next, from GFSK to LoRa SF7 to
+a shed frame rate. Command and abort are last, on ExpressLRS at 36.4\,dB,
+and are never traded --- if that link is lost the aircraft executes its failsafe
+rather than waiting for it to return. Every band is licence-exempt in India: the
+865--867\,MHz SRD band for coordination, and the 2.4 and 5.8\,GHz ISM bands for
+command and video, each flown well inside its permitted power.
+
+Two limits on all of this. Every margin here is free-space, so it is an upper
+bound: multipath over water, Fresnel-zone intrusion from a low ground antenna
+and airframe blocking during a bank are real and none is modelled.
+And the GFSK sensitivity is a datasheet figure, not a measurement --- P5
+measures packet error rate against range on the built aircraft, which is when
+Table~\ref{tab:coord} becomes evidence rather than arithmetic.
 
 \subsection{What this section does not establish}
 

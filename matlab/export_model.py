@@ -31,6 +31,7 @@ sys.path.insert(0, os.path.join(ROOT, "tools", "sizing-model"))
 with contextlib.redirect_stdout(io.StringIO()):
     import rescueswarm_sizing_model as M
     import camera_optics as CO
+    import radio_links
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "model.json")
 
@@ -99,6 +100,18 @@ def main() -> None:
         "mass_g": {k: v * 1000 for k, v in M.bd.items()},
         "payload_system_g": {k: v * 1000 for k, v in M.payload_system.items()},
         "avionics_g": {k: v * 1000 for k, v in M.avionics.items()},
+
+        # ---- radio links, as adopted ----------------------------------------
+        # Read from tools/sizing-model/radio_links.py, which the generated
+        # proposal section reads too, so the margin table in the paper and the
+        # margin curves in fig-links cannot drift apart.
+        "links": [
+            {"name": k["name"], "f_mhz": k["f_mhz"], "tx_dbm": k["tx_dbm"],
+             "g_tx_dbi": k["g_tx_dbi"], "g_rx_dbi": k["g_rx_dbi"],
+             "sens_dbm": k["sens_dbm"], "role": k["role"]}
+            for k in radio_links.LINKS
+        ],
+        "geofence_m": radio_links.GEOFENCE_M,
 
         # ---- geolocation error budget, case C -------------------------------
         # From boresight_budget.py. Note what is ABSENT: there is no GNSS
