@@ -1,0 +1,139 @@
+%============================================================================
+% GENERATED FILE -- do not edit.
+% Produced by tools/proposal/build_brief_tables.py from
+% hardware/bom/sourced_bom.py. Edit the BOM, not this file.
+%============================================================================
+\subsubsection*{Measurement instruments --- phases 1--2 \quad \rs{6{,}384} of parts}
+
+\begingroup\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endhead
+Load-cell amplifier & 7Semi HX711 24-bit ADC & 104 & \textit{Robu} \\
+Load cell & REES52 20 kg load cell + HX711 breakout & 854 & The motors ship without a thrust curve. Measuring thrust and current together gives thrust per watt, which is the number the whole sizing loop rests on. Commercial stands start near \rs{45{,}000}; this is the same measurement for \rs{1{,}331} of parts and a printed frame. \textit{Amazon India} \\
+Thrust-stand mast & SURYAKUSH metal 2.1 m tripod & 373 & \textit{Flipkart} \\
+Fasteners & Hex socket-head assortment M3/M4/M5, SS304 & 1{,}140 & \textit{OnlyScrews} \\
+Threadlocker & Loctite 243, 50 ml & 664 & \textit{Amazon India} \\
+Calibrated bench scale & iScale i-01, 30 kg x 1 g, Legal Metrology stamped and certified & 3{,}249 & Mass is a hard limit: 19.08\,kg predicted against a 25\,kg fleet cap, so 1\,g resolves 0.02\,\% of an aircraft and build-up is tracked per component. Ships with a Legal Metrology seal and calibration certificate, which is what makes the weigh-in figure defensible. Budgeted \rs{12{,}000}. \textit{iScale} \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\subsubsection*{Per aircraft, avionics and sensing --- phases 3--6, repeated at 13--16 and 21--24 \quad \rs{81{,}399} per aircraft, \rs{3{,}44{,}197} in all}
+
+\begingroup\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endhead
+Flight controller & Holybro Pixhawk 6C Mini, 3 off & 66{,}147 & Dual IMU, Pixhawk standard, ArduPilot native. Was carried at quotation; now a live retail listing. \textit{Robu} \\
+FC vibration mount & Glass-fibre anti-vibration shock absorber, 3 off & 483 & \textit{Robu} \\
+Companion computer & Raspberry Pi 5, 8 GB, 3 off & 59{,}997 & The host the autonomy runs on --- Linux, ROS\,2, the coverage planner, MAVLink routing and the delivery logic. The accelerator below is an M.2 card over PCIe and the camera is a CSI module, so neither has anything to plug into without it. \textit{Robu} \\
+AI accelerator & Raspberry Pi AI HAT+, 26 TOPS, 3 off & 35{,}247 & Hailo-8, 26 TOPS. The requirement is 96 inferences/s at 640\,px (48 tiles at 2\,Hz), which this clears; 26 TOPS is margin on the one budget that already fails, not a specification floor. \textit{Robu} \\
+Compute cooling & Official Raspberry Pi 5 active cooler, 3 off & 1{,}557 & \textit{Robu} \\
+Storage & SanDisk High Endurance 128 GB microSD, 3 off & 11{,}967 & \textit{Flipkart} \\
+GNSS RTK receiver & Teravolt AeroNav-Pro RTK, 3 rover + 1 base, 4 off & 1{,}00{,}000 & Four units: one rover per aircraft and one base. Centimetric RELATIVE geometry is what lets recall and delivery error be measured against surveyed ground. Supplier has confirmed RTK rover operation and quoted; this line was an \rs{18{,}000} estimate and is now firm. \textit{Teravolt} \\
+Camera + lens & Arducam 12.3 MP 1/2.3 in HQ module, 6 mm CS lens, 3 off & 20{,}397 & 12.3\,MP at 1/2.3\,in and a 6\,mm lens give 1.03\,cm/px at 40\,m, which puts a person in water at 39\,px --- just over the COCO small-object threshold. Was carried at quotation. \textit{Robu} \\
+Video transmitter & SunRobotics TS832, 5.8 GHz, 600 mW, 3 off & 12{,}717 & Analog, one channel per aircraft. Removes video from the data network and, more importantly, removes three software H.264 encodes from the board that runs tiled inference. \textit{IndiaMART} \\
+Command receiver & ExpressLRS RX24T, 2.4 GHz, 3 off & 4{,}317 & The only path that can command the aircraft, reaching the flight controller directly rather than through the autonomy stack. Must run firmware 3.5+ in native MAVLink mode, which carries control and telemetry on one link and removes a second radio. \textit{Robu} \\
+Coordination radio & EByte E22-900T22D-V2, SX1262, 22 dBm, 3 off & 2{,}967 & SX1262 in the 865--867\,MHz delicensed band. Carries mission data and swarm coordination at 54\,dB of margin --- the largest in the system, which is where the survivor coordinates belong. \textit{Robu} \\
+Power module & Holybro PM07, 3 off & 15{,}747 & \textit{Robu} \\
+BEC, primary & 8 A UBEC, 5/6 V out, 2-6S in, 3 off & 11{,}817 & \textit{Amazon India} \\
+BEC, secondary & ReadytoSky 2-6S 5V/3A + 12V/3A switchable UBEC, 3 off & 837 & \textit{Robu} \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\subsubsection*{Per aircraft, airframe and drive --- phases 7--10, repeated at 17--20 and 25--28 \quad \rs{58{,}521} per aircraft, \rs{1{,}90{,}225} in all}
+
+\begingroup\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endhead
+Motors & Tarot TL96020, 5008, 340 KV, 12 off & 56{,}436 & 3.18\,kgf each, giving twice the aircraft weight in thrust; 340\,KV suits an 18\,in propeller at this pack voltage. Twelve, of which the first is measured on the stand before the remaining eleven are committed. \textit{Robokits} \\
+Propellers & 1855 counter-rotating carbon fibre, CW+CCW pair, 16 off & 26{,}256 & Sixteen for twelve positions: the most frequently replaced item in a flight-test programme, and the four spares are the whole spares policy. \textit{Robokits} \\
+Speed controllers & Darkmatter VISHNU 50 MK-III, 4-in-1, 50 A, 3 off & 15{,}567 & One 4-in-1 board drives all four motors. 50\,A continuous against a 29\,A per-motor peak. Made in India, and was carried at quotation. \textit{Robu} \\
+Arm tube & 3K carbon fibre, OD25 x ID23 x 1000 mm, 6 off & 13{,}554 & 25\,$\times$\,23\,mm carbon. Bending is not the driver at a safety factor of 24; the clamp and joint design is. \textit{Robu} \\
+Motor mounts & Tarot 25 mm motor mount, TL9602, 12 off & 13{,}428 & \textit{Robu} \\
+Arm clamps & T-bolt hose clamps 23-25 mm, SS304, 4 pcs, 3 off & 9{,}036 & \textit{Amazon India} \\
+Landing gear & F450/F550 landing skid, 3 off & 1{,}647 & \textit{Robu} \\
+Printed parts & Pro-Range PETG-CF filament, 1.75 mm, 1 kg & 949 & \textit{Robu} \\
+Release servos & MG90S mini servo, 180 deg, 12 off & 1{,}788 & \textit{Robocraze} \\
+Cells & Molicel INR21700-P45B, 6S3P, 54 off & 27{,}486 & Molicel P45B, 6S3P, 292\,Wh. Covers the mission, a full second search and four minutes of holding within an 80\,\% depth of discharge. \textit{Robu} \\
+Cell holders & 3x1 21700 holder, 21.75 mm bore, 54 off & 648 & \textit{Robu} \\
+Pack interconnect & Pure nickel strip, 0.15 x 27 mm & 6{,}500 & \textit{IndiaMART} \\
+Group interconnect & Tinned copper braided jumper & 500 & \textit{IndiaMART} \\
+Balance leads & JST-XH 6S, 200 mm, 22 AWG, 3 off & 372 & \textit{zBotic} \\
+Pack fusing & ANL fuse holder + 150 A ANL fuses, 3 off & 9{,}000 & 150\,A ANL fuse per pack. Short-circuit protection that cannot nuisance-trip at the 115\,A thrust peak. \textit{Njour} \\
+Cell monitor & 1S-8S per-cell voltage checker + low-voltage alarm, 3 off & 750 & There is no BMS in this build and that is deliberate --- see the note below. This sits on the balance connector rather than in the 115\,A discharge path, and closes the one real gap: the flight controller's failsafe watches PACK volts, so a single sagging cell is invisible to it. \textit{Robu} \\
+Pack retention & 300 mm LiPo strap, reusable, 6 off & 372 & \textit{Robu} \\
+Main leads & 10 AWG ultra-flexible silicone wire & 149 & \textit{Robu} \\
+Power connectors & Amass XT90S anti-spark, M/F pair, 12 off & 2{,}160 & \textit{Robokits} \\
+Signal connectors & JST ZH 6-pin, 200 mm leads, 3 off & 69 & \textit{Robu} \\
+Antenna feeders & SMA M-F bulkhead RG316, 150 mm + adapters, 3 off & 3{,}417 & \textit{Desertcart} \\
+Insulation & PVC heat-shrink sleeve, 150 mm, 3 off & 141 & \textit{Robu} \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\subsubsection*{Flight-test support --- phases 11--12 \quad \rs{38{,}925} of parts}
+
+\begingroup\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endhead
+Safety-pilot transmitter & RadioMaster TX12 MKII ELRS + RP1 receiver & 16{,}519 & ExpressLRS, EdgeTX, with a spare receiver. Manual override independent of the autonomy stack, which is a rule requirement and a safety one. \textit{zBotic} \\
+Battery charger & ToolKitRC M6D, 500 W, 25 A, dual & 7{,}349 & 500\,W dual-channel. Two 292\,Wh packs recharged between sorties is the constraint on flight-test throughput. \textit{Robu} \\
+Pack health monitor & Holybro PM08-CAN, 14S, 200 A & 9{,}058 & 200\,A CAN power module on the bench, to log pack internal resistance as the cells age. The sag simulation currently assumes a DC-IR; this measures it. \textit{Robu} \\
+Cable management & Nylon zip ties, 350 mm, 100 pcs & 135 & \textit{Robu} \\
+Heat-shrink kit & 328 pcs assorted 2:1 heat-shrink & 159 & \textit{Robu} \\
+Mounting tape & 3M VHB 5952, 6 mm x 8.2 m & 560 & \textit{Amazon India} \\
+Hook and loop & Self-adhesive hook and loop, 25 mm x 2 m & 145 & \textit{Amazon India} \\
+Consumables & Fasteners, tape, connectors, filament & 5{,}000 & \textit{in-house} \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\subsubsection*{Ground segment and statutory --- phases 29--32 \quad \rs{19{,}436} of parts}
+
+\begingroup\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endhead
+Video receivers & RC832S 5.8 GHz AV receiver, 3 off & 13{,}197 & Three, one per aircraft feed. The rules require the ground station to display a live camera feed from each aircraft simultaneously. \textit{Robu} \\
+Receive antennas & Triple-feed 5.8 GHz patch, SMA, 3 off & 2{,}517 & 12\,dBi patch at the ground station, which is where the 28.5\,dB of video margin at the 600\,m geofence comes from. \textit{Robu} \\
+Video capture & USB 2.0 analog AV capture adapter, 3 off & 1{,}197 & \textit{Robu} \\
+Coordination base & EByte E22-900T22U, SX1262, USB & 1{,}646 & The ground end of the 865\,MHz link, over USB to the ground station. \textit{Hubtronics} \\
+Base station mount & Photographic tripod and adapter & 879 & \textit{Amazon India} \\
+\bottomrule
+\end{longtable}
+\endgroup
