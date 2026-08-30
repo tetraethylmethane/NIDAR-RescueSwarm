@@ -100,6 +100,31 @@ def main() -> None:
         "payload_system_g": {k: v * 1000 for k, v in M.payload_system.items()},
         "avionics_g": {k: v * 1000 for k, v in M.avionics.items()},
 
+        # ---- geolocation error budget, case C -------------------------------
+        # From boresight_budget.py. Note what is ABSENT: there is no GNSS
+        # position term, because with RTK it is ~0.01 m and was dropped as
+        # negligible. Swapping the receiver puts it back, which is the whole
+        # point of the trade study in Section IV-D.
+        # Emitted as lists of {name, value} rather than objects: MATLAB's
+        # jsondecode turns object keys into valid identifiers, which mangles
+        # "target extent / centroid" into "targetExtent_Centroid" and puts that
+        # on the axis of a published figure.
+        "geotag_terms_m": [
+            {"name": "unmodelled",              "sigma_m": 0.70},
+            {"name": "target extent, centroid", "sigma_m": 0.50},
+            {"name": "boresight residual",      "sigma_m": 0.16},
+            {"name": "GNSS-camera lever arm",   "sigma_m": 0.10},
+            {"name": "attitude",                "sigma_m": 0.07},
+            {"name": "pixel centroid",          "sigma_m": 0.02},
+        ],
+        "receiver_classes_m": [
+            {"name": "RTK fixed",             "sigma_m": 0.01},
+            {"name": "SBAS",                  "sigma_m": 0.60},
+            {"name": "standalone multi-band", "sigma_m": 1.00},
+        ],
+        "delivery_other_m": {"ballistic dispersion": 0.32, "position hold": 0.20},
+        "delivery_requirement_m": 5.0,
+
         # ---- mission profile, for the dynamic simulations ------------------
         "mission_segments": [
             {"name": n, "duration_s": t, "power_W": p} for n, t, p in segs

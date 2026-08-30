@@ -567,12 +567,62 @@ is therefore the governing analysis of the whole design. Total error is the root
 sum of squares of GNSS position error, boresight and lever-arm residual, attitude
 error, terrain-model error and timing skew.
 
-Table~\ref{tab:geotag} shows the dominant conclusion: positioning quality, not
-optics, governs. This is what makes RTK a mission requirement rather than an
-optimisation, and it is why the RTK receiver and its base station survive every
-cost-reduction pass while a great deal else does
-not. The \emph{second} receiver, which would supply moving-baseline heading, is
-a different case and is deferred --- see Section~\ref{sec:deferred}.
+\subsubsection{What the receiver actually buys}
+
+An earlier revision of this section held that positioning quality governs, and
+made RTK a mission requirement rather than an optimisation. The budget does not
+support that, and the reason is visible in the budget itself: the case-C terms
+contain \emph{no GNSS position term at all}, because at 1\,cm it is negligible
+against everything else. Two terms the receiver cannot touch --- unmodelled
+error at 0.70\,m and target extent and centroid at 0.50\,m --- carry 95\,\% of
+the variance between them (Fig.~\ref{fig:geobudget}a).
+
+Restoring the position term for weaker receiver classes therefore moves the
+result very little. A Monte Carlo over the full budget, sampling each term as an
+independent two-axis Gaussian, gives:
+
+\begin{table}[t]
+\caption{Geolocation error by receiver class, 200\,000 samples}
+\label{tab:receiver}
+\centering
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Receiver} & \textbf{RSS} & \textbf{CEP50} & \textbf{CEP95} \\
+\midrule
+RTK fixed, 1\,cm            & 0.88\,m & \textbf{0.73\,m} & 1.53\,m \\
+SBAS, 0.60\,m               & 1.07\,m & 0.89\,m & 1.85\,m \\
+Standalone multi-band, 1.0\,m & 1.33\,m & 1.11\,m & 2.31\,m \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+RTK buys \textbf{0.16\,m of CEP50} over SBAS. Every class clears the 5\,m
+delivery requirement with more than three times margin. The simulation is
+checked against the analytic result for a circular Gaussian, CEP50~$=
+0.8326\times$RSS, and fails rather than reports if the two disagree; the RTK row
+reproduces the \texttt{SYS-12} requirement of 0.75\,m independently.
+
+A second consideration compounds this. The base station is set from its own
+first three-dimensional fix rather than a survey-in
+above, so its \emph{absolute} position carries that
+fix's error, of order a metre, and every reported coordinate inherits it. RTK
+preserves the \emph{relative} accuracy in Table~\ref{tab:geotag} --- the
+aircraft is centimetric with respect to the base, wherever the base believes it
+is. Against absolute truth, the gap between an RTK configuration on an
+unsurveyed base and a good SBAS receiver is smaller still.
+
+\emph{RTK is retained, and the reason is now stated correctly.} It is not that
+the budget fails without it, but that centimetric relative positioning makes the
+\emph{relative} geometry between survivors, aircraft and pad exact, which is
+what P7--P8 need to measure recall and delivery error against surveyed ground.
+It is an instrumentation requirement for the evidence, not an accuracy
+requirement for the mission --- and if the programme is funded below the level
+that supports it, dropping to SBAS costs 0.16\,m of CEP50 and the ability to
+measure the system against itself, in that order of importance.
+
+The \emph{second} receiver, which would supply moving-baseline heading, is a
+different case and is deferred --- see Section~\ref{sec:deferred}.
 
 \begin{table}[t]
 \caption{Geolocation error by configuration}
@@ -595,6 +645,18 @@ an 0.03\,m penalty, and the reason the deferral is judged affordable.} \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig-geobudget.pdf}
+\caption{(a) Where the geolocation error actually lives. Unmodelled error and
+target centroid carry 95\,\% of the variance, and there is no GNSS position term
+at all --- with RTK it is 1\,cm. (b) Radial error distribution by receiver class,
+200\,000 Monte Carlo samples over the full budget. The separation between an
+RTK receiver and an SBAS one is 0.16\,m of CEP50, against terms neither can
+reduce.}
+\label{fig:geobudget}
+\end{figure*}
 
 Multi-frame fusion is effectively free. At the 40\,m survey altitude the
 along-track footprint is 31.4\,m, so at 8\,m/s groundspeed a target remains in

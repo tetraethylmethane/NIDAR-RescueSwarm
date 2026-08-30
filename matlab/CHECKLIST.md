@@ -63,7 +63,7 @@ mission duration and energy · mass closure.
 | F1 | `fig-detect` | Target area vs altitude/downsample vs COCO | MATLAB | **done** — not wired |
 | F2 | `fig-looks` | Looks vs rate; inference cost of 3.06 Hz | MATLAB | **done** — not wired |
 | F3 | `fig-motor` | Reserve stack; motor operating point | MATLAB | **done** — not wired |
-| F4 | `fig-sag` | Pack voltage over the mission | MATLAB | **done** — not wired |
+| F4 | `fig-sag` | Pack voltage over the mission | MATLAB | **wired** |
 | F5 | `fig-geotag` | Error by fix quality; fusion saturation | matplotlib | **wired** |
 | F6 | `fig-mass` | Mass budget | matplotlib | **wired** |
 | F7 | `fig-launch` | Launch separation | matplotlib | **wired** |
@@ -87,7 +87,7 @@ still matplotlib; porting them completes the move to one toolchain.
 | S1 | Pack voltage sag | Where does the failsafe threshold go? | base | **done** |
 | S2 | Thermal, cells + nickel | Does 0.2 mm nickel survive 115 A? | PDE | **todo** |
 | S3 | Motor–propeller matching | Predict thrust before P2 measures it | Motor Control | **todo** |
-| S4 | Geolocation Monte Carlo | CEP under wind and attitude noise | Aerospace | **todo** |
+| S4 | Geolocation Monte Carlo | What does the receiver class actually buy? | base | **done** |
 | S5 | Coverage path timing | Mission time over real region shapes | base | **todo** — Python SITL covers part of this |
 
 ### S1 result
