@@ -32,202 +32,155 @@ REPEATS = {"avionics": "repeated at 13--16 and 21--24",
 # The reasoning a reader is being asked to accept. Lines without an entry are
 # self-evident from the model column and get the supplier only.
 RATIONALE = {
- "Load-cell amplifier":
-   "24-bit conversion on a 20\\,kg cell resolves about a gram, so the same "
-   "stand that measures 3.18\\,kgf of thrust also weighs components to the "
-   "tolerance the mass budget needs.",
- "Thrust-stand mast":
-   "A light stand rather than a camera tripod: it holds the motor clear of the "
-   "bench so its wake is not recirculated into the propeller, which is the "
-   "usual way a home-built thrust measurement reads high.",
- "Fasteners":
-   "M3 to M5 stainless, assorted. A carbon airframe is bolted rather than "
-   "bonded, and the sizes are not settled until the printed mounts are fitted.",
- "Threadlocker":
-   "Medium strength, so a joint can still be undone. Every fastener in the "
-   "drive train sees the motor's vibration spectrum, and this is the cheapest "
-   "insurance against a motor mount backing out in flight.",
- "FC vibration mount":
-   "The autopilot's state estimate is only as good as its accelerometers, and "
-   "an 18\\,in propeller puts its blade-pass frequency close to the band the "
-   "filter cares about. Isolating the board is cheaper than tuning around it.",
- "Compute cooling":
-   "The worst thermal case is on the ground, not in flight: the five-minute "
-   "setup boots Linux and loads the model with the propellers stopped and no "
-   "downwash. This keeps the accelerator off its thermal limit in that window.",
- "Storage":
-   "High-endurance rather than ordinary. The card takes continuous 12\\,MP "
-   "frame logging plus detection metadata for a whole mission, a sustained "
-   "write pattern that retires consumer cards quickly.",
- "Power module":
-   "Feeds the autopilot its pack voltage and current, which is what the "
-   "low-voltage failsafe acts on. With no board in the discharge path this is "
-   "the only current measurement on the aircraft.",
- "BEC, primary":
-   "8\\,A at 5\\,V for the computer and accelerator, which together draw about "
-   "25\\,W. Sized well above that because a brownout on the compute rail "
-   "during a delivery is the failure this line exists to prevent.",
- "BEC, secondary":
-   "A separate, smaller regulator for the servos and receiver, so a stalled "
-   "release servo cannot drag down the rail the autopilot shares.",
- "Motor mounts":
-   "Clamps a 25\\,mm arm and takes the motor's bolt pattern directly, so the "
-   "tube needs no machining. This is the joint the bending analysis assumes, "
-   "and the part the safety factor of 24 does \\emph{not} cover --- clamp and "
-   "joint design is what actually governs.",
- "Arm clamps":
-   "Stainless T-bolt clamps at the arm-to-body joint, bolted rather than "
-   "bonded, so an arm damaged in a heavy landing is replaced in the field "
-   "instead of scrapping the centre plate.",
- "Landing gear":
-   "Skids rather than legs, for the clearance the payload magazine needs "
-   "beneath the airframe and a stance wide enough to absorb an off-nominal "
-   "touchdown.",
- "Suspension springs":
-   "Torsion springs in the skid, so a hard landing is absorbed by the gear "
-   "rather than transmitted into the arms and the battery pack.",
- "Printed parts":
-   "PETG with chopped carbon for the magazine, mounts and compute bay. "
-   "Stiffer than PLA and far less prone to creep at the temperature a dark "
-   "airframe reaches standing in the sun.",
- "Release servos":
-   "Metal-gear, one per kit station. Metal because the detent holds a 200\\,g "
-   "kit against flight loads, and a stripped nylon gear drops a kit with no "
-   "indication that it has happened.",
- "Cell holders":
-   "Fixes the 18 cells in a known geometry so the nickel is welded to a "
-   "repeatable pattern, and keeps the cases apart, which is what stops one "
-   "failing cell taking its neighbours with it.",
- "Pack interconnect":
-   "0.15\\,$\\times$\\,27\\,mm pure nickel, multi-layer, sized for 38\\,A per "
-   "parallel group at the 115\\,A pack peak. Pure rather than nickel-plated "
-   "steel, which carries several times the resistance for the same section.",
- "Group interconnect":
-   "Braided copper between parallel groups, where the current is highest and "
-   "the joint has to tolerate the pack flexing in flight.",
- "Balance leads":
-   "How the charger reads all six cells. With no board on the aircraft this is "
-   "the only per-cell measurement in the system, and it is taken every charge.",
- "Pack retention":
-   "The pack is a fifth of the aircraft's mass. A strap that lets go during a "
-   "manoeuvre shifts the centre of gravity further than the attitude loop can "
-   "trim.",
- "Main leads":
-   "10\\,AWG, sized for the 115\\,A peak rather than the 42\\,A hover, because "
-   "the peak is what sets conductor temperature during a gust recovery.",
- "Power connectors":
-   "XT90 with anti-spark pre-charge. Connecting a 292\\,Wh pack without it "
-   "arcs the contacts and eventually welds them shut.",
- "Signal connectors":
-   "Keyed throughout, so the loom can only be reassembled one way after a "
-   "repair --- which is when miswiring actually happens.",
- "Antenna feeders":
-   "RG316 with a bulkhead fitting, so the antenna mounts on the airframe skin "
-   "rather than hanging off the radio, and the run stays short enough not to "
-   "eat into the link margin.",
- "Insulation":
-   "Sleeving over the pack and the high-current joints --- the only places on "
-   "the aircraft where a chafed conductor is an immediate fire rather than a "
-   "fault.",
- "Cable management":
-   "Ties long enough to dress a loom around a 690\\,mm wheelbase.",
- "Heat-shrink kit":
-   "Assorted sizes for the signal side, where joints are made once during "
-   "integration and thereafter inspected rather than re-made.",
- "Mounting tape":
-   "VHB for the receivers, radios and compute-bay damping. Holds against "
-   "vibration where a screw would need a boss the printed part cannot carry.",
- "Hook and loop":
-   "For the pack and anything else that has to come out between sorties "
-   "without tools, inside the five-minute setup window.",
- "Consumables":
-   "One line for what a build actually consumes: solder, flux, abrasives, "
-   "spare hardware, filament. Held at a round figure because itemising it "
-   "would be false precision.",
- "Video capture":
-   "Presents the three analog receivers to the ground station as three USB "
-   "video devices, which is what lets one operator watch three feeds on one "
-   "screen.",
- "Base station mount":
-   "A stable, repeatable mount for the base receiver. The corrections are "
-   "relative, so survey-grade accuracy is unnecessary; what matters is that "
-   "the antenna does not move during the mission.",
+ # Plain English, one line. The reader is a faculty mentor deciding whether to
+ # fund this, not an engineer reviewing the electrical design -- the numbers
+ # that justify each choice live in the technical proposal, not here.
+ "Load-cell amplifier": "Turns the load cell's signal into a reading we can log.",
  "Load cell":
-   "The motors ship without a thrust curve. Measuring thrust and current "
-   "together gives thrust per watt, which is the number the whole sizing loop "
-   "rests on. Commercial stands start near \\rs{45{,}000}; this is the same "
-   "measurement for \\rs{1{,}331} of parts and a printed frame.",
+   "The motors ship without a thrust curve, so we measure it ourselves. "
+   "Ready-made stands cost around ten times this.",
+ "Thrust-stand mast":
+   "Holds the motor clear of the bench, so its own draught does not flatter "
+   "the reading.",
+ "Fasteners": "A carbon airframe is bolted, not glued.",
+ "Threadlocker":
+   "Stops bolts working loose under motor vibration. Medium strength, so a "
+   "joint can still be undone.",
+
  "Flight controller":
-   "Dual IMU, Pixhawk standard, ArduPilot native. Was carried at quotation; "
-   "now a live retail listing.",
+   "The autopilot: flies the aircraft and runs its safety behaviours. "
+   "Previously a quotation, now ordinary retail.",
+ "FC vibration mount":
+   "Isolates the autopilot from propeller vibration, which otherwise confuses "
+   "its sensors.",
  "Companion computer":
-   "The host the autonomy runs on --- Linux, ROS\\,2, the coverage planner, "
-   "MAVLink routing and the delivery logic. The accelerator below is an M.2 "
-   "card over PCIe and the camera is a CSI module, so neither has anything to "
-   "plug into without it.",
+   "The computer the autonomy runs on. The accelerator and the camera both "
+   "plug into it, so neither works without it.",
  "AI accelerator":
-   "Hailo-8, 26 TOPS. The requirement is 96 inferences/s at 640\\,px (48 tiles "
-   "at 2\\,Hz), which this clears; 26 TOPS is margin on the one budget that "
-   "already fails, not a specification floor.",
+   "Runs the person-detection model fast enough to search at flying speed.",
+ "Compute cooling":
+   "The hottest moment is the setup on the ground, before the propellers are "
+   "turning and cooling it.",
+ "Storage":
+   "Records every frame and detection for a whole mission. Ordinary cards wear "
+   "out at that rate.",
  "GNSS RTK receiver":
-   "Four units: one rover per aircraft and one base. Centimetric RELATIVE "
-   "geometry is what lets recall and delivery error be measured against "
-   "surveyed ground. Supplier has confirmed RTK rover operation and quoted; "
-   "this line was an \\rs{18{,}000} estimate and is now firm.",
+   "Precise positioning: one per aircraft and one on the ground. The supplier "
+   "has confirmed it works this way and quoted; this was an estimate before.",
  "Camera + lens":
-   "12.3\\,MP at 1/2.3\\,in and a 6\\,mm lens give 1.03\\,cm/px at 40\\,m, "
-   "which puts a person in water at 39\\,px --- just over the COCO small-object "
-   "threshold. Was carried at quotation.",
+   "The search sensor, chosen so a person in water is large enough in the "
+   "picture to be found.",
  "Video transmitter":
-   "Analog, one channel per aircraft. Removes video from the data network and, "
-   "more importantly, removes three software H.264 encodes from the board that "
-   "runs tiled inference.",
+   "Sends the live picture down, one channel per aircraft.",
  "Command receiver":
-   "The only path that can command the aircraft, reaching the flight "
-   "controller directly rather than through the autonomy stack. Must run "
-   "firmware 3.5+ in native MAVLink mode, which carries control and telemetry "
-   "on one link and removes a second radio.",
+   "Carries the safety pilot's control and the aircraft's reporting on a "
+   "single link, which saves a second radio.",
  "Coordination radio":
-   "SX1262 in the 865--867\\,MHz delicensed band. Carries mission data and "
-   "swarm coordination at 54\\,dB of margin --- the largest in the system, "
-   "which is where the survivor coordinates belong.",
- "Speed controllers":
-   "One 4-in-1 board drives all four motors. 50\\,A continuous against a "
-   "29\\,A per-motor peak. Made in India, and was carried at quotation.",
+   "How the three aircraft tell each other what they have found. The most "
+   "robust link on the aircraft, which is where survivor positions belong.",
+ "Power module":
+   "Reports battery voltage and current to the autopilot, which is what "
+   "triggers a low-battery return.",
+ "BEC, primary":
+   "Powers the computer. Deliberately oversized: losing it in flight is the "
+   "failure this line exists to prevent.",
+ "BEC, secondary":
+   "A separate supply for the servos, so a jammed servo cannot disturb the "
+   "autopilot.",
+
  "Motors":
-   "3.18\\,kgf each, giving twice the aircraft weight in thrust; 340\\,KV suits "
-   "an 18\\,in propeller at this pack voltage. Twelve, of which the first is "
-   "measured on the stand before the remaining eleven are committed.",
+   "Twelve. The first is measured on the stand before the other eleven are "
+   "bought.",
  "Propellers":
-   "Sixteen for twelve positions: the most frequently replaced item in a "
-   "flight-test programme, and the four spares are the whole spares policy.",
- "Cells":
-   "Molicel P45B, 6S3P, 292\\,Wh. Covers the mission, a full second search and "
-   "four minutes of holding within an 80\\,\\% depth of discharge.",
- "Pack fusing":
-   "150\\,A ANL fuse per pack. Short-circuit protection that cannot nuisance-"
-   "trip at the 115\\,A thrust peak.",
+   "Sixteen for twelve positions. The item most often broken in flight "
+   "testing, and the whole of our spares policy.",
+ "Speed controllers":
+   "One board drives all four motors. Made in India, and previously a "
+   "quotation.",
  "Arm tube":
-   "25\\,$\\times$\\,23\\,mm carbon. Bending is not the driver at a safety "
-   "factor of 24; the clamp and joint design is.",
+   "The four arms. Carbon, and comfortably strong --- the joints, not the "
+   "tubes, are what limit the airframe.",
+ "Motor mounts":
+   "Joins motor to arm without machining the tube. This joint is the part that "
+   "has to be right.",
+ "Arm clamps":
+   "Bolted rather than bonded, so an arm damaged in a heavy landing is swapped "
+   "in the field instead of scrapping the frame.",
+ "Landing gear":
+   "Gives clearance underneath for the kit magazine, and a stance wide enough "
+   "for an untidy landing.",
+ "Suspension springs":
+   "Let the legs absorb a hard landing rather than pass it into the arms and "
+   "the battery.",
+ "Printed parts":
+   "Filament for the magazine, mounts and covers. Holds its shape in the sun, "
+   "which cheaper filament does not.",
+ "Release servos":
+   "Open the four kit stations. Metal gears, because a plastic one can drop a "
+   "kit without anyone knowing.",
+ "Cells":
+   "The battery: enough for the mission, a second full search, and four "
+   "minutes in hand.",
+ "Cell holders":
+   "Hold the cells in place and keep them apart, so one failing cell does not "
+   "take its neighbours with it.",
+ "Pack interconnect":
+   "Joins the cells. Pure nickel, because the cheaper plated strip runs hot at "
+   "the current this battery delivers.",
+ "Group interconnect": "Joins the battery's groups, where the current is highest.",
+ "Balance leads":
+   "How the charger checks each cell. With no battery board fitted, this is "
+   "our only per-cell check --- and it happens on every charge.",
+ "Pack fusing":
+   "Protects against a short circuit without cutting power at full throttle.",
+ "Pack retention":
+   "Holds the battery down. It is a fifth of the aircraft's weight, so a strap "
+   "that lets go is not a small problem.",
+ "Main leads":
+   "The main power cable, sized for the highest current the motors ever draw "
+   "rather than the average.",
+ "Power connectors":
+   "Anti-spark, so connecting a battery this size does not burn the contacts.",
+ "Signal connectors":
+   "Keyed, so the wiring can only go back together one way after a repair.",
+ "Antenna feeders":
+   "Let the antennas mount on the airframe instead of hanging off the radios.",
+ "Insulation":
+   "Sleeving over the battery joints --- the one place on the aircraft where a "
+   "rubbed wire is an immediate fire.",
+
  "Safety-pilot transmitter":
-   "ExpressLRS, EdgeTX, with a spare receiver. Manual override independent of "
-   "the autonomy stack, which is a rule requirement and a safety one.",
+   "Manual override for the safety pilot, independent of the autonomy. A rule "
+   "requirement and a safety one.",
  "Battery charger":
-   "500\\,W dual-channel. Two 292\\,Wh packs recharged between sorties is the "
-   "constraint on flight-test throughput.",
+   "Two batteries recharged between flights is what sets how many tests fit "
+   "into a day.",
  "Pack health monitor":
-   "200\\,A CAN power module on the bench, to log pack internal resistance as "
-   "the cells age. The sag simulation currently assumes a DC-IR; this measures "
-   "it.",
+   "A bench instrument for tracking how the batteries age over the programme.",
+ "Cable management": "Ties long enough to dress wiring around a one-metre airframe.",
+ "Heat-shrink kit": "Insulates the signal wiring during assembly.",
+ "Mounting tape":
+   "Holds radios and receivers where a screw would need a fixing the printed "
+   "part cannot carry.",
+ "Hook and loop":
+   "For the battery and anything else that must come out between flights "
+   "without tools.",
+ "Consumables":
+   "Solder, abrasives, spare hardware, filament. A round figure, because "
+   "itemising it would be false precision.",
+
  "Video receivers":
-   "Three, one per aircraft feed. The rules require the ground station to "
-   "display a live camera feed from each aircraft simultaneously.",
+   "Three, so the ground station can show all three aircraft at once, which "
+   "the rules require.",
  "Receive antennas":
-   "12\\,dBi patch at the ground station, which is where the 28.5\\,dB of "
-   "video margin at the 600\\,m geofence comes from.",
+   "The ground antennas. Most of the video range comes from these rather than "
+   "from the transmitters.",
+ "Video capture": "Brings the three pictures into the ground station computer.",
  "Coordination base":
-   "The ground end of the 865\\,MHz link, over USB to the ground station.",
+   "The ground end of the link the aircraft use to report what they find.",
+ "Base station mount":
+   "Holds the ground receiver still during a mission. Survey-grade accuracy is "
+   "unnecessary; not moving is what matters.",
 }
 
 SUPPLIER = [("robu.in", "Robu"), ("robokits", "Robokits"), ("amazon.in", "Amazon India"),
@@ -290,7 +243,7 @@ def rows(key):
 # the schedule instead of silently contradicting it.
 SCHEDULE = [
  (1,  "Establish thrust and mass measurement capability", "Approval"),
- (2,  "Verify static thrust against the 3.18 kgf requirement", "Instruments commissioned"),
+ (2,  "Confirm one motor lifts what the design needs", "Instruments commissioned"),
  (3,  "Aircraft 1 --- autopilot and control link", r"\textbf{Thrust verified}"),
  (4,  "Aircraft 1 --- onboard computer and AI accelerator", "Autopilot bench-tested"),
  (5,  "Aircraft 1 --- centimetre positioning (RTK rover)", "Compute stack operating"),

@@ -89,52 +89,50 @@ scarce and committed to evacuation. Conventional drones need one pilot each,
 depend on infrastructure the flood has removed, and cannot assist a survivor
 once found.
 
-Detection is the harder problem. A person in floodwater presents head and
-shoulders, 40\,cm across. Detection models take a fixed, small input, so the
-usual approach shrinks the image and the target with it, to a size at which
-published accuracy is 29--61\,\%. A smaller model is worse: smaller models take
-smaller inputs.
+Finding people is the harder problem. Someone in floodwater shows only head and
+shoulders, about 40\,cm across. Detection software works on a small, fixed
+picture size, so the usual approach shrinks the photograph --- and the person
+with it --- until they are too small to recognise reliably. Choosing a smaller,
+cheaper model makes this worse rather than better.
 
-No dataset annotates people in flood imagery. Thermal imaging fails in water,
-where skin equilibrates toward water temperature.
+There is also no public collection of labelled flood photographs to learn from,
+and thermal cameras do not help, because someone in water is close to the
+temperature of the water around them.
 
 %-----------------------------------------------------------------------------
 \section{Our solution}
 
-\textbf{System.} The operator draws a search region of any shape. The software
-splits it into three balanced sub-regions and plans a path over each, verified
-on thirteen non-convex shapes with no path leaving the region and imbalance
-below 0.02\,\%. The aircraft fly autonomously; the test harness shows
-structurally that no command is sent after the mission begins. Detection and
-geolocation run on board. Each aircraft carries four kits, descends, nulls its
-groundspeed over a survivor and releases one. Link loss, low battery and
-operator abort converge on a single return-and-land behaviour.
+\textbf{System.} The operator draws a search area of any shape. The software
+divides it into three fair shares and plans a route over each; we have tested
+this on thirteen awkward shapes, and no route strays outside the area. The
+aircraft then fly themselves --- our tests confirm that no further command is
+sent once a mission has started. Each one recognises people and works out where
+they are without help from the ground. It carries four relief kits, comes down
+over a survivor, stops still, and drops one. A lost radio link, a low battery
+and the operator pressing abort all lead to the same thing: come home and land.
 
-\textbf{Detection.} The image is not shrunk. Each frame is divided into 48
-overlapping tiles at native resolution, and the survey altitude is 40\,m rather
-than 60\,m. The target becomes \textbf{39 pixels} rather than 13, nine times the
-area, outside the band where detector performance collapses. Either change alone
-leaves it inside.
+\textbf{Detection.} Rather than shrink the picture to fit the detector, we cut
+each frame into tiles and search them at full resolution, and we fly lower.
+Together those two changes make a person in the water \textbf{nine times larger}
+in the image, which lifts them out of the size range where these detectors stop
+working. Either change on its own is not enough. The cost is four times the
+computing, which the chosen accelerator has, and the mission is no longer than
+before because the lower flight saves more climbing than the extra passes cost.
 
-The cost is four times the computation: 48 tiles at 2\,Hz is 96 inferences per
-second, against 130--160 measured for the accelerator. Mission duration is
-shorter than at 60\,m, the lower climb outweighing the extra transects.
-
-\textbf{Open question.} Confirming a survivor across twelve frames needs
-3\,Hz, which exceeds that capacity. A two-stage filter, discarding the 87\,\% of
-tiles that are open water, would recover it. A filter that discards a tile
-containing a person fails without indication, so it will be evaluated against
-public data before adoption.
+\textbf{Open question.} Confirming a sighting across several frames would need
+half as much computing again as we have. There is a way to recover it, by
+skipping the tiles that are plainly open water, but a filter that throws away a
+tile containing a person fails silently. We will test it against public data
+before adopting it.
 
 %-----------------------------------------------------------------------------
 \section{Deliverables}
 
 \begin{enumerate}\itemsep0pt
 \item Three aircraft operating as a coordinated group under one operator.
-\item A ground station that displays mission state and is architecturally
-incapable of commanding the aircraft.
-\item Autonomy software --- partitioning, path planning, allocation, failsafes ---
-with an automated test suite.
+\item A ground station that shows what is happening and, by design, cannot fly
+the aircraft.
+\item The autonomy software, with an automatic test suite behind it.
 \item Measured detection accuracy and a verdict on the two-stage filter.
 \item A publication: tiling, aerial person detection and low-power onboard
 inference have not been combined for flood conditions.
@@ -189,40 +187,23 @@ replication of a demonstrated configuration rather than a projection.
 
 The schedule gives the amount
 \emph{released} per phase. The tables below give the parts each phase
-\emph{buys}. The two differ by a fixed rule, and the rule has been corrected in
-this revision. It previously added 22\,\% customs duty and 18\,\% GST to every
-line. That was right when most lines were quotations for parts not yet sourced;
-it is wrong now that they are Indian retail listings, because a listed retail
-price in India is already GST-paid, and the duty on an imported part has
-already been paid by whoever put it on a domestic shelf. Adding both again
-overstated the ask by roughly a lakh.
+\emph{buys}. A released amount is the parts cost plus tax where tax is still
+owed, plus 15\,\% contingency. Across the programme that is \rs{5{,}95{,}232}
+of parts against \rs{7{,}12{,}210} released.
 
-The rule is therefore: retail listings are taken at the listed price, the
-genuinely ex-tax share --- supplier quotations and business-to-business
-listings --- carries 18\,\% GST, and 15\,\% contingency applies to both. Across
-the programme that is \rs{5{,}95{,}232} of parts against \rs{7{,}12{,}210}
-released, a factor of 1.20. The schedule above and the tables below are
-derived from the same basket, so a price change moves both together rather than
-leaving one to contradict the other.
+\textbf{Every line below is a current listing from a named Indian supplier,
+priced and linked.} An earlier version of this brief said the opposite --- that
+a handful of lines were firm and the rest were estimates. That is no longer
+true of any line, and the schedule and the tables are generated from the same
+list, so they cannot drift apart.
 
-\textbf{Every line in the tables below is now a live listing from a named
-supplier, priced and linked.} An earlier revision of this brief said the
-opposite --- that seven lines were firm and that ``every other line in this
-section is a quotation or an estimate from a comparable part.'' That is no
-longer true of any line. The two that mattered most have both settled: the
-GNSS receiver, previously an \rs{18{,}000} estimate against an unpriced part,
-is quoted by the supplier at \rs{25{,}000} with RTK rover operation confirmed;
-and the flight controller, camera and speed controllers, all previously carried
-at quotation, are ordinary retail. The tables are generated from that basket
-rather than transcribed, so they cannot drift from it.
-
-Three consequences worth stating plainly, because they move the figure in both
-directions. The onboard computer was budgeted at \rs{8{,}000} against a real
-price of \rs{19{,}999}, which is the single largest correction in the
-programme. The certified scale, budgeted at \rs{12{,}000}, is not in the ask at
-all: the department already holds one, so it is an institutional contribution
-rather than a purchase. And the parts that were to buy a 5.8\,GHz mesh now buy
-three separate radios, because the mesh was withdrawn on its link budget.
+Three corrections are worth stating plainly, because they move the figure in
+both directions and together they \emph{reduced} the ask by about
+\rs{31{,}000}. The onboard computer was budgeted at \rs{8{,}000} against a real
+price of \rs{19{,}999}. The certified scale is no longer in the ask at all,
+because the department already owns one. And the earlier version added customs
+duty and GST to every line, which was right when the lines were estimates but
+wrong for Indian retail prices, where the tax is already paid.
 
 \needspace{7\baselineskip}
 Terms used below. \emph{RTK}: satellite positioning corrected against
@@ -237,27 +218,14 @@ in this build, and the note after the tables says why.
 \input{generated-brief-tables}
 
 \needspace{6\baselineskip}
-\textbf{Why there is no battery management board.} An earlier revision funded
-``6S 60\,A BMS, distribution board, regulator'' as one \rs{8{,}500} line. Two
-thirds of that is bought above under other names: the distribution board is the
-Holybro PM07 and the regulators are the two UBECs. What remained was cell
-protection, and a board in series with the pack is the wrong device for it at
-this current.
-
-The pack draws 42\,A in hover and 115\,A at the thrust peak. A 60\,A board
-trips in normal flight; the 100\,A board stocked in India trips at full thrust,
-and a cut-out at maximum thrust is a crash rather than a protection. A board
-rated past 115\,A would put its transistors in series with the main path,
-adding resistance and heat exactly where the pack already reaches its
-low-voltage floor. So the protection is distributed across parts that are in
-the tables: a 150\,A fuse for short circuits, the flight controller's
-low-voltage failsafe for over-discharge, balance leads charged on the bench,
-and the PM07 for current and voltage telemetry. Per-cell voltage is read on the
-charger, which sees all six cells through the balance lead on every charge ---
-which is when a diverging group shows up. What this build does not have is
-per-cell protection \emph{in flight}, and that is a stated consequence of not
-fitting a series board rather than an oversight.
-
+\textbf{Why there is no battery management board.} An earlier version funded
+one. Most of what that line covered is already bought under other names, and
+the part that remains --- a board that cuts power when a cell is unhappy --- is
+the wrong device on an aircraft, because it can cut power at full throttle,
+which is a crash rather than a protection. Instead the battery is fused against
+short circuits, the autopilot brings the aircraft home on low voltage, and
+every cell is checked on the charger before each flight. What we do not have is
+per-cell protection in the air; that is a deliberate choice, not an oversight.
 
 \subsection{What this arrangement costs us}
 
