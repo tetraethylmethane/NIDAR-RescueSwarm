@@ -204,6 +204,28 @@ for k in ("attitude", "centroid", "time"):
 rssD = math.sqrt(sum(v * v for v in caseD.values()))
 check("IV-D", "case D RSS (20-frame fusion)", 0.66, rssD, tol=0.05, unit="m")
 
+# =====================================================================  IV-D
+# Receiver classes. The whole trade turns on one number: the GNSS error at
+# which delivery CEP95 reaches the 5 m requirement. If the non-GNSS budget ever
+# changes, that break point moves and the NavIC/GPS conclusions move with it.
+_rest2 = sum(v * v for v in (0.70, 0.50, 0.16, 0.10, 0.07, 0.02))
+_break = math.sqrt((5.0 / 1.7308) ** 2 - _rest2)
+check("IV-D", "non-GNSS budget floor", 0.88, math.sqrt(_rest2), tol=0.01, unit="m")
+check("IV-D", "GNSS error at which the requirement breaks", 2.75, _break,
+      tol=0.01, unit="m")
+for _lbl, _g, _c95 in (("RTK fixed", 0.01, 1.53), ("SBAS", 0.60, 1.85),
+                       ("multi-band", 1.00, 2.31), ("GPS L1 only", 2.50, 4.59),
+                       ("NavIC SPS", 5.00, 8.79)):
+    check("IV-D", f"CEP95, {_lbl}", _c95,
+          1.7308 * math.sqrt(_rest2 + _g * _g), tol=0.01, unit="m")
+# The argument the section makes, asserted rather than just stated: SBAS clears
+# the requirement and NavIC does not. If this ever flips the prose is wrong.
+results.append((1.7308 * math.sqrt(_rest2 + 0.60 ** 2) <= 5.0, "IV-D",
+                "SBAS clears the 5 m delivery requirement", 1, 1, 0.0, "", ""))
+results.append((1.7308 * math.sqrt(_rest2 + 5.00 ** 2) > 5.0, "IV-D",
+                "NavIC SPS does NOT clear it -- the section's conclusion",
+                1, 1, 0.0, "", ""))
+
 # =====================================================================  IV-H
 # Communications.
 #

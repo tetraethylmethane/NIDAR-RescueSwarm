@@ -130,10 +130,27 @@ def main() -> None:
             {"name": "attitude",                "sigma_m": 0.07},
             {"name": "pixel centroid",          "sigma_m": 0.02},
         ],
+        # Horizontal 1-sigma for each class the fleet could fly. The three
+        # original entries are unchanged so Section IV-D's table still holds;
+        # GPS-only and NavIC are added because the question "why not the
+        # cheaper receiver" needs an answer with a number attached.
+        #   RTK fixed      carrier-phase against a local base
+        #   SBAS / GAGAN   code-phase with the Indian augmentation
+        #   multi-band     L1+L5 autonomous, no augmentation
+        #   GPS L1 only    autonomous single-frequency, no augmentation
+        #   NavIC SPS      IRNSS standard positioning service, published
         "receiver_classes_m": [
             {"name": "RTK fixed",             "sigma_m": 0.01},
             {"name": "SBAS",                  "sigma_m": 0.60},
             {"name": "standalone multi-band", "sigma_m": 1.00},
+            {"name": "GPS L1 only",           "sigma_m": 2.50},
+            {"name": "NavIC SPS",             "sigma_m": 5.00},
+        ],
+        # Delivery requirement, and the fleet as actually configured: one
+        # aircraft on RTK for measurement, two on SBAS.
+        "fleet_receivers_m": [
+            {"name": "aircraft 1, RTK", "sigma_m": 0.01, "count": 1},
+            {"name": "aircraft 2 and 3, SBAS", "sigma_m": 0.60, "count": 2},
         ],
         "delivery_other_m": {"ballistic dispersion": 0.32, "position hold": 0.20},
         "delivery_requirement_m": 5.0,

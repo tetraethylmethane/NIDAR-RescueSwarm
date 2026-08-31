@@ -16,7 +16,7 @@ derivation. MATLAB re-derives independently from primitives only.
 
 | # | Check | Tool | Status |
 |---|---|---|---|
-| V1 | Proposal claims vs models — 55 checks | Python | **done** |
+| V1 | Proposal claims vs models — 64 checks | Python | **done** |
 | V2 | Independent re-derivation — 28 checks | MATLAB | **done** |
 | V3 | Mass statement closes to MTOW | both | **done** |
 | V4 | Generated §V asserts against model | Python | **done** |
@@ -75,6 +75,7 @@ mission duration and energy · mass closure.
 | F12 | `fig-funding` | — | matplotlib | **todo** — orphaned (funding is out of the paper) |
 | F13 | `fig-geobudget` | Variance share; error CDF by receiver class | MATLAB | **wired** |
 | F14 | `fig-links` | Margin at the geofence; margin vs range | MATLAB | **wired** |
+| F15 | `fig-receivers` | Error CDF by GNSS class; the 2.75 m break point | MATLAB | **wired** |
 
 **Open:** F5–F9 are still matplotlib. Porting them completes the move to one
 toolchain; nothing else depends on it.
@@ -91,6 +92,7 @@ toolchain; nothing else depends on it.
 | S2 | Thermal, cells + nickel | Does 0.2 mm nickel survive 115 A? | PDE | **todo** |
 | S3 | Motor–propeller matching | Predict thrust before P2 measures it | Motor Control | **todo** |
 | S4 | Geolocation Monte Carlo | What does the receiver class actually buy? | base | **done** |
+| S6 | Receiver class sweep | Which classes clear the 5 m requirement at all? | base | **done** |
 | S5 | Coverage path timing | Mission time over real region shapes | base | **todo** — Python SITL covers part of this |
 
 ### S1 result

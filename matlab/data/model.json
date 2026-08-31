@@ -180,6 +180,26 @@
   {
    "name": "standalone multi-band",
    "sigma_m": 1.0
+  },
+  {
+   "name": "GPS L1 only",
+   "sigma_m": 2.5
+  },
+  {
+   "name": "NavIC SPS",
+   "sigma_m": 5.0
+  }
+ ],
+ "fleet_receivers_m": [
+  {
+   "name": "aircraft 1, RTK",
+   "sigma_m": 0.01,
+   "count": 1
+  },
+  {
+   "name": "aircraft 2 and 3, SBAS",
+   "sigma_m": 0.6,
+   "count": 2
   }
  ],
  "delivery_other_m": {

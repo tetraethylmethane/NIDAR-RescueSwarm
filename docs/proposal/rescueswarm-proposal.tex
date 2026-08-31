@@ -630,6 +630,83 @@ and the remaining two aircraft fly SBAS, which Table~\ref{tab:receiver} shows
 clears the delivery requirement with better than twice the margin. Fitting all
 three was buying three copies of a measurement that only needs taking once.
 
+\subsubsection{How good the receiver actually has to be}
+\label{sec:receivers}
+
+The trade above compares three receivers. The question that keeps returning in
+review is broader --- why not GPS on its own, or NavIC, which is Indian and
+costs a fifth of the RTK unit --- and it deserves an answer with a number
+rather than a preference.
+
+\emph{NavIC is not an alternative to RTK.} The two are different layers: NavIC
+is a constellation, alongside GPS, GLONASS, Galileo and BeiDou, while RTK is a
+carrier-phase correction technique applied on top of whatever constellation is
+tracked. The meaningful comparison is therefore between \emph{augmentation
+classes}, and NavIC enters it at its standalone accuracy, because that is how
+it would be flown.
+
+Everything in the budget except the receiver sums to 0.88\,m
+(Fig.~\ref{fig:geobudget}a), and that figure is a floor: no receiver reduces
+it. Adding a receiver term $\sigma_g$ in quadrature and converting to the
+95\,\% radius gives the criterion directly,
+\begin{equation}
+\mathrm{CEP95} = 1.7308\sqrt{\sigma_{\mathrm{rest}}^{2} + \sigma_g^{2}}
+\;\le\; 5\,\text{m}
+\quad\Longrightarrow\quad
+\sigma_g \le 2.75\,\text{m}.
+\label{eq:gnssbreak}
+\end{equation}
+That single number settles the question. Any receiver better than 2.75\,m
+horizontal clears the delivery requirement; any receiver worse than it does
+not, whatever else is done to the system.
+
+\begin{table}[t]
+\caption{Receiver classes against the 5\,m delivery requirement, 200\,000 samples}
+\label{tab:receivers}
+\centering
+\small
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+\textbf{Class} & $\boldsymbol{\sigma_g}$ & \textbf{CEP50} & \textbf{CEP95} & \\
+\midrule
+RTK fixed             & 0.01\,m & 0.74\,m & \textbf{1.53\,m} & clears \\
+SBAS / GAGAN          & 0.60\,m & 0.89\,m & \textbf{1.85\,m} & clears \\
+Multi-band autonomous & 1.00\,m & 1.11\,m & \textbf{2.31\,m} & clears \\
+GPS L1 only           & 2.50\,m & 2.21\,m & \textbf{4.59\,m} & marginal \\
+NavIC SPS             & 5.00\,m & 4.23\,m & \textbf{8.79\,m} & \emph{fails} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{fig-receivers.pdf}
+\caption{(a) Radial error distribution for five receiver classes over the full
+geolocation budget, 200\,000 Monte Carlo samples each. (b) The same result as a
+criterion: delivery CEP95 against the receiver's own horizontal error, with the
+5\,m requirement and the 2.75\,m break point of (\ref{eq:gnssbreak}). Markers
+are the five classes of panel (a) in the same colours. The curve does not start
+at zero --- 0.88\,m of the budget belongs to terms no receiver touches.}
+\label{fig:receivers}
+\end{figure*}
+
+Three conclusions follow, and the middle one is the one that matters for cost.
+NavIC at its published standalone accuracy \emph{does not clear the
+requirement}, so it cannot replace the receiver on any aircraft; its value here
+would be as an additional constellation tracked alongside the others, which
+improves geometry and costs nothing if the chosen module already supports it.
+GPS on its own is marginal at 4.59\,m against a 5\,m requirement --- it passes
+arithmetically and leaves nothing for the day the geometry is poor. SBAS clears
+it at 1.85\,m, which is why the two uninstrumented aircraft fly it.
+
+\emph{The sensitivity is where the honesty is.} The SBAS term is carried at
+0.60\,m, which is optimistic; field figures for code-phase augmentation are
+nearer 1.0--1.5\,m. Equation~(\ref{eq:gnssbreak}) shows the requirement
+survives either --- 2.31\,m and 3.01\,m at CEP95 respectively --- so the
+conclusion is not sensitive to the assumption. It would become sensitive at
+3\,m, which is why P5 measures achieved horizontal accuracy on the built
+aircraft rather than inheriting a datasheet figure.
+
 The \emph{second} receiver, which would supply moving-baseline heading, is a
 different case and is deferred --- see Section~\ref{sec:deferred}.
 

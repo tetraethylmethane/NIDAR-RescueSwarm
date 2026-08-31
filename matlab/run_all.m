@@ -45,7 +45,7 @@ end
 
 if any(strcmp(what, {'all','sim'}))
     fprintf('\n>> SIMULATIONS\n');
-    for fn = {@sim_pack_sag, @sim_geobudget}
+    for fn = {@sim_pack_sag, @sim_geobudget, @sim_receivers}
         try
             fn{1}();
         catch ME
