@@ -88,8 +88,8 @@ SMALLFONT
 \vspace{2mm}\hrule\vspace{2.5mm}
 
 \begin{center}
-\textbf{Fund Request --- Phase PHASE of NTOTAL}\\[0.6mm]
-{SMALLFONT RescueSwarm: autonomous multi-UAV post-disaster search and delivery}
+\textbf{RescueSwarm --- An Autonomous Multi-UAV System for\\[0.8mm]
+Post-Disaster Search, Localisation and Payload Delivery}
 \end{center}
 
 \vspace{1mm}\hrule\vspace{2.5mm}
