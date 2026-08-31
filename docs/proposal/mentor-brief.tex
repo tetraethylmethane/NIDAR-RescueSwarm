@@ -63,71 +63,73 @@ Post-Disaster Search, Localisation and Payload Delivery}
 %-----------------------------------------------------------------------------
 \section{Executive summary}
 
-Floods displace millions of people in India each year. The limiting factor in a
-rescue is locating survivors, not reaching them.
+Floods displace millions of people in India every year. The hard part of a
+rescue is not reaching survivors; it is finding them.
 
-Three one-metre, 6.4\,kg multirotor aircraft search flooded ground as a
-coordinated group under one operator, identify people from the air, report their
-position to a metre, and deliver a relief kit to each. No mobile network or
-internet is required.
+We want to build three small aircraft, about a metre across and 6.4\,kg each,
+that search together. One person sends them out over flooded ground. They fly
+themselves, spot people from the air, work out where those people are to within
+about a metre, and drop a relief kit to each. Nothing depends on a phone
+network or the internet.
 
-Sizing, error budgets and flight software are complete; coordination is
-demonstrated across three simulated autopilots. No aircraft has flown, so the
-figures here are calculated.
+The design and the software are done, and we have flown the whole mission in
+simulation with three aircraft cooperating. Nothing has flown for real yet, so
+every figure here is calculated rather than measured.
 
-The first approval we seek is \rs{3{,}605}, for the parts to measure whether
-one motor lifts what the design needs. Funding runs in 30 such steps, each
-released only after the previous produced a stated result, and nothing above
-\rs{26{,}000} is committed until that thrust figure exists. The programme
-totals \rs{7{,}12{,}210} if every step is approved.
+We would like to begin with \rs{3{,}605}: enough to test whether one motor
+lifts what the design needs. After that the money comes in 30 small steps, each
+released only once the step before it has produced a result we can show you.
+Nothing over \rs{26{,}000} is spent until that first thrust measurement exists.
+If every step is approved the programme comes to \rs{7{,}12{,}210}.
 
 %-----------------------------------------------------------------------------
 \section{The problem}
 
-Boat teams search slowly, at risk, and cannot see rooftops. Helicopters are
-scarce and committed to evacuation. Conventional drones need one pilot each,
-depend on infrastructure the flood has removed, and cannot assist a survivor
-once found.
+Boats are slow, dangerous for the crew, and cannot see onto rooftops.
+Helicopters are few and are needed for evacuation. Ordinary drones need a pilot
+each, rely on infrastructure the flood has washed away, and cannot help anyone
+once they have found them.
 
-Finding people is the harder problem. Someone in floodwater shows only head and
-shoulders, about 40\,cm across. Detection software works on a small, fixed
-picture size, so the usual approach shrinks the photograph --- and the person
-with it --- until they are too small to recognise reliably. Choosing a smaller,
-cheaper model makes this worse rather than better.
+Finding people turns out to be the harder half. Someone in floodwater shows
+only their head and shoulders --- about 40\,cm of them is visible from above.
+Detection software works on a small picture of fixed size, so the usual
+approach shrinks the photograph, and the person shrinks with it until there is
+too little left to recognise. Using a smaller, cheaper model makes that worse,
+not better.
 
-There is also no public collection of labelled flood photographs to learn from,
-and thermal cameras do not help, because someone in water is close to the
-temperature of the water around them.
+There is also no public set of labelled flood photographs to learn from. Thermal
+cameras do not rescue us either: someone sitting in water ends up close to the
+temperature of the water.
 
 %-----------------------------------------------------------------------------
 \section{Our solution}
 
-\textbf{System.} The operator draws a search area of any shape. The software
-divides it into three fair shares and plans a route over each; we have tested
-this on thirteen awkward shapes, and no route strays outside the area. The
-aircraft then fly themselves --- our tests confirm that no further command is
-sent once a mission has started. Each one recognises people and works out where
-they are without help from the ground. It carries four relief kits, comes down
-over a survivor, stops still, and drops one. A lost radio link, a low battery
-and the operator pressing abort all lead to the same thing: come home and land.
+The operator draws a search area of any shape. The software splits it three
+ways and plans a route over each share. We have tried this on thirteen awkward
+shapes and no route ever wandered outside the area. After that the aircraft fly
+themselves, and our tests confirm nothing is commanded from the ground once a
+mission has begun. Each aircraft spots people and works out where they are on
+its own, carries four relief kits, descends over a survivor, holds still, and
+drops one. If the radio fails, the battery runs low, or the operator hits
+abort, all three end the same way: come home and land.
 
-\textbf{Detection.} Rather than shrink the picture to fit the detector, we cut
-each frame into tiles and search them at full resolution, and we fly lower.
-Together those two changes make a person in the water \textbf{nine times larger}
-in the image, which lifts them out of the size range where these detectors stop
-working. Either change on its own is not enough. The cost is four times the
-computing, which the chosen accelerator has, and the mission is no longer than
-before because the lower flight saves more climbing than the extra passes cost.
+The trick with the camera is not to shrink the picture. We cut each frame into
+tiles and search them at full size, and we fly lower. Between them those two
+changes make a person in the water nine times bigger in the image, which is
+what lifts them clear of the range where this kind of software stops working.
+Neither change is enough on its own. It costs four times as much computing,
+which the accelerator we have chosen can supply, and the mission takes no
+longer, because flying lower saves more climbing than the extra passes cost.
 
-\textbf{Open question.} We plan to look at each patch of ground twice a second,
-which the accelerator handles comfortably. Confirming a person across enough
-frames to be sure would mean three times a second --- half as much work again,
-and more than the accelerator can be relied on for. There is a way out: most of
-what the camera sees is plainly open water, so a cheap first check could discard
-those patches and let the expensive one run only on the rest. The risk is that
-if it wrongly discards a patch with a person in it, nothing reports the mistake
---- no error, no warning, just a survivor never found. We will measure how often
-that happens, against public data, before adopting it.
+There is one thing we have not solved. We plan to look at each patch of ground
+twice a second, which the accelerator manages comfortably. To be really
+confident about a sighting we would want three looks a second, and that is half
+as much work again --- more than we can count on. There may be a way round it:
+most of what the camera sees is plainly open water, so a quick, cheap check
+could throw those patches away and leave the expensive search to the rest. The
+danger is that if the quick check throws away a patch with a person in it,
+nothing tells us. No error, no warning, just someone never found. We will
+measure how often that happens against public data before we rely on it.
 
 %-----------------------------------------------------------------------------
 \section{Deliverables}
@@ -150,17 +152,15 @@ inference have not been combined for flood conditions.
 % above sets its parallel items. As running paragraphs the labels did not hang
 % and the block read as one mass of text.
 \begin{itemize}\itemsep2pt
-\item \textbf{Operational.} Ten hectares in under eight minutes, returning
-coordinates rather than a video feed needing continuous attention.
-\item \textbf{Economic.} The complete system costs less than three hours of
-medium-helicopter charter at Indian rates, travels by road, and is operated by
-two people.
-\item \textbf{Institutional.} A thrust stand, ground station, tested codebase and
-trained students remain with the department.
-\item \textbf{Strategic.} Indian suppliers wherever they meet the
-specification: every line but one is a domestic
-listing, so nothing waits on customs and a part broken in testing is replaced
-in days.
+\item Ten hectares searched in under eight minutes, and what comes back is a
+set of coordinates a rescue team can act on, not a video feed somebody has to
+sit and watch.
+\item The whole thing costs less than three hours of helicopter charter at
+Indian rates, travels by road, and is run by two people.
+\item A thrust stand, a ground station, a tested codebase and students who have
+built all of it --- and all of that stays in the department afterwards.
+\item Every part but one comes from an Indian supplier, so nothing sits at
+customs and anything broken in testing is replaced within days.
 \end{itemize}
 
 %-----------------------------------------------------------------------------
@@ -236,14 +236,14 @@ per-cell protection in the air; that is a deliberate choice, not an oversight.
 
 \subsection{What this arrangement costs us}
 
-Thirty approvals is a material administrative overhead, and buying one aircraft
-at a time means placing the same order three times rather than once, at
-single-unit prices and with three lots of shipping. Consolidating the
-per-aircraft phases into one order is available if schedule or price becomes
-binding.
+We should be honest that thirty approvals is a lot of paperwork for the office,
+and that building one aircraft at a time means ordering the same parts three
+times over, at single-unit prices and with three lots of shipping. If the
+paperwork or the price becomes the bigger problem, the per-aircraft steps can
+be merged into one order.
 
-\textbf{The detection evaluation needs no procurement:} about a week on a
-departmental GPU and 30\,GB of storage, against a public dataset.
+The detection work needs no money at all: about a week on a departmental GPU
+and 30\,GB of storage, against a dataset that is already public.
 
 %-----------------------------------------------------------------------------
 \section{Future work}
@@ -268,20 +268,20 @@ configuration needs a different operating point.
 %-----------------------------------------------------------------------------
 \section{Conclusion}
 
-Three aircraft, one operator, no network: survivors located in flooded terrain
-and reached with a relief kit. Eight minutes for ten hectares, returning
-coordinates a rescue coordinator can act on. The design is specified; what
-remains is to build it and measure it.
+Three aircraft, one operator, no network: people found in flooded ground and
+reached with a relief kit, ten hectares in eight minutes, and coordinates a
+rescue coordinator can act on. The design is finished. What is left is to build
+it and find out whether it works.
 
-Exposure is never more than one phase. The first two total \rs{9{,}014} and
-settle whether these motors lift this aircraft; if they do not, the programme
-stops there and the department keeps a thrust stand. Nothing above
-\rs{26{,}000} is released until a measured thrust figure exists, and the two
-largest blocks come only after a complete aircraft has flown.
+The department is never exposed to more than one step at a time. The first two
+come to \rs{9{,}014} and settle whether these motors will lift this aircraft.
+If they will not, we stop there and the department still has a thrust stand.
+Nothing above \rs{26{,}000} is released until that measurement exists, and the
+two biggest blocks only come after a complete aircraft has flown.
 
-Floods recur every monsoon, and no capability of this kind exists at a scale two
-people can deploy. The whole system costs less than three hours of
-medium-helicopter charter. We ask the department to release Phase 1.
+Floods come back every monsoon, and nothing of this kind exists at a size two
+people can carry to the water's edge. We would like to begin, and we are asking
+the department to release Phase 1.
 
 %-----------------------------------------------------------------------------
 % One DoSA approval letter per phase, generated from the same parts list as the
