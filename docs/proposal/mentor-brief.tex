@@ -119,11 +119,15 @@ working. Either change on its own is not enough. The cost is four times the
 computing, which the chosen accelerator has, and the mission is no longer than
 before because the lower flight saves more climbing than the extra passes cost.
 
-\textbf{Open question.} Confirming a sighting across several frames would need
-half as much computing again as we have. There is a way to recover it, by
-skipping the tiles that are plainly open water, but a filter that throws away a
-tile containing a person fails silently. We will test it against public data
-before adopting it.
+\textbf{Open question.} We plan to look at each patch of ground twice a second,
+which the accelerator handles comfortably. Confirming a person across enough
+frames to be sure would mean three times a second --- half as much work again,
+and more than the accelerator can be relied on for. There is a way out: most of
+what the camera sees is plainly open water, so a cheap first check could discard
+those patches and let the expensive one run only on the rest. The risk is that
+if it wrongly discards a patch with a person in it, nothing reports the mistake
+--- no error, no warning, just a survivor never found. We will measure how often
+that happens, against public data, before adopting it.
 
 %-----------------------------------------------------------------------------
 \section{Deliverables}
