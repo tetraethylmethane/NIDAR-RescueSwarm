@@ -55,8 +55,16 @@ BOM = [
   "https://robu.in/product/official-raspberry-pi-5-active-cooler/"),
  ("avionics", "Storage", "SanDisk High Endurance 128 GB microSD", 3989, 3, 1,
   "https://www.flipkart.com/sandisk-high-endurance-128-gb-microsd-card-class-10-100-mb-s-memory/p/itmb71522dd1ecd0"),
- ("avionics", "GNSS RTK receiver", "Teravolt AeroNav-Pro RTK, 3 rover + 1 base", 25000, 4, 0,
-  "https://teravolt.gitbook.io/teravolt/gps/aeronav-pro-rtk"),
+ # RTK on ONE aircraft plus the base, not on all three. Phases 7-8 characterise
+ # the SYSTEM, and all three airframes are identical hardware running identical
+ # software, so one instrumented aircraft measured against surveyed ground gives
+ # the number. The other two fly SBAS, which clears the 5 m delivery
+ # requirement with better than 2x margin.
+ ("avionics", "GNSS RTK receiver", "Teravolt AeroNav-Pro RTK, aircraft 1 rover + ground base",
+  25000, 2, 0, "https://teravolt.gitbook.io/teravolt/gps/aeronav-pro-rtk"),
+ ("avionics", "GNSS receiver", "Holybro M9N, u-blox NEO-M9N with IST8310 compass",
+  7200, 2, 0,
+  "https://robokits.co.in/multirotor-spare-parts/gps-sensors/holybro-m9n-uart-gps-compatible-with-hex-pixhawk-cube"),
  ("avionics", "Camera + lens", "Arducam 12.3 MP 1/2.3 in HQ module, 6 mm CS lens", 6799, 3, 1,
   "https://robu.in/product/arducam-high-quality-camera-for-raspberry-pi-12-3mp-1-2-3-inch-hq-camera-module-with-6mm-cs-lens-for-pi-4b-3b-2b-3a-pi-zero-and-more/"),
  ("avionics", "Video transmitter", "SunRobotics TS832, 5.8 GHz, 600 mW", 4239, 3, 1,
@@ -170,7 +178,7 @@ PHASE_OF = {
     "Flight controller": (3, 13, 21), "FC vibration mount": (3, 13, 21),
     "Companion computer": (4, 14, 22), "AI accelerator": (4, 14, 22),
     "Compute cooling": (4, 14, 22), "Storage": (4, 14, 22),
-    "GNSS RTK receiver": (5, 15, 23, 29),
+    "GNSS RTK receiver": (5, 29), "GNSS receiver": (15, 23),
     "Camera + lens": (6, 16, 24), "Video transmitter": (6, 16, 24),
     "Command receiver": (6, 16, 24), "Coordination radio": (6, 16, 24),
     "Arm tube": (7, 17, 25), "Motor mounts": (7, 17, 25),
@@ -299,7 +307,8 @@ GST = 0.18
 # What the source sheet stated for itself, kept so the discrepancy stays visible.
 SHEET_STATED_TOTAL = 592572.09
 SHEET_OMITTED = 549 * 3 + 2 * 32 + 949  # landing gear, springs, filament
-ADDED_AFTER_SHEET = 0                  # nothing added; the scale is institutional
+# Two Teravolt units dropped (-50,000) and two Holybro M9N added (+14,400):
+ADDED_AFTER_SHEET = -50000 + 7200 * 2
 
 PACK_PROTECTION = """Why there is no BMS in this BOM.
 

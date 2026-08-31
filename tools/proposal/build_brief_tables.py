@@ -65,8 +65,14 @@ RATIONALE = {
    "Records every frame and detection for a whole mission. Ordinary cards wear "
    "out at that rate.",
  "GNSS RTK receiver":
-   "Precise positioning: one per aircraft and one on the ground. The supplier "
-   "has confirmed it works this way and quoted; this was an estimate before.",
+   "Centimetre positioning for aircraft 1 and the ground station it corrects "
+   "against. Only one aircraft carries it: all three are the same machine, so "
+   "measuring one against surveyed ground is what tells us how well the design "
+   "works. Quoted by the supplier; this line was an estimate before.",
+ "GNSS receiver":
+   "Positioning for aircraft 2 and 3, accurate to about two metres against a "
+   "five metre requirement. Carries the compass the flight controller needs, "
+   "and plugs straight into it.",
  "Camera + lens":
    "The search sensor, chosen so a person in water is large enough in the "
    "picture to be found.",
@@ -256,7 +262,7 @@ SCHEDULE = [
  (12, "Field consumables and assembly materials", "Charging verified"),
  (13, "Aircraft 2 --- autopilot and control link", r"\textbf{Aircraft 1 flew a full mission}"),
  (14, "Aircraft 2 --- onboard computer and AI accelerator", "Autopilot bench-tested"),
- (15, "Aircraft 2 --- centimetre positioning (RTK rover)", "Compute stack operating"),
+ (15, "Aircraft 2 --- satellite positioning and compass", "Compute stack operating"),
  (16, "Aircraft 2 --- camera and the three radios", "Position fix acquired"),
  (17, "Aircraft 2 --- airframe fabrication", "Avionics integrated"),
  (18, "Aircraft 2 --- battery pack and power distribution", "Airframe fabricated"),
@@ -264,7 +270,7 @@ SCHEDULE = [
  (20, "Aircraft 2 --- propulsion completed", "Drive train installed"),
  (21, "Aircraft 3 --- autopilot and control link", r"\textbf{Two aircraft, separation verified}"),
  (22, "Aircraft 3 --- onboard computer and AI accelerator", "Autopilot bench-tested"),
- (23, "Aircraft 3 --- centimetre positioning (RTK rover)", "Compute stack operating"),
+ (23, "Aircraft 3 --- satellite positioning and compass", "Compute stack operating"),
  (24, "Aircraft 3 --- camera and the three radios", "Position fix acquired"),
  (25, "Aircraft 3 --- airframe fabrication", "Avionics integrated"),
  (26, "Aircraft 3 --- battery pack and power distribution", "Airframe fabricated"),

@@ -24,7 +24,7 @@ Threadlocker & Loctite 243, 50 ml & 664 & Stops bolts working loose under motor 
 \end{longtable}
 \endgroup
 
-\subsubsection*{Per aircraft, avionics and sensing --- phases 3--6, repeated at 13--16 and 21--24 \quad \rs{81{,}399} per aircraft, \rs{3{,}44{,}197} in all}
+\subsubsection*{Per aircraft, avionics and sensing --- phases 3--6, repeated at 13--16 and 21--24 \quad \rs{81{,}399} per aircraft, \rs{3{,}08{,}597} in all}
 
 \begingroup\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
@@ -42,7 +42,8 @@ Companion computer & Raspberry Pi 5, 8 GB, 3 off & 59{,}997 & The computer the a
 AI accelerator & Raspberry Pi AI HAT+, 26 TOPS, 3 off & 35{,}247 & Runs the person-detection model fast enough to search at flying speed. \textit{Robu} \\
 Compute cooling & Official Raspberry Pi 5 active cooler, 3 off & 1{,}557 & The hottest moment is the setup on the ground, before the propellers are turning and cooling it. \textit{Robu} \\
 Storage & SanDisk High Endurance 128 GB microSD, 3 off & 11{,}967 & Records every frame and detection for a whole mission. Ordinary cards wear out at that rate. \textit{Flipkart} \\
-GNSS RTK receiver & Teravolt AeroNav-Pro RTK, 3 rover + 1 base, 4 off & 1{,}00{,}000 & Precise positioning: one per aircraft and one on the ground. The supplier has confirmed it works this way and quoted; this was an estimate before. \textit{Teravolt} \\
+GNSS RTK receiver & Teravolt AeroNav-Pro RTK, aircraft 1 rover + ground base, 2 off & 50{,}000 & Centimetre positioning for aircraft 1 and the ground station it corrects against. Only one aircraft carries it: all three are the same machine, so measuring one against surveyed ground is what tells us how well the design works. Quoted by the supplier; this line was an estimate before. \textit{Teravolt} \\
+GNSS receiver & Holybro M9N, u-blox NEO-M9N with IST8310 compass, 2 off & 14{,}400 & Positioning for aircraft 2 and 3, accurate to about two metres against a five metre requirement. Carries the compass the flight controller needs, and plugs straight into it. \textit{Robokits} \\
 Camera + lens & Arducam 12.3 MP 1/2.3 in HQ module, 6 mm CS lens, 3 off & 20{,}397 & The search sensor, chosen so a person in water is large enough in the picture to be found. \textit{Robu} \\
 Video transmitter & SunRobotics TS832, 5.8 GHz, 600 mW, 3 off & 12{,}717 & Sends the live picture down, one channel per aircraft. \textit{IndiaMART} \\
 Command receiver & ExpressLRS RX24T, 2.4 GHz, 3 off & 4{,}317 & Carries the safety pilot's control and the aircraft's reporting on a single link, which saves a second radio. \textit{Robu} \\
