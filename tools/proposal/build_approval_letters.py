@@ -51,6 +51,13 @@ SUBMITTER = ("Swastik Kumar",
 
 N = len(SCHEDULE)
 
+# LaTeX control sequences starting with \f are written through this token. The
+# editing path into this file has more than once turned a literal backslash-f
+# into a form feed, which LaTeX then swallows silently; SMALLFONT and BOXRULE
+# keep those two sequences out of the source text entirely.
+FN = chr(92) + "footnotesize"
+FB = chr(92) + "fbox"
+
 
 def gate_sentence(ph, gate):
     """What must already be true before this phase is released."""
@@ -63,19 +70,43 @@ def gate_sentence(ph, gate):
 
 TEMPLATE = r"""
 \clearpage
-\thispagestyle{fancy}
+\thispagestyle{plain}
 \begingroup
-\small
-\setlength{\parskip}{0.34em}
+SMALLFONT
+\setlength{\parskip}{0.26em}
+% The brief sets loose table spacing for readability; a letter has to fit one
+% page, so it is reset here rather than globally.
+\setlength{\extrarowheight}{0pt}
+\renewcommand{\arraystretch}{1.02}
 
-\begin{center}\textbf{Fund Request --- Phase PHASE of NTOTAL}\end{center}
-
+% ---- letterhead, matching the brief's ---------------------------------------
 \noindent
+\raisebox{-0.5\height}{\includegraphics[height=11mm]{brainwave.pdf}}%
+\hfill
+\raisebox{-0.5\height}{\includegraphics[height=10mm]{thapar_logo.png}}
+
+\vspace{2mm}\hrule\vspace{2.5mm}
+
+\begin{center}
+\textbf{Fund Request --- Phase PHASE of NTOTAL}\\[0.6mm]
+{SMALLFONT RescueSwarm: autonomous multi-UAV post-disaster search and delivery}
+\end{center}
+
+\vspace{1mm}\hrule\vspace{2.5mm}
+
+\noindent\begin{minipage}[t]{0.62\textwidth}
 To\\
 The Dean, Student Affairs (DoSA)\\
 \emph{Through:} President, Thapar Amateur Astronomers Society (TAAS)\\
 Thapar Institute of Engineering \& Technology, Patiala
+\end{minipage}\hfill
+\begin{minipage}[t]{0.34\textwidth}
+\raggedleft
+Ref.: RS/PH-PHASE\\[2.2mm]
+Date: \rule{28mm}{0.4pt}
+\end{minipage}
 
+\vspace{1mm}
 \noindent\textbf{Subject:} Fund Request under TAAS Society for the RescueSwarm
 Project --- Phase PHASE of NTOTAL, OBJECTIVE
 
@@ -85,15 +116,14 @@ We, a team of students of Thapar Institute of Engineering \& Technology, are
 working under the guidance of MENTORA and MENTORB on \textbf{RescueSwarm}, an
 autonomous multi-UAV system for post-disaster search, survivor localisation and
 payload delivery. The software and simulation framework is complete, and the
-programme is now in hardware integration and testing. It is funded in NTOTAL
-steps rather than as one grant, so that each step is approved only once the
-previous one has produced a stated result.
+programme is now in hardware integration and testing, funded in NTOTAL steps so
+that each is approved only once the previous has produced a stated result.
 
 \noindent\textbf{This request is Phase PHASE of NTOTAL: OBJECTIVE.} GATESENT
 We request funding for the following components:
 
-{\footnotesize
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{7.0cm}rr@{}}
+{\scriptsize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{6.9cm}rr@{}}
 \toprule
 \textbf{Component} & \textbf{Model} & \textbf{Qty} & \textbf{Cost (INR)} \\
 \midrule
@@ -111,8 +141,8 @@ carries tax where it is still owed, and a 15\,\% contingency.
 
 \noindent\textbf{Team Members}\quad\emph{Mentors:} MENTORA and MENTORB
 
-{\footnotesize
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{6.2cm}ll@{}}
+{\scriptsize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{6.1cm}ll@{}}
 \toprule
 \textbf{Name} & \textbf{Department} & \textbf{Batch} & \textbf{Roll No.} \\
 \midrule
@@ -121,19 +151,40 @@ TEAMROWS
 \end{tabular}
 }
 
-\vspace{2mm}
+\vspace{1.5mm}
 \noindent\textbf{Approvals \& Signatures}
 
-\vspace{9mm}
+\vspace{8mm}
 \noindent
-\begin{tabular}{@{}p{5.2cm}p{5.2cm}p{5.4cm}@{}}
+\begin{tabular}{@{}p{5.3cm}p{5.3cm}p{5.4cm}@{}}
 \hrulefill & \hrulefill & \hrulefill \\
-MENTORA & MENTORB & President, TAAS \\
+\textbf{MENTORA} & \textbf{MENTORB} & \textbf{President, TAAS} \\
+{SMALLFONT Mentor} & {SMALLFONT Mentor} &
+{SMALLFONT Thapar Amateur Astronomers Society} \\
 \end{tabular}
 
-\vspace{3mm}
-\noindent\textbf{Submitted by:} SUBNAME, SUBDEPT,
-Thapar Institute of Engineering \& Technology, Roll No. SUBROLL
+\vspace{5.5mm}
+\noindent
+\begin{tabular}{@{}p{8.2cm}p{8.2cm}@{}}
+\hrulefill & \hrulefill \\
+\textbf{SUBNAME} & \textbf{Date} \\
+{SMALLFONT SUBDEPT, Roll No. SUBROLL} & \\
+{SMALLFONT Submitted on behalf of the team} & \\
+\end{tabular}
+
+\vspace{2.5mm}
+\noindent BOXRULE{\begin{minipage}{0.968\textwidth}
+\vspace{0.8mm}
+{SMALLFONT \textbf{For office use --- Office of the Dean, Student Affairs}}
+
+\vspace{6mm}
+\begin{tabular}{@{}p{4.6cm}p{5.5cm}p{5.3cm}@{}}
+\hrulefill & \hrulefill & \hrulefill \\
+{SMALLFONT Amount sanctioned (INR)} & {SMALLFONT Signature} &
+{SMALLFONT Date} \\
+\end{tabular}
+\vspace{0.8mm}
+\end{minipage}}
 \endgroup
 """
 
@@ -153,7 +204,8 @@ def letter(ph, objective, gate, lines, total):
                      ("NTOTAL", str(N)), ("PHASE", str(ph)),
                      ("MENTORA", MENTORS[0]), ("MENTORB", MENTORS[1]),
                      ("SUBNAME", SUBMITTER[0]), ("SUBDEPT", SUBMITTER[1]),
-                     ("SUBROLL", SUBMITTER[2])):
+                     ("SUBROLL", SUBMITTER[2]),
+                     ("SMALLFONT", FN), ("BOXRULE", FB)):
         out = out.replace(key, val)
     return out
 
@@ -176,13 +228,15 @@ def main():
         f"letters total {grand:.2f} but the BOM is {S.total():.2f}"
 
     body = "".join(out)
-    # The escaping hazards this repository keeps hitting: a lost backslash
-    # turns \textbf into a TAB and \begin into a backspace, and both compile.
+    # The escaping hazards this repository keeps hitting: a lost backslash turns
+    # \textbf into a TAB and \footnotesize into a form feed, and both compile.
     want = TEMPLATE.count(r"\textbf") * len(out)
     assert body.count(r"\textbf") == want, \
         f"lost a backslash: {body.count(chr(92) + 'textbf')} of {want}"
+    assert body.count(FN) == TEMPLATE.count("SMALLFONT") * len(out), "lost a font"
     assert not any(ord(c) < 32 and c != "\n" for c in body), "control character"
-    assert "PHASE" not in body and "TOTALAMT" not in body, "unreplaced key"
+    for key in ("PHASE", "TOTALAMT", "SMALLFONT", "BOXRULE", "OBJECTIVE"):
+        assert key not in body, f"unreplaced key: {key}"
 
     header = ("%" + "=" * 76 + "\n"
               "% GENERATED FILE -- do not edit.\n"
