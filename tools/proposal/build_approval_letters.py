@@ -42,7 +42,7 @@ TEAM = [
     ("Manan Kapoor",   r"Computer Science \& Engineering",          "1024030467"),
     ("Manav Pansari",  r"Electronics \& Communication Engineering", "1024060151"),
     ("Ravi Kant Raja", r"Robotics and Artificial Intelligence Engg.", "1024230032"),
-    ("Neil Mathur",    r"Mechanical Engineering",                   "1024080017"),
+    ("Neil Kishore",   r"Mechanical Engineering",                   "1024080017"),
 ]
 BATCH = "2024--2028"
 SUBMITTER = ("Swastik Kumar",
