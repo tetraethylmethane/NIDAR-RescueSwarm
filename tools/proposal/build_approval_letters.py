@@ -88,9 +88,7 @@ SMALLFONT
 \vspace{2mm}\hrule\vspace{2.5mm}
 
 \begin{center}
-{\large\bfseries RescueSwarm}\\[1.1mm]
-{\normalsize\bfseries An Autonomous Multi-UAV System for Post-Disaster\\[0.4mm]
-Search, Localisation and Payload Delivery}
+{\small\bfseries RescueSwarm --- An Autonomous Multi-UAV System for Post-Disaster Search, Localisation and Payload Delivery}
 \end{center}
 
 \vspace{1mm}\hrule\vspace{2.5mm}
