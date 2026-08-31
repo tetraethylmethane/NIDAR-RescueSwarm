@@ -70,7 +70,7 @@ def gate_sentence(ph, gate):
 
 TEMPLATE = r"""
 \clearpage
-\thispagestyle{plain}
+\thispagestyle{empty}
 \begingroup
 SMALLFONT
 \setlength{\parskip}{0.26em}
