@@ -88,8 +88,9 @@ SMALLFONT
 \vspace{2mm}\hrule\vspace{2.5mm}
 
 \begin{center}
-\textbf{RescueSwarm --- An Autonomous Multi-UAV System for\\[0.8mm]
-Post-Disaster Search, Localisation and Payload Delivery}
+{\large\bfseries RescueSwarm}\\[1.1mm]
+{\normalsize\bfseries An Autonomous Multi-UAV System for Post-Disaster\\[0.4mm]
+Search, Localisation and Payload Delivery}
 \end{center}
 
 \vspace{1mm}\hrule\vspace{2.5mm}
@@ -122,7 +123,8 @@ that each is approved only once the previous has produced a stated result.
 \noindent\textbf{This request is Phase PHASE of NTOTAL: OBJECTIVE.} GATESENT
 We request funding for the following components:
 
-{\scriptsize
+\noindent\makebox[\textwidth][c]{%
+\scriptsize
 \begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{6.9cm}rr@{}}
 \toprule
 \textbf{Component} & \textbf{Model} & \textbf{Qty} & \textbf{Cost (INR)} \\
@@ -131,8 +133,7 @@ COMPROWS
 \midrule
 \multicolumn{3}{@{}r}{\textbf{Total}} & \textbf{TOTALAMT} \\
 \bottomrule
-\end{tabular}
-}
+\end{tabular}}
 
 \noindent We kindly request approval and financial support of
 \textbf{\rs{TOTALAMT}} under TAAS Society for the procurement of the components
@@ -141,15 +142,15 @@ carries tax where it is still owed, and a 15\,\% contingency.
 
 \noindent\textbf{Team Members}\quad\emph{Mentors:} MENTORA and MENTORB
 
-{\scriptsize
+\noindent\makebox[\textwidth][c]{%
+\scriptsize
 \begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{6.1cm}ll@{}}
 \toprule
 \textbf{Name} & \textbf{Department} & \textbf{Batch} & \textbf{Roll No.} \\
 \midrule
 TEAMROWS
 \bottomrule
-\end{tabular}
-}
+\end{tabular}}
 
 \vspace{1.5mm}
 \noindent\textbf{Approvals \& Signatures}
