@@ -47,6 +47,10 @@ BOM = [
   "https://robu.in/product/holybro-pixhawk-6c-mini-flight-controller/"),
  ("avionics", "FC vibration mount", "Glass-fibre anti-vibration shock absorber", 161, 3, 1,
   "https://robu.in/product/glass-fiber-flight-controller-anti-vibration-set-shock-absorber-apmkkmwc/"),
+ # The autopilot ships without one and logs nothing without it. Separate from
+ # the companion computer's card, which is a different slot on a different board.
+ ("avionics", "Autopilot log card", "SanDisk 32 GB microSDHC, class 10", 1549, 3, 1,
+  "https://robocraze.com/products/sandisk-32gb-micro-sd-sdhc-card"),
  ("avionics", "Companion computer", "Raspberry Pi 5, 8 GB", 19999, 3, 1,
   "https://robu.in/product/raspberry-pi-5-model-8gb/"),
  ("avionics", "AI accelerator", "Raspberry Pi AI HAT+, 26 TOPS", 11749, 3, 1,
@@ -89,6 +93,10 @@ BOM = [
   "https://robu.in/product/darkmatter-vishnu-50-mk-iii-4-in-1-50a-8bit-blheli_s-esc-made-in-india/"),
  ("airframe", "Arm tube", "3K carbon fibre, OD25 x ID23 x 1000 mm", 2259, 6, 2,
   "https://robu.in/product/3k-carbon-fiber-tube-hollow-od25-x-id23-x-l1000-mm/"),
+ # The arms are tubes; this is what they bolt to. One sheet yields the top and
+ # bottom plate of a centre section at this wheelbase.
+ ("airframe", "Frame plate stock", "3K carbon fibre sheet, 300 x 200 x 2 mm", 2895, 3, 1,
+  "https://indianrobostore.com/product/3k-carbon-fiber-sheet-300mm200mm2mm"),
  ("airframe", "Motor mounts", "Tarot 25 mm motor mount, TL9602", 1119, 12, 4,
   "https://robu.in/product/tarot-25mm-motor-mount-multicopter-orange-tl9602/"),
  ("airframe", "Arm clamps", "T-bolt hose clamps 23-25 mm, SS304, 4 pcs", 3012.11, 3, 1,
@@ -176,12 +184,13 @@ PHASE_OF = {
     "Fasteners": (1,), "Threadlocker": (1,),
     "Motors": (2, 10, 20, 28), "Propellers": (10, 20, 28),
     "Flight controller": (3, 13, 21), "FC vibration mount": (3, 13, 21),
+    "Autopilot log card": (3, 13, 21),
     "Companion computer": (4, 14, 22), "AI accelerator": (4, 14, 22),
     "Compute cooling": (4, 14, 22), "Storage": (4, 14, 22),
     "GNSS RTK receiver": (5, 29), "GNSS receiver": (15, 23),
     "Camera + lens": (6, 16, 24), "Video transmitter": (6, 16, 24),
     "Command receiver": (6, 16, 24), "Coordination radio": (6, 16, 24),
-    "Arm tube": (7, 17, 25), "Motor mounts": (7, 17, 25),
+    "Arm tube": (7, 17, 25), "Frame plate stock": (7, 17, 25), "Motor mounts": (7, 17, 25),
     "Arm clamps": (7, 17, 25), "Landing gear": (7, 17, 25),
     "Suspension springs": (7, 17, 25), "Printed parts": (7,),
     "Cells": (8, 18, 26), "Cell holders": (8, 18, 26),
@@ -308,7 +317,9 @@ GST = 0.18
 SHEET_STATED_TOTAL = 592572.09
 SHEET_OMITTED = 549 * 3 + 2 * 32 + 949  # landing gear, springs, filament
 # Two Teravolt units dropped (-50,000) and two Holybro M9N added (+14,400):
-ADDED_AFTER_SHEET = -50000 + 7200 * 2
+ADDED_AFTER_SHEET = (-50000 + 7200 * 2   # two RTK units out, two M9N in
+                     + 1549 * 3          # autopilot log cards, not shipped with it
+                     + 2895 * 3)         # frame plate stock, the arms bolt to it
 
 PACK_PROTECTION = """Why there is no BMS in this BOM.
 

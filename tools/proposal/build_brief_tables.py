@@ -50,6 +50,12 @@ RATIONALE = {
  "Flight controller":
    "The autopilot: flies the aircraft and runs its safety behaviours. "
    "Previously a quotation, now ordinary retail.",
+ "Autopilot log card":
+   "The autopilot ships without one and records nothing without it. This is a "
+   "different slot on a different board from the computer's card above.",
+ "Frame plate stock":
+   "The arms are tubes; this is the plate they bolt to. One sheet yields the "
+   "top and bottom of a centre section at this size.",
  "FC vibration mount":
    "Isolates the autopilot from propeller vibration, which otherwise confuses "
    "its sensors.",
