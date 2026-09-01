@@ -3,7 +3,7 @@
 % Produced by tools/proposal/build_brief_tables.py from
 % hardware/bom/sourced_bom.py. Edit the BOM, not this file.
 %============================================================================
-\subsubsection*{Measurement instruments --- phases 1--2 \quad \rs{3{,}135} of parts}
+\subsubsection*{Measurement instruments --- phases 1--2 \quad \rs{3{,}246} of parts}
 
 \begingroup\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
@@ -20,11 +20,12 @@ Load cell & REES52 20 kg load cell + HX711 breakout & 854 & The motors ship with
 Thrust-stand mast & SURYAKUSH metal 2.1 m tripod & 373 & Holds the motor clear of the bench, so its own draught does not flatter the reading. \textit{Flipkart} \\
 Fasteners & Hex socket-head assortment M3/M4/M5, SS304 & 1{,}140 & A carbon airframe is bolted, not glued. \textit{OnlyScrews} \\
 Threadlocker & Loctite 243, 50 ml & 664 & Stops bolts working loose under motor vibration. Medium strength, so a joint can still be undone. \textit{Amazon India} \\
+Throttle source & Servo tester / ESC consistency tester, PPM & 111 & A motor on a stand needs something to command it. The safety-pilot transmitter is not bought until phase 11, long after this test. \textit{Robokits} \\
 \bottomrule
 \end{longtable}
 \endgroup
 
-\subsubsection*{Per aircraft, avionics and sensing --- phases 3--6, repeated at 13--16 and 21--24 \quad \rs{82{,}948} per aircraft, \rs{3{,}13{,}244} in all}
+\subsubsection*{Per aircraft, avionics and sensing --- phases 3--6, repeated at 13--16 and 21--24 \quad \rs{82{,}948} per aircraft, \rs{3{,}12{,}722} in all}
 
 \begingroup\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
@@ -44,7 +45,7 @@ AI accelerator & Raspberry Pi AI HAT+, 26 TOPS, 3 off & 35{,}247 & Runs the pers
 Compute cooling & Official Raspberry Pi 5 active cooler, 3 off & 1{,}557 & The hottest moment is the setup on the ground, before the propellers are turning and cooling it. \textit{Robu} \\
 Storage & SanDisk High Endurance 128 GB microSD, 3 off & 11{,}967 & Records every frame and detection for a whole mission. Ordinary cards wear out at that rate. \textit{Flipkart} \\
 GNSS RTK receiver & Teravolt AeroNav-Pro RTK, aircraft 1 rover + ground base, 2 off & 50{,}000 & Centimetre positioning for aircraft 1 and the ground station it corrects against. Only one aircraft carries it: all three are the same machine, so measuring one against surveyed ground is what tells us how well the design works. Quoted by the supplier; this line was an estimate before. \textit{Teravolt} \\
-GNSS receiver & Holybro M9N, u-blox NEO-M9N with IST8310 compass, 2 off & 14{,}400 & Positioning for aircraft 2 and 3, accurate to about two metres against a five metre requirement. Carries the compass the flight controller needs, and plugs straight into it. \textit{Robokits} \\
+GNSS receiver & Holybro Micro M9N GPS with case, NEO-M9N and compass, 2 off & 13{,}878 & Positioning for aircraft 2 and 3, accurate to about two metres against a five metre requirement. Carries the compass the flight controller needs, and plugs straight into it. \textit{in-house} \\
 Camera + lens & Arducam 12.3 MP 1/2.3 in HQ module, 6 mm CS lens, 3 off & 20{,}397 & The search sensor, chosen so a person in water is large enough in the picture to be found. \textit{Robu} \\
 Video transmitter & SunRobotics TS832, 5.8 GHz, 600 mW, 3 off & 12{,}717 & Sends the live picture down, one channel per aircraft. \textit{IndiaMART} \\
 Command receiver & ExpressLRS RX24T, 2.4 GHz, 3 off & 4{,}317 & Carries the safety pilot's control and the aircraft's reporting on a single link, which saves a second radio. \textit{Robu} \\

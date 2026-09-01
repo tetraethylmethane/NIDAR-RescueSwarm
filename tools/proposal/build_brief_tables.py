@@ -36,6 +36,9 @@ RATIONALE = {
  # fund this, not an engineer reviewing the electrical design -- the numbers
  # that justify each choice live in the technical proposal, not here.
  "Load-cell amplifier": "Turns the load cell's signal into a reading we can log.",
+ "Throttle source":
+   "A motor on a stand needs something to command it. The safety-pilot "
+   "transmitter is not bought until phase 11, long after this test.",
  "Load cell":
    "The motors ship without a thrust curve, so we measure it ourselves. "
    "Ready-made stands cost around ten times this.",
@@ -255,14 +258,14 @@ def rows(key):
 # the schedule instead of silently contradicting it.
 SCHEDULE = [
  (1,  "Establish thrust and mass measurement capability", "Approval"),
- (2,  "Confirm one motor lifts what the design needs", "Instruments commissioned"),
+ (2,  "Measure one motor, propeller and speed controller on the stand", "Instruments commissioned"),
  (3,  "Aircraft 1 --- autopilot and control link", r"\textbf{Thrust verified}"),
  (4,  "Aircraft 1 --- onboard computer and AI accelerator", "Autopilot bench-tested"),
  (5,  "Aircraft 1 --- centimetre positioning (RTK rover)", "Compute stack operating"),
  (6,  "Aircraft 1 --- camera and the three radios", "Position fix acquired"),
  (7,  "Aircraft 1 --- airframe fabrication", "Avionics integrated"),
  (8,  "Aircraft 1 --- battery pack and power distribution", "Airframe fabricated"),
- (9,  "Aircraft 1 --- speed controllers, release servos, wiring", "Pack bench-discharged"),
+ (9,  "Aircraft 1 --- release servos and wiring", "Pack bench-discharged"),
  (10, "Aircraft 1 --- propulsion completed", "Drive train installed"),
  (11, "Charging, pack instrumentation and manual override", "Aircraft assembled and weighed"),
  (12, "Field consumables and assembly materials", "Charging verified"),
