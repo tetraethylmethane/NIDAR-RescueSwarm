@@ -205,21 +205,29 @@ def _ann(i, x, y, w, h, cat=1):
 
 
 def test_pitch_convention_is_inferred_once_per_dataset():
-    """Per-value guessing is ambiguous across [-90, 0] and silently deletes the
-    oblique frames, which are the hard ones."""
+    """Decided by which extreme the data reaches, never per value."""
+    # DJI raw: reaches below -45
     assert D.infer_pitch_convention([{"gimbal_pitch": -90.0},
                                      {"gimbal_pitch": -45.0}]) == "nadir_at_-90"
+    # SeaDronesSee viewing angle: reaches past +45 (real data runs 0..90)
+    assert D.infer_pitch_convention([{"gimbal_pitch(degrees)": 90.0},
+                                     {"gimbal_pitch(degrees)": 33.0}]) == "nadir_at_90"
+    # neither extreme reached -> refuse to guess. The old code defaulted this to
+    # "nadir_at_0" and kept the wrong half of SeaDronesSee.
     assert D.infer_pitch_convention([{"gimbal_pitch": 0.0},
-                                     {"gimbal_pitch": 45.0}]) == "nadir_at_0"
+                                     {"gimbal_pitch": 20.0}]) == "unknown"
     assert D.infer_pitch_convention([{"gimbal_yaw": 3.0}]) == "unknown"
 
 
 def test_off_nadir_under_each_convention():
+    # DJI raw: -90 is straight down
     assert D._off_nadir({"gimbal_pitch": -90.0}, "nadir_at_-90") == pytest.approx(0.0)
     assert D._off_nadir({"gimbal_pitch": -70.0}, "nadir_at_-90") == pytest.approx(20.0)
-    # the value that used to fall between the two ranges and return None
     assert D._off_nadir({"gimbal_pitch": -45.0}, "nadir_at_-90") == pytest.approx(45.0)
-    assert D._off_nadir({"gimbal_pitch": 45.0}, "nadir_at_0") == pytest.approx(45.0)
+    # SeaDronesSee: +90 is straight down, so off-nadir = 90 - pitch
+    assert D._off_nadir({"gimbal_pitch(degrees)": 90.0}, "nadir_at_90") == pytest.approx(0.0)
+    assert D._off_nadir({"gimbal_pitch(degrees)": 70.0}, "nadir_at_90") == pytest.approx(20.0)
+    assert D._off_nadir({"gimbal_pitch(degrees)": 0.0}, "nadir_at_90") == pytest.approx(90.0)
     assert D._off_nadir({"gimbal_yaw": 3.0}, "nadir_at_-90") is None
 
 
@@ -244,6 +252,20 @@ def test_frames_without_people_or_metadata_are_dropped(tmp_path):
     assert [f.image_id for f in kept] == [1]
     assert reasons["no annotated person"] == 1
     assert reasons["no usable gimbal metadata"] == 1
+
+
+def test_seadronessee_positive_pitch_keeps_nadir_not_horizon(tmp_path):
+    """SeaDronesSee logs 90 = straight down. The near-nadir frame is pitch 90;
+    the horizontal one is pitch 0 -- the OPPOSITE end from the DJI raw form.
+    Reading it as "0 = nadir" (the old default) kept every horizontal frame and
+    dropped the top-down ones, measuring the reverse of the problem we fly."""
+    coco = _coco([_img(1, 90.0), _img(2, 0.0)],
+                 [_ann(1, 10, 10, 30, 30), _ann(2, 10, 10, 30, 30)])
+    p = tmp_path / "a.json"
+    p.write_text(json.dumps(coco), encoding="utf-8")
+    kept, reasons = D.select(D.load_split(str(p)))
+    assert [f.image_id for f in kept] == [1]        # nadir kept, horizon dropped
+    assert any("oblique" in k for k in reasons)
 
 
 def test_null_meta_is_not_a_crash(tmp_path):

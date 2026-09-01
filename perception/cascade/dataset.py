@@ -97,28 +97,50 @@ def _raw_pitch(meta: dict) -> float | None:
 
 
 def infer_pitch_convention(metas) -> str:
-    """Which way the dataset writes gimbal pitch: 'nadir_at_-90' or 'nadir_at_0'.
+    """Which way the dataset writes gimbal pitch. One of:
 
-    This MUST be decided once for the whole split, not per value. The two
-    conventions overlap across [-90, 0], so a lone -45 is ambiguous -- it is
-    45 degrees off nadir under one convention and meaningless under the other.
-    Deciding per value silently mislabels every oblique frame as "no metadata",
-    which quietly deletes the hard examples and flatters the result.
+      'nadir_at_-90'  DJI raw:  0 = horizontal, -90 = straight down
+      'nadir_at_90'   SeaDronesSee "viewing angle": 0 = horizontal, +90 = down
+      'unknown'       cannot be read from the values -- refuse to guess
+
+    This MUST be decided once for the whole split, not per value. It is decided
+    by which extreme the data actually reaches: a value past +45 can only be the
+    SeaDronesSee form (the DJI raw form tops out at 0), and a value past -45 can
+    only be the DJI form. SeaDronesSee's real train pitch runs 0..90 and peaks at
+    90 (WACV'22 paper: 90 deg is the top-down view), so it resolves to
+    'nadir_at_90'.
+
+    The old code defaulted the remaining case to 'nadir_at_0' (0 = nadir). That
+    default is the trap: SeaDronesSee's +90 nadir frames came out as 90 deg off
+    nadir and were dropped, while its horizontal 0 frames were kept as
+    "near-nadir" -- the exact opposite of what the experiment needs. When neither
+    extreme is reached the split is entirely oblique and the convention is not
+    recoverable, so we return 'unknown' and let select() drop the frames rather
+    than silently keep the wrong half.
     """
     vals = [p for p in (_raw_pitch(m) for m in metas) if p is not None]
     if not vals:
         return "unknown"
-    return "nadir_at_-90" if min(vals) < -45.0 else "nadir_at_0"
+    hi, lo = max(vals), min(vals)
+    if hi > 45.0:
+        return "nadir_at_90"
+    if lo < -45.0:
+        return "nadir_at_-90"
+    return "unknown"
 
 
 def _off_nadir(meta: dict, convention: str = "nadir_at_-90") -> float | None:
     """Degrees away from straight down, under a convention fixed by the caller."""
     p = _raw_pitch(meta)
-    if p is None or convention == "unknown":
+    if p is None:
         return None
-    if convention == "nadir_at_-90":
+    if convention == "nadir_at_-90":     # DJI raw: 0 = horizontal, -90 = nadir
         return abs(p + 90.0)
-    return abs(p)
+    if convention == "nadir_at_90":      # SeaDronesSee: 0 = horizontal, +90 = nadir
+        return abs(90.0 - p)
+    if convention == "nadir_at_0":       # 0 = nadir; kept for completeness
+        return abs(p)
+    return None                          # unknown / unrecognised
 
 
 def _person_category_ids(coco: dict) -> set[int]:
