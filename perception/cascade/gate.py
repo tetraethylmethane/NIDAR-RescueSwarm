@@ -169,6 +169,29 @@ def evaluate(scores, labels, frame_ids, target_ids, threshold: float) -> dict:
     }
 
 
+def max_rejection_at_recall(scores, labels, frame_ids, target_ids, min_recall):
+    """Highest rejection reachable while per-target recall stays >= min_recall.
+
+    The adoption rule is stated on per-TARGET recall, but the single reported
+    operating point is pinned to a conservative per-TILE recall (TARGET_RECALL),
+    so it understates the gate. Sweeping the thresholds and keeping the most
+    aggressive one that still holds per-target recall is the operating point the
+    rule actually cares about.
+
+    CAVEAT: the threshold is chosen on the same val split it is scored on, so
+    this is an OPTIMISTIC upper bound -- read it as "could the gate clear the bar
+    at all", not as a deployable number. A clean measurement picks the threshold
+    on a held-out split and reports it here.
+    """
+    best = None
+    for thr in sorted(set(scores)):
+        r = evaluate(scores, labels, frame_ids, target_ids, thr)
+        if r["target_recall"] >= min_recall and (best is None
+                                                  or r["rejection"] > best["rejection"]):
+            best = r
+    return best
+
+
 def report(res: dict, gate_input: int) -> bool:
     cascade = E.cascade_at(gate_input)
     v = E.verdict(res["rejection"], res["target_recall"],
@@ -305,6 +328,21 @@ def main() -> None:
     thr = threshold_for_recall(scores, labels, TARGET_RECALL)
     res = evaluate(scores, labels, fva, tva, thr)
     ok = report(res, args.input)
+
+    # The rule is per-TARGET recall >= 90 %, but the point above is pinned at a
+    # conservative per-TILE recall, so a near-miss there is not a clear fail.
+    # Show the tradeoff: max rejection at each per-target-recall floor. Threshold
+    # is picked on val, so these are OPTIMISTIC (see max_rejection_at_recall).
+    be = E.break_even_rejection(E.DOWNSAMPLED, E.cascade_at(args.input))
+    print()
+    print("  operating curve -- max rejection at each per-target-recall floor")
+    print(f"  (break-even {be:.1%}; threshold chosen on val -> OPTIMISTIC upper bound)")
+    for mr in (1.00, 0.95, 0.90):
+        op = max_rejection_at_recall(scores, labels, fva, tva, mr)
+        if op:
+            mark = "clears" if op["rejection"] >= be else "short "
+            print(f"    per-target recall >= {mr:>4.0%}:  rejection {op['rejection']:5.1%}  "
+                  f"(thr {op['threshold']:.4f})  {mark} break-even")
     sys.exit(0 if ok else 1)
 
 
