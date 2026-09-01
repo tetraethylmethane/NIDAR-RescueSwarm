@@ -235,18 +235,31 @@ def main() -> None:
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     if dev == "cpu":
         print("  WARNING: no CUDA device. This will take days, not hours.")
-    tf = T.Compose([T.Resize((args.input, args.input)), T.ToTensor(),
-                    T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+    # Store each tile as uint8 and normalise per batch on the GPU. Building one
+    # stacked, normalised float32 tensor of every tile was ~64 GB at 640 px and
+    # got OOM-killed under the container's memory cgroup (the host has 2 TB, the
+    # cgroup does not). uint8 is 4x smaller, and holding the tiles as a LIST
+    # rather than a single stacked tensor avoids the transient doubling at stack
+    # time. PILToTensor gives 0-255 uint8; ToTensor's /255 then the same
+    # normalise happen per batch on device, so the numbers are unchanged.
+    to_uint8 = T.Compose([T.Resize((args.input, args.input)), T.PILToTensor()])
+    mean = torch.tensor([0.485, 0.456, 0.406], device=dev).view(1, 3, 1, 1)
+    std = torch.tensor([0.229, 0.224, 0.225], device=dev).view(1, 3, 1, 1)
+
+    def batch(tiles):
+        """List of uint8 CHW tiles -> normalised float batch on device."""
+        xb = torch.stack(tiles).to(dev).float().div_(255.0)
+        return xb.sub_(mean).div_(std)
 
     def load(frames, limit):
         xs, ys, fids, tids = [], [], [], []
         for crop, label, fid, owners in iter_tiles(frames, args.images, wanted,
                                                    limit=limit):
-            xs.append(tf(crop))
+            xs.append(to_uint8(crop))          # uint8 CHW, 4x smaller than float
             ys.append(label)
             fids.append(fid)
             tids.append(owners)
-        return torch.stack(xs), torch.tensor(ys, dtype=torch.float32), fids, tids
+        return xs, torch.tensor(ys, dtype=torch.float32), fids, tids
 
     print("  extracting tiles (this is the slow part)...")
     Xtr, Ytr, _, _ = load(train, args.limit)
@@ -268,11 +281,12 @@ def main() -> None:
     n, bs = len(Ytr), 64
     for ep in range(args.epochs):
         model.train()
-        perm = torch.randperm(n)
+        perm = torch.randperm(n).tolist()
         tot = 0.0
         for i in range(0, n, bs):
             idx = perm[i:i + bs]
-            xb, yb = Xtr[idx].to(dev), Ytr[idx].to(dev)
+            xb = batch([Xtr[j] for j in idx])
+            yb = Ytr[torch.tensor(idx)].to(dev)
             opt.zero_grad()
             loss = lossf(model(xb).squeeze(1), yb)
             loss.backward()
@@ -284,7 +298,7 @@ def main() -> None:
     scores = []
     with torch.no_grad():
         for i in range(0, len(Yva), bs):
-            xb = Xva[i:i + bs].to(dev)
+            xb = batch(Xva[i:i + bs])
             scores.extend(torch.sigmoid(model(xb).squeeze(1)).cpu().tolist())
 
     labels = [int(v) for v in Yva.tolist()]
