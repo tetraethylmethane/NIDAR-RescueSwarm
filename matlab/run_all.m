@@ -33,7 +33,7 @@ end
 
 if any(strcmp(what, {'all','figs'}))
     fprintf('\n>> FIGURES\n');
-    for fn = {@fig_detect, @fig_looks, @fig_energy}
+    for fn = {@fig_detect, @fig_looks, @fig_energy, @fig_links}
         try
             fn{1}();
         catch ME
@@ -45,11 +45,13 @@ end
 
 if any(strcmp(what, {'all','sim'}))
     fprintf('\n>> SIMULATIONS\n');
-    try
-        sim_pack_sag();
-    catch ME
-        fprintf(2, '   FAILED sim_pack_sag: %s\n', ME.message);
-        nfail = nfail + 1;
+    for fn = {@sim_pack_sag, @sim_geobudget, @sim_receivers}
+        try
+            fn{1}();
+        catch ME
+            fprintf(2, '   FAILED %s: %s\n', func2str(fn{1}), ME.message);
+            nfail = nfail + 1;
+        end
     end
 end
 

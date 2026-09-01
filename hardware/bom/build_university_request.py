@@ -210,7 +210,7 @@ SUPPLIER = {
     "RC rx, storage, cooling, mounts": ("ExpressLRS 2.4 GHz rx (3.5+, native MAVLink)", "Zerodrag (India)", "https://zerodrag.in/"),
     "ESCs": ("50-60 A continuous, field-oriented, 6S. Peak demand is 29 A "
             "per motor at T/W 2.0.", "Reflex Drive (Lucknow)", "https://reflexdrive.in/"),
-    "Mesh node + antennas": ("5.8 GHz mesh node", "FxUAV Technologies (Burla)", "https://fxuav.in/"),
+    "Video and coordination radios": ("Analog 5.8 GHz video set + SX1262 865 MHz modules", "FxUAV Technologies (Burla)", "https://fxuav.in/"),
     "Payload system": ("Servo release, 4 stations", "Zerodrag + in-house", "https://zerodrag.in/"),
     "Propellers": ("18 in carbon", "Reflex Drive / UAV Garage", "https://uavgarage.com/"),
     "Wiring, connectors": ("Silicone wire, XT90-S, JST-GH", "Polycab / Robu", "https://robu.in/"),

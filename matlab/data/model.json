@@ -103,6 +103,110 @@
   "wiring harness + connectors": 190.0,
   "buzzer, LEDs, switches, mounts": 60.0
  },
+ "links": [
+  {
+   "name": "Analog video, 5.8 GHz",
+   "f_mhz": 5800,
+   "tx_dbm": 27.8,
+   "g_tx_dbi": 2,
+   "g_rx_dbi": 12,
+   "sens_dbm": -90,
+   "role": "Video downlink, one channel per aircraft"
+  },
+  {
+   "name": "ExpressLRS, 2.4 GHz",
+   "f_mhz": 2400,
+   "tx_dbm": 20,
+   "g_tx_dbi": 2,
+   "g_rx_dbi": 2,
+   "sens_dbm": -108,
+   "role": "Command, abort, and RTK corrections"
+  },
+  {
+   "name": "LoRa, 865 MHz SF7",
+   "f_mhz": 865,
+   "tx_dbm": 14,
+   "g_tx_dbi": 2,
+   "g_rx_dbi": 2,
+   "sens_dbm": -123,
+   "role": "Mission data, detections, and swarm coordination"
+  },
+  {
+   "name": "802.11, 5.8 GHz (withdrawn)",
+   "f_mhz": 5800,
+   "tx_dbm": 20,
+   "g_tx_dbi": 5,
+   "g_rx_dbi": 5,
+   "sens_dbm": -82,
+   "role": "Original single-mesh design; withdrawn on margin"
+  }
+ ],
+ "geofence_m": 600.0,
+ "geotag_terms_m": [
+  {
+   "name": "unmodelled",
+   "sigma_m": 0.7
+  },
+  {
+   "name": "target extent, centroid",
+   "sigma_m": 0.5
+  },
+  {
+   "name": "boresight residual",
+   "sigma_m": 0.16
+  },
+  {
+   "name": "GNSS-camera lever arm",
+   "sigma_m": 0.1
+  },
+  {
+   "name": "attitude",
+   "sigma_m": 0.07
+  },
+  {
+   "name": "pixel centroid",
+   "sigma_m": 0.02
+  }
+ ],
+ "receiver_classes_m": [
+  {
+   "name": "RTK fixed",
+   "sigma_m": 0.01
+  },
+  {
+   "name": "SBAS",
+   "sigma_m": 0.6
+  },
+  {
+   "name": "standalone multi-band",
+   "sigma_m": 1.0
+  },
+  {
+   "name": "GPS L1 only",
+   "sigma_m": 2.5
+  },
+  {
+   "name": "NavIC SPS",
+   "sigma_m": 5.0
+  }
+ ],
+ "fleet_receivers_m": [
+  {
+   "name": "aircraft 1, RTK",
+   "sigma_m": 0.01,
+   "count": 1
+  },
+  {
+   "name": "aircraft 2 and 3, SBAS",
+   "sigma_m": 0.6,
+   "count": 2
+  }
+ ],
+ "delivery_other_m": {
+  "ballistic dispersion": 0.32,
+  "position hold": 0.2
+ },
+ "delivery_requirement_m": 5.0,
  "mission_segments": [
   {
    "name": "Arm, spin-up, launch queue",

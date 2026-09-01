@@ -31,6 +31,7 @@ sys.path.insert(0, os.path.join(ROOT, "tools", "sizing-model"))
 with contextlib.redirect_stdout(io.StringIO()):
     import rescueswarm_sizing_model as M
     import camera_optics as CO
+    import radio_links
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "model.json")
 
@@ -99,6 +100,60 @@ def main() -> None:
         "mass_g": {k: v * 1000 for k, v in M.bd.items()},
         "payload_system_g": {k: v * 1000 for k, v in M.payload_system.items()},
         "avionics_g": {k: v * 1000 for k, v in M.avionics.items()},
+
+        # ---- radio links, as adopted ----------------------------------------
+        # Read from tools/sizing-model/radio_links.py, which the generated
+        # proposal section reads too, so the margin table in the paper and the
+        # margin curves in fig-links cannot drift apart.
+        "links": [
+            {"name": k["name"], "f_mhz": k["f_mhz"], "tx_dbm": k["tx_dbm"],
+             "g_tx_dbi": k["g_tx_dbi"], "g_rx_dbi": k["g_rx_dbi"],
+             "sens_dbm": k["sens_dbm"], "role": k["role"]}
+            for k in radio_links.LINKS
+        ],
+        "geofence_m": radio_links.GEOFENCE_M,
+
+        # ---- geolocation error budget, case C -------------------------------
+        # From boresight_budget.py. Note what is ABSENT: there is no GNSS
+        # position term, because with RTK it is ~0.01 m and was dropped as
+        # negligible. Swapping the receiver puts it back, which is the whole
+        # point of the trade study in Section IV-D.
+        # Emitted as lists of {name, value} rather than objects: MATLAB's
+        # jsondecode turns object keys into valid identifiers, which mangles
+        # "target extent / centroid" into "targetExtent_Centroid" and puts that
+        # on the axis of a published figure.
+        "geotag_terms_m": [
+            {"name": "unmodelled",              "sigma_m": 0.70},
+            {"name": "target extent, centroid", "sigma_m": 0.50},
+            {"name": "boresight residual",      "sigma_m": 0.16},
+            {"name": "GNSS-camera lever arm",   "sigma_m": 0.10},
+            {"name": "attitude",                "sigma_m": 0.07},
+            {"name": "pixel centroid",          "sigma_m": 0.02},
+        ],
+        # Horizontal 1-sigma for each class the fleet could fly. The three
+        # original entries are unchanged so Section IV-D's table still holds;
+        # GPS-only and NavIC are added because the question "why not the
+        # cheaper receiver" needs an answer with a number attached.
+        #   RTK fixed      carrier-phase against a local base
+        #   SBAS / GAGAN   code-phase with the Indian augmentation
+        #   multi-band     L1+L5 autonomous, no augmentation
+        #   GPS L1 only    autonomous single-frequency, no augmentation
+        #   NavIC SPS      IRNSS standard positioning service, published
+        "receiver_classes_m": [
+            {"name": "RTK fixed",             "sigma_m": 0.01},
+            {"name": "SBAS",                  "sigma_m": 0.60},
+            {"name": "standalone multi-band", "sigma_m": 1.00},
+            {"name": "GPS L1 only",           "sigma_m": 2.50},
+            {"name": "NavIC SPS",             "sigma_m": 5.00},
+        ],
+        # Delivery requirement, and the fleet as actually configured: one
+        # aircraft on RTK for measurement, two on SBAS.
+        "fleet_receivers_m": [
+            {"name": "aircraft 1, RTK", "sigma_m": 0.01, "count": 1},
+            {"name": "aircraft 2 and 3, SBAS", "sigma_m": 0.60, "count": 2},
+        ],
+        "delivery_other_m": {"ballistic dispersion": 0.32, "position hold": 0.20},
+        "delivery_requirement_m": 5.0,
 
         # ---- mission profile, for the dynamic simulations ------------------
         "mission_segments": [

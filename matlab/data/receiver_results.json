@@ -1,0 +1,42 @@
+{
+  "RTKFixed": {
+    "name": "RTK fixed",
+    "sigma": 0.01,
+    "rss": 0.883742043811428,
+    "cep50": 0.735612195024116,
+    "cep95": 1.5294241043588008,
+    "pass": true
+  },
+  "SBAS": {
+    "name": "SBAS",
+    "sigma": 0.6,
+    "rss": 1.068129205667554,
+    "cep50": 0.88906079136460325,
+    "cep95": 1.8482556569403119,
+    "pass": true
+  },
+  "standaloneMulti_band": {
+    "name": "standalone multi-band",
+    "sigma": 1,
+    "rss": 1.3345036530485781,
+    "cep50": 1.1101038409223274,
+    "cep95": 2.3122357947503769,
+    "pass": true
+  },
+  "GPSL1Only": {
+    "name": "GPS L1 only",
+    "sigma": 2.5,
+    "rss": 2.6515844319953308,
+    "cep50": 2.2093337990998454,
+    "cep95": 4.5810307843423459,
+    "pass": true
+  },
+  "NavICSPS": {
+    "name": "NavIC SPS",
+    "sigma": 5,
+    "rss": 5.077489537163026,
+    "cep50": 4.2215677082327048,
+    "cep95": 8.795474815822093,
+    "pass": false
+  }
+}

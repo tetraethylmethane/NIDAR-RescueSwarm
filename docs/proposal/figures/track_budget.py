@@ -50,7 +50,7 @@ AIRCRAFT_TRACK = {
     "Pack, BMS, PDB, BEC": "A",
     "RC rx, storage, cooling, mounts": "B",
     "ESCs": "A",
-    "Mesh node + antennas": "B",
+    "Video and coordination radios": "B",
     "Payload system": "A",
     "Propellers": "A",
     "Wiring, connectors": "A",

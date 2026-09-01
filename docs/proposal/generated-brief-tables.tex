@@ -1,0 +1,141 @@
+%============================================================================
+% GENERATED FILE -- do not edit.
+% Produced by tools/proposal/build_brief_tables.py from
+% hardware/bom/sourced_bom.py. Edit the BOM, not this file.
+%============================================================================
+\subsubsection*{Measurement instruments --- phases 1--2 \quad \rs{3{,}135} of parts}
+
+\begingroup\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endhead
+Load-cell amplifier & 7Semi HX711 24-bit ADC & 104 & Turns the load cell's signal into a reading we can log. \textit{Robu} \\
+Load cell & REES52 20 kg load cell + HX711 breakout & 854 & The motors ship without a thrust curve, so we measure it ourselves. Ready-made stands cost around ten times this. \textit{Amazon India} \\
+Thrust-stand mast & SURYAKUSH metal 2.1 m tripod & 373 & Holds the motor clear of the bench, so its own draught does not flatter the reading. \textit{Flipkart} \\
+Fasteners & Hex socket-head assortment M3/M4/M5, SS304 & 1{,}140 & A carbon airframe is bolted, not glued. \textit{OnlyScrews} \\
+Threadlocker & Loctite 243, 50 ml & 664 & Stops bolts working loose under motor vibration. Medium strength, so a joint can still be undone. \textit{Amazon India} \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\subsubsection*{Per aircraft, avionics and sensing --- phases 3--6, repeated at 13--16 and 21--24 \quad \rs{82{,}948} per aircraft, \rs{3{,}13{,}244} in all}
+
+\begingroup\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endhead
+Flight controller & Holybro Pixhawk 6C Mini, 3 off & 66{,}147 & The autopilot: flies the aircraft and runs its safety behaviours. Previously a quotation, now ordinary retail. \textit{Robu} \\
+FC vibration mount & Glass-fibre anti-vibration shock absorber, 3 off & 483 & Isolates the autopilot from propeller vibration, which otherwise confuses its sensors. \textit{Robu} \\
+Autopilot log card & SanDisk 32 GB microSDHC, class 10, 3 off & 4{,}647 & The autopilot ships without one and records nothing without it. This is a different slot on a different board from the computer's card above. \textit{Robocraze} \\
+Companion computer & Raspberry Pi 5, 8 GB, 3 off & 59{,}997 & The computer the autonomy runs on. The accelerator and the camera both plug into it, so neither works without it. \textit{Robu} \\
+AI accelerator & Raspberry Pi AI HAT+, 26 TOPS, 3 off & 35{,}247 & Runs the person-detection model fast enough to search at flying speed. \textit{Robu} \\
+Compute cooling & Official Raspberry Pi 5 active cooler, 3 off & 1{,}557 & The hottest moment is the setup on the ground, before the propellers are turning and cooling it. \textit{Robu} \\
+Storage & SanDisk High Endurance 128 GB microSD, 3 off & 11{,}967 & Records every frame and detection for a whole mission. Ordinary cards wear out at that rate. \textit{Flipkart} \\
+GNSS RTK receiver & Teravolt AeroNav-Pro RTK, aircraft 1 rover + ground base, 2 off & 50{,}000 & Centimetre positioning for aircraft 1 and the ground station it corrects against. Only one aircraft carries it: all three are the same machine, so measuring one against surveyed ground is what tells us how well the design works. Quoted by the supplier; this line was an estimate before. \textit{Teravolt} \\
+GNSS receiver & Holybro M9N, u-blox NEO-M9N with IST8310 compass, 2 off & 14{,}400 & Positioning for aircraft 2 and 3, accurate to about two metres against a five metre requirement. Carries the compass the flight controller needs, and plugs straight into it. \textit{Robokits} \\
+Camera + lens & Arducam 12.3 MP 1/2.3 in HQ module, 6 mm CS lens, 3 off & 20{,}397 & The search sensor, chosen so a person in water is large enough in the picture to be found. \textit{Robu} \\
+Video transmitter & SunRobotics TS832, 5.8 GHz, 600 mW, 3 off & 12{,}717 & Sends the live picture down, one channel per aircraft. \textit{IndiaMART} \\
+Command receiver & ExpressLRS RX24T, 2.4 GHz, 3 off & 4{,}317 & Carries the safety pilot's control and the aircraft's reporting on a single link, which saves a second radio. \textit{Robu} \\
+Coordination radio & EByte E22-900T22D-V2, SX1262, 22 dBm, 3 off & 2{,}967 & How the three aircraft tell each other what they have found. The most robust link on the aircraft, which is where survivor positions belong. \textit{Robu} \\
+Power module & Holybro PM07, 3 off & 15{,}747 & Reports battery voltage and current to the autopilot, which is what triggers a low-battery return. \textit{Robu} \\
+BEC, primary & 8 A UBEC, 5/6 V out, 2-6S in, 3 off & 11{,}817 & Powers the computer. Deliberately oversized: losing it in flight is the failure this line exists to prevent. \textit{Amazon India} \\
+BEC, secondary & ReadytoSky 2-6S 5V/3A + 12V/3A switchable UBEC, 3 off & 837 & A separate supply for the servos, so a jammed servo cannot disturb the autopilot. \textit{Robu} \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\subsubsection*{Per aircraft, airframe and drive --- phases 7--10, repeated at 17--20 and 25--28 \quad \rs{61{,}186} per aircraft, \rs{1{,}98{,}224} in all}
+
+\begingroup\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endhead
+Motors & Tarot TL96020, 5008, 340 KV, 12 off & 56{,}436 & Twelve. The first is measured on the stand before the other eleven are bought. \textit{Robokits} \\
+Propellers & 1855 counter-rotating carbon fibre, CW+CCW pair, 16 off & 26{,}256 & Sixteen for twelve positions. The item most often broken in flight testing, and the whole of our spares policy. \textit{Robokits} \\
+Speed controllers & Darkmatter VISHNU 50 MK-III, 4-in-1, 50 A, 3 off & 15{,}567 & One board drives all four motors. Made in India, and previously a quotation. \textit{Robu} \\
+Arm tube & 3K carbon fibre, OD25 x ID23 x 1000 mm, 6 off & 13{,}554 & The four arms. Carbon, and comfortably strong --- the joints, not the tubes, are what limit the airframe. \textit{Robu} \\
+Frame plate stock & 3K carbon fibre sheet, 300 x 200 x 2 mm, 3 off & 8{,}685 & The arms are tubes; this is the plate they bolt to. One sheet yields the top and bottom of a centre section at this size. \textit{in-house} \\
+Motor mounts & Tarot 25 mm motor mount, TL9602, 12 off & 13{,}428 & Joins motor to arm without machining the tube. This joint is the part that has to be right. \textit{Robu} \\
+Arm clamps & T-bolt hose clamps 23-25 mm, SS304, 4 pcs, 3 off & 9{,}036 & Bolted rather than bonded, so an arm damaged in a heavy landing is swapped in the field instead of scrapping the frame. \textit{Amazon India} \\
+Landing gear & F450/F550 landing skid, 3 off & 1{,}647 & Gives clearance underneath for the kit magazine, and a stance wide enough for an untidy landing. \textit{Robu} \\
+Suspension springs & 5 mm stainless double torsion spring, 32 off & 64 & Let the legs absorb a hard landing rather than pass it into the arms and the battery. \textit{IndiaMART} \\
+Printed parts & Pro-Range PETG-CF filament, 1.75 mm, 1 kg & 949 & Filament for the magazine, mounts and covers. Holds its shape in the sun, which cheaper filament does not. \textit{Robu} \\
+Release servos & MG90S mini servo, 180 deg, 12 off & 1{,}788 & Open the four kit stations. Metal gears, because a plastic one can drop a kit without anyone knowing. \textit{Robocraze} \\
+Cells & Molicel INR21700-P45B, 6S3P, 54 off & 27{,}486 & The battery: enough for the mission, a second full search, and four minutes in hand. \textit{Robu} \\
+Cell holders & 3x1 21700 holder, 21.75 mm bore, 54 off & 648 & Hold the cells in place and keep them apart, so one failing cell does not take its neighbours with it. \textit{Robu} \\
+Pack interconnect & Pure nickel strip, 0.15 x 27 mm & 6{,}500 & Joins the cells. Pure nickel, because the cheaper plated strip runs hot at the current this battery delivers. \textit{IndiaMART} \\
+Group interconnect & Tinned copper braided jumper & 500 & Joins the battery's groups, where the current is highest. \textit{IndiaMART} \\
+Balance leads & JST-XH 6S, 200 mm, 22 AWG, 3 off & 372 & How the charger checks each cell. With no battery board fitted, this is our only per-cell check --- and it happens on every charge. \textit{zBotic} \\
+Pack fusing & ANL fuse holder + 150 A ANL fuses, 3 off & 9{,}000 & Protects against a short circuit without cutting power at full throttle. \textit{Njour} \\
+Pack retention & 300 mm LiPo strap, reusable, 6 off & 372 & Holds the battery down. It is a fifth of the aircraft's weight, so a strap that lets go is not a small problem. \textit{Robu} \\
+Main leads & 10 AWG ultra-flexible silicone wire & 149 & The main power cable, sized for the highest current the motors ever draw rather than the average. \textit{Robu} \\
+Power connectors & Amass XT90S anti-spark, M/F pair, 12 off & 2{,}160 & Anti-spark, so connecting a battery this size does not burn the contacts. \textit{Robokits} \\
+Signal connectors & JST ZH 6-pin, 200 mm leads, 3 off & 69 & Keyed, so the wiring can only go back together one way after a repair. \textit{Robu} \\
+Antenna feeders & SMA M-F bulkhead RG316, 150 mm + adapters, 3 off & 3{,}417 & Let the antennas mount on the airframe instead of hanging off the radios. \textit{Desertcart} \\
+Insulation & PVC heat-shrink sleeve, 150 mm, 3 off & 141 & Sleeving over the battery joints --- the one place on the aircraft where a rubbed wire is an immediate fire. \textit{Robu} \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\subsubsection*{Flight-test support --- phases 11--12 \quad \rs{38{,}925} of parts}
+
+\begingroup\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endhead
+Safety-pilot transmitter & RadioMaster TX12 MKII ELRS + RP1 receiver & 16{,}519 & Manual override for the safety pilot, independent of the autonomy. A rule requirement and a safety one. \textit{zBotic} \\
+Battery charger & ToolKitRC M6D, 500 W, 25 A, dual & 7{,}349 & Two batteries recharged between flights is what sets how many tests fit into a day. \textit{Robu} \\
+Pack health monitor & Holybro PM08-CAN, 14S, 200 A & 9{,}058 & A bench instrument for tracking how the batteries age over the programme. \textit{Robu} \\
+Cable management & Nylon zip ties, 350 mm, 100 pcs & 135 & Ties long enough to dress wiring around a one-metre airframe. \textit{Robu} \\
+Heat-shrink kit & 328 pcs assorted 2:1 heat-shrink & 159 & Insulates the signal wiring during assembly. \textit{Robu} \\
+Mounting tape & 3M VHB 5952, 6 mm x 8.2 m & 560 & Holds radios and receivers where a screw would need a fixing the printed part cannot carry. \textit{Amazon India} \\
+Hook and loop & Self-adhesive hook and loop, 25 mm x 2 m & 145 & For the battery and anything else that must come out between flights without tools. \textit{Amazon India} \\
+Consumables & Fasteners, tape, connectors, filament & 5{,}000 & Solder, abrasives, spare hardware, filament. A round figure, because itemising it would be false precision. \textit{in-house} \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\subsubsection*{Ground segment and statutory --- phases 29--32 \quad \rs{19{,}436} of parts}
+
+\begingroup\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Item} & \thead{Model} & \thead{INR, all 3} & \thead{Why this part, and from whom} \\
+\midrule
+\endhead
+Video receivers & RC832S 5.8 GHz AV receiver, 3 off & 13{,}197 & Three, so the ground station can show all three aircraft at once, which the rules require. \textit{Robu} \\
+Receive antennas & Triple-feed 5.8 GHz patch, SMA, 3 off & 2{,}517 & The ground antennas. Most of the video range comes from these rather than from the transmitters. \textit{Robu} \\
+Video capture & USB 2.0 analog AV capture adapter, 3 off & 1{,}197 & Brings the three pictures into the ground station computer. \textit{Robu} \\
+Coordination base & EByte E22-900T22U, SX1262, USB & 1{,}646 & The ground end of the link the aircraft use to report what they find. \textit{Hubtronics} \\
+Base station mount & Photographic tripod and adapter & 879 & Holds the ground receiver still during a mission. Survey-grade accuracy is unnecessary; not moving is what matters. \textit{Amazon India} \\
+\bottomrule
+\end{longtable}
+\endgroup

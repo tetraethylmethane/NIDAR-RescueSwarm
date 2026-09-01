@@ -49,7 +49,7 @@ AC_PHASE = {
     "GNSS RTK primary":                "5, 15, 23",
     "Camera + lens":                   "6, 16, 24",
     "RC rx, storage, cooling, mounts": "6, 16, 24",
-    "Mesh node + antennas":            "6, 16, 24",
+    "Video and coordination radios":            "6, 16, 24",
     "Structure":                       "7, 17, 25",
     "Li-ion cells":                    "8, 18, 26",
     "Pack, BMS, PDB, BEC":             "8, 18, 26",
@@ -107,7 +107,7 @@ PARTS = {
  "Payload system": ("Four metal-gear servos, mechanical detents",
                     "Robu.in / Robokits India", S),
  "Wiring, connectors": ("10 AWG silicone, XT90-S, JST-GH", "Robu.in / IndiaMART", S),
- "Mesh node + antennas": ("5.8 GHz mesh node and antennas", "supplier quotation", Q),
+ "Video and coordination radios": ("3x analog 5.8 GHz VTX, 3x GCS receiver + patch, 4x SX1262 865 MHz", "supplier quotation", Q),
  "RC rx, storage, cooling, mounts": (
    "ExpressLRS 2.4 GHz receiver, storage, cooling, mounts", "Robu.in / IndiaMART", S),
  "VEGA co-processor": ("VEGA RISC-V development kit (no cost line)",

@@ -15,7 +15,7 @@ in-house or locally. Links are never invented to fill the column.
 | Phase | Item | Model | Unit INR | Qty | Line INR | Link | Link status |
 |---|---|---|---|---|---|---|---|
 | 3, 13, 21 | Flight controller | Holybro Pixhawk 6C Mini | 22,600 | 3 | 67,800 | [robu.in](https://robu.in/product/holybro-pixhawk-6c-mini-flight-controller/) | product |
-| 4, 14, 22 | Companion computer | Raspberry Pi 5, 8 GB | 8,000 | 3 | 24,000 | Robu.in / Silverline / Element14 India | supplier |
+| 4, 14, 22 | Companion computer | Raspberry Pi 5, 8 GB | 19,999 | 3 | 59,997 | Robu.in / Silverline / Element14 India | supplier |
 | 4, 14, 22 | AI accelerator | Raspberry Pi AI HAT+, 26 TOPS (Hailo-8) | 11,000 | 3 | 33,000 | Robu.in / Silverline; multiple Indian retailers | supplier |
 | 5, 15, 23 | GNSS RTK primary | Teravolt AeroNav-Pro RTK (or AeroNav-X5) | 25,000 | 3 | 75,000 | [teravolt.gitbook.io](https://teravolt.gitbook.io/teravolt/gps/aeronav-pro-rtk) | quote |
 | 2, 10, 20, 28 | Motors | Tarot TL96020, 5008, 340 KV | 4,500 | 12 | 54,000 | Robokits India / IndiaMART | supplier |
@@ -25,7 +25,7 @@ in-house or locally. Links are never invented to fill the column.
 | 8, 18, 26 | Pack, BMS, PDB, BEC | 6S 60 A BMS, distribution board, regulator | 8,500 | 3 | 25,500 | Robu.in / IndiaMART | supplier |
 | 6, 16, 24 | RC rx, storage, cooling, mounts | ExpressLRS 2.4 GHz receiver, storage, cooling, mounts | 8,500 | 3 | 25,500 | Robu.in / IndiaMART | supplier |
 | 9, 19, 27 | ESCs | 50-60 A continuous, 6S | 1,800 | 12 | 21,600 | Robokits India / Robu.in | supplier |
-| 6, 16, 24 | Mesh node + antennas | 5.8 GHz mesh node and antennas | 6,000 | 3 | 18,000 | supplier quotation | quote |
+| 6, 16, 24 | Video and coordination radios | 3x analog 5.8 GHz VTX, 3x GCS receiver + patch, 4x SX1262 865 MHz | 6,000 | 3 | 18,000 | supplier quotation | quote |
 | 9, 19, 27 | Payload system | Four metal-gear servos, mechanical detents | 4,500 | 3 | 13,500 | Robu.in / Robokits India | supplier |
 | 9, 19, 27 | Propellers | Tarot 1855 carbon, 18 in, CW/CCW | 1,625 | 12 | 19,500 | Robokits India | supplier |
 | 9, 19, 27 | Wiring, connectors | 10 AWG silicone, XT90-S, JST-GH | 2,400 | 3 | 7,200 | Robu.in / IndiaMART | supplier |
@@ -42,6 +42,6 @@ in-house or locally. Links are never invented to fill the column.
 | 12 | Fasteners, tape, connectors, filament | Consumables | 13,000 | 1 | 13,000 | local / Robu.in | supplier |
 | 32 | DGCA registration | Statutory fee, three aircraft | 5,000 | 1 | 5,000 | [digitalsky.dgca.gov.in](https://digitalsky.dgca.gov.in/) | verified |
 
-**Parts total: INR 614,400**
+**Parts total: INR 650,397**
 
-Landed programme total, after 22% duty on the imported share, 18% GST and 15% contingency: **INR 786,392**
+Landed programme total, after 22% duty on the imported share, 18% GST and 15% contingency: **INR 827,788**
