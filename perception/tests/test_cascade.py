@@ -187,8 +187,17 @@ def _coco(images, annotations, cats=(("swimmer", 1),)):
 
 
 def _img(i, pitch, w=3840, h=2160, alt=40.0):
+    """A SeaDronesSee-shaped image record: per-frame telemetry nests under
+    "meta" with the unit baked into the key name, exactly as the real ODv2
+    annotations write it. A frame with neither field carries "meta": null,
+    which is how 2,718 of the 8,930 real train frames arrive."""
+    meta = {}
+    if alt is not None:
+        meta["height_above_takeoff(meter)"] = alt
+    if pitch is not None:
+        meta["gimbal_pitch(degrees)"] = pitch
     return {"id": i, "file_name": f"{i}.jpg", "width": w, "height": h,
-            "altitude": alt, "gimbal_pitch": pitch}
+            "meta": meta or None}
 
 
 def _ann(i, x, y, w, h, cat=1):
@@ -234,6 +243,21 @@ def test_frames_without_people_or_metadata_are_dropped(tmp_path):
     kept, reasons = D.select(D.load_split(str(p)))
     assert [f.image_id for f in kept] == [1]
     assert reasons["no annotated person"] == 1
+    assert reasons["no usable gimbal metadata"] == 1
+
+
+def test_null_meta_is_not_a_crash(tmp_path):
+    """SeaDronesSee writes "meta": null on frames without telemetry (2,718 of
+    8,930 in train). A null must coerce to no-metadata and drop the frame, never
+    raise -- the bug that AttributeError'd on the real data."""
+    coco = _coco([{"id": 1, "file_name": "1.jpg", "width": 3840, "height": 2160,
+                   "meta": None},
+                  _img(2, -88.0)],
+                 [_ann(1, 10, 10, 30, 30), _ann(2, 10, 10, 30, 30)])
+    p = tmp_path / "a.json"
+    p.write_text(json.dumps(coco), encoding="utf-8")
+    kept, reasons = D.select(D.load_split(str(p)))       # must not raise
+    assert [f.image_id for f in kept] == [2]
     assert reasons["no usable gimbal metadata"] == 1
 
 

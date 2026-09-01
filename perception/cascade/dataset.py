@@ -75,7 +75,18 @@ class Frame:
         return longs[len(longs) // 2]
 
 
-PITCH_KEYS = ("gimbal_pitch", "gimbal_pitch_deg", "pitch")
+# SeaDronesSee writes these in the DJI flight-log style, with the unit in the
+# key name. The bare forms are kept as fallbacks for any re-hosted copy that
+# normalised them.
+PITCH_KEYS = ("gimbal_pitch(degrees)", "gimbal_pitch", "gimbal_pitch_deg", "pitch")
+ALTITUDE_KEYS = ("height_above_takeoff(meter)", "altitude")
+
+
+def _altitude(meta: dict) -> float | None:
+    for key in ALTITUDE_KEYS:
+        if meta.get(key) is not None:
+            return float(meta[key])
+    return None
 
 
 def _raw_pitch(meta: dict) -> float | None:
@@ -134,7 +145,12 @@ def load_split(ann_path: str) -> list[Frame]:
             if w > 0 and h > 0:
                 by_image[a["image_id"]].append((x, y, x + w, y + h))
 
-    metas = [img.get("meta", img) for img in coco.get("images", [])]
+    # SeaDronesSee carries per-image metadata under "meta", but writes it as an
+    # explicit null on frames that have none (2,718 of 8,930 in train). A missing
+    # OR null meta must become an empty dict, not the image record itself -- the
+    # image record has no pitch key, so falling back to it would only hide the
+    # gap. These frames then drop out cleanly in select() as "no usable gimbal".
+    metas = [img.get("meta") or {} for img in coco.get("images", [])]
     convention = infer_pitch_convention(metas)
 
     frames = []
@@ -142,7 +158,7 @@ def load_split(ann_path: str) -> list[Frame]:
         frames.append(Frame(
             image_id=img["id"], file_name=img["file_name"],
             width=img["width"], height=img["height"],
-            altitude_m=meta.get("altitude"),
+            altitude_m=_altitude(meta),
             off_nadir_deg=_off_nadir(meta, convention),
             boxes=by_image.get(img["id"], []),
         ))

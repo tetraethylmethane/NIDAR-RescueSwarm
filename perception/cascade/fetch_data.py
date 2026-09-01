@@ -122,8 +122,10 @@ def verify(dest: str) -> bool:
         else:
             print(f"    person-like category: {person}")
 
-        metas = [i.get("meta", i) for i in imgs]
-        n_alt = sum(1 for m in metas if m.get("altitude") is not None)
+        # meta is an explicit null on frames without it -- coerce to {} rather
+        # than falling back to the image record (which carries no pitch key).
+        metas = [i.get("meta") or {} for i in imgs]
+        n_alt = sum(1 for m in metas if D._altitude(m) is not None)
         n_pitch = sum(1 for m in metas if D._raw_pitch(m) is not None)
         cov = n_pitch / len(imgs) if imgs else 0.0
         conv = D.infer_pitch_convention(metas)
