@@ -78,10 +78,18 @@ def iter_tiles(frames, images_dir, wanted_px, tile=640, overlap=0.20, limit=None
     would resample the same pixels 48 times and change the interpolation the
     model sees between training and inference.
     """
+    import sys
     from PIL import Image
 
     n = 0
-    for f in frames:
+    total = len(frames)
+    for done, f in enumerate(frames, 1):
+        # Progress to stderr (unbuffered) so a slow NFS read or a heavy upscale
+        # is visible rather than looking like a hang. Extraction prints nothing
+        # otherwise, and on a network mount it is the longest step by far.
+        if done % 20 == 0 or done == total:
+            print(f"    ...{done}/{total} frames, {n} tiles so far",
+                  file=sys.stderr, flush=True)
         plan = D.plan_tiles(f, wanted_px, tile, overlap)
         if not plan["usable"]:
             continue
