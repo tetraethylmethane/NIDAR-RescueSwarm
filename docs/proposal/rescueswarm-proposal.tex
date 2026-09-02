@@ -1405,17 +1405,27 @@ The aircraft flies its sweep with no command from the ground, so what keeps it
 away from a building has to be designed in rather than flown around. Three
 things do, and a fourth deliberately does not.
 
-\emph{Altitude separation is the primary mitigation.} The sweep is at 40\,m
-AGL. Flood-zone structures are typically two to four storeys, six to twelve
-metres, so the sweep clears them by a wide margin. Transit is lower --- 20, 25
-and 30\,m, chosen for vertical deconfliction between the three aircraft --- and
-is therefore the more exposed phase, though it still clears the same
-structures by at least 8\,m.
+\emph{Altitude clears low-rise structures and nothing else.} The sweep is at
+40\,m AGL, which clears the two-to-four-storey construction of a rural or
+peri-urban flood plain by a wide margin. It does not clear an urban one.
+Chennai and Mumbai --- the flooding this system is aimed at --- contain a great
+deal of building well above 40\,m, and the sweep altitude is below all of it.
 
-\emph{The search region is drawn by the operator}, who is standing at the site
-and can exclude a transmission pylon, a tower or a tall block from the area
-before the mission starts. This is the only mechanism that handles an obstacle
-taller than the transit altitude, and it depends on a human seeing it.
+\emph{And the aircraft cannot climb over it.} This is the constraint that
+governs, and it is not a sensor problem. The survey altitude is pinned by
+detection: at 40\,m a person in water is 1498\,px\textsuperscript{2} and clears
+the COCO small-object floor, and by 50\,m the same target is
+959\,px\textsuperscript{2} and does not. There is no
+altitude that both clears a 60\,m building and resolves a 0.4\,m target with
+this camera. Vertical avoidance is therefore unavailable, and every obstacle
+taller than the sweep must be avoided \emph{laterally}.
+
+\emph{Lateral avoidance is by declared exclusion, not by sensing.} The operator
+draws the search region at the site, and ArduPilot's polygon exclusion fences
+let a pylon, a tower or a tall block be declared as a volume the aircraft
+refuses to enter. This is enforced by the autopilot rather than by the mission
+planner, so it holds even if the plan is wrong. It depends entirely on a human
+having seen the obstacle and drawn it.
 
 \emph{Height is measured, not inferred.} A downward lidar gives true height
 above whatever is beneath the aircraft. This matters most at the release: the
@@ -1430,15 +1440,22 @@ forward, and is not an obstacle sensor.
 
 \emph{There is no forward obstacle detection, and this is a stated limitation
 rather than an oversight.} Nothing on the aircraft can see a structure ahead of
-it. The mitigation is entirely altitude and the operator's choice of region,
-which is adequate for open flooded ground and is \emph{not} adequate for a
-built-up area containing anything taller than the transit altitude. Adding it
-is not expensive --- a 360-degree lidar feeding ArduPilot's object avoidance is
-of order INR 10,000 and 190\,g against a 4.9\,kg fleet growth allowance ---
-but it is unfunded, untested and would be flown for the first time on a
-competition aircraft, which is a worse risk than the one it removes. The
-honest position is that this system is scoped for open water and low-rise
-flooding, and that a built-up deployment requires the sensor first.
+it, whatever the structure is made of --- an optical sensor would additionally
+struggle with glass, but that is moot when there is no sensor at all. An
+undeclared tall building is therefore invisible to the system, and the aircraft
+would fly into it.
+
+\emph{The scope this forces is explicit.} The system as funded is for open
+water and low-rise flooding, where 40\,m is above everything and the exclusion
+fence covers the isolated pylon. It is \emph{not} for urban flooding among
+high-rise, and the reason is structural rather than a missing part: even with a
+forward sensor the aircraft could only stop or turn, not climb, so operating
+there needs a route planner that solves around obstacles at a fixed altitude,
+which is a different programme. A 360-degree lidar is of order INR 10,000 and
+190\,g against a 4.9\,kg growth allowance and would be worth carrying as a
+last-resort stop --- but unfunded, untested, and first flown at a competition
+it is a worse risk than the one it removes. P6 is where it should be flown if
+it is bought at all.
 
 \subsection{Assumed, or not yet implemented}
 \label{sec:notimpl}
