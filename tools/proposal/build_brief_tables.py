@@ -261,7 +261,7 @@ SCHEDULE = [
  (2,  "Measure one motor, propeller and speed controller on the stand", "Instruments commissioned"),
  (3,  "Aircraft 1 --- autopilot and control link", r"\textbf{Thrust verified}"),
  (4,  "Aircraft 1 --- onboard computer and AI accelerator", "Autopilot bench-tested"),
- (5,  "Aircraft 1 --- centimetre positioning (RTK rover)", "Compute stack operating"),
+ (5,  "Aircraft 1 --- centimetre positioning: RTK rover and ground base", "Compute stack operating"),
  (6,  "Aircraft 1 --- camera and the three radios", "Position fix acquired"),
  (7,  "Aircraft 1 --- airframe fabrication", "Avionics integrated"),
  (8,  "Aircraft 1 --- battery pack and power distribution", "Airframe fabricated"),
@@ -285,8 +285,7 @@ SCHEDULE = [
  (26, "Aircraft 3 --- battery pack and power distribution", "Airframe fabricated"),
  (27, "Aircraft 3 --- speed controllers, release servos, wiring", "Pack bench-discharged"),
  (28, "Aircraft 3 --- propulsion completed", "Drive train installed"),
- (29, "RTK base receiver, the source of the corrections", "Third aircraft flying"),
- (30, "Ground station: three video feeds, data link, base mount", "Base receiver acquired"),
+ (29, "Ground station: three video feeds, data link, base mount", "Third aircraft flying"),
 ]
 
 

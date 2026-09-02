@@ -191,7 +191,11 @@ PHASE_OF = {
     "Autopilot log card": (3, 13, 21),
     "Companion computer": (4, 14, 22), "AI accelerator": (4, 14, 22),
     "Compute cooling": (4, 14, 22), "Storage": (4, 14, 22),
-    "GNSS RTK receiver": (5, 29), "GNSS receiver": (15, 23),
+    # Both RTK units in one step. A rover without its base is not an RTK
+    # receiver, it is an ordinary one, so splitting them across phases 5 and
+    # 29 would have left aircraft 1 flying uncorrected for the whole build
+    # and no ground truth surveyable until the programme was nearly over.
+    "GNSS RTK receiver": (5,), "GNSS receiver": (15, 23),
     "Camera + lens": (6, 16, 24), "Video transmitter": (6, 16, 24),
     "Command receiver": (6, 16, 24), "Coordination radio": (6, 16, 24),
     "Arm tube": (7, 17, 25), "Frame plate stock": (7, 17, 25), "Motor mounts": (7, 17, 25),
@@ -210,8 +214,8 @@ PHASE_OF = {
     "Pack health monitor": (11,),
     "Cable management": (12,), "Heat-shrink kit": (12,),
     "Mounting tape": (12,), "Hook and loop": (12,), "Consumables": (12,),
-    "Video receivers": (30,), "Receive antennas": (30,), "Video capture": (30,),
-    "Coordination base": (30,), "Base station mount": (30,),
+    "Video receivers": (29,), "Receive antennas": (29,), "Video capture": (29,),
+    "Coordination base": (29,), "Base station mount": (29,),
 }
 
 # One measured, then three to finish aircraft 1, then four per aircraft.
