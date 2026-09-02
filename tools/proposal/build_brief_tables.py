@@ -82,6 +82,10 @@ RATIONALE = {
    "Positioning for aircraft 2 and 3, accurate to about two metres against a "
    "five metre requirement. Carries the compass the flight controller needs, "
    "and plugs straight into it.",
+ "Height rangefinder":
+   "Measures true height above whatever is below --- water, ground or a "
+   "rooftop. The kit is released at 6 m, and the barometer measures height "
+   "above the launch point, which over floodwater is a different thing.",
  "Camera + lens":
    "The search sensor, chosen so a person in water is large enough in the "
    "picture to be found.",

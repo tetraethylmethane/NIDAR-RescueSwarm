@@ -25,7 +25,7 @@ Throttle source & Servo tester / ESC consistency tester, PPM & 111 & A motor on 
 \end{longtable}
 \endgroup
 
-\subsubsection*{Per aircraft, avionics and sensing --- phases 3--6, repeated at 13--16 and 21--24 \quad \rs{82{,}948} per aircraft, \rs{3{,}12{,}722} in all}
+\subsubsection*{Per aircraft, avionics and sensing --- phases 3--6, repeated at 13--16 and 21--24 \quad \rs{85{,}775} per aircraft, \rs{3{,}21{,}203} in all}
 
 \begingroup\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
@@ -46,6 +46,7 @@ Compute cooling & Official Raspberry Pi 5 active cooler, 3 off & 1{,}557 & The h
 Storage & SanDisk High Endurance 128 GB microSD, 3 off & 11{,}967 & Records every frame and detection for a whole mission. Ordinary cards wear out at that rate. \textit{Flipkart} \\
 GNSS RTK receiver & Teravolt AeroNav-Pro RTK, aircraft 1 rover + ground base, 2 off & 50{,}000 & Centimetre positioning for aircraft 1 and the ground station it corrects against. Only one aircraft carries it: all three are the same machine, so measuring one against surveyed ground is what tells us how well the design works. Quoted by the supplier; this line was an estimate before. \textit{Teravolt} \\
 GNSS receiver & Holybro Micro M9N GPS with case, NEO-M9N and compass, 2 off & 13{,}878 & Positioning for aircraft 2 and 3, accurate to about two metres against a five metre requirement. Carries the compass the flight controller needs, and plugs straight into it. \textit{in-house} \\
+Height rangefinder & Benewake TFmini-S, 12 m lidar, UART, 3 off & 8{,}481 & Measures true height above whatever is below --- water, ground or a rooftop. The kit is released at 6 m, and the barometer measures height above the launch point, which over floodwater is a different thing. \textit{in-house} \\
 Camera + lens & Arducam 12.3 MP 1/2.3 in HQ module, 6 mm CS lens, 3 off & 20{,}397 & The search sensor, chosen so a person in water is large enough in the picture to be found. \textit{Robu} \\
 Video transmitter & SunRobotics TS832, 5.8 GHz, 600 mW, 3 off & 12{,}717 & Sends the live picture down, one channel per aircraft. \textit{IndiaMART} \\
 Command receiver & ExpressLRS RX24T, 2.4 GHz, 3 off & 4{,}317 & Carries the safety pilot's control and the aircraft's reporting on a single link, which saves a second radio. \textit{Robu} \\

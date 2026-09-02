@@ -73,6 +73,13 @@ BOM = [
  ("avionics", "GNSS receiver", "Holybro Micro M9N GPS with case, NEO-M9N and compass",
   6939, 2, 0,
   "https://indianrobostore.com/product/holybro-micro-m9n-gps-with-case-high-precision-multi-band-gnss"),
+ # True height above whatever is below -- water, ground or a rooftop. The
+ # release gate is specified at 6 m AGL and the barometer measures height above
+ # the launch point, which over floodwater of unknown level is a different
+ # quantity. 12 m indoors, about 7 m outdoors, so it acquires during the
+ # descent and gates the release; it does not see forward.
+ ("avionics", "Height rangefinder", "Benewake TFmini-S, 12 m lidar, UART", 2827, 3, 1,
+  "https://indianrobostore.com/product/benewake-12m-tfmini-s-micro-lidar-distance-sensor-for-drones-uav-uas-robots-uart"),
  ("avionics", "Camera + lens", "Arducam 12.3 MP 1/2.3 in HQ module, 6 mm CS lens", 6799, 3, 1,
   "https://robu.in/product/arducam-high-quality-camera-for-raspberry-pi-12-3mp-1-2-3-inch-hq-camera-module-with-6mm-cs-lens-for-pi-4b-3b-2b-3a-pi-zero-and-more/"),
  ("avionics", "Video transmitter", "SunRobotics TS832, 5.8 GHz, 600 mW", 4239, 3, 1,
@@ -196,7 +203,7 @@ PHASE_OF = {
     # 29 would have left aircraft 1 flying uncorrected for the whole build
     # and no ground truth surveyable until the programme was nearly over.
     "GNSS RTK receiver": (5,), "GNSS receiver": (15, 23),
-    "Camera + lens": (6, 16, 24), "Video transmitter": (6, 16, 24),
+    "Camera + lens": (6, 16, 24), "Height rangefinder": (6, 16, 24), "Video transmitter": (6, 16, 24),
     "Command receiver": (6, 16, 24), "Coordination radio": (6, 16, 24),
     "Arm tube": (7, 17, 25), "Frame plate stock": (7, 17, 25), "Motor mounts": (7, 17, 25),
     "Arm clamps": (7, 17, 25), "Landing gear": (7, 17, 25),
@@ -338,6 +345,7 @@ ADDED_AFTER_SHEET = (-50000 + 7200 * 2   # two RTK units out, two M9N in
                      + 1549 * 3          # autopilot log cards, not shipped with it
                      + 2895 * 3          # frame plate stock, the arms bolt to it
                      + 111               # bench throttle source
+                     + 2827 * 3          # height rangefinders for the release gate
                      - (7200 - 6939) * 2)  # M9N repriced from the team's listing
 
 PACK_PROTECTION = """Why there is no BMS in this BOM.

@@ -1118,7 +1118,7 @@ rather than descend uncommanded partway home.
 \node[blk, below=of setup] (arm) {Arm; gate on 3-D fix};
 \node[blk, below=of arm] (to) {Staggered take-off\\delay 0 / 15 / 30\,s};
 \node[blk, below=of to] (tr) {Transit at 20 / 25 / 30\,m\\(vertical deconfliction)};
-\node[blk, below=of tr] (sw) {Boustrophedon sweep\\60\,m AGL $\cdot$ 8\,m/s};
+\node[blk, below=of tr] (sw) {Boustrophedon sweep\\40\,m AGL $\cdot$ 8\,m/s};
 \node[dec, below=5mm of sw] (det) {detection?};
 \node[blk, below=5mm of det] (conf) {Temporal confirm\\$\geq$2 frames, fuse position};
 \node[blk, below=of conf] (del) {Descend, null groundspeed\\$<$0.3\,m/s, release at 6\,m};
@@ -1397,6 +1397,48 @@ dispersion and geolocation error are all modelled and regenerate from source.
 The geolocation Monte Carlo reconciles with the independent analytic budget to
 within one per cent, and the geotag projection has been verified
 self-consistent between two independent formulations to $7.8\times10^{-10}$\,m.
+
+\subsection{Obstacles, and what the aircraft can and cannot see}
+\label{sec:obstacles}
+
+The aircraft flies its sweep with no command from the ground, so what keeps it
+away from a building has to be designed in rather than flown around. Three
+things do, and a fourth deliberately does not.
+
+\emph{Altitude separation is the primary mitigation.} The sweep is at 40\,m
+AGL. Flood-zone structures are typically two to four storeys, six to twelve
+metres, so the sweep clears them by a wide margin. Transit is lower --- 20, 25
+and 30\,m, chosen for vertical deconfliction between the three aircraft --- and
+is therefore the more exposed phase, though it still clears the same
+structures by at least 8\,m.
+
+\emph{The search region is drawn by the operator}, who is standing at the site
+and can exclude a transmission pylon, a tower or a tall block from the area
+before the mission starts. This is the only mechanism that handles an obstacle
+taller than the transit altitude, and it depends on a human seeing it.
+
+\emph{Height is measured, not inferred.} A downward lidar gives true height
+above whatever is beneath the aircraft. This matters most at the release: the
+kit is specified to leave at 6\,m AGL, and a barometer reports height above the
+launch point, which over floodwater of unknown and changing level is a
+different quantity. An error here is not a nuisance --- Section~\ref{sec:delivery}
+shows impact velocity and dispersion both scale with release height, so a kit
+released from a believed 6\,m that is really 15\,m is a different ballistic
+problem from the one that was analysed. The sensor reaches about 7\,m outdoors,
+so it acquires during the descent and gates the release; it does not see
+forward, and is not an obstacle sensor.
+
+\emph{There is no forward obstacle detection, and this is a stated limitation
+rather than an oversight.} Nothing on the aircraft can see a structure ahead of
+it. The mitigation is entirely altitude and the operator's choice of region,
+which is adequate for open flooded ground and is \emph{not} adequate for a
+built-up area containing anything taller than the transit altitude. Adding it
+is not expensive --- a 360-degree lidar feeding ArduPilot's object avoidance is
+of order INR 10,000 and 190\,g against a 4.9\,kg fleet growth allowance ---
+but it is unfunded, untested and would be flown for the first time on a
+competition aircraft, which is a worse risk than the one it removes. The
+honest position is that this system is scoped for open water and low-rise
+flooding, and that a built-up deployment requires the sensor first.
 
 \subsection{Assumed, or not yet implemented}
 \label{sec:notimpl}
