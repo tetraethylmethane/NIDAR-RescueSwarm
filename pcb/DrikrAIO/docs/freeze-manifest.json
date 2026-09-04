@@ -1,0 +1,36 @@
+{
+  "schema": "drikraio.freeze/1",
+  "frozen_at": "2026-09-05",
+  "frozen_state": "PRE-ROUTING BASELINE",
+  "routing_status": "BLOCKED",
+  "thermal_status": "MARGINAL",
+  "note": "Frozen. Do not route, do not commit BSC014N06NS to the schematic, do not generate manufacturing outputs. Unfreezing is a deliberate, reviewed act.",
+  "assertions": {
+    "netclass_count": 8,
+    "phase_track_mm": 6.6,
+    "vbat_track_mm": 6.6,
+    "min_clearance_mm": 0.09,
+    "track_segments": 0,
+    "vias": 0,
+    "schematic_files_with_bsc014n06ns": 0,
+    "manufacturing_outputs": 0
+  },
+  "sha256": {
+    "DrikrAIO.kicad_pcb": "4e7f2ebbb0bd400b1be5b36d561056592ed56b75d29c454c4f8cbb2d3a13fd17",
+    "DrikrAIO.kicad_pro": "b187da3a95fcd3dcdde670489115f71ca64dbaaf06e8122b467792d54a041788",
+    "DrikrAIO.kicad_dru": "6129d24a16584d7e2ac4a7367b599c7f330765793b45825c89cbd417ea278985",
+    "DrikrAIO.kicad_sch": "9ad8654128b3da9f9d3d90f91d12ce37be24f968d43208ba39b5abe001067381",
+    "ESC.kicad_sch": "53865cf073ca0f94834a337dd3a8f3815bd5f97849006f327918420d3d4cca53",
+    "esc_power.kicad_sch": "77d5ab5cdc967d0705a1b3a8cf96e45f25e687cb27717b67c721ba7750e5357e",
+    "rp2350a.kicad_sch": "8656e171cc411f93595543ebec7c48fe08ff15aab94a0a1dbb720821f99168fa",
+    "power.kicad_sch": "c31c535bd944dfedde8fc8f3c4d28d210b155631f135d64ef0deb172fe2ccc74",
+    "imu.kicad_sch": "947cf3674376a6188e2ede6d1b01530a7b434dd4768ec792211c8ed4525d59c2",
+    "osd.kicad_sch": "d399974d9776e268fbe32761c3aae60071c23d209d02411882c0a179073cafad",
+    "blackbox.kicad_sch": "6c5a3997c3364f09d25a91f332e414099f09bddf958abb0f7e582e1e40b6d0a7",
+    "pads.kicad_sch": "f4d2b3bf315fed4c8aca04279fd68dc2f40f83292ff8ea4f51e59d639c88f91b",
+    "rx_esp32c3_sx1281.kicad_sch": "d1537b45fdaea6d66fa15a2ada17beeaf66c90d398d701aa0ebd1702408548bf",
+    "lib.pretty/BSC014N06NS_PG-TDSON-8.kicad_mod": "189cae53496324d6c8b044715294ac9f166ee5d4bce62f523cdf6b54c11f5073",
+    "fp-lib-table": "2b2b138fa48479fd8faadbf22178ce288067c927ebe4fc613849172753b47905",
+    "sym-lib-table": "b8a47fb58fc795fbced1f23603ef104ad20577ea891c7079c5610017f466caf1"
+  }
+}

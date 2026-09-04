@@ -114,10 +114,20 @@ Rebuild it with:
 
 ## Reviews
 
-# ROUTING STATUS: BLOCKED
+# ROUTING STATUS: BLOCKED — BASELINE FROZEN
 
 **[docs/routing-readiness-report.md](docs/routing-readiness-report.md) is current.**
-Baseline rev 2: [docs/pre-routing-baseline.json](docs/pre-routing-baseline.json).
+Baseline rev 3, frozen: [docs/pre-routing-baseline.json](docs/pre-routing-baseline.json),
+[docs/freeze-manifest.json](docs/freeze-manifest.json).
+
+Verify the freeze at any time:
+
+```sh
+python hardware/tools/freeze.py     # exit 0 = intact
+```
+
+Primary remaining thermal variables are **airflow exposure and duty cycle**.
+More copper is **not** the primary solution.
 
 Blocked on: 115 A peak duration, peak repetition rate, airflow boundary
 condition, thermal validation plan, and the deferred MOSFET schematic commit.

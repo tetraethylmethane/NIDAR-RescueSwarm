@@ -10,7 +10,18 @@
 4. **Thermal validation plan unresolved**
 5. **BSC014N06NS schematic commitment intentionally deferred**
 
-Date 2026-09-05 · Baseline rev 2: [`pre-routing-baseline.json`](pre-routing-baseline.json)
+Date 2026-09-05 · Baseline rev 3, **FROZEN**:
+[`pre-routing-baseline.json`](pre-routing-baseline.json) ·
+[`freeze-manifest.json`](freeze-manifest.json)
+
+**The baseline is frozen.** 16 artefacts recorded by SHA-256 with the state
+assertions that held at freeze time. `hardware/tools/freeze.py` verifies it and
+exits non-zero on any drift — tested by injecting a Phase-width regression,
+which it caught by both hash and assertion.
+
+Unfreezing is a deliberate, reviewed act requiring the peak duration, duty
+cycle, airflow specification and executed validation plan. **Do not unfreeze to
+make progress.**
 
 No routing performed. No Gerbers, drill files or fabrication outputs generated.
 No peak duration, repetition rate or airflow condition invented.
@@ -48,6 +59,10 @@ The thermal architecture is **not** PASS. It is **MARGINAL**.
 - **Only one steady-state case passes: hover in developed slipstream.**
 - Rotor-disc / slipstream placement is a **thermal design parameter**.
 - The design is **not** "propwash cooled" — see the placement study.
+
+### Primary remaining variables: airflow and duty cycle
+
+**More copper is not the primary solution.**
 
 ### The result that redirects the work
 

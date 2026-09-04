@@ -1,6 +1,6 @@
 {
   "schema": "drikraio.pre-routing-baseline/1",
-  "revision": 2,
+  "revision": 3,
   "date": "2026-09-05",
   "status": "NO-GO",
   "routing_allowed": false,
@@ -149,7 +149,12 @@
       "die_side_contribution_k": 5.7,
       "note": "Rth(j-c) + R_spread contribute only 5.7 K of the rise. More copper and more thermal vias cannot fix the peak case; the bottleneck is board-to-air, not die-to-board."
     },
-    "absolute_max_is_not_a_target": "Tj = 175 C is the absolute maximum, not an operating target"
+    "absolute_max_is_not_a_target": "Tj = 175 C is the absolute maximum, not an operating target",
+    "primary_remaining_variables": {
+      "first": "airflow exposure / placement relative to the rotor disc",
+      "second": "peak duty cycle",
+      "not_primary": "copper area, thermal via count and Rds(on) -- Rth(j-c) plus spreading account for only 5.7 K of the rise, so these cannot fix the sustained peak case"
+    }
   },
   "footprint": {
     "canonical": "lib.pretty/BSC014N06NS_PG-TDSON-8.kicad_mod",
@@ -317,5 +322,47 @@
     "thermal_validation_status": "OPEN",
     "engineering_statement": "Peak thermal acceptability cannot be determined from peak current alone. Peak duration and repetition rate determine whether the 115 A condition is a transient event or a thermally significant operating condition."
   },
-  "routing_status": "BLOCKED"
+  "routing_status": "BLOCKED",
+  "frozen": true,
+  "freeze": {
+    "state": "FROZEN",
+    "frozen_at": "2026-09-05",
+    "manifest": "docs/freeze-manifest.json",
+    "verifier": "hardware/tools/freeze.py",
+    "artefacts_frozen": 16,
+    "verified_at_freeze": {
+      "track_segments": 0,
+      "vias": 0,
+      "netclass_count": 8,
+      "design_rules_verified": 10,
+      "phase_track_mm": 6.6,
+      "vbat_track_mm": 6.6,
+      "min_clearance_mm": 0.09,
+      "footprint_checks": "25/25 PASS",
+      "schematic_files_with_bsc014n06ns": 0,
+      "manufacturing_outputs": 0,
+      "verify_netclasses_exit": 0,
+      "verify_fet_footprint_exit": 0
+    },
+    "unfreeze_policy": "Unfreezing is a deliberate, reviewed act. It requires at minimum that peak_duration_ms and peak_duty_cycle be supplied, the airflow boundary condition be specified, and the thermal validation plan be executed. Do not unfreeze to make progress."
+  },
+  "permanently_superseded": {
+    "loop_inductance_nh": {
+      "value": 7.53,
+      "replaced_by": 8.72,
+      "reason": "computed with the 40 V part's tf of 9.5 ns"
+    },
+    "convection_coefficient_w_m2k": {
+      "value": 80.0,
+      "replaced_by": [
+        42.0,
+        60.0
+      ],
+      "reason": "requires 22.4 m/s; this aircraft's slipstream is 12.46 m/s"
+    },
+    "copper_area_linear_scaling": {
+      "reason": "thermal resistance does not scale linearly with area"
+    },
+    "status": "PERMANENT. These must not reappear in any live document or model."
+  }
 }
