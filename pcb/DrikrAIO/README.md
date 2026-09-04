@@ -112,6 +112,28 @@ Rebuild it with:
 "C:/Program Files/KiCad/10.0/bin/python.exe" hardware/tools/build_pcb.py
 ```
 
+## Electrical design review
+
+**[docs/electrical-design-review.md](docs/electrical-design-review.md) gates
+routing.** Numbers regenerate from `hardware/tools/power_review.py`.
+
+Three blockers, all calculated rather than assumed:
+
+1. **The 115 A peak duration is undefined** anywhere in the repo, so repeated
+   peaks cannot be assessed. Firmware parameter, not a PCB one.
+2. **The `Phase` netclass is 1.0 mm, which carries 5.3 A** against a 21 A phase
+   RMS. It came from a toothpick-class board and would pass DRC on a board that
+   cannot carry its own current.
+3. **40 V FETs on a 25.2 V rail leave a 2.25 nH loop-inductance budget** at 80 %
+   derating — about 2 mm of trace. No standard TVS fits the window, which is why
+   OpenESC rev3 removed its clamps. 60 V parts would relax this to 7.5 nH at
+   roughly double the conduction loss.
+
+Also established: 115 A needs 69 mm of 2 oz outer copper on a 50 mm board, so
+the bus must use **all six layers**; J1 is 0.7 A per contact and is a breakout
+only, never a battery path; and the board is cooled by propwash — at peak in
+still air it reaches ~110 °C.
+
 ## Open work
 
 1. **Routing, and real placement.** The scaffold groups parts correctly; it does
