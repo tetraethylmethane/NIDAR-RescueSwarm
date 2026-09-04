@@ -3,7 +3,7 @@
 Single-board integration of a flight controller, four ESC channels and an
 ExpressLRS receiver, assembled from proven OpenDrone designs.
 
-**Status: schematic assembles, netlists, and is not finished.** See *Open work*.
+**Status: schematic netlists; board is a placed scaffold, unrouted.** See *Open work*.
 
 This is Stage 1 of two. It deliberately targets FPV-class hardware on the parts
 that already fly, to prove the integration once. Stage 2 re-platforms to
@@ -84,11 +84,41 @@ sheets, plus unresolved `ESCLibrary` / `PCM_*` symbol libraries, which are KiCad
 PCM add-ons. Symbols are embedded in the schematics, so the design opens and
 netlists without them; install them only to re-place those parts.
 
+## Board
+
+`DrikrAIO.kicad_pcb` exists as a **scaffold, not a layout**. 50 x 50 mm on the
+30.5 mm mounting pattern, 6 layers, 2 oz outer / 1 oz inner, ENIG. Nothing is
+routed.
+
+```
+50 x 50 mm      6 layers      347 footprints      1283 pads netted
+292 placed on board            55 staged off-board, grouped by block
+0 overlaps                     0 parts crossing the edge
+```
+
+Placement is by function: power stages in four quadrants on the bottom with
+the shared power block across the middle, control on top, receiver in a corner
+for the antenna. Where a zone filled up the remainder is staged **outside** the
+outline in per-block columns, which is what KiCad does with new parts -- better
+an honestly unplaced part than one silently overlapping its neighbour.
+
+**Board size was measured, not chosen.** U3's pad set alone spans 44.0 x 45.8 mm
+so 45 mm could not contain it, and the other 346 parts come to 2409 mm2 of
+footprint area -- 48 % of a two-sided 50 mm board, which leaves room to route.
+
+Rebuild it with:
+
+```sh
+"C:/Program Files/KiCad/10.0/bin/python.exe" hardware/tools/build_pcb.py
+```
+
 ## Open work
 
-1. **PCB layout.** Not started; no `.kicad_pcb` exists. This is the bulk of the
-   remaining work and it is not a job for a generator: four switching power
-   stages, a 2.4 GHz chain and a 115 A-capable battery entry share one board.
+1. **Routing, and real placement.** The scaffold groups parts correctly; it does
+   not lay them out. Four switching power stages, a 2.4 GHz chain and a 115 A
+   battery entry share this board, and that is judgement work, not a generator's.
+   Start by pulling the 55 staged parts in and putting the IMU near the board
+   centre -- the scaffold parks it at the right edge for want of a free zone.
 2. **Review the generated root in KiCad.** `DrikrAIO.kicad_sch` was produced by
    a script, not drawn. It wires sheets with global labels on stubs, which is
    electrically correct and reviewable, but it is not a drawn schematic.

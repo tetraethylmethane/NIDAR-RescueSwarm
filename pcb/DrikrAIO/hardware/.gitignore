@@ -12,3 +12,9 @@ KiCad-Library/
 *.kicad_prl
 fp-info-cache
 *-backups/
+
+# generated reports and locks
+erc.rpt
+drc.rpt
+*.net
+~*.lck
