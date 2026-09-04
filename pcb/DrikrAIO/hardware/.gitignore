@@ -1,0 +1,14 @@
+# The OpenDrone shared parts catalogue: 145 footprints, 110 symbols,
+# 246 3D models and 48 datasheets, ~290 MB. Not vendored -- clone it:
+#
+#   git clone --depth 1 https://github.com/OpenDrone-hw/KiCad-Library.git pcb/DrikrAIO/hardware/KiCad-Library
+#
+# fp-lib-table and sym-lib-table resolve OpenDrone, 4in1ESC, OpenRX-Shared
+# and ESCLibrary through it. Without it the schematics still open, because
+# symbols are embedded, but footprints will not resolve for layout.
+KiCad-Library/
+
+# KiCad local state, per-user
+*.kicad_prl
+fp-info-cache
+*-backups/

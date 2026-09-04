@@ -1,0 +1,9 @@
+(fp_lib_table
+	(version 7)
+	(lib (name "lib")(type "KiCad")(uri "${KIPRJMOD}/lib.pretty")(options "")(descr "project-local footprints, seeded from OpenFC-Lite-Mini"))
+	(lib (name "4in1ESC-30x30")(type "KiCad")(uri "${KIPRJMOD}/4in1ESC-30x30.pretty")(options "")(descr "OpenESC-30x30 power-stage footprints, incl. PDFN-8L 5x6 for the 40 V FETs"))
+	(lib (name "OpenDrone")(type "KiCad")(uri "${KIPRJMOD}/KiCad-Library/footprint/OpenDrone.pretty")(options "")(descr "OpenDrone parts catalogue"))
+	(lib (name "4in1ESC")(type "KiCad")(uri "${KIPRJMOD}/KiCad-Library/footprint/OpenDrone.pretty")(options "")(descr "alias: nickname used by the OpenESC sheets, same catalogue"))
+	(lib (name "OpenRX-Shared")(type "KiCad")(uri "${KIPRJMOD}/KiCad-Library/footprint/OpenDrone.pretty")(options "")(descr "alias: nickname used by the OpenRX sheet, same catalogue"))
+	(lib (name "ESCLibrary")(type "KiCad")(uri "${KIPRJMOD}/KiCad-Library/footprint/OpenDrone.pretty")(options "")(descr "alias: nickname used by the OpenESC sheet, same catalogue"))
+)
