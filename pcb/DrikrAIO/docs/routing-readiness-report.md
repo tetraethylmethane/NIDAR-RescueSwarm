@@ -111,9 +111,10 @@ None of these has been turned into a PASS by assumption.
 
 | Document | State |
 |---|---|
-| [`pre-routing-baseline.json`](pre-routing-baseline.json) | rev 2 — OPEN statuses and engineering statement recorded |
+| [`pre-routing-baseline.json`](pre-routing-baseline.json) | **rev 3, FROZEN** — OPEN statuses, engineering statement, freeze record, unfreeze policy |
 | [`thermal-analysis.md`](thermal-analysis.md) | parameterised; steady-state / single-pulse / repeated-pulse separated; placement study |
 | [`thermal-validation-plan.md`](thermal-validation-plan.md) | draft; C1 bench forced-air, C2 installed aircraft, C3 still air prohibited above quiescent |
+| [`freeze-manifest.json`](freeze-manifest.json) | 16 artefacts by SHA-256 + state assertions |
 | [`routing-readiness-report.md`](routing-readiness-report.md) | this document |
 | [`pre-routing-review-2.md`](pre-routing-review-2.md) | prior review, still valid for §1–§13 |
 | `electrical-design-review.md`, `pre-routing-report.md` | **SUPERSEDED**, bannered |
