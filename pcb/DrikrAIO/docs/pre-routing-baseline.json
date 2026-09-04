@@ -1,11 +1,10 @@
 {
   "schema": "drikraio.pre-routing-baseline/1",
-  "revision": 1,
+  "revision": 2,
   "date": "2026-09-05",
   "status": "NO-GO",
   "routing_allowed": false,
   "mosfet_committed_to_schematic": false,
-
   "electrical": {
     "battery": {
       "chemistry": "6S3P Li-ion",
@@ -31,7 +30,6 @@
       "phase_rms_note": "hover assumes phase RMS = 2x battery current at 50% duty; assumption, not measurement"
     }
   },
-
   "mosfet": {
     "mpn": "BSC014N06NS",
     "manufacturer": "Infineon",
@@ -40,18 +38,18 @@
     "status": "PREFERRED CANDIDATE, NOT COMMITTED",
     "datasheet_values": {
       "vds_v": 60,
-      "rds_on_max_ohm": 1.45e-3,
-      "rds_on_typ_ohm": 1.2e-3,
+      "rds_on_max_ohm": 0.00145,
+      "rds_on_typ_ohm": 0.0012,
       "rds_on_condition": "VGS=10V, ID=50A",
-      "tf_s": 11e-9,
-      "tr_s": 10e-9,
-      "qg_max_c": 104e-9,
-      "qgd_max_c": 21e-9,
-      "qoss_max_c": 125e-9,
-      "qrr_typ_c": 139e-9,
-      "coss_max_f": 1875e-12,
-      "crss_max_f": 118e-12,
-      "ciss_max_f": 8125e-12,
+      "tf_s": 1.1e-08,
+      "tr_s": 1e-08,
+      "qg_max_c": 1.04e-07,
+      "qgd_max_c": 2.1e-08,
+      "qoss_max_c": 1.25e-07,
+      "qrr_typ_c": 1.39e-07,
+      "coss_max_f": 1.875e-09,
+      "crss_max_f": 1.18e-10,
+      "ciss_max_f": 8.125e-09,
       "rth_jc_max_kw": 0.8,
       "rth_ja_reference_kw": 50.0,
       "rth_ja_reference_condition": "6 cm2 one-layer 70 um Cu, 40x40x1.5 mm FR4, vertical, still air",
@@ -61,10 +59,10 @@
       "tj_max_c": 175
     },
     "calculated_values": {
-      "rds_on_125c_ohm": 2.2475e-3,
+      "rds_on_125c_ohm": 0.0022475,
       "rds_on_125c_basis": "x1.55 from Diagram 9 max curve",
-      "di_dt_a_per_s": 2.61e9,
-      "loop_inductance_budget_80pct_h": 8.72e-9
+      "di_dt_a_per_s": 2610000000.0,
+      "loop_inductance_budget_80pct_h": 8.72e-09
     },
     "prohibited_uses": [
       "257 A headline ID must NOT be used as a PCB current rating",
@@ -75,9 +73,11 @@
       "stock and price at 24 per board"
     ]
   },
-
   "pcb": {
-    "size_mm": [50.0, 50.0],
+    "size_mm": [
+      50.0,
+      50.0
+    ],
     "mounting_pattern_mm": 30.5,
     "layers": 6,
     "outer_copper_oz": 2,
@@ -89,7 +89,6 @@
     "staged_off_board": 55,
     "routed_nets": 0
   },
-
   "thermal": {
     "model": "Rth(j-a) = Rth(j-c) + R_spread + R_conv",
     "linear_area_scaling": "WITHDRAWN - do not use",
@@ -113,24 +112,45 @@
       "h_previously_assumed_status": "WITHDRAWN - requires 22.4 m/s, above this aircraft's slipstream"
     },
     "junction_temperature_c": {
-      "hover_still_air": 282.8,
-      "hover_at_disc": 128.9,
-      "hover_slipstream": 103.2,
-      "peak_still_air": 397.5,
-      "peak_at_disc": 171.4,
-      "peak_slipstream": 133.7
+      "hover_h42": 128.9,
+      "hover_h60": 103.2,
+      "peak_sustained_h42": 169.9,
+      "peak_sustained_h60": 132.7,
+      "peak_still_air": 393.0
     },
     "verdict": {
       "tj_target_c": 125,
       "tj_absolute_max_c": 175,
       "still_air": "FAIL at hover and peak - not acceptable at any sustained power",
-      "propwash_hover": "PASS in slipstream, MARGINAL at the disc",
-      "propwash_peak": "MISSES the 125 C target under all realistic airflow; 171.4 C at the disc is 3.6 C from the absolute limit",
-      "summary": "NOT DISQUALIFIED - nothing exceeds 175 C - but the 125 C conservative target is not met at peak"
+      "propwash_hover": "PASS in slipstream (103.2 C); FAILS at the disc (128.9 C)",
+      "propwash_peak": "FAILS the 125 C target at both airflows: 132.7 C slipstream, 169.9 C at the disc",
+      "summary": "MARGINAL. Sustained peak is not acceptable at either airflow. Acceptability depends entirely on peak duration and duty cycle, which are OPEN. At h=60 duty cycles up to 0.5 remain under the 125 C target."
     },
-    "requires_measurement": "Rth(j-a) on the first board"
+    "requires_measurement": "Rth(j-a) on the first board",
+    "status": "MARGINAL - NOT PASS",
+    "h_cases_live": {
+      "A_at_disc_w_m2k": 42.0,
+      "B_slipstream_w_m2k": 60.0
+    },
+    "h_superseded": {
+      "value_w_m2k": 80.0,
+      "reason": "requires 22.4 m/s; aircraft slipstream is 12.46 m/s"
+    },
+    "board_thermal_time_constant_s": {
+      "h42": 44.5,
+      "h60": 31.2,
+      "basis": "ESTIMATE, lumped C=9.3 J/K"
+    },
+    "remediation": {
+      "required_h_for_125c_at_peak_w_m2k": 65.8,
+      "required_airflow_m_s": 15.1,
+      "required_board_area_cm2_at_h60": 55,
+      "board_area_available_cm2": 50,
+      "die_side_contribution_k": 5.7,
+      "note": "Rth(j-c) + R_spread contribute only 5.7 K of the rise. More copper and more thermal vias cannot fix the peak case; the bottleneck is board-to-air, not die-to-board."
+    },
+    "absolute_max_is_not_a_target": "Tj = 175 C is the absolute maximum, not an operating target"
   },
-
   "footprint": {
     "canonical": "lib.pretty/BSC014N06NS_PG-TDSON-8.kicad_mod",
     "status": "PASS",
@@ -138,10 +158,19 @@
     "checks_total": 25,
     "electrical_geometry": "PRESERVED - do not modify without a datasheet-based reason",
     "pitch_mm": 1.27,
-    "lead_pad_mm": [0.58, 1.08],
-    "thermal_pad_mm": [4.40, 4.10],
+    "lead_pad_mm": [
+      0.58,
+      1.08
+    ],
+    "thermal_pad_mm": [
+      4.4,
+      4.1
+    ],
     "paste_windows": 4,
-    "paste_window_mm": [1.70, 1.55],
+    "paste_window_mm": [
+      1.7,
+      1.55
+    ],
     "paste_coverage_pct": 58.4,
     "courtyard": "added - donor had none",
     "fixed_defects": [
@@ -149,10 +178,18 @@
       "courtyard added; donor footprint had no F.CrtYd layer at all"
     ]
   },
-
   "drc": {
     "expected_netclasses": 8,
-    "netclass_names": ["Default", "Analog", "Gate", "Phase", "Power", "RF", "USB", "VBAT"],
+    "netclass_names": [
+      "Default",
+      "Analog",
+      "Gate",
+      "Phase",
+      "Power",
+      "RF",
+      "USB",
+      "VBAT"
+    ],
     "phase_track_width_mm": 6.6,
     "vbat_track_width_mm": 6.6,
     "power_via_diameter_mm": 0.8,
@@ -188,61 +225,97 @@
       "reproduced_by": "hardware/tools/test_save_cycle.py"
     }
   },
-
   "unresolved": [
     {
       "id": "PEAK-DURATION",
       "item": "115 A peak duration",
       "owner": "system / firmware / propulsion",
-      "blocks": ["routing", "repeated-peak thermal", "PCB copper transient", "capacitor stress", "connector heating", "board thermal recovery", "peak energy analysis"]
+      "blocks": [
+        "routing",
+        "repeated-peak thermal",
+        "PCB copper transient",
+        "capacitor stress",
+        "connector heating",
+        "board thermal recovery",
+        "peak energy analysis"
+      ]
     },
     {
       "id": "PEAK-REPETITION",
       "item": "115 A peak repetition rate and allowable duty cycle",
       "owner": "system / firmware / propulsion",
-      "blocks": ["repeated-peak thermal accumulation"]
+      "blocks": [
+        "repeated-peak thermal accumulation"
+      ]
     },
     {
       "id": "AIRFLOW-SPEC",
       "item": "Reproducible airflow / thermal boundary condition for bench test and for flight",
       "owner": "mechanical / test",
-      "blocks": ["thermal validation", "bench test safety"]
+      "blocks": [
+        "thermal validation",
+        "bench test safety"
+      ]
     },
     {
       "id": "THERMAL-VALIDATION",
       "item": "Final thermal validation plan and measured Rth(j-a)",
       "owner": "hardware / test",
-      "blocks": ["thermal sign-off"]
+      "blocks": [
+        "thermal sign-off"
+      ]
     },
     {
       "id": "PWM-FREQ",
       "item": "PWM frequency; 24 kHz assumed from AM32 default, unverified",
       "owner": "firmware",
-      "blocks": ["switching loss accuracy"]
+      "blocks": [
+        "switching loss accuracy"
+      ]
     },
     {
       "id": "X5R-BIAS",
       "item": "X5R capacitance at 25 V DC bias",
       "owner": "hardware",
-      "blocks": ["DC-link capacitor sizing"]
+      "blocks": [
+        "DC-link capacitor sizing"
+      ]
     },
     {
       "id": "FAB-CAPABILITY",
       "item": "Fabricator capability for 2 oz outer at 0.16 mm features",
       "owner": "manufacturing",
-      "blocks": ["manufacturing release"]
+      "blocks": [
+        "manufacturing release"
+      ]
     }
   ],
-
   "prohibited_actions": [
     "routing any net",
     "auto-routing",
     "committing BSC014N06NS to the schematic",
     "generating Gerbers, drill files or any fabrication package",
-    "inventing the 115 A peak duration or repetition rate",
+    "inventing the 115 A peak duration, repetition rate or duty cycle",
+    "inventing the airflow boundary condition",
     "using 7.53 nH as the loop-inductance budget",
-    "using h = 80 W/m2K as the convection boundary condition",
+    "using h = 80 W/m2K or any other optimistic airflow coefficient",
     "claiming the board is thermally safe in still air",
+    "describing the design as simply 'propwash cooled'",
+    "treating Tj = 175 C as an acceptable operating target",
     "routing up against the 8.72 nH theoretical limit without margin"
-  ]
+  ],
+  "system_requirements": {
+    "peak_current_A": 115,
+    "peak_duration_ms": null,
+    "peak_repetition_rate_Hz": null,
+    "peak_duty_cycle": null,
+    "airflow_boundary_condition": null,
+    "thermal_validation_plan": null,
+    "peak_duration_status": "OPEN",
+    "peak_repetition_status": "OPEN",
+    "airflow_status": "OPEN",
+    "thermal_validation_status": "OPEN",
+    "engineering_statement": "Peak thermal acceptability cannot be determined from peak current alone. Peak duration and repetition rate determine whether the 115 A condition is a transient event or a thermally significant operating condition."
+  },
+  "routing_status": "BLOCKED"
 }

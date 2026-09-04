@@ -1,10 +1,19 @@
 # DrikrAIO — Routing Readiness Report
 
-**ROUTING = NO-GO.**
+# ROUTING STATUS: BLOCKED
 
-Date 2026-09-05. Baseline: [`pre-routing-baseline.json`](pre-routing-baseline.json).
-No routing performed. BSC014N06NS not committed to the schematic. No peak
-duration invented.
+**Reasons:**
+
+1. **115 A peak duration unresolved**
+2. **115 A repetition rate unresolved**
+3. **Airflow boundary condition unresolved**
+4. **Thermal validation plan unresolved**
+5. **BSC014N06NS schematic commitment intentionally deferred**
+
+Date 2026-09-05 · Baseline rev 2: [`pre-routing-baseline.json`](pre-routing-baseline.json)
+
+No routing performed. No Gerbers, drill files or fabrication outputs generated.
+No peak duration, repetition rate or airflow condition invented.
 
 ---
 
@@ -12,112 +21,110 @@ duration invented.
 
 | # | Item | Evidence |
 |---|---|---|
-| 1 | **MOSFET transient architecture** | BSC014N06NS, 60 V. di/dt = 28.75 A / 11 ns = 2.61 A/ns; 80 %-derated budget **8.72 nH**. 3.9× the 40 V part's 2.25 nH. Verified from Rev 2.6, not carried over. |
-| 2 | **Corrected footprint** | `lib.pretty/BSC014N06NS_PG-TDSON-8.kicad_mod`, **25/25 checks pass**. Electrical land preserved; paste windowpane 4 × 1.70 × 1.55 mm at 58.4 %; courtyard added. |
-| 3 | **Netclass corrections** | `Phase`/`VBAT` 1.0 → 6.6 mm, vias 0.8/0.4. All 8 classes present. |
-| 4 | **SaveBoard regression detection** | Reproduced deterministically and now a **hard build gate**. |
+| 1 | BSC014N06NS Rev 2.6 transient architecture | 60 V; di/dt 2.61 A/ns from datasheet t_f = 11 ns |
+| 2 | **8.72 nH** switching-loop budget | 80 % derating of 60 V against 25.2 V rail |
+| 3 | Corrected footprint | `BSC014N06NS_PG-TDSON-8.kicad_mod`, **25/25** |
+| 4 | Phase/VBAT netclasses = 6.6 mm | applied, vias 0.8/0.4 |
+| 5 | All 8 netclasses verified after SaveBoard | `verify_netclasses.py` |
+| 6 | SaveBoard regression detection is a **hard build gate** | `build_pcb.py` exits non-zero |
+| 7 | All 10 design-rule minimums compared for **exact equality, both directions** | `verify_netclasses.py` |
+| 8 | Fault injection fails correctly on `min_clearance` 0.09 → 0.0 | tested, exit 1 |
+| 9 | 7.53 nH **SUPERSEDED** | purged from live use; older docs bannered |
+| 10 | h = 80 W/m²·K **SUPERSEDED** | absent from the live thermal model |
 
-### On (4) — the gate is now real
+## NOT PASS — thermal is MARGINAL
 
-`build_pcb.py` exits non-zero and refuses to continue if verification fails. No
-DRC, no manufacturing outputs, on a board whose rules were lost.
+The thermal architecture is **not** PASS. It is **MARGINAL**.
 
-Deliberate fault injection found a bug **in the verifier itself**: it only
-flagged design rules that moved *up*, so `min_clearance` 0.09 → **0.0** — the
-exact regression it exists to catch — was waved through as "tighter". A minimum
-going down is a weakened rule. All ten board minimums are now checked for
-**exact equality in both directions**. Re-tested: injected fault → exit 1;
-restored → exit 0.
+| Case | h | T_j hover | T_j peak sustained |
+|---|--:|--:|--:|
+| A — at the disc, 6.23 m/s | 42 | **128.9 °C** ❌ | **169.9 °C** ❌ |
+| B — slipstream, 12.46 m/s | 60 | **103.2 °C** ✅ | **132.7 °C** ❌ |
+| still air *(safety fact)* | 15 | 282.8 °C | 393 °C |
 
----
+- 125 °C is the design target; **175 °C is the absolute maximum, not a target**.
+- Peak fails the 125 °C target at **both** airflows.
+- At case A, peak leaves **5.1 °C** to the absolute maximum.
+- **Only one steady-state case passes: hover in developed slipstream.**
+- Rotor-disc / slipstream placement is a **thermal design parameter**.
+- The design is **not** "propwash cooled" — see the placement study.
 
-## FAIL / OPEN
+### The result that redirects the work
 
-| # | Item | Owner | Blocks |
+R_θ(j-c) + R_spread contribute only **5.7 K** of the total rise. Everything else
+is board-to-air.
+
+**More thermal vias, more copper pour, or a lower-R_DS(on) part cannot fix the
+peak case.** The bottleneck is getting heat off the board, not out of the die.
+The only two levers that work are **airflow exposure** and **duty cycle**.
+
+Remediation, solved from the steady-state peak case:
+
+| Lever | Required | Available |
+|---|--:|--:|
+| Airflow | h = 65.8 (≈15.1 m/s) | 42 / 60 (6.23 / 12.46 m/s) |
+| Board area at h=60 | 55 cm² (≈52 × 52 mm) | 50 cm² — violates the mechanical constraint |
+
+### And the result that may make it moot
+
+Board thermal time constant **τ ≈ 31–45 s** *(estimate)*.
+
+A peak much shorter than that barely moves the board. **The duration threshold
+that matters is tens of seconds, not milliseconds.** At h = 60, duty cycles up
+to **0.5** stay under the 125 °C target.
+
+So the peak case may never apply — but **duty cycle is OPEN**, so no row of that
+table can be selected as the operating condition.
+
+> **Peak thermal acceptability cannot be determined from peak current alone.
+> Peak duration and repetition rate determine whether the 115 A condition is a
+> transient event or a thermally significant operating condition.**
+
+## OPEN
+
+| # | Item | Baseline field | Status |
 |---|---|---|---|
-| 1 | **115 A peak duration** | system / firmware | Routing, and 6 dependent calculations |
-| 2 | **115 A repetition rate / duty cycle** | system / firmware | Repeated-peak accumulation |
-| 3 | **Reproducible airflow specification** | mechanical / test | Thermal validation, bench safety |
-| 4 | **Final thermal validation plan** | hardware / test | Thermal sign-off |
+| 1 | 115 A peak duration | `peak_duration_ms: null` | **OPEN** |
+| 2 | 115 A repetition rate / duty cycle | `peak_repetition_rate_Hz: null`, `peak_duty_cycle: null` | **OPEN** |
+| 3 | Airflow boundary condition | `airflow_boundary_condition: null` | **OPEN** |
+| 4 | Thermal validation plan | `thermal_validation_plan: null` | **OPEN** — drafted, not executed |
+| 5 | Placement case P3 (partially obstructed) | — | **REQUIRES MECHANICAL INPUT** |
 
-**115 A peak duration and repetition rate are unresolved system requirements.**
+None of these has been turned into a PASS by assumption.
 
----
+## Deliverables
 
-## Thermal — the previous PASS does not survive
+| Document | State |
+|---|---|
+| [`pre-routing-baseline.json`](pre-routing-baseline.json) | rev 2 — OPEN statuses and engineering statement recorded |
+| [`thermal-analysis.md`](thermal-analysis.md) | parameterised; steady-state / single-pulse / repeated-pulse separated; placement study |
+| [`thermal-validation-plan.md`](thermal-validation-plan.md) | draft; C1 bench forced-air, C2 installed aircraft, C3 still air prohibited above quiescent |
+| [`routing-readiness-report.md`](routing-readiness-report.md) | this document |
+| [`pre-routing-review-2.md`](pre-routing-review-2.md) | prior review, still valid for §1–§13 |
+| `electrical-design-review.md`, `pre-routing-report.md` | **SUPERSEDED**, bannered |
 
-You asked me to define the airflow rather than write "propwash cooled". Doing
-that **withdraws the earlier verdict.**
+## Build gate — enforced
 
-The 32.1 K/W / 111.8 °C result used **h = 80 W/m²·K**. Derived from momentum
-theory on the actual design point (disc loading 9.69 kg/m², from
-`docs/sizing/model-output.txt`):
+```
+CREATE FRESH BOARD → APPLY NETCLASSES → APPLY DESIGN RULES → SAVE → RELOAD
+  → VERIFY 8 NETCLASSES → VERIFY 10 DESIGN RULES → VERIFY WIDTHS/VIAS/CLEARANCES
+  → [only then] DRC → [only then] MANUFACTURING OUTPUT
+```
 
-| | Velocity | h |
-|---|--:|--:|
-| Induced, at the disc | 6.23 m/s | 42 W/m²·K |
-| Fully developed slipstream | 12.46 m/s | 60 W/m²·K |
-| **h = 80 requires** | **22.4 m/s** | — |
-
-**h = 80 needs almost double this aircraft's own slipstream.** Against airflow
-it actually produces:
-
-| Condition | T_j at the disc (h=42) | T_j in slipstream (h=60) |
-|---|--:|--:|
-| Hover | 128.9 °C ❌ | 103.2 °C ✅ |
-| **Peak** | **171.4 °C** ❌ | **133.7 °C** ❌ |
-
-Still air remains catastrophic: 282.8 °C hover, 397.5 °C peak.
-
-**Nothing exceeds the 175 °C absolute maximum**, so the design is not
-disqualified — but the **conservative 125 °C target is not met at peak under any
-airflow this aircraft produces**, and 171.4 °C at the disc sits 3.6 °C from the
-hard limit.
-
-Consequences:
-
-- Thermal status moves from **PASS WITH CONDITION** to **MARGINAL — does not
-  meet the 125 °C target at peak**.
-- **Mounting position relative to the rotor disc is now a thermal design
-  parameter**, not a mechanical convenience. Slipstream is worth ~38 °C.
-- This sharpens open item 1: if the 115 A peak is short and rare it is
-  irrelevant; if it is sustained, the peak case governs. **The duration decides
-  whether this matters at all.**
-- h is calculated, not measured. R_θ(j-a) must be measured on the first board.
-
----
-
-## Bench-test safety requirement
-
-**Full-power bench testing requires controlled forced airflow.**
-
-Do not run sustained 115 A on a stationary board without it: still air gives
-~398 °C junction, which destroys the parts.
-
-The airflow used for any thermal measurement must be **stated and reproducible**
-— velocity, direction and distance — not described as "propwash". The reference
-conditions for this design are 6.23 m/s (at the disc) and 12.46 m/s (developed
-slipstream), and a bench setup should bracket both.
-
----
+On failure: exit non-zero, no DRC, no Gerbers, no drill files, no fabrication
+outputs. Verified by fault injection, and by a fresh-board vs loaded-board
+save-cycle test that reproduces the regression on demand.
 
 ## Prohibited, restated
 
 No routing. No auto-routing. No Gerbers, drill files or fabrication package. No
-committing BSC014N06NS to the schematic. **7.53 nH** and **h = 80 W/m²·K** are
-superseded and must not reappear — earlier documents now carry SUPERSEDED
-banners and their live values have been corrected.
-
-Design to **below** 8.72 nH; do not route up against the calculated limit.
+committing BSC014N06NS to the schematic. No inventing peak duration, repetition
+rate or airflow. **7.53 nH** and **h = 80 W/m²·K** must not reappear. 175 °C is
+not an operating target. Do not describe the design as "propwash cooled". Design
+below 8.72 nH with margin, not up against it.
 
 ---
 
-## Verdict
+# ROUTING STATUS: BLOCKED
 
-**ROUTING = NO-GO.**
-
-Four gate items pass. Two fail outright (peak duration, repetition rate), one is
-undefined (airflow specification), one is not yet written (validation plan), and
-the thermal verdict has weakened from PASS to MARGINAL on closer analysis.
-
-Stopping here as instructed. No further speculative PCB changes.
+Stopping here. No further speculative engineering changes.

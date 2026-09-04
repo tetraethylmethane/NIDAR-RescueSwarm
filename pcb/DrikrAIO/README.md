@@ -114,23 +114,29 @@ Rebuild it with:
 
 ## Reviews
 
+# ROUTING STATUS: BLOCKED
+
 **[docs/routing-readiness-report.md](docs/routing-readiness-report.md) is current.**
-**ROUTING = NO-GO.** Machine-readable baseline:
-[docs/pre-routing-baseline.json](docs/pre-routing-baseline.json).
+Baseline rev 2: [docs/pre-routing-baseline.json](docs/pre-routing-baseline.json).
 
-Thermal has weakened from PASS to **MARGINAL**: defining the airflow instead of
-writing "propwash cooled" showed h=80 W/m2K needs 22.4 m/s against this
-aircraft's 12.46 m/s slipstream. At real airflow, peak reaches 133.7 C in
-slipstream and 171.4 C at the disc — under the 175 C limit, over the 125 C
-target.
+Blocked on: 115 A peak duration, peak repetition rate, airflow boundary
+condition, thermal validation plan, and the deferred MOSFET schematic commit.
 
+**Thermal is MARGINAL, not PASS.** Only one steady-state case passes — hover in
+developed slipstream (103.2 C). Peak fails the 125 C target at both airflows
+(132.7 C slipstream, 169.9 C at the disc). Still air reaches 393 C and is
+prohibited above quiescent.
 
-**[docs/pre-routing-review-2.md](docs/pre-routing-review-2.md) is current.**
-**GO/NO-GO: NO-GO** — four gate conditions pass, the 115 A peak duration does
-not. Corrected footprint  passes
-25/25 checks (windowpane paste at 58.4 %, courtyard added — the donor had
-none). Thermal architecture is feasible **only with propwash**: still air gives
-T_j 283 °C at hover, and Rev 1's 110 °C figure was wrong.
+The result that redirects the work: Rth(j-c) + R_spread contribute only **5.7 K**
+of the rise. **More vias and more copper cannot fix the peak case** — the
+bottleneck is board-to-air. The only levers are airflow exposure and duty cycle.
+
+The result that may make it moot: board time constant is **31-45 s**, so a peak
+much shorter than that barely moves the board. At h=60, duty up to 0.5 stays
+under target. But duty cycle is OPEN, so no row can be selected.
+
+Analysis: [docs/thermal-analysis.md](docs/thermal-analysis.md) ·
+Validation: [docs/thermal-validation-plan.md](docs/thermal-validation-plan.md)
 
 ## Electrical design review
 
