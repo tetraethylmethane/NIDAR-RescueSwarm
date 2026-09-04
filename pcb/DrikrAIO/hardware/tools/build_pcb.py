@@ -9,6 +9,7 @@ final.
 Run with KiCad's bundled Python:
     "C:/Program Files/KiCad/10.0/bin/python.exe" build_pcb.py
 """
+import json
 import os
 import re
 import sys
@@ -307,7 +308,31 @@ def main():
                     assigned += 1
 
     board.BuildListOfNets()
+
+    # SaveBoard REWRITES the .kicad_pro and replaces net_settings with a bare
+    # Default class. That silently destroyed the whole netclass set once
+    # already -- Phase, VBAT, RF, Gate, Analog and USB all vanished, and the
+    # board still opened and still passed DRC, because a board with no
+    # netclasses has nothing to violate. Preserve it around the save.
+    pro_path = os.path.join(HW, "DrikrAIO.kicad_pro")
+    keep = None
+    if os.path.exists(pro_path):
+        with open(pro_path, encoding="utf-8") as fh:
+            keep = json.load(fh).get("net_settings")
+
     pcbnew.SaveBoard(OUT, board)
+
+    if keep is not None:
+        with open(pro_path, encoding="utf-8") as fh:
+            pro = json.load(fh)
+        if [c.get("name") for c in pro.get("net_settings", {}).get("classes", [])] \
+                != [c.get("name") for c in keep.get("classes", [])]:
+            pro["net_settings"] = keep
+            with open(pro_path, "w", encoding="utf-8", newline="\n") as fh:
+                json.dump(pro, fh, indent=2)
+            print(f"   net_settings restored after SaveBoard "
+                  f"({len(keep.get('classes', []))} classes)")
+
     inject_stackup(OUT)
 
     print(f"board written: {OUT}")

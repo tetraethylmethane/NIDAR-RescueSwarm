@@ -224,7 +224,49 @@ def main():
               f" loop L < {allowed/didt*1e9:5.2f} nH"
               f"{'   <-- very hard to guarantee' if v == 40 else '   achievable'}")
 
-    rule("10. WHAT THIS MEANS")
+    rule("10. 60 V FET SELECTION  (decision: 60 V minimum)")
+    # (label, VDSS, Rds(on) max @10V, source-confidence)
+    CANDIDATES = [
+        ("SP40N01GHNK  (fitted, 40 V)", 40.0, 1.5e-3,
+         "committed datasheet Ver-1.1"),
+        ("NCEP60T15G", 60.0, 3.1e-3,
+         "third-party database, NOT the manufacturer datasheet"),
+        ("BSC028N06NS", 60.0, 2.8e-3, "Infineon product page"),
+        ("BSC014N06NS", 60.0, 1.45e-3, "Infineon product page"),
+    ]
+    print(f"  {'part':<28} {'VDSS':>5} {'Rmax':>7} {'Rhot':>7} "
+          f"{'Pcond/FET':>10} {'4ch':>7} {'Lloop':>7}")
+    print(f"  {'':<28} {'V':>5} {'mohm':>7} {'mohm':>7} "
+          f"{'W @29A':>10} {'W':>7} {'nH':>7}")
+    print("  " + "-" * 76)
+    for name, vdss, rmax, src in CANDIDATES:
+        rhot = rmax * RDSON_HOT_MULT
+        p_cond = i_ph_peak ** 2 * rhot
+        p_sw6 = 6 * (0.5 * V_MAX * i_ph_peak * (TR + TF) * F_PWM
+                     + 0.5 * COSS * V_MAX ** 2 * F_PWM + QRR * V_MAX * F_PWM)
+        p_4ch = 4 * (2 * p_cond + p_sw6)
+        l_loop = (vdss * 0.8 - V_MAX) / didt
+        print(f"  {name:<28} {vdss:5.0f} {rmax*1e3:7.2f} {rhot*1e3:7.2f} "
+              f"{p_cond:10.2f} {p_4ch:7.1f} {l_loop*1e9:7.2f}")
+    print("\n  Switching terms above reuse the SP40N01GHNK timings; each")
+    print("  candidate's own tr/tf/Coss/Qrr are UNKNOWN until its datasheet is")
+    print("  read. Conduction dominates here, so the ranking holds, but the")
+    print("  absolute numbers for the 60 V rows are provisional.")
+    print()
+    print("  BSC014N06NS is 60 V at LOWER Rds(on) than the fitted 40 V part.")
+    print("  Moving to 60 V therefore need not cost conduction loss at all --")
+    print("  it costs unit price, and it needs the SuperSO8 land pattern")
+    print("  checked against PDFN-8L_L6.0-W5.0-P1.27. The OpenDrone catalogue")
+    print("  already lists an Infineon SuperSO8 (BSC010N04LS6) as landing on")
+    print("  this footprint, which is good evidence but is not a substitute")
+    print("  for the drawing arithmetic.")
+    for name, vdss, rmax, src in CANDIDATES:
+        rhot = rmax * RDSON_HOT_MULT
+        p_fet = i_ph_peak ** 2 * rhot + 0.21
+        print(f"    {name:<28} Rth(j-a) budget at peak:"
+              f" {(125.0-T_AMB)/p_fet:5.1f} C/W   [{src}]")
+
+    rule("11. WHAT THIS MEANS")
     print("  - 2 oz outer copper ALONE cannot carry the bus. Use all six")
     print("    layers in parallel, stitched with a via array.")
     print("  - The 'Phase' netclass at 1.0 mm track is far short of the phase")

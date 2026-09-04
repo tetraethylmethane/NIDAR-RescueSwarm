@@ -117,17 +117,17 @@ Rebuild it with:
 **[docs/electrical-design-review.md](docs/electrical-design-review.md) gates
 routing.** Numbers regenerate from `hardware/tools/power_review.py`.
 
-Three blockers, all calculated rather than assumed:
+**Resolved:** `Phase` and `VBAT` netclasses corrected 1.0 mm → 6.6 mm with
+0.8/0.4 vias (1.0 mm carries 5.3 A against a 21 A phase RMS), and the MOSFET
+decision is **60 V minimum**.
 
-1. **The 115 A peak duration is undefined** anywhere in the repo, so repeated
-   peaks cannot be assessed. Firmware parameter, not a PCB one.
-2. **The `Phase` netclass is 1.0 mm, which carries 5.3 A** against a 21 A phase
-   RMS. It came from a toothpick-class board and would pass DRC on a board that
-   cannot carry its own current.
-3. **40 V FETs on a 25.2 V rail leave a 2.25 nH loop-inductance budget** at 80 %
-   derating — about 2 mm of trace. No standard TVS fits the window, which is why
-   OpenESC rev3 removed its clamps. 60 V parts would relax this to 7.5 nH at
-   roughly double the conduction loss.
+**Recommended part: Infineon BSC014N06NS** — 60 V, R_DS(on) max **1.45 mΩ**,
+SuperSO8 5×6. It is 60 V at *lower* resistance than the fitted 40 V part, so it
+buys 3.3× the loop-inductance headroom (2.25 → 7.53 nH) at slightly lower loss.
+Land pattern and switching parameters still need verifying against its datasheet.
+
+**Still open: the 115 A peak duration** is undefined anywhere in the repo, so
+repeated peaks cannot be assessed. Firmware parameter, not a PCB one.
 
 Also established: 115 A needs 69 mm of 2 oz outer copper on a 50 mm board, so
 the bus must use **all six layers**; J1 is 0.7 A per contact and is a breakout

@@ -2,6 +2,26 @@
 
 **Gate: routing must not begin until §18 is signed off.**
 
+## Decisions taken (2026-09-04)
+
+| Item | Decision |
+|---|---|
+| Battery | 6S3P Li-ion, 18–25.2 V |
+| Continuous board current | 42 A |
+| Peak | 115 A — **duration still undefined** |
+| MOSFET | **60 V minimum** |
+| Outer copper | 2 oz (current) |
+| High-current bus | **All six layers in parallel** |
+| Phase copper | Wide multilayer pour, **not** 1 mm traces |
+| J1 | **Not a battery-current entry** |
+| Main battery entry | U3 high-current pads / high-current connector |
+| TVS | **Do not force one** onto a 25.2 V / 40 V architecture |
+| Cooling | Propwash-dependent; bench peak testing needs external airflow |
+| Routing | **Blocked** until power geometry and FET selection resolve |
+
+**Applied:** `Phase` and `VBAT` netclasses corrected from 1.0 mm to 6.6 mm with
+0.8/0.4 vias; the 60 V FET selection is §7a.
+
 Every number here is produced by
 [`hardware/tools/power_review.py`](../hardware/tools/power_review.py) and
 regenerates from it. Device parameters are quoted from the datasheets committed
@@ -88,9 +108,14 @@ Per channel, phase copper required (2 oz outer, 20 °C rise):
 | Phase, hover | 21 A | **6.6 mm** |
 | Phase, peak | 29 A | **10.2 mm** |
 
-**The `Phase` netclass is currently 1.0 mm, which carries 5.3 A.** It is short
-by roughly 4× at hover and 6× at peak. It was inherited from OpenAIO, a
-toothpick-class board. **This must be corrected before routing** — see §16.
+The `Phase` netclass **was** 1.0 mm, which carries 5.3 A — short by roughly 4×
+at hover and 6× at peak. It was inherited from OpenAIO, a toothpick-class
+board, and it would have passed DRC on a board that cannot carry its own
+current. **Corrected to 6.6 mm with 0.8/0.4 vias**, alongside `VBAT`.
+
+6.6 mm is the *per-layer* minimum. The rated current is reached by pouring the
+same net on all six layers, §10 — the netclass number is a floor that stops a
+hand-route quietly necking down, not the whole conductor.
 
 ## 5. MOSFET loss — SP40N01GHNK
 
@@ -165,14 +190,48 @@ Protection must therefore come from **loop geometry**, §8.
 | 40 V (current) | 6.8 V | 2.25 nH | very hard to guarantee |
 | **60 V** | 22.8 V | **7.53 nH** | achievable, and re-opens the TVS option |
 
-> **RECOMMENDATION — needs your decision.** Moving to a 60 V FET in the same
-> PDFN5×6 footprint would take the loop-inductance requirement from *hard to
-> guarantee* to *routine*, and would make a TVS viable as a second line of
-> defence. The cost is R_DS(on): 60 V parts in this package are typically
-> 2–3 mΩ against 1.2 mΩ, which roughly doubles conduction loss (peak per
-> channel 5.2 W → ~8 W). **This is a real trade and it is yours to make.**
-> The 40 V part is what OpenESC ships and flies — at 6S, on a board whose loop
-> geometry was tuned for it.
+**Decision taken: 60 V minimum.** See §7a.
+
+## 7a. 60 V MOSFET selection
+
+The assumption that 60 V costs conduction loss turns out to be **false** if the
+right part is chosen.
+
+| Part | V_DSS | R_DS(on) max | R hot (×1.6) | P_cond/FET @29 A | 4 ch total | Loop budget | R_θ(j-a) budget |
+|---|--:|--:|--:|--:|--:|--:|--:|
+| SP40N01GHNK *(fitted, 40 V)* | 40 V | 1.50 mΩ | 2.40 mΩ | 1.98 W | 20.9 W | 2.25 nH | 38.7 °C/W |
+| NCEP60T15G | 60 V | 3.10 mΩ | 4.96 mΩ | 4.10 W | 37.8 W | 7.53 nH | 19.7 °C/W |
+| BSC028N06NS | 60 V | 2.80 mΩ | 4.48 mΩ | 3.70 W | 34.6 W | 7.53 nH | 21.7 °C/W |
+| **BSC014N06NS** | **60 V** | **1.45 mΩ** | **2.32 mΩ** | **1.92 W** | **20.4 W** | **7.53 nH** | **40.0 °C/W** |
+
+**Recommended: Infineon BSC014N06NS**, OptiMOS 5, SuperSO8 5×6, I_D 240 A.
+
+It is 60 V at *lower* R_DS(on) than the fitted 40 V part, so it delivers the
+3.3× loop-inductance headroom **and** slightly lower loss **and** a slightly
+better thermal budget. The cost is unit price, not watts.
+
+The other two 60 V candidates roughly double conduction loss and cut the
+R_θ(j-a) budget to ~20 °C/W, which is not realistically achievable on this PCB.
+
+### Before this part is committed
+
+- **Land pattern must be checked** against `PDFN-8L_L6.0-W5.0-P1.27` by
+  arithmetic on the datasheet drawing. The OpenDrone catalogue already lists an
+  Infineon SuperSO8 (BSC010N04LS6) as landing on this footprint, which is good
+  evidence but is not the check.
+- **t_r, t_f, C_oss, Q_rr, R_θJC, E_AS are UNKNOWN** — taken from the Infineon
+  product page, not the datasheet. The switching terms above reuse the
+  SP40N01GHNK timings. Conduction dominates so the ranking holds, but the
+  absolute 60 V numbers are provisional.
+- **Stock and price at the required quantity** (24/board) not checked.
+
+### Supply-chain warning carried from the catalogue
+
+`SP40N01GHNK` ships under **one MPN with two datasheet revisions** that disagree
+on the parameters this review depends on: R_θJC **1.27 vs 0.96 °C/W** and E_AS
+**490 vs 1089 mJ**. This review used Ver-1.1. If Ver-1.0 silicon arrives on a
+reorder, the thermal budget is ~32 % worse than calculated. That ambiguity is
+itself an argument for moving to a part with a single published spec.
 
 ## 8. Bulk and ceramic capacitance
 
@@ -306,10 +365,10 @@ A 1–2 W RF PA is a new thermal zone and a new interferer next to the receiver.
 
 ## 16. DRC rules — changes required before routing
 
-| Rule | Current | Required | Why |
+| Rule | Was | Now | Why |
 |---|---|---|---|
-| `Phase` netclass track | 1.0 mm | **≥ 6.6 mm pour** | 1.0 mm carries 5.3 A; phase RMS is 21 A |
-| `VBAT` netclass track | 1.0 mm | **≥ 17.2 mm pour, 6 layers** | 42 A continuous |
+| `Phase` netclass track | 1.0 mm | **6.6 mm** ✅ applied | 1.0 mm carries 5.3 A; phase RMS is 21 A |
+| `VBAT` netclass track | 1.0 mm | **6.6 mm/layer, 6 layers** ✅ applied | 42 A continuous |
 | Bus via count | none | **≥ 40 per transition** | §9 |
 | FET thermal pad | none | **≥ 100 mm² pour, ≥ 9 vias** | §5 |
 | RF clearance | 0.30 mm | keep, add **50 Ω impedance class** | §14 |
@@ -344,7 +403,7 @@ will pass DRC on a board that cannot carry its own current.
 | 4 | Four-channel 11 A / 29 A | ✅ §4 |
 | 5 | MOSFET loss | ✅ §5 |
 | 6 | MOSFET transient voltage | ⚠️ §6 — 2.25 nH budget is severe |
-| 7 | TVS selection | ✅ §7 — **none viable; decision needed on 40 V vs 60 V** |
+| 7 | TVS selection | ✅ §7 — none viable; **60 V decided**, §7a |
 | 8 | Bulk capacitor sizing/placement | ✅ §8 (X5R bias derating UNKNOWN) |
 | 9 | Via arrays | ✅ §9 |
 | 10 | Copper pours | ✅ §10 |
@@ -353,17 +412,18 @@ will pass DRC on a board that cannot carry its own current.
 | 13 | Ground architecture | ✅ §13 |
 | 14 | RF isolation | ✅ §14 |
 | 15 | VTX thermal | ✅ §15 — out of scope, no VTX exists |
-| 16 | DRC rules | ❌ §16 — **netclasses must be corrected first** |
+| 16 | DRC rules | ✅ §16 — netclasses corrected |
 | 17 | Manufacturing constraints | ⚠️ §17 — fab capability unconfirmed |
 
-**Three blockers before routing:**
+**Remaining blockers before routing:**
 
 1. **Define the 115 A peak duration and repetition.** Firmware/flight-dynamics
-   parameter. Blocks thermal sign-off.
-2. **Correct the `Phase` and `VBAT` netclasses.** They currently permit a board
-   that cannot carry its own current.
-3. **Decide 40 V vs 60 V MOSFETs.** The 2.25 nH loop budget at 40 V is the
-   single tightest constraint in this design.
+   parameter. Still blocks thermal sign-off. *(open)*
+2. ~~Correct the `Phase` and `VBAT` netclasses.~~ **Done** — 6.6 mm, 0.8/0.4 vias.
+3. ~~Decide 40 V vs 60 V.~~ **Done — 60 V minimum.** Now: verify the
+   BSC014N06NS land pattern against `PDFN-8L_L6.0-W5.0-P1.27`, read its
+   datasheet for the switching and thermal parameters, and check stock at 24
+   per board. *(open, but bounded)*
 
 **Two to confirm in parallel:** fabricator capability for 2 oz / 0.16 mm, and
 X5R capacitance at 25 V bias.

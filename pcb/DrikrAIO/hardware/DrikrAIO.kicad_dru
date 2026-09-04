@@ -40,17 +40,35 @@
   (layer outer))
 
 # MOTOR PHASE AND BATTERY COPPER.
-# Peak is 29 A per motor against a 6S pack. The Phase and VBAT netclasses carry
-# 1.0 mm track and 0.5/0.3 vias; this floors them so a hand-route cannot quietly
-# neck one down where it leaves a pad.
+#
+# Calculated in tools/power_review.py, not chosen. IPC-2221 on 2 oz outer at a
+# 20 C rise gives 5.3 A for a 1.0 mm track. Phase RMS is 21 A at hover and 29 A
+# at peak; the bus is 42 A continuous. The old 1.0 mm floor was inherited from
+# OpenAIO, a toothpick-class board, and was short by 4-6x -- it would have
+# passed DRC on a board that could not carry its own current.
+#
+# 6.6 mm is the PER-LAYER minimum for 21 A. The rated current is reached by
+# pouring the same net on all six layers and stitching them; these rules are a
+# floor that stops a hand-route necking down where it leaves a pad, not a
+# statement that one 6.6 mm trace is the whole conductor.
 
 (rule "motor phase minimum width"
-  (constraint track_width (min 1.0mm))
+  (constraint track_width (min 6.6mm))
   (condition "A.NetClass == 'Phase'"))
 
 (rule "battery rail minimum width"
-  (constraint track_width (min 1.0mm))
+  (constraint track_width (min 6.6mm))
   (condition "A.NetClass == 'VBAT'"))
+
+# HIGH-CURRENT VIAS.
+# 0.3 mm drill at 25 um plating is 1.08 mohm and about 1.5 A continuous. The bus
+# needs 28 vias at 42 A and 38 at 115 A; a phase needs 14. Single vias on these
+# nets are the bottleneck the pours exist to avoid, so the minimum via is
+# enlarged and the array requirement is documented in the design review.
+
+(rule "power via size"
+  (constraint via_diameter (min 0.8mm))
+  (condition "A.NetClass == 'Phase' || A.NetClass == 'VBAT'"))
 
 # RF KEEP-CLEAR, 2.4 GHz ELRS.
 # The receiver chain shares a board with four switching power stages. Copper
