@@ -1,0 +1,248 @@
+{
+  "schema": "drikraio.pre-routing-baseline/1",
+  "revision": 1,
+  "date": "2026-09-05",
+  "status": "NO-GO",
+  "routing_allowed": false,
+  "mosfet_committed_to_schematic": false,
+
+  "electrical": {
+    "battery": {
+      "chemistry": "6S3P Li-ion",
+      "v_nominal": 21.6,
+      "v_min": 18.0,
+      "v_max": 25.2,
+      "design_voltage": 25.2,
+      "unit": "V"
+    },
+    "board_current": {
+      "continuous_a": 42.0,
+      "peak_a": 115.0,
+      "peak_duration_s": null,
+      "peak_repetition_hz": null,
+      "peak_duty_cycle": null
+    },
+    "per_channel": {
+      "channels": 4,
+      "continuous_a": 10.5,
+      "peak_a": 28.75,
+      "phase_rms_hover_a": 21.0,
+      "phase_rms_peak_a": 28.75,
+      "phase_rms_note": "hover assumes phase RMS = 2x battery current at 50% duty; assumption, not measurement"
+    }
+  },
+
+  "mosfet": {
+    "mpn": "BSC014N06NS",
+    "manufacturer": "Infineon",
+    "datasheet": "Final Datasheet Revision 2.6, 2024-05-11",
+    "package": "PG-TDSON-8 (outline PG-TDSON-8-U04)",
+    "status": "PREFERRED CANDIDATE, NOT COMMITTED",
+    "datasheet_values": {
+      "vds_v": 60,
+      "rds_on_max_ohm": 1.45e-3,
+      "rds_on_typ_ohm": 1.2e-3,
+      "rds_on_condition": "VGS=10V, ID=50A",
+      "tf_s": 11e-9,
+      "tr_s": 10e-9,
+      "qg_max_c": 104e-9,
+      "qgd_max_c": 21e-9,
+      "qoss_max_c": 125e-9,
+      "qrr_typ_c": 139e-9,
+      "coss_max_f": 1875e-12,
+      "crss_max_f": 118e-12,
+      "ciss_max_f": 8125e-12,
+      "rth_jc_max_kw": 0.8,
+      "rth_ja_reference_kw": 50.0,
+      "rth_ja_reference_condition": "6 cm2 one-layer 70 um Cu, 40x40x1.5 mm FR4, vertical, still air",
+      "id_tc25_a": 257,
+      "id_tc100_a": 182,
+      "id_ta25_pcb_a": 31,
+      "tj_max_c": 175
+    },
+    "calculated_values": {
+      "rds_on_125c_ohm": 2.2475e-3,
+      "rds_on_125c_basis": "x1.55 from Diagram 9 max curve",
+      "di_dt_a_per_s": 2.61e9,
+      "loop_inductance_budget_80pct_h": 8.72e-9
+    },
+    "prohibited_uses": [
+      "257 A headline ID must NOT be used as a PCB current rating",
+      "7.53 nH loop budget is SUPERSEDED and must not appear in current documentation"
+    ],
+    "unknown": [
+      "zth_ja_transient - not present in Rev 2.6",
+      "stock and price at 24 per board"
+    ]
+  },
+
+  "pcb": {
+    "size_mm": [50.0, 50.0],
+    "mounting_pattern_mm": 30.5,
+    "layers": 6,
+    "outer_copper_oz": 2,
+    "inner_copper_oz": 1,
+    "surface_finish": "ENIG",
+    "footprints": 347,
+    "pads_netted": 1283,
+    "placed_on_board": 292,
+    "staged_off_board": 55,
+    "routed_nets": 0
+  },
+
+  "thermal": {
+    "model": "Rth(j-a) = Rth(j-c) + R_spread + R_conv",
+    "linear_area_scaling": "WITHDRAWN - do not use",
+    "r_spread_kw": 1.81,
+    "rth_jc_max_kw": 0.8,
+    "required_rth_ja_kw": {
+      "hover_tj125": 66.2,
+      "peak_tj125": 38.0,
+      "peak_tj175": 60.4
+    },
+    "airflow_boundary_condition": {
+      "note": "'propwash cooled' is not a specification; derived from momentum theory",
+      "disc_loading_kg_m2": 9.69,
+      "v_induced_at_disc_m_s": 6.23,
+      "v_slipstream_m_s": 12.46,
+      "correlation": "flat plate, Nu = 0.664 Re^0.5 Pr^(1/3), L = 0.05 m, air at 60 C",
+      "h_still_air_w_m2k": 15.0,
+      "h_at_disc_w_m2k": 42.0,
+      "h_slipstream_w_m2k": 60.0,
+      "h_previously_assumed_w_m2k": 80.0,
+      "h_previously_assumed_status": "WITHDRAWN - requires 22.4 m/s, above this aircraft's slipstream"
+    },
+    "junction_temperature_c": {
+      "hover_still_air": 282.8,
+      "hover_at_disc": 128.9,
+      "hover_slipstream": 103.2,
+      "peak_still_air": 397.5,
+      "peak_at_disc": 171.4,
+      "peak_slipstream": 133.7
+    },
+    "verdict": {
+      "tj_target_c": 125,
+      "tj_absolute_max_c": 175,
+      "still_air": "FAIL at hover and peak - not acceptable at any sustained power",
+      "propwash_hover": "PASS in slipstream, MARGINAL at the disc",
+      "propwash_peak": "MISSES the 125 C target under all realistic airflow; 171.4 C at the disc is 3.6 C from the absolute limit",
+      "summary": "NOT DISQUALIFIED - nothing exceeds 175 C - but the 125 C conservative target is not met at peak"
+    },
+    "requires_measurement": "Rth(j-a) on the first board"
+  },
+
+  "footprint": {
+    "canonical": "lib.pretty/BSC014N06NS_PG-TDSON-8.kicad_mod",
+    "status": "PASS",
+    "checks_passed": 25,
+    "checks_total": 25,
+    "electrical_geometry": "PRESERVED - do not modify without a datasheet-based reason",
+    "pitch_mm": 1.27,
+    "lead_pad_mm": [0.58, 1.08],
+    "thermal_pad_mm": [4.40, 4.10],
+    "paste_windows": 4,
+    "paste_window_mm": [1.70, 1.55],
+    "paste_coverage_pct": 58.4,
+    "courtyard": "added - donor had none",
+    "fixed_defects": [
+      "18.04 mm2 solid paste aperture replaced with windowpane",
+      "courtyard added; donor footprint had no F.CrtYd layer at all"
+    ]
+  },
+
+  "drc": {
+    "expected_netclasses": 8,
+    "netclass_names": ["Default", "Analog", "Gate", "Phase", "Power", "RF", "USB", "VBAT"],
+    "phase_track_width_mm": 6.6,
+    "vbat_track_width_mm": 6.6,
+    "power_via_diameter_mm": 0.8,
+    "power_via_drill_mm": 0.4,
+    "expected_design_rules": 10,
+    "critical_design_rules": {
+      "min_clearance": 0.09,
+      "min_connection": 0.09,
+      "min_track_width": 0.09,
+      "min_via_diameter": 0.35,
+      "min_through_hole_diameter": 0.2,
+      "min_via_annular_width": 0.075,
+      "min_hole_clearance": 0.2,
+      "min_hole_to_hole": 0.2,
+      "min_copper_edge_clearance": 0.2,
+      "solder_mask_to_copper_clearance": 0.005
+    },
+    "custom_rules": [
+      "2 oz outer copper, clearance",
+      "2 oz outer copper, track width",
+      "motor phase minimum width",
+      "battery rail minimum width",
+      "power via size",
+      "RF clearance to other copper"
+    ],
+    "verifier": "hardware/tools/verify_netclasses.py",
+    "verifier_mandatory": true,
+    "drc_validity_rule": "A green DRC is INVALID unless verify_netclasses.py exits 0 for the same board state",
+    "known_regression": {
+      "trigger": "fresh pcbnew.BOARD() -> SaveBoard()",
+      "safe_path": "LoadBoard() -> SaveBoard()",
+      "damage": "8 netclasses reduced to 1; 10 design rules changed; min_clearance 0.09 -> 0.0",
+      "reproduced_by": "hardware/tools/test_save_cycle.py"
+    }
+  },
+
+  "unresolved": [
+    {
+      "id": "PEAK-DURATION",
+      "item": "115 A peak duration",
+      "owner": "system / firmware / propulsion",
+      "blocks": ["routing", "repeated-peak thermal", "PCB copper transient", "capacitor stress", "connector heating", "board thermal recovery", "peak energy analysis"]
+    },
+    {
+      "id": "PEAK-REPETITION",
+      "item": "115 A peak repetition rate and allowable duty cycle",
+      "owner": "system / firmware / propulsion",
+      "blocks": ["repeated-peak thermal accumulation"]
+    },
+    {
+      "id": "AIRFLOW-SPEC",
+      "item": "Reproducible airflow / thermal boundary condition for bench test and for flight",
+      "owner": "mechanical / test",
+      "blocks": ["thermal validation", "bench test safety"]
+    },
+    {
+      "id": "THERMAL-VALIDATION",
+      "item": "Final thermal validation plan and measured Rth(j-a)",
+      "owner": "hardware / test",
+      "blocks": ["thermal sign-off"]
+    },
+    {
+      "id": "PWM-FREQ",
+      "item": "PWM frequency; 24 kHz assumed from AM32 default, unverified",
+      "owner": "firmware",
+      "blocks": ["switching loss accuracy"]
+    },
+    {
+      "id": "X5R-BIAS",
+      "item": "X5R capacitance at 25 V DC bias",
+      "owner": "hardware",
+      "blocks": ["DC-link capacitor sizing"]
+    },
+    {
+      "id": "FAB-CAPABILITY",
+      "item": "Fabricator capability for 2 oz outer at 0.16 mm features",
+      "owner": "manufacturing",
+      "blocks": ["manufacturing release"]
+    }
+  ],
+
+  "prohibited_actions": [
+    "routing any net",
+    "auto-routing",
+    "committing BSC014N06NS to the schematic",
+    "generating Gerbers, drill files or any fabrication package",
+    "inventing the 115 A peak duration or repetition rate",
+    "using 7.53 nH as the loop-inductance budget",
+    "using h = 80 W/m2K as the convection boundary condition",
+    "claiming the board is thermally safe in still air",
+    "routing up against the 8.72 nH theoretical limit without margin"
+  ]
+}

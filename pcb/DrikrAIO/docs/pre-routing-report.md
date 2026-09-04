@@ -1,5 +1,14 @@
 # DrikrAIO — Pre-Routing Engineering Report
 
+> ## ⚠ SUPERSEDED
+> This document is retained for its reasoning and its correction record.
+> **Current status is [pre-routing-review-2.md](pre-routing-review-2.md); the
+> machine-readable baseline is [pre-routing-baseline.json](pre-routing-baseline.json).**
+> Numbers here that have since been corrected: the loop-inductance budget is
+> **8.72 nH**, not 7.53 nH (the old figure used the 40 V part's t_f), and the
+> still-air thermal figures were computed with an over-optimistic convection
+> coefficient.
+
 **ROUTING REMAINS BLOCKED.** One requirement is unresolved (§14) and one
 assembly defect must be fixed (§2).
 

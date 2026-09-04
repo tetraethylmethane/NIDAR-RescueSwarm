@@ -45,12 +45,27 @@ EXPECTED_RULES = [
     "RF clearance to other copper",
 ]
 
-# Board-level minimums that must not silently relax.
+# Board-level minimums. EXACT equality is required, in both directions.
+#
+# An earlier version of this file only failed when a value went UP, on the
+# reasoning that a larger minimum is a tighter rule. That is wrong for a
+# minimum: min_clearance going 0.09 -> 0.0 means there is no clearance rule at
+# all, and the check waved it through as "tighter". It was caught by
+# deliberately injecting the exact regression this file exists to detect.
+#
+# Any deviation is now a failure. A rule that changed for a good reason should
+# be changed HERE, in the baseline, as a reviewed edit.
 EXPECTED_DS = {
-    "min_track_width": 0.09,
     "min_clearance": 0.09,
+    "min_connection": 0.09,
+    "min_track_width": 0.09,
     "min_via_diameter": 0.35,
     "min_through_hole_diameter": 0.2,
+    "min_via_annular_width": 0.075,
+    "min_hole_clearance": 0.2,
+    "min_hole_to_hole": 0.2,
+    "min_copper_edge_clearance": 0.2,
+    "solder_mask_to_copper_clearance": 0.005,
 }
 
 
@@ -97,14 +112,16 @@ def main():
             else:
                 print(f"  ok    {name}.{key} = {actual}")
 
-    # 8. board-level clearance/track minimums
+    # 8. board-level minimums -- exact match, either direction
     ds = pro.get("board", {}).get("design_settings", {}).get("rules", {})
+    print(f"  design rules checked: {len(EXPECTED_DS)}")
     for key, val in EXPECTED_DS.items():
         actual = ds.get(key)
         if actual is None:
-            fail(f"design_settings.{key} is unset", problems)
-        elif float(actual) > val + 1e-6:
-            fail(f"design_settings.{key} relaxed to {actual}, expected <= {val}",
+            fail(f"design_settings.{key} is MISSING", problems)
+        elif abs(float(actual) - val) > 1e-9:
+            direction = "weakened" if float(actual) < val else "changed"
+            fail(f"design_settings.{key} {direction}: {actual}, expected {val}",
                  problems)
 
     # custom DRC rules

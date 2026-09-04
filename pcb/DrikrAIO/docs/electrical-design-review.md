@@ -1,5 +1,14 @@
 # DrikrAIO — Electrical Design Review
 
+> ## ⚠ SUPERSEDED
+> This document is retained for its reasoning and its correction record.
+> **Current status is [pre-routing-review-2.md](pre-routing-review-2.md); the
+> machine-readable baseline is [pre-routing-baseline.json](pre-routing-baseline.json).**
+> Numbers here that have since been corrected: the loop-inductance budget is
+> **8.72 nH**, not 7.53 nH (the old figure used the 40 V part's t_f), and the
+> still-air thermal figures were computed with an over-optimistic convection
+> coefficient.
+
 **Gate: routing must not begin until §18 is signed off.**
 
 ## Decisions taken (2026-09-04)
@@ -188,7 +197,7 @@ Protection must therefore come from **loop geometry**, §8.
 | FET rating | Allowed spike | Max loop L | |
 |---|--:|--:|---|
 | 40 V (current) | 6.8 V | 2.25 nH | very hard to guarantee |
-| **60 V** | 22.8 V | **7.53 nH** | achievable, and re-opens the TVS option |
+| **60 V** | 22.8 V | **8.72 nH** | achievable, and re-opens the TVS option |
 
 **Decision taken: 60 V minimum.** See §7a.
 
@@ -200,9 +209,9 @@ right part is chosen.
 | Part | V_DSS | R_DS(on) max | R hot (×1.6) | P_cond/FET @29 A | 4 ch total | Loop budget | R_θ(j-a) budget |
 |---|--:|--:|--:|--:|--:|--:|--:|
 | SP40N01GHNK *(fitted, 40 V)* | 40 V | 1.50 mΩ | 2.40 mΩ | 1.98 W | 20.9 W | 2.25 nH | 38.7 °C/W |
-| NCEP60T15G | 60 V | 3.10 mΩ | 4.96 mΩ | 4.10 W | 37.8 W | 7.53 nH | 19.7 °C/W |
-| BSC028N06NS | 60 V | 2.80 mΩ | 4.48 mΩ | 3.70 W | 34.6 W | 7.53 nH | 21.7 °C/W |
-| **BSC014N06NS** | **60 V** | **1.45 mΩ** | **2.32 mΩ** | **1.92 W** | **20.4 W** | **7.53 nH** | **40.0 °C/W** |
+| NCEP60T15G | 60 V | 3.10 mΩ | 4.96 mΩ | 4.10 W | 37.8 W | 8.72 nH | 19.7 °C/W |
+| BSC028N06NS | 60 V | 2.80 mΩ | 4.48 mΩ | 3.70 W | 34.6 W | 8.72 nH | 21.7 °C/W |
+| **BSC014N06NS** | **60 V** | **1.45 mΩ** | **2.32 mΩ** | **1.92 W** | **20.4 W** | **8.72 nH** | **40.0 °C/W** |
 
 **Recommended: Infineon BSC014N06NS**, OptiMOS 5, SuperSO8 5×6, I_D 240 A.
 

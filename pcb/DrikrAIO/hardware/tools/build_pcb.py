@@ -351,9 +351,26 @@ def main():
 
     inject_stackup(OUT)
 
-    # Independent check. A green DRC proves nothing if the rules were lost.
-    rc = os.system(f'python "{os.path.join(os.path.dirname(os.path.abspath(__file__)), "verify_netclasses.py")}" >nul 2>&1')
-    print(f"   netclass verification: {'PASS' if rc == 0 else 'FAIL -- run tools/verify_netclasses.py'}")
+    # ---- HARD GATE ------------------------------------------------------
+    # Verification is a build gate, not a report. If configuration was lost,
+    # the build STOPS here: no DRC, no manufacturing outputs, non-zero exit.
+    # A green DRC on a board that has lost its rules is worse than no DRC,
+    # because it looks like evidence.
+    import subprocess
+    verifier = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            "verify_netclasses.py")
+    res = subprocess.run([sys.executable, verifier],
+                         capture_output=True, text=True)
+    print("   " + "-" * 60)
+    if res.returncode != 0:
+        print("   BUILD GATE: FAIL -- configuration was lost and not restored")
+        print(res.stdout.rstrip())
+        print("   Refusing to continue. Do not run DRC. Do not generate")
+        print("   manufacturing outputs from this board.")
+        sys.exit(1)
+    print("   BUILD GATE: PASS -- netclasses, widths, vias, clearances and")
+    print("   all board minimums verified after save/reload.")
+    print("   DRC results on this board state may now be considered meaningful.")
 
     print(f"board written: {OUT}")
     print(f"   {BW} x {BH} mm, 6 layers, {MOUNT} mm mount")

@@ -114,6 +114,17 @@ Rebuild it with:
 
 ## Reviews
 
+**[docs/routing-readiness-report.md](docs/routing-readiness-report.md) is current.**
+**ROUTING = NO-GO.** Machine-readable baseline:
+[docs/pre-routing-baseline.json](docs/pre-routing-baseline.json).
+
+Thermal has weakened from PASS to **MARGINAL**: defining the airflow instead of
+writing "propwash cooled" showed h=80 W/m2K needs 22.4 m/s against this
+aircraft's 12.46 m/s slipstream. At real airflow, peak reaches 133.7 C in
+slipstream and 171.4 C at the disc — under the 175 C limit, over the 125 C
+target.
+
+
 **[docs/pre-routing-review-2.md](docs/pre-routing-review-2.md) is current.**
 **GO/NO-GO: NO-GO** — four gate conditions pass, the 115 A peak duration does
 not. Corrected footprint  passes

@@ -44,9 +44,30 @@ T_OUTER, T_INNER = 70e-6, 35e-6
 T_CU_EFF = 2 * T_OUTER + 4 * T_INNER             # all six layers, via-stitched
 P_AVIONICS = 3.0                                 # W, ESTIMATE, not sourced
 
-# Convection coefficients, W/m2.K. These are the dominant uncertainty.
+# Convection coefficients, W/m2.K.
+#
+# "Propwash cooled" is not a boundary condition, so it is derived here.
+#
+# Disc loading is 9.69 kg/m2 (docs/sizing/model-output.txt, 18 in quad design
+# point). Momentum theory gives the induced velocity at the disc:
+#     v_i = sqrt(DL.g / 2.rho) = 6.23 m/s
+# and the fully developed slipstream below it is 2.v_i = 12.46 m/s. The board
+# sits between those two, depending where it is mounted relative to the disc.
+#
+# Flat-plate forced convection, L = 50 mm board edge, air at ~60 C
+# (nu = 1.9e-5 m2/s, k = 0.028 W/m.K, Pr = 0.70):
+#     Nu = 0.664 . Re^0.5 . Pr^(1/3),  h = Nu.k/L
+#         6.23 m/s -> h = 42 W/m2K     (at the disc)
+#        12.46 m/s -> h = 60 W/m2K     (fully developed slipstream)
+#
+# The earlier model used h = 80, which needs 22.4 m/s -- almost double this
+# aircraft's own slipstream. It was optimistic and is not used any more.
+DISC_LOADING = 9.69                  # kg/m2
+V_INDUCED, V_SLIPSTREAM = 6.23, 12.46
 H_STILL = 15.0      # natural convection + radiation, small vertical PCB
-H_PROP = 80.0       # propwash, order 5-10 m/s over the board
+H_PROP_LOW = 42.0   # at the disc, 6.23 m/s
+H_PROP_HIGH = 60.0  # fully developed slipstream, 12.46 m/s
+H_PROP = H_PROP_LOW  # design against the WORSE of the two
 
 
 def fet_loss(i_ph):
@@ -98,7 +119,9 @@ def main():
         print(f"    24 FETs (2 of 6 conducting per channel) {p_fets_total:6.2f} W")
         print(f"    board total (+{P_AVIONICS:.0f} W avionics)          {p_board:6.2f} W")
 
-        for hlbl, h in (("still air", H_STILL), ("propwash", H_PROP)):
+        for hlbl, h in (("still air", H_STILL),
+                        ("prop @disc", H_PROP_LOW),
+                        ("prop slipstr", H_PROP_HIGH)):
             r_conv = 1.0 / (h * AREA_BOTH_SIDES)
             dt_board = p_board * r_conv
             t_board = T_AMB + dt_board
@@ -107,7 +130,7 @@ def main():
             t_j = t_board + p_fet * (RTH_JC_MAX + r_spread)
             ok125 = "OK" if t_j <= TJ_TARGET else "OVER"
             ok175 = "OK" if t_j <= TJ_MAX else "OVER LIMIT"
-            print(f"      {hlbl:<10} h={h:5.1f} W/m2K  R_conv(board)={r_conv:6.2f} K/W"
+            print(f"      {hlbl:<13} h={h:5.1f} W/m2K R_conv={r_conv:6.2f} K/W"
                   f"  board {t_board:6.1f} C")
             print(f"                 -> Tj {t_j:6.1f} C   "
                   f"vs 125 C target: {ok125:4}   vs 175 C limit: {ok175}")
@@ -123,15 +146,30 @@ def main():
             print(f"    {lbl:<6} P={p_fet:4.2f} W, Tj<{tj:.0f} C, Ta={T_AMB:.0f} C"
                   f"  -> Rth(j-a) <= {(tj - T_AMB)/p_fet:5.1f} K/W")
 
-    print("\n  The 38.6 K/W figure quoted earlier is confirmed for the peak")
-    print("  case at a 125 C target. It is NOT a property of the device -- it")
-    print("  is what the board must achieve, and R_conv decides it.")
+    print("\n  The ~38 K/W requirement for the peak case at a 125 C target is")
+    print("  confirmed. It is NOT a property of the device -- it is what the")
+    print("  board must achieve, and R_conv decides it.")
     print()
-    print("  SENSITIVITY: h is the dominant uncertainty. It is a textbook")
-    print("  range, not a measurement. Everything above moves with it, so the")
-    print("  conclusion to carry is the ORDERING, not the absolute degrees:")
-    print("  still air fails at both hover and peak; propwash is what makes")
-    print("  the design work; and the margin at peak is thin either way.")
+    print("  " + "!" * 68)
+    print("  THE EARLIER 'PASS UNDER PROPWASH' VERDICT DOES NOT SURVIVE THIS.")
+    print("  " + "!" * 68)
+    print("  That verdict used h = 80 W/m2K, which needs 22.4 m/s. This")
+    print("  aircraft's fully developed slipstream is 12.46 m/s (h = 60) and at")
+    print("  the disc it is 6.23 m/s (h = 42). Against its own airflow:")
+    print()
+    print("    hover, slipstream   Tj 103 C   -> meets the 125 C target")
+    print("    hover, at the disc  Tj 129 C   -> MISSES the 125 C target")
+    print("    peak,  slipstream   Tj 134 C   -> MISSES the 125 C target")
+    print("    peak,  at the disc  Tj 171 C   -> 3.6 C from the 175 C LIMIT")
+    print()
+    print("  Nothing here exceeds the 175 C absolute maximum, so the design is")
+    print("  not disqualified -- but it does NOT meet the conservative 125 C")
+    print("  target at peak under any airflow this aircraft actually produces.")
+    print("  Mounting position relative to the disc is now a thermal design")
+    print("  parameter, not a mechanical convenience.")
+    print()
+    print("  SENSITIVITY: h remains the dominant uncertainty and is calculated,")
+    print("  not measured. Rth(j-a) must be measured on the first board.")
 
     # ---------------- parameterised peak, duration UNKNOWN -----------------
     print("\n" + "=" * 74)
