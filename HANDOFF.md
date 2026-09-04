@@ -10,6 +10,37 @@ Read this one first if you are about to change something.
 
 ---
 
+## 0. Where it stands today
+
+**2026-09-04**, at `fa3495c`. Nothing has flown. Every performance figure is
+calculated or simulated; the evidence table in §2 says which is which.
+
+| | |
+|---|---|
+| Funding ask | **INR 6,85,532**, in 29 staged releases, first is INR 3,733 |
+| Parts | **INR 5,81,034**, 59 lines, every one a live listing with a URL |
+| Technical proposal | 22 pages, 64 automated checks passing |
+| Mentor brief | 37 pages: 7 of brief, then 29 DoSA approval letters, one per phase |
+| Ground station | Runs; captured live for the paper with synthetic telemetry |
+
+**The three things to pick up first:**
+
+1. **Two BOM systems have diverged** (§4.5). `sourced_bom.py` feeds the brief
+   and the letters; the older `competition_budget.py` chain still feeds the
+   technical proposal's budget and has not been updated for any recent work.
+   Nothing forces them to agree.
+2. **The 12 mm lens is uncosted and untested** (§4.8). It would move the survey
+   from 40 m to 80 m with identical detection, which is the only credible answer
+   to obstacles on unsurveyed ground. Buy the Arducam lens kit and test it.
+3. **The ring-aware clipper is six lines and was prototyped, not committed**
+   (§4.8). It makes declared obstacles routable around.
+
+**The thing most likely to embarrass us:** the aircraft cannot see a building,
+and the mass statement carries relief kits and a parachute the BOM does not buy.
+Both are stated in the documents; neither is solved.
+
+---
+
 ## 1. The two repositories
 
 | | |
@@ -125,6 +156,33 @@ python3 simulations/sitl/fly_endurance.py      # -> telemetry_endurance.json
 python3 simulations/sitl/render.py telemetry.json out.gif "title" "subtitle"
 ```
 
+Documents. **Nothing in these is typed by hand — edit the model, not the .tex.**
+The generated files carry a "GENERATED FILE, do not edit" header for a reason.
+
+```sh
+# Regenerate everything the BOM feeds, in this order
+python hardware/bom/sourced_bom.py               # totals, and the transcription guard
+python tools/proposal/build_brief_tables.py      # brief tables + phase schedule
+python tools/proposal/build_approval_letters.py  # the 29 DoSA letters
+python tools/proposal/build_sizing_section.py    # the proposal's Section V
+
+# Check every numeric claim against the model that owns it
+python tools/proposal/verify_proposal_numbers.py   # 64 checks, exits non-zero on any failure
+
+# MATLAB: independent re-derivation, figures, simulations
+python matlab/export_model.py                    # Python primitives -> matlab/data/model.json
+matlab -batch "cd matlab; run_all"               # verify + figs + sims
+
+# Build the PDFs. TWICE -- the first pass writes the cross-references,
+# the second reads them back.
+cd docs/proposal
+pdflatex -interaction=nonstopmode mentor-brief.tex        # x2  -> 37 pages
+pdflatex -interaction=nonstopmode rescueswarm-proposal.tex # x2 -> 22 pages
+```
+
+**A clean LaTeX build is not proof the document is right.** See §5: too-wide
+content wraps silently inside `center`. Render pages to images and look.
+
 `simulations/recordings/*.json` is committed telemetry from real SITL runs. The
 GIFs are gitignored and regenerate from it.
 
@@ -225,60 +283,127 @@ Cells are unblocked: the design point is **6S3P, 18 cells per aircraft, 54 for
 the fleet**. See `docs/sizing/model-output.txt`, which is authoritative over any
 prose including this file.
 
-### 4.5 Which BOM is authoritative — RESOLVED, but with a consequence
+### 4.5 Which BOM is authoritative — `sourced_bom.py`, and there are still two
 
-`hardware/bom/RescueSwarm_BOM_India_Verified.xlsx` **wins** and is now tracked.
-It had been sitting untracked — one `rm` from gone — while being the best
-artifact in the folder. Its own README says why: *"The previous BOM named
-suppliers. This one names PARTS."* 41 lines, exact model numbers, 28 live
-product links, per-line status, thrust validated against published bench data.
+`hardware/bom/sourced_bom.py` **wins**. 59 lines, every one a live listing from
+a named Indian supplier with a URL, transcribed from the team's own sourcing
+sheet. It is a Python module, not a workbook, because three documents generate
+from it and a spreadsheet cannot be asserted against.
 
-It disagrees with `RescueSwarm_BOM_India.xlsx` by **₹26,146 per aircraft**, and
-the direction is upward:
+```
+parts        5,81,034      released   6,85,532      29 phases
+```
 
-| | India BOM | Verified |
-|---|--:|--:|
-| Flight controller | 26,000 | **42,000** — the Agam Full Set incl. 5 % GST, and it bundles the power module |
-| Power module | 2,800 | **0** — inside the Full Set; buying it separately double-counts |
-| Motor | 7,000 | **9,099** — listed price with published thrust; 7,000 was never sourced |
-| **Per aircraft** | **2,64,400** | **2,90,546** |
+It carries a **transcription guard**: the module asserts its own total equals
+the source sheet's stated total, plus the rows that sheet's SUM range misses,
+plus what has been added since. If a line is mistyped, dropped or
+double-counted, importing the module raises. That guard is how the sheet's own
+arithmetic faults were found (see §5).
 
-**The consequence nobody has signed off:** the Verified BOM is a **17 in**
-aircraft, not 18 in, and bottom-up mass drops 6,236 g → 5,780 g. `docs/sizing/`,
-`cost_model.py` and `bom_reconcile.py` all still describe the 18 in aircraft, as
-does the funding proposal. Adopting it means **re-running the sizing model, not
-editing a price.**
+Everything downstream generates from it and reconciles by assertion:
 
-### 4.6 The funding ask has moved a long way — and the workbook is now stale
+| Generated | By | Asserts |
+|---|---|---|
+| Brief component tables | `tools/proposal/build_brief_tables.py` | every row has a rationale; no orphans |
+| Phase schedule | same | per-phase allocation sums to the parts total |
+| 29 DoSA approval letters | `tools/proposal/build_approval_letters.py` | the 29 letters sum to the parts total exactly |
 
-`docs/proposal/` holds an IEEEtran funding proposal (15 pages, 12 figures,
-committed as PDF). The ask went **₹28.74 L → ₹8.24 L (−71 %)** across several
-passes, driven by team decisions recorded in `docs/proposal/README.md`.
+**The unresolved part.** The older system — `docs/proposal/figures/competition_budget.py`,
+`tools/proposal/build_bom.py`, `BOM.md`, `RescueSwarm_BOM.csv` and the xlsx
+workbooks — still exists and still feeds the technical proposal's budget
+figures. It has **not** been updated for any of the receiver, obstacle or
+missing-component work. The two have diverged. Nothing currently forces them to
+agree, and this is the single largest known defect in the repository. Reconcile
+before either document goes out alongside the other.
 
-The adopted configuration is **₹1,57,800 per aircraft**: hobby-grade where the
-failure mode is visible and the spec is easy to verify; professional for the
-autopilot, RTK receiver, accelerator, camera, matched cells and structure.
+### 4.6 The funding ask, and what moved it
 
-`hardware/bom/RescueSwarm_Cost_Study.xlsx` **had** drifted out of agreement with
-the proposal. It is now **generated** by `hardware/bom/build_cost_study.py`,
-which imports every figure from `docs/proposal/figures/competition_budget.py` —
-the same module the proposal's budget and charts derive from. Nothing is
-restated in two places, so the two artifacts cannot disagree again. Re-run the
-script after any configuration change; do not edit the workbook by hand.
+The ask is **₹6,85,532** against **₹5,81,034** of parts. The released figure is
+parts plus tax where tax is still owed plus 15 % contingency — *not* duty plus
+GST on everything, which is what an earlier revision did and which overstated
+the ask by about a lakh. These are Indian retail listings; a listed retail price
+is already GST-paid and the duty was paid by whoever put the part on a domestic
+shelf. Only supplier quotations and B2B listings carry GST.
 
-**Three things gate the ask and are not decided:**
+Against the ₹7,43,004 the brief once asked, the reduction is about ₹57,000, and
+it came entirely from correcting our own arithmetic and one design decision, not
+from cutting capability.
+
+**Still open and gating:**
 
 1. **Insurance** was deferred at team direction. Third-party cover is commonly
    mandatory for Indian UAV operations. **Confirm before any flight.**
-2. **Duty and GST were double-counted — now corrected.** The audit is done:
-   every line is classified tax-inclusive (₹4.66 L), ex-GST (₹1.82 L) or exempt
-   (₹0.05 L) in `competition_budget.py`, and tax applies only to the middle
-   bucket. **₹1.64 L removed; the ask fell ₹10.12 L → ₹8.24 L.** Residual risk
-   is only that a line marked ex-GST is in fact inclusive, which would reduce
-   the ask further. Confirm with each supplier in tranche 1.
-3. **Indigenous content is 36 %, not the 45 % first asserted.** Computed from
-   per-line fractions. This matters beyond presentation: duty is levied on the
-   imported residual, so the wrong figure understated the duty.
+2. **Relief kits, recovery parachutes and ground-truth apparatus** are deferred
+   at team direction (2026-08-18) and are *not* in the BOM. But the mass
+   statement still carries the kits at 800 g and the parachute at 300 g per
+   aircraft, and the proposal describes both. **The aircraft is designed to lift
+   payload the programme does not buy.** The kits are the delivered payload; the
+   ground-truth apparatus is what detection recall would be measured against.
+   Decisions to revisit, not omissions to patch.
+3. Seven phases once exceeded a ₹30 k cap. Re-check against the current
+   schedule before assuming that still holds — the phase structure has changed
+   twice since.
+
+### 4.7 Receivers — RESOLVED as a hybrid, and the reasoning is in the paper
+
+Two Teravolt AeroNav-Pro RTK (₹25,000 each: **one rover on aircraft 1, one
+ground base**) and two Holybro Micro M9N (₹6,939 each, aircraft 2 and 3).
+
+The argument, derived in §IV-D and backed by `matlab/sim/sim_receivers.m`:
+everything in the geolocation budget except the receiver sums to 0.88 m, so a
+5 m delivery requirement caps the receiver's own error at **2.75 m**. SBAS
+clears at 1.85 m CEP95; NavIC's published standalone accuracy fails at 8.79 m.
+RTK is retained as *instrumentation*, not for mission accuracy — and an
+instrument characterises a design, so one instrumented aircraft is enough. What
+P7–P8 measure is where a kit landed, surveyed on the ground, not what the
+aircraft believed at the time.
+
+**NavIC is not an alternative to RTK** — it is a constellation, RTK is a
+correction technique. Worth having as an *additional* constellation if a module
+already tracks it. Ask Teravolt whether the AeroNav-Pro does; it costs nothing.
+
+### 4.8 Obstacles — the scope limit, and the way out nobody has costed
+
+**Nothing on the aircraft can see a building.** There is no forward sensor. The
+aircraft flies where a human said it was safe, and if that human missed a
+structure it will fly into it. This is now stated in §IV-K rather than left
+silent.
+
+Altitude is the only real mitigation, and the sweep is at 40 m — which clears a
+rural flood plain and does **not** clear urban building. Worse, it cannot simply
+be raised: the survey altitude is pinned by detection, 1498 px² of target at
+40 m against 959 px² at 50 m, so climbing over a tall structure costs the
+detection the mission exists for.
+
+**The way out, and it is not a sensor.** The 40 m ceiling comes from the *6 mm
+lens*, not from physics. The Arducam is CS-mount. A **12 mm lens at 80 m is
+identical in every detection term** — same 1.03 cm GSD, same 38.7 px target,
+same 41.9 m swath, same 7 transects, same 196 s sweep — at twice the height.
+16 mm reaches 120 m.
+
+| | 6 mm at 40 m | 12 mm at 80 m |
+|---|---|---|
+| Geolocation CEP95 | 1.53 m | 1.62 m — still passes |
+| Body-rate gate for 1 px blur | 13.6 °/s | **7.4 °/s** |
+
+The blur gate is the real cost: half the angular pixel scale halves the
+tolerable body rate, so turns need tighter detection suppression. **This is
+costed nowhere and tested nowhere.** Robu stocks an Arducam LK004 kit
+(6/8/12/16/25 mm) — buy one, test, then three of whichever wins.
+
+**Two further things, both small:**
+
+- `autonomy/coverage_planner/boustrophedon.py` uses even-odd scanline fill with
+  cell decomposition, which is the right algorithm for routing *around* an
+  obstacle, and `_decompose` already groups disjoint runs. It cannot take a hole
+  only because `_clip_segment_to_poly` treats its input as one ring. A
+  ring-aware version is **six lines** and was prototyped correctly this session
+  but **not committed**. Do it — it makes declared obstacles avoidable for free.
+- A 360° lidar was priced and is **not recommended**. The 12 m units
+  (RPLIDAR A1M8, ₹6,777) only buy an emergency stop, and at 8 m/s stopping needs
+  14.7 m. The 40 m RPLIDAR S1 that would let you route around is **₹62,400
+  each** — ₹1.87 L for three, a third of the programme. If anything, buy one for
+  a P6 experiment; do not fly three untested at a competition.
 
 ---
 
@@ -329,6 +454,47 @@ telemetry, the arithmetic — and not against the other places it appears. `vali
 table of known-phantom names, because `BATT_RESISTANCE` sat in the parameter
 files for weeks doing nothing — it is a PX4 name, ArduPilot estimates internal
 resistance itself, and `.parm` drops unknown names in silence.
+
+**A third class: a sum that is complete against an incomplete list.** The 29
+approval letters were asserted to sum to the parts total exactly, and did. That
+proves nothing about whether the parts list is right, and it was not:
+
+- **Frame plate stock** was missing entirely. The arms are carbon tube; nothing
+  bought the plate they bolt to. It had been inside a single "Structure,
+  in-house fabrication" line in the old cost model, and itemising that line lost
+  it.
+- **The autopilot log card** was missing. The Pixhawk 6C Mini ships without one
+  and records nothing without it; the 128 GB card in the BOM is the companion
+  computer's, a different slot on a different board.
+- **Phase 2 bought a motor and nothing to spin it.** The phase whose entire
+  purpose is measuring thrust had no propeller, no speed controller and no
+  throttle source — the safety-pilot transmitter is not bought until phase 11.
+  It funded something that could not be switched on.
+- **The RTK base was bought 24 phases after the rover.** A rover without its
+  base is an ordinary receiver, so aircraft 1 would have flown the whole build
+  uncorrected with no ground truth surveyable until the programme was nearly
+  over.
+
+The lesson: assert the sum *and* diff the list against the design. Both of the
+missing components were found by comparing `sourced_bom.py` against the mass
+statement and against the cost model it replaced, not by any arithmetic check.
+
+**A fourth: LaTeX that compiles cleanly and is still wrong.**
+
+- A too-wide title inside `\begin{center}` **wraps silently** — no overfull
+  warning, no error. A clean build is not proof of layout. Render pages to
+  images and look at them.
+- `\begin{center}` around a table adds its own vertical skip, which pushed nine
+  one-page letters onto a second sheet carrying only signatures. Use a
+  full-width `\makebox` to centre without the skip.
+- A blank line inside `\caption{}` breaks it with an error far from the cause.
+
+**A fifth: the editing path into this repo mangles backslashes.** Writing LaTeX
+or regex through a shell heredoc has repeatedly turned `\textbf` into a TAB and
+`\footnotesize` into a form feed — both of which LaTeX swallows in silence.
+`build_approval_letters.py` therefore writes every `\f` sequence through a token
+and asserts the per-letter counts before emitting anything. Prefer the editor
+over heredocs for anything containing backslashes, and assert after writing.
 
 **Other things that bite:**
 
@@ -386,5 +552,7 @@ pack internal resistance by bench discharge, and every flight-test line in
 | What the perception owner needs | `docs/perception-integration-plan.md` |
 | Cost and indigenisation | `docs/business/cost-and-economics.md` |
 | The funding proposal, and its correction record | `docs/proposal/` — read the README before the PDF |
-| What the aircraft is actually built from | `hardware/bom/RescueSwarm_BOM_India_Verified.xlsx` |
+| What the aircraft is actually built from | `hardware/bom/sourced_bom.py` — the xlsx workbooks are superseded, see §4.5 |
+| Why each part was chosen | `tools/proposal/build_brief_tables.py`, `RATIONALE` |
+| Analysis status: what is done, partial or todo | `matlab/CHECKLIST.md` |
 | What was inherited in the GCS and what was wrong with it | `docs/gcs-inherited-review.md` |
