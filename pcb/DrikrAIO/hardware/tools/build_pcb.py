@@ -309,31 +309,51 @@ def main():
 
     board.BuildListOfNets()
 
-    # SaveBoard REWRITES the .kicad_pro and replaces net_settings with a bare
-    # Default class. That silently destroyed the whole netclass set once
-    # already -- Phase, VBAT, RF, Gate, Analog and USB all vanished, and the
-    # board still opened and still passed DRC, because a board with no
-    # netclasses has nothing to violate. Preserve it around the save.
+    # SaveBoard REWRITES the .kicad_pro. It replaced all eight netclasses with
+    # a bare Default once, and separately relaxed nine board-level minimums --
+    # min_clearance to 0.0, min_track_width 0.09 -> 0.2, min_via_diameter
+    # 0.35 -> 0.5. Both times DRC stayed green afterwards, because a board with
+    # no rules has nothing to violate. The first fix only guarded net_settings
+    # and missed design_settings entirely; verify_netclasses.py found that.
+    #
+    # Snapshot BOTH, save, reload, and put back anything that moved.
     pro_path = os.path.join(HW, "DrikrAIO.kicad_pro")
-    keep = None
+    keep_nets = keep_rules = None
     if os.path.exists(pro_path):
         with open(pro_path, encoding="utf-8") as fh:
-            keep = json.load(fh).get("net_settings")
+            snap = json.load(fh)
+        keep_nets = snap.get("net_settings")
+        keep_rules = snap.get("board", {}).get("design_settings", {}).get("rules")
 
     pcbnew.SaveBoard(OUT, board)
 
-    if keep is not None:
+    if keep_nets is not None:
         with open(pro_path, encoding="utf-8") as fh:
             pro = json.load(fh)
-        if [c.get("name") for c in pro.get("net_settings", {}).get("classes", [])] \
-                != [c.get("name") for c in keep.get("classes", [])]:
-            pro["net_settings"] = keep
+        changed = []
+        got = [c.get("name") for c in
+               pro.get("net_settings", {}).get("classes", [])]
+        want = [c.get("name") for c in keep_nets.get("classes", [])]
+        if got != want:
+            pro["net_settings"] = keep_nets
+            changed.append(f"{len(want)} netclasses")
+        if keep_rules is not None:
+            cur = pro.setdefault("board", {}).setdefault(
+                "design_settings", {}).setdefault("rules", {})
+            moved = [k for k, v in keep_rules.items() if cur.get(k) != v]
+            if moved:
+                cur.update(keep_rules)
+                changed.append(f"{len(moved)} design rules")
+        if changed:
             with open(pro_path, "w", encoding="utf-8", newline="\n") as fh:
                 json.dump(pro, fh, indent=2)
-            print(f"   net_settings restored after SaveBoard "
-                  f"({len(keep.get('classes', []))} classes)")
+            print(f"   RESTORED after SaveBoard: {', '.join(changed)}")
 
     inject_stackup(OUT)
+
+    # Independent check. A green DRC proves nothing if the rules were lost.
+    rc = os.system(f'python "{os.path.join(os.path.dirname(os.path.abspath(__file__)), "verify_netclasses.py")}" >nul 2>&1')
+    print(f"   netclass verification: {'PASS' if rc == 0 else 'FAIL -- run tools/verify_netclasses.py'}")
 
     print(f"board written: {OUT}")
     print(f"   {BW} x {BH} mm, 6 layers, {MOUNT} mm mount")

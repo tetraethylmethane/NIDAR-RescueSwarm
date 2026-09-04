@@ -121,10 +121,17 @@ routing.** Numbers regenerate from `hardware/tools/power_review.py`.
 0.8/0.4 vias (1.0 mm carries 5.3 A against a 21 A phase RMS), and the MOSFET
 decision is **60 V minimum**.
 
-**Recommended part: Infineon BSC014N06NS** — 60 V, R_DS(on) max **1.45 mΩ**,
-SuperSO8 5×6. It is 60 V at *lower* resistance than the fitted 40 V part, so it
-buys 3.3× the loop-inductance headroom (2.25 → 7.53 nH) at slightly lower loss.
-Land pattern and switching parameters still need verifying against its datasheet.
+**Preferred part: Infineon BSC014N06NS**, verified against the manufacturer
+datasheet (Rev 2.6) in [docs/pre-routing-report.md](docs/pre-routing-report.md).
+Package is **PG-TDSON-8**. Land pattern **passes** the arithmetic against
+`PDFN-8L_L6.0-W5.0-P1.27`; the **stencil does not** — the thermal pad has one
+18 mm² paste aperture where Infineon specifies a windowpane, a defect the
+current OpenESC footprint already carries. Loop budget corrected to **8.72 nH**
+on the real t_f of 11 ns, 3.9× the 40 V part. Not committed to the schematic.
+
+**The headline current is not board capability:** 257 A is at T_c=25 °C. On a
+PCB in still air the datasheet says **31 A**, assuming 6 cm² of copper per
+device — and 24 FETs on a 50 × 50 board get about 2.1 cm² each.
 
 **Still open: the 115 A peak duration** is undefined anywhere in the repo, so
 repeated peaks cannot be assessed. Firmware parameter, not a PCB one.

@@ -266,7 +266,81 @@ def main():
         print(f"    {name:<28} Rth(j-a) budget at peak:"
               f" {(125.0-T_AMB)/p_fet:5.1f} C/W   [{src}]")
 
-    rule("11. WHAT THIS MEANS")
+    rule("11. BSC014N06NS -- VERIFIED AGAINST THE MANUFACTURER DATASHEET")
+    # Infineon BSC014N06NS, Final datasheet Revision 2.6, 2024-05-11.
+    # Every value below is quoted from that document, table and diagram cited.
+    B = dict(
+        pkg="PG-TDSON-8 (outline PG-TDSON-8-U04)",
+        vds=60.0,
+        rds_typ=1.2e-3, rds_max=1.45e-3,        # T4, VGS=10V ID=50A
+        rds_mult_125=1.55,                       # Diagram 9, max curve 1.45->2.25
+        id_tc25=257.0, id_tc100=182.0, id_ta25=31.0,   # T2
+        idm=1028.0, eas=580e-3, ptot_tc25=188.0, ptot_ta25=3.0,
+        tj_max=175.0,
+        rth_jc_typ=0.5, rth_jc_max=0.8, rth_ja=50.0,   # T3
+        rth_ja_cond="6 cm2 one-layer 70 um Cu, 40x40x1.5 FR4, vertical, still air",
+        ciss=8125e-12, coss=1875e-12, crss=118e-12,    # T5, max, VDS=30V
+        td_on=23e-9, tr=10e-9, td_off=43e-9, tf=11e-9,  # T5, RG,ext=2ohm
+        qg=104e-9, qgs=28e-9, qgd=21e-9, qsw=26e-9, qoss=125e-9,  # T6, max
+        vplateau=4.3, rg_max=3.0,
+        is_max=156.0, vsd_max=1.2, trr_max=83e-9, qrr_typ=139e-9,  # T7
+    )
+    print(f"  package        {B['pkg']}")
+    print(f"  VDS            {B['vds']:.0f} V")
+    print(f"  Rds(on)        {B['rds_typ']*1e3:.2f} typ / {B['rds_max']*1e3:.2f} max"
+          f" mohm  @VGS=10V ID=50A")
+    print(f"  Rds(on) 125C   {B['rds_max']*B['rds_mult_125']*1e3:.2f} mohm"
+          f"  (x{B['rds_mult_125']}, Diagram 9)")
+    print(f"  ID             {B['id_tc25']:.0f} A @Tc=25C |"
+          f" {B['id_tc100']:.0f} A @Tc=100C |"
+          f" {B['id_ta25']:.0f} A @Ta=25C on a real PCB")
+    print(f"  Rth(j-c)       {B['rth_jc_typ']} typ / {B['rth_jc_max']} max K/W")
+    print(f"  Rth(j-a)       {B['rth_ja']:.0f} K/W  -- {B['rth_ja_cond']}")
+    print(f"  Tj max         {B['tj_max']:.0f} C")
+    print(f"  tr / tf        {B['tr']*1e9:.0f} / {B['tf']*1e9:.0f} ns")
+    print(f"  Qg / Qgd / Qoss{B['qg']*1e9:.0f} / {B['qgd']*1e9:.0f} /"
+          f" {B['qoss']*1e9:.0f} nC max")
+    print(f"  Qrr / trr      {B['qrr_typ']*1e9:.0f} nC typ / {B['trr_max']*1e9:.0f} ns max")
+
+    print("\n  --- HEADLINE CURRENT IS NOT BOARD CAPABILITY ---")
+    print(f"  257 A is at Tc=25 C, i.e. an ideal heatsink. The number that")
+    print(f"  matters is {B['id_ta25']:.0f} A: the device on a PCB in still air with")
+    print(f"  {B['rth_ja']:.0f} K/W. Our phase RMS at peak is {i_ph_peak:.0f} A --")
+    print(f"  {100*i_ph_peak/B['id_ta25']:.0f}% of that figure, and the datasheet")
+    print("  condition assumes 6 cm2 of copper PER DEVICE.")
+    cu_needed = 24 * 6.0
+    cu_have = 2 * (5.0 * 5.0)
+    print(f"  24 FETs x 6 cm2 = {cu_needed:.0f} cm2 required;"
+          f" a 50x50 board has {cu_have:.0f} cm2 on both sides.")
+    print(f"  We can give each FET about {cu_have/24:.1f} cm2 -- "
+          f"{cu_needed/cu_have:.1f}x short of the datasheet condition.")
+
+    rds_hot = B["rds_max"] * B["rds_mult_125"]
+    print("\n  --- LOSS, RECOMPUTED ON VERIFIED PARAMETERS ---")
+    for lbl, iph in (("hover", i_ph_hover), ("peak", i_ph_peak)):
+        p_cond = iph ** 2 * rds_hot
+        p_sw = 0.5 * V_MAX * iph * (B["tr"] + B["tf"]) * F_PWM
+        p_oss = B["qoss"] * V_MAX * F_PWM
+        p_qrr = B["qrr_typ"] * V_MAX * F_PWM
+        p_fet = p_cond + p_sw + p_oss + p_qrr
+        p_chan = 2 * p_cond + 6 * (p_sw + p_oss + p_qrr)
+        print(f"    {lbl:<6} I={iph:.0f} A: cond {p_cond:.2f} W, sw {p_sw:.3f} W,"
+              f" Qoss {p_oss:.3f} W, Qrr {p_qrr:.3f} W -> {p_fet:.2f} W/FET,"
+              f" {p_chan:.2f} W/ch, {4*p_chan:.1f} W total")
+        for tj in (125.0, B["tj_max"]):
+            print(f"           Rth(j-a) budget for Tj<{tj:.0f}C at {T_AMB:.0f}C:"
+                  f" {(tj-T_AMB)/p_fet:5.1f} K/W")
+
+    print("\n  --- TRANSIENT, RECOMPUTED ---")
+    didt_b = i_ph_peak / B["tf"]
+    print(f"  di/dt = {i_ph_peak:.0f} A / {B['tf']*1e9:.0f} ns ="
+          f" {didt_b/1e9:.2f} A/ns  (slower than the 40 V part: good)")
+    for derate in (1.0, 0.8):
+        allowed = B["vds"] * derate - V_MAX
+        print(f"    to {derate*100:.0f}% of VDS: spike {allowed:5.1f} V ->"
+              f" loop L < {allowed/didt_b*1e9:5.2f} nH")
+
+    rule("12. WHAT THIS MEANS")
     print("  - 2 oz outer copper ALONE cannot carry the bus. Use all six")
     print("    layers in parallel, stitched with a via array.")
     print("  - The 'Phase' netclass at 1.0 mm track is far short of the phase")
