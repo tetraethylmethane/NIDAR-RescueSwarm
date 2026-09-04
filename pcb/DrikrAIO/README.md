@@ -112,6 +112,15 @@ Rebuild it with:
 "C:/Program Files/KiCad/10.0/bin/python.exe" hardware/tools/build_pcb.py
 ```
 
+## Reviews
+
+**[docs/pre-routing-review-2.md](docs/pre-routing-review-2.md) is current.**
+**GO/NO-GO: NO-GO** — four gate conditions pass, the 115 A peak duration does
+not. Corrected footprint  passes
+25/25 checks (windowpane paste at 58.4 %, courtyard added — the donor had
+none). Thermal architecture is feasible **only with propwash**: still air gives
+T_j 283 °C at hover, and Rev 1's 110 °C figure was wrong.
+
 ## Electrical design review
 
 **[docs/electrical-design-review.md](docs/electrical-design-review.md) gates
