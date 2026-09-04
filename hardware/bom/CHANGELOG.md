@@ -53,7 +53,7 @@ supplier is a tranche-1 action.
 proposal about the headline number: the workbook claimed a floor of ₹1.83 L at
 52 % Indian content while the proposal had settled on **₹1,57,800 at 36 %**. Two
 artifacts stating different costs for the same aircraft is the defect
-`HANDOFF.md` §5 exists to prevent, and patching one of them would only have
+`TRAPS.md` exists to prevent, and patching one of them would only have
 reset the clock.
 
 **The workbook is now produced by [`build_cost_study.py`](build_cost_study.py),

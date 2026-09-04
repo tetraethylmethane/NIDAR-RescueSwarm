@@ -5,7 +5,7 @@ WHY THIS EXISTS
 An earlier version of this workbook was hand-built and then edited repeatedly as
 the ask changed. It drifted until it disagreed with the funding proposal about
 the headline number -- two artifacts stating different costs for the same
-aircraft, which is the exact defect HANDOFF.md section 5 is organised against.
+aircraft, which is the exact defect TRAPS.md is organised against.
 
 This script removes the possibility. Every figure below is IMPORTED from
 docs/proposal/figures/competition_budget.py, which is also what the proposal's

@@ -18,7 +18,7 @@ exactly this and queues manual work on two pairs of hands.
 |---|---|
 | ~~No mission-mode launcher~~ | **Fixed.** `scripts/run-mission.sh` in NIDAR-GSC starts the mission build and refuses to hand over unless `mission_mode` is true and `/uav/commands/insert` answers 403. Do **not** use `run-gs.sh` — it is the dev launcher and registers 31 command routes, each a −50 under rule 8.16. |
 | **No 868 MHz safety radio** | `/api/safety/status` reports `NO_RADIO` and abort returns 503. Rule 8.19 needs abort and recall to work. The RC-channel path (`RC7/RC8/RC9`) is independent of the GCS and does work, but it is the safety pilot's, not the operator's. |
-| **`mission_backend` has drifted** between this repo and NIDAR-GSC — the flying copy is not the tested copy. See [HANDOFF](../../HANDOFF.md) §4.2b. |
+| **`mission_backend` has drifted** between this repo and NIDAR-GSC — the flying copy is not the tested copy. See [HANDOFF](../../HANDOFF.md) §4.5. |
 
 ---
 
@@ -39,7 +39,10 @@ exactly this and queues manual work on two pairs of hands.
       ```
       Confirm on the vehicle: `BATT_FS_LOW_ACT=2`, `BATT_LOW_MAH=2700`,
       `FENCE_ENABLE=1`, `RTL_ALT` 2500/3000/3500 cm, `RTL_LOIT_TIME`
-      0/20000/40000 ms, `SYSID_THISMAV` 1/2/3.
+      0/60000/120000 ms, `SYSID_THISMAV` 1/2/3. If a vehicle reads back
+      20000/40000 ms, it is running a pre-2026-09 parameter set: that stagger
+      is shorter than the measured 53 s descent and two aircraft closed to
+      3.10 m on it. Do not fly it.
 - [ ] **Confirm the GCS laptop boots the mission build**, offline, from cold.
 
 ---
@@ -98,8 +101,10 @@ on the wrong corner and it will come home to the wrong corner.
   its strip, then climbs to the 40 m search deck.
 - **Each strip is swept twice**, the second pass on the reverse heading.
 - **Recovery is sequenced**: they hold at 25 / 30 / 35 m and descend one at a
-  time, `RTL_LOIT_TIME` 0 / 20 / 40 s. The last aircraft waiting 40 s over the
-  pad is correct behaviour and costs ~3.5 % of the pack.
+  time, `RTL_LOIT_TIME` 0 / 60 / 120 s. The last aircraft waiting two minutes
+  over the pad is correct behaviour, not a hang. It costs ~10 % of the pack,
+  which is half the landing reserve — the stagger covers a descent measured at
+  53 s and cannot be shortened without first shortening the descent.
 - **Low battery returns them home by itself** at 20 % remaining. Verified in
   SITL at 10 809 mAh of a 10 800 mAh trip.
 

@@ -118,7 +118,7 @@ Each strip is swept twice, the second pass on the reverse heading, and every swe
 | Recovery chute | **Fit one** | Cannot meet the "land on the pad" condition, but −10 beats −50, so it is worth ~40 points anyway |
 | Pad layout | **Corners, not a row** | A row is the worst packing on a square. Compliance said "3 per row"; they landed **0.83 m** apart — an overlap. Corners give 2.61 m instead of 1.22 m. Measured closest approach **0.83 → 2.27 m** |
 | Search pattern | **Two passes, second reversed** | Not for coverage — one pass has no gaps. Boresight bias is *systematic*, so flying the reverse heading cancels it where more frames cannot. Costs a full second sweep |
-| Launch and recovery | **Sequenced in the mission file** | `NAV_DELAY` 0/15/30 s and `RTL_LOIT_TIME` 0/20/40 s — parameters, not companion code, because the failsafe RTL is a mode change inside the flight controller |
+| Launch and recovery | **Sequenced in the mission file** | `NAV_DELAY` 0/15/30 s and `RTL_LOIT_TIME` 0/60/120 s — parameters, not companion code, because the failsafe RTL is a mode change inside the flight controller. The loiter stagger is 60 s because the descent was **measured** at 53 s; at the 20 s it was first set to, two aircraft closed to 3.10 m over the pad |
 | Motor-out redundancy | **Open** | Only rotors keep the aircraft *flying and scoring*, and only rotors work in the 6 m delivery hover. Ties to rotor count |
 
 Numbers in [configuration trade](docs/sizing/configuration-trade.md).
@@ -164,6 +164,7 @@ Four questions are [drafted and unsent](docs/requirements/organiser-questions.md
 
 ```text
 HANDOFF.md                  read this first if you are picking the project up
+TRAPS.md                    read this before adding a config, a generated file or a test
 docs/                       requirements, sizing, business, system overview
 tools/sizing-model/         the model everything traces back to
 hardware/bom/               Indian BOM + indigenisation scorecard
@@ -176,7 +177,7 @@ ground-station/             mission_backend + the GCS engineering record
 
 The **running** ground station — Flask server, React client, SITL launch scripts — is in [NIDAR-GSC](https://github.com/tetraethylmethane/NIDAR-GSC). What lives here is `ground-station/mission_backend/` (fleet model, KML parser, MAVLink ingest, and the SYS-20 module split that makes a retask route structurally unreachable), plus the requirement evidence: [PLAN.md](ground-station/PLAN.md), the flight screenshots and [mission-flight.mp4](ground-station/mission-flight.mp4).
 
-> ⚠ **The two copies of `mission_backend` have drifted.** `mavlink_ingest.py` is 186 lines here against 304 in NIDAR-GSC, and only the GSC copy calls `SET_MESSAGE_INTERVAL` — without which a passive listener receives nothing but heartbeats. The GSC copy is the one that flies; this one is what CI tests. See [HANDOFF.md](HANDOFF.md) §4.
+> ⚠ **The two copies of `mission_backend` have drifted.** `mavlink_ingest.py` is 186 lines here against 304 in NIDAR-GSC, and only the GSC copy calls `SET_MESSAGE_INTERVAL` — without which a passive listener receives nothing but heartbeats. The GSC copy is the one that flies; this one is what CI tests. See [HANDOFF.md](HANDOFF.md) §4.5.
 
 `communication/` is still planned.
 
@@ -197,7 +198,8 @@ python3 simulations/sitl/proof_figures.py                # redraw §3 from telem
 
 | Document | What's in it |
 |:--|:--|
-| [Handoff](HANDOFF.md) | **Start here.** What is proven, what waits on a human, and the traps that have cost days |
+| [Handoff](HANDOFF.md) | **Start here.** What is proven, what waits on a human, what is unowned |
+| [Traps](TRAPS.md) | Ten classes of defect this project has already paid for, and what now prevents each |
 | [Competition day](docs/checklists/competition-day.md) | How the GCS is actually operated on the day — draft, never rehearsed |
 | [System overview](docs/system-overview.md) | Mission flow, architecture, perception, indigenisation, failsafes |
 | [Sizing calculations](docs/sizing/sizing-calculations.md) | Why every number is what it is |

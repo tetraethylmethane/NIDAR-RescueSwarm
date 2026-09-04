@@ -5,15 +5,25 @@ having forgotten all of it.
 
 `README.md` says what the system **is**: design point, scoring, decisions, open
 risks. This says what state the work is **in** — what is proven, what is only
-modelled, what is waiting on a human, and which traps have already cost days.
-Read this one first if you are about to change something.
+modelled, and what is waiting on a human. Read this one first if you are about
+to change something.
+
+`TRAPS.md` says what has already gone wrong and what now prevents it. **Read
+that one before adding a config file, a generated artifact, or a test.**
+
+Unfamiliar abbreviation? §9 is a glossary.
 
 ---
 
 ## 0. Where it stands today
 
-**2026-09-04**, at `fa3495c`. Nothing has flown. Every performance figure is
-calculated or simulated; the evidence table in §2 says which is which.
+**2026-09-04.** Nothing has flown. Every performance figure is calculated or
+simulated; the evidence table in §2 says which is which.
+
+> This section deliberately carries **no commit hash**. It used to, and it was
+> wrong within one commit of being written, because the commit that updates this
+> file is never the commit it can name. `git log -1` is authoritative about where
+> the repository is; this section is authoritative about where the *work* is.
 
 | | |
 |---|---|
@@ -22,22 +32,35 @@ calculated or simulated; the evidence table in §2 says which is which.
 | Technical proposal | 22 pages, 64 automated checks passing |
 | Mentor brief | 37 pages: 7 of brief, then 29 DoSA approval letters, one per phase |
 | Ground station | Runs; captured live for the paper with synthetic telemetry |
+| Tests | 158 autonomy, 49 perception, 64 proposal-number checks |
 
-**The three things to pick up first:**
+### The five things to pick up first
 
-1. **Two BOM systems have diverged** (§4.5). `sourced_bom.py` feeds the brief
-   and the letters; the older `competition_budget.py` chain still feeds the
-   technical proposal's budget and has not been updated for any recent work.
-   Nothing forces them to agree.
-2. **The 12 mm lens is uncosted and untested** (§4.8). It would move the survey
-   from 40 m to 80 m with identical detection, which is the only credible answer
-   to obstacles on unsurveyed ground. Buy the Arducam lens kit and test it.
-3. **The ring-aware clipper is six lines and was prototyped, not committed**
-   (§4.8). It makes declared obstacles routable around.
+Everything marked **P1** anywhere in this document appears in this list. If you
+add a P1 elsewhere, add it here too — a priority marker that only exists in the
+section it describes is not a priority, it is a note.
 
-**The thing most likely to embarrass us:** the aircraft cannot see a building,
-and the mass statement carries relief kits and a parachute the BOM does not buy.
-Both are stated in the documents; neither is solved.
+1. **P1 — Two BOM systems have diverged** (§4.6). `sourced_bom.py` feeds the
+   brief and the letters; the older `competition_budget.py` chain still feeds
+   the technical proposal's budget and has not been updated for any recent work.
+   Nothing forces them to agree. **The single largest known defect in the
+   repository.**
+2. **P1 — Attribute the 299 g mass residual** (§2.3). The mass statement lists
+   6,061 g against a 6,360 g MTOW and its own percentages sum to 95.3 %.
+   Nothing downstream is wrong, but a reader adding the bars up finds 299 g
+   missing.
+3. **P1 — Confirm insurance before any flight** (§4.7). Third-party cover is
+   commonly mandatory for Indian UAV operations. It was deferred at team
+   direction; deferring it is a decision that expires the moment anything flies.
+4. **Buy and test the 12 mm lens** (§4.9). It moves the survey from 40 m to
+   80 m with identical detection, which is the only credible answer to
+   obstacles on unsurveyed ground. It is costed nowhere and tested nowhere.
+5. **Commit the ring-aware clipper** (§4.9). Six lines, prototyped correctly
+   and never committed. It makes declared obstacles routable around, for free.
+
+**The thing most likely to embarrass us:** the aircraft cannot see a building
+(§4.9), and the mass statement carries relief kits and a parachute the BOM does
+not buy (§4.7). Both are stated in the documents; neither is solved.
 
 ---
 
@@ -56,7 +79,11 @@ export NIDAR_SYS=/path/to/Drikr-NIDAR
 ```
 
 If that is wrong, `sim-flight.sh` **refuses to launch** rather than quietly
-flying stock parameters. That refusal is deliberate — see §5.
+flying stock parameters. That refusal is deliberate — see `TRAPS.md` §1.
+
+**No GSC commit is pinned anywhere.** Every "measured in SITL" result below was
+produced against whatever GSC was checked out at the time, and nothing records
+what that was. Worth fixing the next time a result is recorded.
 
 ---
 
@@ -66,65 +93,116 @@ The single most useful thing to know here is which numbers are **measured**,
 which are **modelled**, and which are **assumed**. Treating one for another is
 how this project has lost most of its time.
 
-| Claim | Status | Where |
-|---|---|---|
-| Battery failsafe returns the aircraft to the pad | **Measured** — SITL, RTL at 10809 mAh of a 10800 mAh trip, three aircraft | `NIDAR-GSC/scripts/test-battery-failsafe.sh` |
-| mavlink-router carries three SYSIDs to one GCS port | **Measured** — three SITL, all three arrive | `NIDAR-GSC/scripts/test-mavlink-router.sh` |
-| Geotag projection is self-consistent | **Measured** — two independent formulations agree to 7.8e-10 m | `perception/geotagging/accuracy.py` §1 |
-| Geotag CEP50 | **Modelled** — Monte Carlo whose *inputs* are budget assumptions. Reconciles with the analytic budget to +1 % | `docs/sizing/geotag-accuracy-output.txt` |
-| Separation at launch | **Measured in sim** — 64.80 m, up from 1.31 m | `proof-1-launch.png` |
-| Separation en route | **34.00 m claimed here; 29.19 m recomputed.** Definition-sensitive — see §2b | `proof-2-sweep.png` |
-| Separation during recovery | **6.52 m claimed here; 5.51 m recomputed.** Hardcoded in a caption string — see §2b | `proof-4-pad.png` |
-| Three aircraft land safely on one pad | **Measured 2.27 m minimum, clear by 1.22 m** — corner slots, not a row | `proof-4-pad.png` |
-| Endurance, hover power, mass budget | **Modelled** — no aircraft has flown | `docs/sizing/model-output.txt` |
-| Detection recall, boresight, RTK accuracy | **Assumed** — no real imagery, no calibration, no hardware | — |
+| Claim | Status | When | Where |
+|---|---|---|---|
+| Battery failsafe returns the aircraft to the pad | **Measured** — SITL, RTL at 10809 mAh of a 10800 mAh trip, three aircraft. Capacity threshold only — see the caveat below | not recorded | `NIDAR-GSC/scripts/test-battery-failsafe.sh` |
+| mavlink-router carries three SYSIDs to one GCS port | **Measured** — three SITL, all three arrive | not recorded | `NIDAR-GSC/scripts/test-mavlink-router.sh` |
+| Geotag projection is self-consistent | **Measured** — two independent formulations agree to 7.8e-10 m | current | `perception/geotagging/accuracy.py` §1 |
+| Geotag CEP50 | **Modelled** — Monte Carlo whose *inputs* are budget assumptions. Reconciles with the analytic budget to +1 % | current | `docs/sizing/geotag-accuracy-output.txt` |
+| Separation, all phases | **Measured in sim** — recomputed from committed telemetry by script, compared by CI | 2026-08-18 | `simulations/recordings/separation-output.txt` |
+| Take-off stagger is served as commanded | **Measured in sim** — 0/15/30 s commanded, 0/15.5/31.7 s observed at `SIM_SPEEDUP 1` | 2026-08-18 | §2.2 |
+| Three aircraft land safely on one pad | **Measured 5.34 m closest airborne approach**, corner slots, sequenced descents | 2026-08-18 | §2.1 |
+| Endurance, hover power, mass budget | **Modelled** — no aircraft has flown | current | `docs/sizing/model-output.txt` |
+| Detection recall, boresight, RTK accuracy | **Assumed** — no real imagery, no calibration, no hardware | — | — |
 
 Nothing in this project has flown on real hardware. Every "measured" above
 means measured in simulation or in software, which rules out whole classes of
 error and rules out none of the physical ones.
 
-### 2b. Three numbers in this table did not reproduce
+> **Caveat on the battery failsafe.** SITL holds pack voltage **constant** at
+> 25.20 V in every recording here, so only `BATT_LOW_MAH` can ever trip. The
+> `BATT_LOW_VOLT` path is **untested and untestable in this harness**, and
+> `verify_flight.py` reports it as such rather than passing it silently.
 
-Writing figure captions for the funding proposal meant recomputing the
-separation results from `simulations/recordings/mission-telemetry.json`. The
-launch figure was **wrong and is corrected**: this file said 92.12 m, while
-`README.md`, `proof-1-launch.png` and the raw telemetry all say **64.80 m**.
+### 2.1 The separation numbers now come from a script
 
-The other two are **definition-sensitive and left alone deliberately** — my
-"en route" excludes a 60 m radius around the pad, which may not be the boundary
-the original used:
+Three separation results used to live here as prose and two did not reproduce.
+The launch figure was wrong (this file said 92.12 m against a true 64.80 m) and
+the other two were marked "definition-sensitive and left alone" — honest about
+the number, and a bad place to leave it.
 
-| | claimed | recomputed |
+**The definitions now live in `tools/separation/recompute_separation.py`**,
+applied to the committed recordings, with the output committed at
+`simulations/recordings/separation-output.txt` and compared byte for byte by CI.
+The phase boundaries (a 60 m pad radius, a 1 m ground threshold, pairing by
+sample index) are arguments in that file. If you disagree with a definition,
+change it there and the documents follow.
+
+Current results, both recordings:
+
+| Phase | speedup-3 recording *(superseded)* | speedup-1 recording *(current)* |
 |---|--:|--:|
-| en route | 34.00 m | 29.19 m |
-| stacked over the pad | 6.52 m | 5.51 m |
+| launch | 64.80 m | 26.96 m |
+| en route | 29.19 m | 35.16 m |
+| recovery | 5.51 m | **5.34 m** |
 
-**Worth fixing at the source:** `simulations/sitl/proof_figures.py:350` carries
-the 6.52 m as a **hardcoded string inside a caption** rather than computing it.
-That is prose beside a formula — the same defect §5 is organised against, in the
-script that generates the evidence.
+**Read the columns, not just the bold number.** The widely quoted **64.80 m**
+launch separation comes from the **superseded** recording, flown at
+`SIM_SPEEDUP 3` with the old descent stagger. The current recording gives
+**26.96 m** at launch. Deconfliction still works emphatically — it was 1.31 m
+before any sequencing existed — but 64.80 m is not the current configuration's
+number and should stop being quoted as one.
 
-### 2b-2. The take-off delays are not visible in the telemetry as commanded
+**The fullest correction record is `docs/proposal/README.md`**, which owns this
+history including the 60 m/40 m survey-altitude conflict. This section is a
+summary and a pointer; that document is canonical. Do not maintain both.
 
-The mission file sets `NAV_DELAY` to **0/15/30 s**, and the autopilots log
-`Delaying 15 sec` / `Delaying 30 sec`. The aircraft are observed leaving the pad
-at **0.0 / 3.5 / 10.0 s**. Aircraft 3 served 9.2 s of a commanded 30; aircraft 2
-served 2.7 s of a commanded 15 — inconsistent ratios, so not a clean
-`SIM_SPEEDUP` conversion.
+`simulations/sitl/proof_figures.py:350` still carries a separation result as a
+**hardcoded string inside a caption** rather than computing it. See `TRAPS.md`
+§7. The four `proof-*.png` figures are rendered from the superseded recording
+and are stale until the mission is re-recorded.
 
-**The deconfliction result stands** (1.31 m -> 64.80 m is measured). The
-*mechanism* does not: §4.2 attributes the spacing to a 0/15/30 s stagger and the
-recording does not show those delays being served. Re-fly at `SIM_SPEEDUP 1`
-before quoting the mechanism. Full detail in `docs/proposal/README.md`.
+### 2.2 The take-off delays — RESOLVED, and this file was two weeks behind
 
-### 2c. The mass statement does not close
+This section used to say the commanded `NAV_DELAY` of 0/15/30 s was not visible
+in the telemetry, that the deconfliction *mechanism* was therefore unverified,
+and that someone should re-fly at `SIM_SPEEDUP 1`.
+
+**That re-fly happened on 2026-08-18, in commit `bcf3127`, and settled it.** The
+recording has been committed at
+`simulations/recordings/mission-telemetry-speedup1.json` ever since. Lift-off is
+observed at **0 / 15.5 / 31.7 s** against a commanded 0 / 15 / 30, the residual
+being climb time to 2 m. The events log carries `Delaying 15 sec` and
+`Delaying 30 sec` and the aircraft serve them.
+
+The 0/3.5/10.0 s figures this file used to quote were a **speedup-3 sampling
+artifact**, exactly as the harness's own comment predicted. `NAV_DELAY` does
+what the mission file says and the proposal's launch-deconfliction mechanism is
+verified.
+
+> Two weeks of "someone should check this" sat on top of a committed recording
+> that had already checked it. When you close a question, close it in this file
+> in the same commit.
+
+### 2.3 The mass statement does not close — **P1**
 
 `docs/sizing/model-output.txt` lists **6,061 g of items against a 6,360 g
 MTOW** — a 299 g (4.7 %) unallocated residual, and its own percentages sum to
-95.3 %. Nothing downstream is wrong because structure is derived as
+95.3 %. Nothing downstream is wrong, because structure is derived as
 `0.235 × MTOW` rather than summed, but a reader adding the bars up finds 299 g
 missing. The proposal now shows the residual as its own bar rather than hiding
 it. **Attributing it is a P1 action.**
+
+### 2.4 Neither recording has a clean clock
+
+Both committed recordings have a broken timebase, in different ways, and the
+check that was supposed to catch it only looked one way:
+
+| Recording | Max forward gap | Backward steps |
+|---|--:|--:|
+| speedup-3 *(superseded)* | **453.93 s** | 0 |
+| speedup-1 *(current)* | 0.55 s | **17**, worst −2.14 s |
+
+The speedup-1 recording was reported as having a clean clock on the strength of
+"max gap 0.55 s across 1201 samples". `verify_flight.py` tested only
+`gap > 5 s`, so 17 backward steps passed in silence. It now checks both
+directions and reports the backward steps as a WARN.
+
+**This does not affect any separation result** — those pair samples by index,
+not by timestamp, which is the only correct choice against a clock like this.
+It does mean that **every `t=` in these recordings is a label on a sample, not a
+mission time.** Do not quote one as an elapsed duration. See `TRAPS.md` §5 and
+§6.
 
 ---
 
@@ -141,11 +219,21 @@ python perception/geotagging/accuracy.py
 
 # Tests. NOTE the working directory -- CI runs them from inside each package,
 # and running from the repo root hides import errors that CI then catches.
-cd autonomy   && python -m pytest tests -q     # 125
-cd perception && python -m pytest tests -q     #  17
+cd autonomy   && python -m pytest tests -q     # 158
+cd perception && python -m pytest tests -q     #  49
 
-# Firmware parameters, regenerated and validated
+# Firmware parameters. GENERATED -- edit params.py, never the .parm files.
+# CI regenerates these and fails on any diff. See TRAPS.md §4 for why.
 cd firmware/ardupilot-params && python params.py --drones 3 --out .
+
+# Separation, recomputed from the committed telemetry. Exits non-zero if any
+# current recording puts two airborne aircraft closer than 5 m.
+python tools/separation/recompute_separation.py
+
+# Is the recorded flight autonomous and clean? Parses the harness AST to prove
+# no MAVLink transmit occurs after set_mode(AUTO), then checks separation,
+# geofence, failsafes, energy, clock integrity and fix validity.
+python simulations/sitl/verify_flight.py simulations/recordings/mission-telemetry-speedup1.json
 
 # SITL: prove the battery failsafe brings it home
 NIDAR_SYS=$PWD ../NIDAR-GSC/scripts/test-battery-failsafe.sh
@@ -180,8 +268,8 @@ pdflatex -interaction=nonstopmode mentor-brief.tex        # x2  -> 37 pages
 pdflatex -interaction=nonstopmode rescueswarm-proposal.tex # x2 -> 22 pages
 ```
 
-**A clean LaTeX build is not proof the document is right.** See §5: too-wide
-content wraps silently inside `center`. Render pages to images and look.
+**A clean LaTeX build is not proof the document is right.** Too-wide content
+wraps silently inside `center`. Render pages to images and look. `TRAPS.md` §8.
 
 `simulations/recordings/*.json` is committed telemetry from real SITL runs. The
 GIFs are gitignored and regenerate from it.
@@ -196,12 +284,27 @@ it. It now refuses to run without an explicit override.
 
 These are not blocked on work. They are blocked on someone choosing.
 
+**Nobody owns any of them.** The Owner and Decide-by columns are empty on
+purpose: the gap is real, and writing it down is the first step to closing it.
+Fill these in — a decision with no name against it does not get made.
+
+| # | Decision | Owner | Decide by |
+|---|---|---|---|
+| 4.3 | Send the organiser questions | — unassigned — | |
+| 4.4 | Confirm corner pad slots with the organisers | — unassigned — | |
+| 4.5 | Resolve the `mission_backend` split (3 options) | — unassigned — | |
+| 4.6 | **P1** Which BOM is authoritative — reconcile the two | — unassigned — | |
+| 4.7 | **P1** Insurance, before any flight | — unassigned — | |
+| 4.7 | Relief kits, parachutes, ground-truth apparatus | — unassigned — | |
+| 4.8 | `LAND_SPEED` vs the landing reserve | — unassigned — | |
+| 4.9 | Buy and test the 12 mm lens | — unassigned — | |
+
 ### 4.1 Pad recovery — RESOLVED by moving the slots to the corners
 
 Was: three aircraft aiming at slots 1.22 m apart came to rest **0.83 m** apart,
-an overlap of 1.046 m airframes, and stacked **3.99 m** apart in the air over
-the pad. `rulebook-compliance.md` had argued three airframes fit the 12 ft pad
-"3 per row", and `pad_slots()` implemented exactly that.
+an overlap of 1.046 m airframes. `rulebook-compliance.md` had argued three
+airframes fit the 12 ft pad "3 per row", and `pad_slots()` implemented exactly
+that.
 
 A row is the worst possible packing on a square. Centres must stay half an
 airframe inside the pad edge, so they live in a 2.61 m square; a row across it
@@ -213,31 +316,61 @@ separation, same pad, no cost.
 | slot spacing | 1.22 m | **2.61 m** |
 | worst case, ±0.5 m dispersion each | −0.13 m (overlap) | **1.61 m** |
 | measured, closest at any time | 0.83 m (overlap) | **2.27 m** |
-| measured, stacked over the pad | 3.99 m | **6.52 m** |
 
 Four aircraft also fit, at the four corners. Five do not, and `pad_slots()`
 raises rather than returning something that overlaps.
 
-**Still worth confirming with the organisers:** the aircraft now sit at the pad
-corners rather than in a line, and brief 7 requires no part of any drone
-outside the box during launch and landing. Slot centres are half an airframe
-inside the edge by construction, so this is satisfied geometrically — but the
-staging photo will look different from what a marshal might expect.
+Geometry was only half of it — see §4.2 for the sequencing that had to go with
+it.
 
-### 4.2 Takeoff sequencing — done
+### 4.2 The descent stagger — a real breach, fixed, reverted, and fixed again
 
-Was: all three launched together and the mission run measured 1.3 m between
-aircraft at 2–3 m altitude. Now a staggered `NAV_DELAY` (0/15/30 s) sits before
-each `NAV_TAKEOFF`, so the spacing lives in the mission file rather than in an
-operator's timing. Re-flown at SIM_SPEEDUP 3 so the stagger is legible:
-**closest pair during launch went 1.31 m to 64.80 m.** Both telemetry sets and
-the figure are in `simulations/recordings/`.
+**This is the most instructive defect in the repository. `TRAPS.md` §4 has the
+full anatomy.**
 
-An earlier claim of 21.17 m here was from a 15x run whose coarser sampling
-missed the closest approach. The finer run is the one to trust, and it also
-moved the tightest point of the whole flight into recovery — see §4.1.
+Corner slots separate where the aircraft *land*. They do nothing about three
+aircraft arriving over one pad at once, and all three hit `BATT_LOW_MAH` within
+seconds of each other because they share a pack design and fly missions of
+near-equal length. `RTL_LOIT_TIME` holds each aircraft at its return altitude so
+only one is descending at a time.
 
-### 4.2b `mission_backend` exists twice, and the copies have drifted
+It was set to **0/20/40 s before any descent had been timed.** The
+`SIM_SPEEDUP 1` re-fly then measured the descent at **53 s**, so drone 2 began
+descending 27.3 s before drone 1 had landed and the two closed to **3.10 m**
+against a 5 m minimum.
+
+The fix — 0/60/120 s — was applied **by hand to the generated `.parm` files**
+and never to `params.py`. The next regeneration silently put the breach back,
+and `test_params.py` asserted the reverted literal, so the suite stayed green on
+it for two weeks.
+
+**Now closed three ways:** `params.py` defaults to a 60 s stagger; CI
+regenerates the `.parm` files and fails on any diff; and the test asserts that
+the stagger covers the measured descent rather than asserting a number.
+
+| | 0/20/40 s | 0/60/120 s |
+|---|--:|--:|
+| closest airborne approach | 3.10 m — **breach** | **5.34 m** |
+| worst-case hold | 40 s | 120 s |
+| energy spent queuing | 10.1 Wh, 17 % of the reserve | 30.4 Wh, **52 %** of the reserve |
+
+That last row is the new problem, and it is §4.8.
+
+### 4.3 Organiser questions are drafted and unsent
+
+`docs/requirements/organiser-questions.md`. Several downstream numbers depend
+on the answers — particularly whether prior site access allows surveying the
+pad, which is worth ~0.4 m of geotag budget.
+
+### 4.4 Confirm the corner layout with the organisers
+
+The aircraft now sit at the pad corners rather than in a line, and brief 7
+requires no part of any drone outside the box during launch and landing. Slot
+centres are half an airframe inside the edge by construction, so this is
+satisfied geometrically — but the staging photo will look different from what a
+marshal might expect. Worth asking rather than discovering on the day.
+
+### 4.5 `mission_backend` exists twice, and the copies have drifted
 
 `ground-station/mission_backend/` in this repo and `server/mission_backend/` in
 NIDAR-GSC are the same package, maintained in two places. Five files are
@@ -271,19 +404,7 @@ Three ways out, and it is a structural choice rather than a fix:
 
 Until one is chosen, sync the copies before trusting either test suite.
 
-### 4.3 Organiser questions are drafted and unsent
-
-`docs/requirements/organiser-questions.md`. Several downstream numbers depend
-on the answers — particularly whether prior site access allows surveying the
-pad, which is worth ~0.4 m of geotag budget.
-
-### 4.4 Parts order
-
-Cells are unblocked: the design point is **6S3P, 18 cells per aircraft, 54 for
-the fleet**. See `docs/sizing/model-output.txt`, which is authoritative over any
-prose including this file.
-
-### 4.5 Which BOM is authoritative — `sourced_bom.py`, and there are still two
+### 4.6 Which BOM is authoritative — `sourced_bom.py`, and there are still two — **P1**
 
 `hardware/bom/sourced_bom.py` **wins**. 59 lines, every one a live listing from
 a named Indian supplier with a URL, transcribed from the team's own sourcing
@@ -298,7 +419,7 @@ It carries a **transcription guard**: the module asserts its own total equals
 the source sheet's stated total, plus the rows that sheet's SUM range misses,
 plus what has been added since. If a line is mistyped, dropped or
 double-counted, importing the module raises. That guard is how the sheet's own
-arithmetic faults were found (see §5).
+arithmetic faults were found (`TRAPS.md` §3).
 
 Everything downstream generates from it and reconciles by assertion:
 
@@ -308,15 +429,16 @@ Everything downstream generates from it and reconciles by assertion:
 | Phase schedule | same | per-phase allocation sums to the parts total |
 | 29 DoSA approval letters | `tools/proposal/build_approval_letters.py` | the 29 letters sum to the parts total exactly |
 
-**The unresolved part.** The older system — `docs/proposal/figures/competition_budget.py`,
-`tools/proposal/build_bom.py`, `BOM.md`, `RescueSwarm_BOM.csv` and the xlsx
-workbooks — still exists and still feeds the technical proposal's budget
-figures. It has **not** been updated for any of the receiver, obstacle or
-missing-component work. The two have diverged. Nothing currently forces them to
-agree, and this is the single largest known defect in the repository. Reconcile
-before either document goes out alongside the other.
+**The unresolved part.** The older system —
+`docs/proposal/figures/competition_budget.py`, `tools/proposal/build_bom.py`,
+`BOM.md`, `RescueSwarm_BOM.csv` and the xlsx workbooks — still exists and still
+feeds the technical proposal's budget figures. It has **not** been updated for
+any of the receiver, obstacle or missing-component work. The two have diverged.
+Nothing currently forces them to agree, and this is the single largest known
+defect in the repository. **Reconcile before either document goes out alongside
+the other.**
 
-### 4.6 The funding ask, and what moved it
+### 4.7 The funding ask, and what moved it
 
 The ask is **₹6,85,532** against **₹5,81,034** of parts. The released figure is
 parts plus tax where tax is still owed plus 15 % contingency — *not* duty plus
@@ -331,8 +453,8 @@ from cutting capability.
 
 **Still open and gating:**
 
-1. **Insurance** was deferred at team direction. Third-party cover is commonly
-   mandatory for Indian UAV operations. **Confirm before any flight.**
+1. **P1 — Insurance** was deferred at team direction. Third-party cover is
+   commonly mandatory for Indian UAV operations. **Confirm before any flight.**
 2. **Relief kits, recovery parachutes and ground-truth apparatus** are deferred
    at team direction (2026-08-18) and are *not* in the BOM. But the mass
    statement still carries the kits at 800 g and the parachute at 300 g per
@@ -344,25 +466,31 @@ from cutting capability.
    schedule before assuming that still holds — the phase structure has changed
    twice since.
 
-### 4.7 Receivers — RESOLVED as a hybrid, and the reasoning is in the paper
+### 4.8 `LAND_SPEED` versus the landing reserve — new, and unowned
 
-Two Teravolt AeroNav-Pro RTK (₹25,000 each: **one rover on aircraft 1, one
-ground base**) and two Holybro Micro M9N (₹6,939 each, aircraft 2 and 3).
+The descent stagger that fixes the pad conflict (§4.2) now spends **52 % of the
+landing reserve** on the last aircraft in the queue: 120 s of hold at the 913 W
+design hover power is 30.4 Wh of a 58.4 Wh reserve. It still lands — the
+remainder is roughly 110 s of hover against a 34 s descent — but the margin fell
+from about 6× to about 1.9×.
 
-The argument, derived in §IV-D and backed by `matlab/sim/sim_receivers.m`:
-everything in the geolocation budget except the receiver sums to 0.88 m, so a
-5 m delivery requirement caps the receiver's own error at **2.75 m**. SBAS
-clears at 1.85 m CEP95; NavIC's published standalone accuracy fails at 8.79 m.
-RTK is retained as *instrumentation*, not for mission accuracy — and an
-instrument characterises a design, so one instrumented aircraft is enough. What
-P7–P8 measure is where a kit landed, surveyed on the ground, not what the
-aircraft believed at the time.
+**The alternative is to shorten the descent rather than lengthen the queue.**
+ArduPilot's default `LAND_SPEED` is 0.5 m/s, which is what makes the descent
+53 s. Raising it fixes the same conflict for less energy.
 
-**NavIC is not an alternative to RTK** — it is a constellation, RTK is a
-correction technique. Worth having as an *additional* constellation if a module
-already tracks it. Ask Teravolt whether the AeroNav-Pro does; it costs nothing.
+It is **deliberately untouched**: descending faster changes control authority
+near the ground, and that is a claim simulation is poor at settling. It wants a
+flight test before it is adopted, which makes it a decision and not a tuning
+value.
 
-### 4.8 Obstacles — the scope limit, and the way out nobody has costed
+`test_the_loiter_stagger_is_affordable_from_the_reserve` documents the trade and
+will fail if the queue grows past what the reserve can pay for. **It currently
+passes by 1.08 Wh of 58.40 — 1.9 %.** A 61 s stagger would fail it. Read that as
+the real state of the margin rather than as a test comfortably passing: the
+queue is very nearly as long as the reserve can fund, and the next thing that
+needs a second of hold has nowhere to take it from.
+
+### 4.9 Obstacles — the scope limit, and the way out nobody has costed
 
 **Nothing on the aircraft can see a building.** There is no forward sensor. The
 aircraft flies where a human said it was safe, and if that human missed a
@@ -397,121 +525,43 @@ costed nowhere and tested nowhere.** Robu stocks an Arducam LK004 kit
   cell decomposition, which is the right algorithm for routing *around* an
   obstacle, and `_decompose` already groups disjoint runs. It cannot take a hole
   only because `_clip_segment_to_poly` treats its input as one ring. A
-  ring-aware version is **six lines** and was prototyped correctly this session
-  but **not committed**. Do it — it makes declared obstacles avoidable for free.
+  ring-aware version is **six lines** and was prototyped correctly but **not
+  committed**. Do it — it makes declared obstacles avoidable for free.
 - A 360° lidar was priced and is **not recommended**. The 12 m units
   (RPLIDAR A1M8, ₹6,777) only buy an emergency stop, and at 8 m/s stopping needs
   14.7 m. The 40 m RPLIDAR S1 that would let you route around is **₹62,400
   each** — ₹1.87 L for three, a third of the programme. If anything, buy one for
   a P6 experiment; do not fly three untested at a competition.
 
+### 4.10 Parts order — unblocked
+
+Cells are unblocked: the design point is **6S3P, 18 cells per aircraft, 54 for
+the fleet**. See `docs/sizing/model-output.txt`, which is authoritative over any
+prose including this file.
+
 ---
 
-## 5. Traps that have already cost time
+## 5. Traps — moved to `TRAPS.md`
 
-Read this section before adding any config file.
+The traps section lives in **[`TRAPS.md`](TRAPS.md)** now. It is the section
+that only grows and the most reusable thing in this repository, and it was
+competing with the project status for a new reader's attention.
 
-**Configs that are not in the execution path.** Four instances so far, and the
-most expensive class of defect on this project:
+Ten classes, each with what looked right, what was true, and what now prevents
+it:
 
-- `mediamtx.yml` — parsed clean, served nothing.
-- `mavlink-router.conf` — `Mode = Normal` routed **zero** messages when the
-  aircraft initiates. Started without complaint for weeks.
-- `firmware/ardupilot-params/*.parm` — a validated, unit-tested failsafe set
-  that **no simulation ever loaded**. Every SITL script used stock defaults,
-  where `BATT_FS_LOW_ACT = 0`. Found by a teammate watching a video, not by any
-  test.
-- `plan.py`'s transit-altitude stagger — applied to `NAV_TAKEOFF` only, so the
-  documented deconfliction was never flown.
-- `plan.py`'s sweep direction — `start_far_side=bool(i % 2)`, keyed on the drone
-  index rather than on anything physical, left two of three aircraft finishing
-  their sweep 516 m and 540 m from the pad on the lowest state of charge of the
-  flight. `plan_mission` now enumerates the four start/direction combinations
-  and keeps the one that ends nearest home; all three now finish inside 130 m,
-  at identical path length.
-
-Each reviewed clean and had passing tests around it. The only thing that
-catches this class is running the real artifact end to end and **reading the
-values back off the running system**.
-
-**A second class, found by reviewing the funding proposal three times.** Where
-§5 is about artifacts that are not in the execution path, this one is about
-*numbers that agree with each other and with nothing else*:
-
-- The proposal asserted **45 % indigenous content** in four places. It agreed
-  with itself everywhere and was wrong everywhere — the computed figure is
-  **35.5 %**. Nobody had ever run the calculation.
-- It paired **2 cm/px with "roughly fifty pixels"**. At 2 cm/px a 1.7 m person
-  is 85 px; the 47 px figure belongs to the 2× downsampled image. Two correct
-  numbers from `sizing-calculations.md` §8, joined into a false statement.
-- `HANDOFF.md` itself carried **92.12 m** for launch separation while the
-  figure, `README.md` and the raw telemetry all said 64.80 m.
-
-The lesson is narrower than "check your numbers": **internal consistency is not
-evidence.** A figure repeated in four places is not corroborated, it is copied.
-Check each number against the thing that *generates* it — the model output, the
-telemetry, the arithmetic — and not against the other places it appears. `validate()` in `params.py` now rejects a
-table of known-phantom names, because `BATT_RESISTANCE` sat in the parameter
-files for weeks doing nothing — it is a PX4 name, ArduPilot estimates internal
-resistance itself, and `.parm` drops unknown names in silence.
-
-**A third class: a sum that is complete against an incomplete list.** The 29
-approval letters were asserted to sum to the parts total exactly, and did. That
-proves nothing about whether the parts list is right, and it was not:
-
-- **Frame plate stock** was missing entirely. The arms are carbon tube; nothing
-  bought the plate they bolt to. It had been inside a single "Structure,
-  in-house fabrication" line in the old cost model, and itemising that line lost
-  it.
-- **The autopilot log card** was missing. The Pixhawk 6C Mini ships without one
-  and records nothing without it; the 128 GB card in the BOM is the companion
-  computer's, a different slot on a different board.
-- **Phase 2 bought a motor and nothing to spin it.** The phase whose entire
-  purpose is measuring thrust had no propeller, no speed controller and no
-  throttle source — the safety-pilot transmitter is not bought until phase 11.
-  It funded something that could not be switched on.
-- **The RTK base was bought 24 phases after the rover.** A rover without its
-  base is an ordinary receiver, so aircraft 1 would have flown the whole build
-  uncorrected with no ground truth surveyable until the programme was nearly
-  over.
-
-The lesson: assert the sum *and* diff the list against the design. Both of the
-missing components were found by comparing `sourced_bom.py` against the mass
-statement and against the cost model it replaced, not by any arithmetic check.
-
-**A fourth: LaTeX that compiles cleanly and is still wrong.**
-
-- A too-wide title inside `\begin{center}` **wraps silently** — no overfull
-  warning, no error. A clean build is not proof of layout. Render pages to
-  images and look at them.
-- `\begin{center}` around a table adds its own vertical skip, which pushed nine
-  one-page letters onto a second sheet carrying only signatures. Use a
-  full-width `\makebox` to centre without the skip.
-- A blank line inside `\caption{}` breaks it with an error far from the cause.
-
-**A fifth: the editing path into this repo mangles backslashes.** Writing LaTeX
-or regex through a shell heredoc has repeatedly turned `\textbf` into a TAB and
-`\footnotesize` into a form feed — both of which LaTeX swallows in silence.
-`build_approval_letters.py` therefore writes every `\f` sequence through a token
-and asserts the per-letter counts before emitting anything. Prefer the editor
-over heredocs for anything containing backslashes, and assert after writing.
-
-**Other things that bite:**
-
-- `FENCE_RADIUS` is 600 m, chosen for the link budget. It caps how far the
-  search area can sit from launch. A first sim run had all three aircraft
-  breach and RTL three seconds into the sweep.
-- `SIM_BATT_CAP_AH` set at **runtime** does not drive the SITL battery model.
-  Set it at boot via `--defaults` or the pack never sags.
-- `--defaults` in ArduPilot SITL takes a **comma-separated list**, applied left
-  to right. Verified, not assumed.
-- Seeding anything from `hash()` on a string makes it non-reproducible: Python
-  randomises string hashing per process. Use `zlib.crc32`.
-- Generating a committed output with PowerShell `>` adds a UTF-8 BOM that
-  `--strip-trailing-cr` will not strip, and the reproduce job fails on line 1.
-  Generate through a shell that writes raw bytes.
-- Run tests the way CI runs them (from inside `autonomy/`, `perception/`), not
-  from the repo root.
+| | |
+|---|---|
+| §1 | Configs that are not in the execution path — **six instances**, the most expensive class here |
+| §2 | Numbers that agree with each other and with nothing else |
+| §3 | A sum that is complete against an incomplete list |
+| §4 | A generated file, edited by hand — shipped a measured safety breach back in |
+| §5 | A check that only looks one way |
+| §6 | Matching samples by a clock that is not monotonic |
+| §7 | Prose beside a formula |
+| §8 | LaTeX that compiles cleanly and is still wrong |
+| §9 | The editing path into this repo mangles backslashes |
+| §10 | Other things that bite |
 
 ---
 
@@ -524,9 +574,17 @@ The rule the `reproduce` job enforces: **every published number regenerates
 from its model, and changing a model means committing the regenerated output in
 the same commit.** 13 outputs in `docs/sizing/` are compared byte for byte.
 
+It also now regenerates and diffs:
+
+- `simulations/recordings/separation-output.txt` — the separation results,
+  recomputed from the committed telemetry.
+- `firmware/ardupilot-params/*.parm` — the generated parameter files. This was
+  the last generated artifact nothing compared, and a hand-edit to it reverted a
+  safety fix for two weeks (§4.2).
+
 This job silently failed for weeks over CRLF before anyone noticed, which is
-worth remembering — a green tick is only worth what the job actually checks.
-`.gitattributes` now normalises the outputs to LF.
+worth remembering — **a green tick is only worth what the job actually checks.**
+`.gitattributes` normalises the compared outputs to LF.
 
 ---
 
@@ -534,8 +592,8 @@ worth remembering — a green tick is only worth what the job actually checks.
 
 Not actionable until something physical exists: 868 MHz safety radio link,
 venue map tiles, boresight calibration, detection recall on real imagery,
-pack internal resistance by bench discharge, and every flight-test line in
-`docs/development-plan.md`.
+pack internal resistance by bench discharge, `LAND_SPEED` validation (§4.8),
+and every flight-test line in `docs/development-plan.md`.
 
 ---
 
@@ -544,6 +602,7 @@ pack internal resistance by bench discharge, and every flight-test line in
 | Question | File |
 |---|---|
 | What is the system, what did we decide, what are the risks | `README.md` |
+| What has already gone wrong, and what stops it now | `TRAPS.md` |
 | Why every number is what it is | `docs/sizing/sizing-calculations.md` |
 | What the rulebook requires and whether we meet it | `docs/requirements/rulebook-compliance.md` |
 | Requirement IDs (`SYS-*`) | `docs/requirements/requirements-baseline.md` |
@@ -552,7 +611,33 @@ pack internal resistance by bench discharge, and every flight-test line in
 | What the perception owner needs | `docs/perception-integration-plan.md` |
 | Cost and indigenisation | `docs/business/cost-and-economics.md` |
 | The funding proposal, and its correction record | `docs/proposal/` — read the README before the PDF |
-| What the aircraft is actually built from | `hardware/bom/sourced_bom.py` — the xlsx workbooks are superseded, see §4.5 |
+| What the aircraft is actually built from | `hardware/bom/sourced_bom.py` — the xlsx workbooks are superseded, see §4.6 |
 | Why each part was chosen | `tools/proposal/build_brief_tables.py`, `RATIONALE` |
 | Analysis status: what is done, partial or todo | `matlab/CHECKLIST.md` |
 | What was inherited in the GCS and what was wrong with it | `docs/gcs-inherited-review.md` |
+| Separation, recomputed from telemetry | `tools/separation/recompute_separation.py` |
+
+---
+
+## 9. Glossary
+
+Everything this document uses without explaining. A teammate knows these; a
+reviewer does not, and §0 is written for both.
+
+| Term | What it means here |
+|---|---|
+| **AGL** | Above ground level, as opposed to above sea level. |
+| **BOM** | Bill of materials — the parts list. §4.6 is about there being two. |
+| **CEP50 / CEP95** | Circular error probable: the radius containing 50 % / 95 % of position fixes. The delivery requirement is stated as a CEP. |
+| **DoSA** | Dean of Student Affairs — the office that approves each funding release. One approval letter per phase, 29 of them. |
+| **GSD** | Ground sample distance — how many centimetres of ground one pixel covers. Sets whether a person is detectable. |
+| **GSC** | Ground Station Computer — the other repository (§1). |
+| **MTOW** | Maximum take-off weight. 6,360 g here; §2.3 is about 299 g of it being unattributed. |
+| **NavIC** | India's regional satellite navigation constellation. A constellation, **not** an alternative to RTK (§4.9's sibling argument in `docs/proposal/`). |
+| **P1 … P11** | Programme phases — the 29 staged funding releases group into these. "P7 recall measurement" means the flight test in phase 7. |
+| **RTK** | Real-time kinematic — a correction technique using a ground base station to bring GNSS error to centimetres. Needs a base *and* a rover. |
+| **SBAS** | Satellite-based augmentation — a weaker correction than RTK, needing no ground station. |
+| **SITL** | Software in the loop — ArduPilot flying a simulated aircraft. Every "measured" result here is SITL. |
+| **SYS-nn** | A requirement ID from `docs/requirements/requirements-baseline.md`. SYS-20 is the one §4.5 is verified against. |
+| **brief 7** | Item 7 of the competition mission brief: no part of any drone outside the pad during launch and landing (§4.4). |
+| **boustrophedon** | The back-and-forth "as the ox ploughs" survey pattern the coverage planner flies. |

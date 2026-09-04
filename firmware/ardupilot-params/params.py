@@ -155,9 +155,17 @@ REQUIRED_FAILSAFES = (
 )
 
 
+# Worst measured descent from RTL_ALT to touchdown, SITL at SIM_SPEEDUP 1,
+# recording simulations/recordings/mission-telemetry-speedup1.json: 53 / 32 / 34 s
+# for drones 1-3 at ArduPilot's default LAND_SPEED. The stagger has to cover the
+# SLOWEST of these, not the average, or the next aircraft enters a corridor the
+# one below it has not left.
+WORST_MEASURED_DESCENT_S = 53.0
+
+
 def for_drone(drone_id: int, rtl_alt_m: float = 25.0,
               rtl_stagger_m: float = 5.0,
-              rtl_loiter_stagger_s: float = 20.0) -> dict[str, float]:
+              rtl_loiter_stagger_s: float = 60.0) -> dict[str, float]:
     """Full parameter set for one aircraft."""
     if not 1 <= drone_id <= 250:
         raise ValueError("drone_id must be a valid MAVLink system id")
@@ -177,17 +185,29 @@ def for_drone(drone_id: int, rtl_alt_m: float = 25.0,
     # onto slots 1.22 m apart on a 3.66 m pad.
     #
     # RTL_LOIT_TIME holds the aircraft at RTL_ALT above home before it descends.
-    # Staggering it by drone (0 / 20 / 40 s) means only one is in the descent at
+    # Staggering it by drone (0 / 60 / 120 s) means only one is in the descent at
     # a time. It is a PARAMETER because the battery failsafe RTL is a mode change
     # inside the flight controller: mission items do not run, and any companion
     # sequencing would be trusting the computer whose failure is one of the
     # reasons to come home in the first place.
     #
-    # Cost, for the last aircraft in the queue: 40 s of hover at the 913 W
-    # design hover power = 10.1 Wh, 3.5 % of the 292 Wh pack. BATT_LOW_MAH fires
-    # at 20 % SoC = 58.4 Wh, so the reserve absorbs it roughly six times over.
-    # test_params.py asserts that relationship rather than the bare number, so
-    # raising the stagger past what the reserve can pay for fails the tests.
+    # THE STAGGER IS 60 s BECAUSE THE DESCENT IS 53 s, AND THAT WAS MEASURED.
+    # It was 20 s until the SIM_SPEEDUP 1 re-fly, chosen before any descent had
+    # been timed. At 20 s drone 2 began descending 27.3 s before drone 1 had
+    # landed, and the two closed to 3.10 m over a 3.66 m pad -- a real breach of
+    # the 5 m minimum, invisible in the coarser speedup-3 recording. See
+    # WORST_MEASURED_DESCENT_S above.
+    #
+    # WHAT IT COSTS, AND WHY THAT IS NOW A DECISION AND NOT A DETAIL.
+    # The last aircraft in the queue holds 120 s at the 913 W design hover
+    # power = 30.4 Wh, against a BATT_LOW_MAH reserve of 58.4 Wh. Queuing now
+    # spends 52 % of the reserve where 0/20/40 spent 17 %. It still lands -- 28 Wh
+    # is roughly 110 s of hover against a 34 s descent -- but the margin went
+    # from ~6x to ~1.9x, and that is no longer comfortable enough to leave
+    # unexamined. Raising LAND_SPEED fixes the same collision for less energy
+    # and is the alternative the team should price; it is untouched here because
+    # it changes control authority near the ground and wants flight validation
+    # before simulation says it is fine. See HANDOFF.md.
     #
     # RTL_LOIT_TIME is in MILLISECONDS, unlike RTL_ALT above it in centimetres.
     p["RTL_LOIT_TIME"] = (drone_id - 1) * rtl_loiter_stagger_s * 1000

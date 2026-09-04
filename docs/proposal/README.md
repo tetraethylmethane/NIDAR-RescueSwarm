@@ -178,7 +178,22 @@ the safety pilot's RC."*
 holds only `.gitkeep` and `public/`; the UI lives in NIDAR-GSC. These two fixes
 have to be made there.
 
-## The take-off delays do not appear in the telemetry as commanded
+## The take-off delays — RESOLVED, and NAV_DELAY is vindicated
+
+> **Resolved 2026-08-18 in commit `bcf3127`, by re-flying at `SIM_SPEEDUP 1`.**
+> Lift-off is observed at **0 / 15.5 / 31.7 s** against a commanded 0 / 15 / 30,
+> the residual being climb time to 2 m. The recording is committed at
+> `simulations/recordings/mission-telemetry-speedup1.json`.
+>
+> The 0 / 2.8 / 9.4 s figures below were a **speedup-3 sampling artifact**,
+> exactly as the SITL harness's own comment predicted. `NAV_DELAY` does what the
+> mission file says, and the proposal's launch-deconfliction *mechanism* is
+> verified, not merely its result.
+>
+> The investigation is kept below because its reasoning was sound and its
+> conclusion was wrong, which is worth being able to re-read. **Everything from
+> here to the end of this section describes the superseded recording.**
+
 
 Re-rendering the launch figure from the raw recording surfaced this. The mission
 file sets `NAV_DELAY` to **0 / 15 / 30 s** before each take-off, and the
@@ -221,38 +236,72 @@ and that is measured, not assumed. What is unverified is the *mechanism*: the
 document says the spacing comes from a 0/15/30 s stagger, and the recording does
 not show those delays being served.
 
-The figure therefore plots **observed** lift-off, not commanded. Two things are
-worth doing before this is quoted as evidence of the mechanism:
+The figure therefore plots **observed** lift-off, not commanded. Two things were
+worth doing before this could be quoted as evidence of the mechanism, and both
+have since been done:
 
-1. Establish whether `t` in the recording is simulated or wall-clock time.
-   `sim-flight.sh` and the recorder are the places to look.
-2. Re-fly at `SIM_SPEEDUP 1`. If the delays are served correctly there, this is
-   a simulation artefact; if they are not, `NAV_DELAY` is not doing what the
-   mission file says — which would be the fifth instance of the defect class in
-   `HANDOFF.md` §5.
+1. ~~Establish whether `t` is simulated or wall-clock time.~~ It tracks
+   simulated seconds, as the mAh argument above concluded. But the clock is
+   **not monotonic** in either recording — see the note below.
+2. ~~Re-fly at `SIM_SPEEDUP 1`.~~ Done, `bcf3127`. The delays are served
+   correctly, so this was a simulation artefact and not a fifth instance of the
+   defect class in `TRAPS.md` §1.
 
-## Separation numbers: HANDOFF.md is stale
+**A note the re-fly added rather than closed.** The speedup-1 recording was
+reported as having a clean clock on the strength of "max gap 0.55 s across 1201
+samples". Its clock steps **backwards 17 times**, worst −2.14 s;
+`verify_flight.py` only tested forward gaps and passed it in silence. It now
+tests both directions. No separation result is affected, because those pair
+samples by index — but **no `t=` from either recording is a mission time.**
+`TRAPS.md` §5 and §6.
+
+## Separation numbers — this document owns the correction record
+
+**This section is canonical.** `HANDOFF.md` §2.1 carries a summary and points
+here. Do not maintain both.
 
 Writing the figure captions meant recomputing the separation results from
 [`mission-telemetry.json`](../../simulations/recordings/). **Three numbers in
-`HANDOFF.md` §2 do not reproduce**, and one of them is definitively wrong:
+`HANDOFF.md` §2 did not reproduce**, and one was definitively wrong:
 
-| Claim | HANDOFF.md | Reproduced from telemetry | Also says |
+| Claim | HANDOFF.md said | Reproduced from telemetry | Also said |
 |---|--:|--:|---|
 | Separation at launch | 92.12 m | **64.80 m** | `README.md` and the figure itself both say 64.80 m |
 | Separation en route | 34.00 m | 29.19 m | definition-sensitive |
 | Stacked over the pad | 6.52 m | 5.51 m | hardcoded as a caption string in `proof_figures.py:350` |
 
-The launch figure is not a definition question: `README.md`, `proof-1-launch.png`
-and the raw telemetry all agree on **64.80 m**, and only `HANDOFF.md` says
-92.12 m. That one has been corrected in place.
+The launch figure was not a definition question: `README.md`,
+`proof-1-launch.png` and the raw telemetry all agree on **64.80 m**, and only
+`HANDOFF.md` said 92.12 m. Corrected in place.
 
-The other two depend on how the phase boundary is drawn — my "en route" excludes
-a 60 m radius around the pad — so they are **left alone pending a decision on the
-definition**, not silently overwritten. The recovery figure is worth attention
-because `proof_figures.py` carries it as a hardcoded string in a caption rather
-than computing it, which is the failure mode this repository is organised
-against.
+**The other two are no longer "definition-sensitive and left alone".** That was
+an honest thing to say about a number and a bad place to leave it: neither the
+document nor the recording could settle the disagreement without re-deriving the
+definition from scratch. The definitions now live in
+[`tools/separation/recompute_separation.py`](../../tools/separation/recompute_separation.py)
+— pad radius, ground threshold, phase boundaries, all arguments in one file —
+applied to the committed recordings, with the output committed at
+`simulations/recordings/separation-output.txt` and compared byte for byte by CI.
+A disagreement between this document and a recording is now a build failure.
+
+Recomputed for both recordings:
+
+| Phase | speedup-3 *(superseded)* | speedup-1 *(current)* |
+|---|--:|--:|
+| launch | 64.80 m | 26.96 m |
+| en route | 29.19 m | 35.16 m |
+| recovery | 5.51 m | **5.34 m** |
+
+**The proposal should stop quoting 64.80 m as the launch separation.** That
+figure comes from the superseded recording, flown at `SIM_SPEEDUP 3` with the
+old 0/20/40 s descent stagger. The current configuration gives **26.96 m**.
+Deconfliction still works emphatically — it was 1.31 m before any sequencing
+existed — but the number in the document is not the number the current aircraft
+produces.
+
+`proof_figures.py:350` still carries a separation result as a hardcoded caption
+string rather than computing it, and the four `proof-*.png` figures are rendered
+from the superseded recording. Both are stale until the mission is re-recorded.
 
 The proposal uses only the reproducible figures.
 
