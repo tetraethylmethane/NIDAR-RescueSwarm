@@ -5764,19 +5764,19 @@
 
 (property "MPN" "CL05B104KB54PNC" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "4815c1c0-12e8-4a29-898c-7d0d21644490")) (pin "2" (uuid "74d9364a-ca55-4e42-8632-4aae33bddacf")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "C1127")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "C1227")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "C1327")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "C1427")
 					(unit 1)
 				)
@@ -5809,19 +5809,19 @@
 
 (property "MPN" "RC0201FR-0710KL" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "b499fe88-fc6e-48a3-a274-9b480187f9f6")) (pin "1" (uuid "0b365f00-2520-4fbe-8043-084d979639de")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1158")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1258")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1358")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1458")
 					(unit 1)
 				)
@@ -5854,19 +5854,19 @@
 
 (property "MPN" "SP40N01GHNK" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "3c9e83e8-874d-4b39-ab92-1596ef1b749b")) (pin "3" (uuid "81cdc5cc-ef60-46a3-89ef-9f3149ad2894")) (pin "2" (uuid "3e04677e-61ca-4ffe-b477-15aa0878a304")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "Q1102")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "Q1202")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "Q1302")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "Q1402")
 					(unit 1)
 				)
@@ -5899,19 +5899,19 @@
 
 (property "MPN" "RC0201FR-0710RL" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "6910cd22-a107-4959-8022-d96dcec74f5e")) (pin "1" (uuid "638e424e-4b57-4f8c-8103-c9268c407b22")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1176")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1276")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1376")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1476")
 					(unit 1)
 				)
@@ -5944,19 +5944,19 @@
 
 (property "MPN" "AC0201FR-07220RL" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "92e83bba-bcee-44a9-953c-fcdaaf0dc82f")) (pin "1" (uuid "a33833dd-f0ea-45a7-b334-5f97fa2cad7a")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1175")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1275")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1375")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1475")
 					(unit 1)
 				)
@@ -5989,19 +5989,19 @@
 
 (property "MPN" "0201WMF150JTEE" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "9e898dd9-ce00-43e6-8aa7-c8b835cb3900")) (pin "2" (uuid "09889d6d-9633-42b0-9914-52bc74e2bf03")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1134")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1234")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1334")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1434")
 					(unit 1)
 				)
@@ -6020,19 +6020,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 254 116.84 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "6fac3e0b-5777-4e5c-a0e8-954ebaa41ff9")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1104")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1204")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1304")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1404")
 					(unit 1)
 				)
@@ -6065,19 +6065,19 @@
 
 (property "MPN" "SP40N01GHNK" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "177e3efa-a6dd-4a45-adf2-a3de487b315a")) (pin "3" (uuid "3b744d1d-9f09-40db-8960-850371a8e17f")) (pin "2" (uuid "85f5bb79-9962-4e2b-b479-78472e5438cf")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "Q1107")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "Q1207")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "Q1307")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "Q1407")
 					(unit 1)
 				)
@@ -6110,19 +6110,19 @@
 
 (property "MPN" "CL05B104KB54PNC" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "103e2f14-820a-459c-8a15-b1603bcb96b7")) (pin "2" (uuid "8588271f-121b-48d5-affc-ba95a9f2099c")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "C1104")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "C1204")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "C1304")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "C1404")
 					(unit 1)
 				)
@@ -6155,19 +6155,19 @@
 
 (property "MPN" "0201WMF1001TEE" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "4916948a-4058-42e1-b7c8-46439a51fb08")) (pin "1" (uuid "bb476a12-3033-46b1-8d44-57a9298b8122")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1157")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1257")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1357")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1457")
 					(unit 1)
 				)
@@ -6186,19 +6186,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 39.37 170.18 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "79c46d5c-6f33-42f1-8bed-ffa20404756a")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1171")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1271")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1371")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1471")
 					(unit 1)
 				)
@@ -6217,19 +6217,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"+BATT\"" (at 99.06 135.89 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "3b7c58c0-adfd-4873-918c-a5cf120c6778")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1175")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1275")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1375")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1475")
 					(unit 1)
 				)
@@ -6248,19 +6248,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 71.12 113.03 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "b6d27d6f-884d-4748-8043-f6ea1c3cac6c")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1167")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1267")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1367")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1467")
 					(unit 1)
 				)
@@ -6279,19 +6279,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 60.96 40.64 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "cf003d4a-7749-4c70-8087-45a74c84532d")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1166")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1266")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1366")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1466")
 					(unit 1)
 				)
@@ -6324,19 +6324,19 @@
 
 (property "MPN" "0201WMF150JTEE" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "0b4fb38a-cd97-4d9e-9362-620d26ae5b0b")) (pin "2" (uuid "8a8f2dea-c1cd-4d58-8c84-d22171de70dc")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1167")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1267")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1367")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1467")
 					(unit 1)
 				)
@@ -6369,19 +6369,19 @@
 
 (property "MPN" "0201WMF150JTEE" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "ef1b2401-4f0d-4d39-950c-f98acec18103")) (pin "2" (uuid "033a1565-1bf2-4060-bef2-e8ce604a68e0")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1127")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1227")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1327")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1427")
 					(unit 1)
 				)
@@ -6400,19 +6400,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 99.06 170.18 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "76577095-20a9-4ef2-8c98-2a9d5416fbc8")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1176")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1276")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1376")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1476")
 					(unit 1)
 				)
@@ -6445,19 +6445,19 @@
 
 (property "MPN" "AT32F421G8U7" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "4" (uuid "5253da6a-d00d-4ffc-a2e0-cf12dde521a5")) (pin "5" (uuid "1e93f3be-5e83-4a05-bcfd-becd1787914b")) (pin "1" (uuid "112dd783-61ce-41d5-b33f-969f57214e0e")) (pin "2" (uuid "ef18ea92-c865-4498-bbc7-5d6cd985f814")) (pin "3" (uuid "3f1fba07-135b-40d9-b937-2a23dceb8119")) (pin "6" (uuid "2545d6d6-ca89-4737-b2ff-baf323e80a2a")) (pin "7" (uuid "4ce76483-6528-4f65-aaf0-130ad30ae78a")) (pin "28" (uuid "ae0e8c7a-976f-4513-aa9a-19518ee9da27")) (pin "8" (uuid "2cfb929a-38d7-4976-917c-926919772d44")) (pin "24" (uuid "e2c4ca15-54d1-4e01-949a-fd62c23f7e66")) (pin "12" (uuid "c87b0f8f-0849-4683-b010-b9ada65df075")) (pin "23" (uuid "ca263481-587d-4e7b-b6c7-c83924687295")) (pin "27" (uuid "062861e7-d982-477d-bfa5-000f23472d41")) (pin "9" (uuid "fdb54839-74ed-48e2-a490-e79a18a44313")) (pin "26" (uuid "4d9783eb-f146-45a9-af1e-4222ba859833")) (pin "10" (uuid "9af1ba04-6ff5-4738-872e-b0af146e8a53")) (pin "25" (uuid "5c0818c2-3e8e-4839-92bb-2fa94794877e")) (pin "11" (uuid "6e3d2fcf-a922-4868-8722-cdc1fc9a0013")) (pin "13" (uuid "6f6666a6-a855-4a87-9a5e-bd3e2e28ab11")) (pin "22" (uuid "1ec8ce16-77d7-4c8f-a266-ee606af8bf5f")) (pin "14" (uuid "fc37c91f-48ab-449d-b4a2-4e872ca80d44")) (pin "16" (uuid "4e3a34ac-a87a-43ab-b4a2-e1760e21eeb2")) (pin "15" (uuid "b401d3b7-db22-4736-a435-5c568e639272")) (pin "18" (uuid "f7ea85ad-dae8-49f6-8047-11e97d0fd9d2")) (pin "17" (uuid "bdc7e060-6742-4e06-82f1-56e3ed873088")) (pin "29" (uuid "79d2417b-c5fc-4179-bc8b-69e042a56e80")) (pin "21" (uuid "a0dfeb85-416c-4de7-b65c-8fb3253a5e3d")) (pin "20" (uuid "525b46b3-0035-44e9-bc58-c85931cbea71")) (pin "19" (uuid "02e61301-cf93-4800-bdc7-009aa27a3c40")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "U1108")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "U1208")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "U1308")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "U1408")
 					(unit 1)
 				)
@@ -6476,19 +6476,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 205.74 116.84 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "b0b31f8a-76d5-4516-a265-c6102b00e198")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1102")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1202")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1302")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1402")
 					(unit 1)
 				)
@@ -6521,19 +6521,19 @@
 
 (property "MPN" "RC0201FR-0710KL" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "74d812c6-7c21-4767-b5a1-19b932e6f0f6")) (pin "1" (uuid "08fafc4b-884a-442a-8c1d-005f4acbc2a1")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1153")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1253")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1353")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1453")
 					(unit 1)
 				)
@@ -6552,19 +6552,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 186.69 30.48 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "ef6b5e20-1412-44c2-82e6-9eeb65b9b744")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1174")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1274")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1374")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1474")
 					(unit 1)
 				)
@@ -6583,19 +6583,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 43.18 60.96 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "ba7f3754-6e8c-489e-ac81-1fac3550e018")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1157")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1257")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1357")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1457")
 					(unit 1)
 				)
@@ -6614,19 +6614,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"+3V3\"" (at 27.94 54.61 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "aa0fb542-6fed-4026-8c0c-e1381ff03613")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1154")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1254")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1354")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1454")
 					(unit 1)
 				)
@@ -6659,19 +6659,19 @@
 
 (property "MPN" "RC0201FR-0710KL" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "64cf62f5-b34b-4328-97f8-f898ad6ebc59")) (pin "1" (uuid "670717a0-87e1-4ad9-aa89-5d9b85638658")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1147")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1247")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1347")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1447")
 					(unit 1)
 				)
@@ -6704,19 +6704,19 @@
 
 (property "MPN" "RC0201FR-0710KL" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "a5749d95-0f37-4d29-be23-f0375e839683")) (pin "1" (uuid "0dd9741b-87e9-4c32-a302-2058597bc5fc")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1155")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1255")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1355")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1455")
 					(unit 1)
 				)
@@ -6749,19 +6749,19 @@
 
 (property "MPN" "RC0201FR-0710KL" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "b37674c6-8e01-4640-8458-b3c308ad2131")) (pin "1" (uuid "7993368d-dfdc-44b1-bddc-480621618751")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1161")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1261")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1361")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1461")
 					(unit 1)
 				)
@@ -6794,19 +6794,19 @@
 
 (property "MPN" "0201WMF1001TEE" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "d663e2d5-0543-4a0f-85fa-9a7e142da25d")) (pin "1" (uuid "b1f48db4-6d04-4832-8b81-007487b8b513")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1154")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1254")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1354")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1454")
 					(unit 1)
 				)
@@ -6839,19 +6839,19 @@
 
 (property "MPN" "RC0201FR-0710KL" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "5b555c7d-e3cc-4362-a5e5-bf3a81acdf1b")) (pin "1" (uuid "52ced202-f085-4c12-9c77-333d65b38a4e")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1159")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1259")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1359")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1459")
 					(unit 1)
 				)
@@ -6870,19 +6870,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"+3V3\"" (at 91.44 33.02 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "a292bb6c-e6ca-41b2-9f9a-bbfadd11c828")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1108")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1208")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1308")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1408")
 					(unit 1)
 				)
@@ -6915,19 +6915,19 @@
 
 (property "MPN" "0201WMF150JTEE" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "944bd8df-f1ed-4d93-880e-edbb52cc671b")) (pin "2" (uuid "858d19b4-3b7a-4a8e-9215-813812f37c9e")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1171")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1271")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1371")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1471")
 					(unit 1)
 				)
@@ -6960,19 +6960,19 @@
 
 (property "MPN" "RC0201FR-0710KL" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "abaa52d0-c18b-46ce-baca-335dda06af37")) (pin "1" (uuid "ba430ca6-4fcf-446e-a27b-ca8c00ff17f5")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1156")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1256")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1356")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1456")
 					(unit 1)
 				)
@@ -6991,19 +6991,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 121.92 50.8 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "ef5d77a9-2517-4de9-9a5c-27f52e54ac75")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1170")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1270")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1370")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1470")
 					(unit 1)
 				)
@@ -7036,19 +7036,19 @@
 
 (property "MPN" "GRM033R6YA104KE14D" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "5a522665-ee80-4abc-bee8-8a2927a32abc")) (pin "2" (uuid "60e8ae58-4347-4a73-8fca-a5b366a5aa1e")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "C1128")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "C1228")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "C1328")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "C1428")
 					(unit 1)
 				)
@@ -7067,19 +7067,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 82.55 40.64 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "e56fd327-6103-490a-a536-f62a1432a77a")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1168")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1268")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1368")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1468")
 					(unit 1)
 				)
@@ -7112,19 +7112,19 @@
 
 (property "MPN" "SP40N01GHNK" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "1d531b95-e36e-48ee-b140-a717f66dddb4")) (pin "3" (uuid "c0e1d34b-1eef-43ef-b0c1-3028954500dc")) (pin "2" (uuid "6edfc58a-c66f-4703-b47e-4b680d287107")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "Q1120")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "Q1220")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "Q1320")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "Q1420")
 					(unit 1)
 				)
@@ -7157,19 +7157,19 @@
 
 (property "MPN" "0201WMF150JTEE" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "a874e442-3610-4dbd-9d8b-6dd4c3d45e8f")) (pin "2" (uuid "2b74ee14-09ef-49d2-805d-fd046353deef")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1150")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1250")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1350")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1450")
 					(unit 1)
 				)
@@ -7188,19 +7188,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"+12V\"" (at 142.24 45.72 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "12b562fd-37b8-4788-acf7-47d42de2252c")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1172")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1272")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1372")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1472")
 					(unit 1)
 				)
@@ -7219,19 +7219,19 @@
 
 (property "Description" "test point" (at 33.02 76.2 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "3811e994-3321-48a9-8807-e1a0dd6ff37c")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "TP1108")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "TP1208")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "TP1308")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "TP1408")
 					(unit 1)
 				)
@@ -7250,19 +7250,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 121.92 48.26 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "f74b9b81-a75c-4102-bd0a-90ff5c88d433")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1169")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1269")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1369")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1469")
 					(unit 1)
 				)
@@ -7295,19 +7295,19 @@
 
 (property "MPN" "SP40N01GHNK" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "dcf1bb74-c4e7-402b-9ca8-8d3a33bf1260")) (pin "3" (uuid "c7005a65-28c2-49d0-851a-2076eb7e7bb8")) (pin "2" (uuid "c4577d30-3efe-437c-a991-eabc97907273")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "Q1117")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "Q1217")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "Q1317")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "Q1417")
 					(unit 1)
 				)
@@ -7340,19 +7340,19 @@
 
 (property "MPN" "NSG2065Q" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "16" (uuid "a00f758b-54c5-4ee2-81ee-6d1d0c117faa")) (pin "2" (uuid "17b89508-dc64-4c32-a6f6-68871230dbe6")) (pin "6" (uuid "130f6cad-bb0f-4c94-83c7-192536177fae")) (pin "11" (uuid "4ddef913-609e-4c7a-9477-fa2ebc549a9a")) (pin "3" (uuid "eeaf340b-8d55-4cbc-9fbe-eafa0ab1e999")) (pin "24" (uuid "f8416047-41d9-4e2e-9e0e-43420df8631b")) (pin "13" (uuid "7bfa4cc4-692c-4293-921f-792c03bbff25")) (pin "21" (uuid "d2aa0c26-17ce-493e-8938-1f2957877524")) (pin "22" (uuid "32d58aaf-62b6-4f1d-b2ef-dd264683ff5c")) (pin "10" (uuid "db1e7567-4f99-4ee5-b6dd-31159b8dd842")) (pin "23" (uuid "7a50a8da-b328-4708-b1f0-cb437b330db8")) (pin "8" (uuid "1ff8fb31-477b-46d0-bf3b-2c66e2dc37e0")) (pin "4" (uuid "ada674c2-2bf4-4a01-941b-f60fae61dc8e")) (pin "12" (uuid "7706c482-4af6-4f1a-a2e8-4839b2cad1f7")) (pin "15" (uuid "ddbfc818-406f-4b66-bd31-1e0b5aad71b1")) (pin "18" (uuid "af3b22ec-cb78-4a67-a093-59e38d84a2d9")) (pin "14" (uuid "6bbb5b6d-07fa-487b-9ab5-76ece1c3842b")) (pin "9" (uuid "d79bb60d-3998-410d-9637-23a46a36df4f")) (pin "17" (uuid "19aeabcd-e741-4f7b-8aac-a6a29d31011b")) (pin "20" (uuid "29a121b2-60f5-4db5-8cd3-b707c69e30c0")) (pin "5" (uuid "718ee4a6-1161-4d00-b81b-da8b5ee77c24")) (pin "7" (uuid "836443ca-89ee-4341-8bdd-6c0629428d53")) (pin "25" (uuid "54c78f3b-aca8-4e5e-871b-1902227f538f")) (pin "1" (uuid "34335835-ecd5-43e7-b808-86a02475f04d")) (pin "19" (uuid "d858f7f7-2d62-4395-b2a7-7a4721c7d692")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "U1101")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "U1201")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "U1301")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "U1401")
 					(unit 1)
 				)
@@ -7385,19 +7385,19 @@
 
 (property "MPN" "GRM033R6YA104KE14D" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "a48214d0-85ff-4c8f-ab6f-0bed22175c55")) (pin "2" (uuid "7ab77e73-d144-458b-8b4e-a4e0de58627d")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "C1126")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "C1226")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "C1326")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "C1426")
 					(unit 1)
 				)
@@ -7430,19 +7430,19 @@
 
 (property "MPN" "0201WMF1001TEE" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "15ac97e8-78cb-457a-84f7-1d325931ceba")) (pin "1" (uuid "e4305f1b-28bf-4871-a1d9-12f844efe167")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1160")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1260")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1360")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1460")
 					(unit 1)
 				)
@@ -7461,19 +7461,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 229.87 116.84 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "0468d25c-3851-4767-9930-601fad2a9051")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1103")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1203")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1303")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1403")
 					(unit 1)
 				)
@@ -7506,19 +7506,19 @@
 
 (property "MPN" "GRM033R6YA104KE14D" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "859acc8e-c421-4f94-a130-06bedfe37eab")) (pin "2" (uuid "504d26c5-dfc8-4757-8262-6c7fb1022d2f")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "C1124")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "C1224")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "C1324")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "C1424")
 					(unit 1)
 				)
@@ -7537,19 +7537,19 @@
 
 (property "Description" "test point" (at 33.02 74.93 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "26fbadf7-f153-445b-8156-93254634505b")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "TP1107")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "TP1207")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "TP1307")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "TP1407")
 					(unit 1)
 				)
@@ -7582,19 +7582,19 @@
 
 (property "MPN" "GRM033R6YA104KE14D" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "fbdb8524-3585-4ddc-9113-62b82502ffaa")) (pin "2" (uuid "a001d54c-87f2-4c66-9f19-136149c61646")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "C1125")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "C1225")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "C1325")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "C1425")
 					(unit 1)
 				)
@@ -7613,19 +7613,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"+12V\"" (at 186.69 22.86 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "6814fbb0-ca1c-438d-81d1-dbe1a2db2059")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1173")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1273")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1373")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1473")
 					(unit 1)
 				)
@@ -7658,19 +7658,19 @@
 
 (property "MPN" "SP40N01GHNK" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "63da6a09-04e1-4fa4-9dc2-4de7cf62a4b5")) (pin "3" (uuid "b93dc2d5-f2bb-4854-9a20-b4800be76a99")) (pin "2" (uuid "817e33aa-91e3-4753-b629-12ea7eb51755")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "Q1111")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "Q1211")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "Q1311")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "Q1411")
 					(unit 1)
 				)
@@ -7689,19 +7689,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 44.45 71.12 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "f7fe7286-c8f2-44f0-849f-c7013bb48f9f")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1158")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1258")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1358")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1458")
 					(unit 1)
 				)
@@ -7734,19 +7734,19 @@
 
 (property "MPN" "RC0201FR-0710KL" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "d68dbf5c-9891-4d0b-86b8-464462cfc0be")) (pin "1" (uuid "fda24584-8880-4480-acb1-f54359ccdbd2")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1148")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1248")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1348")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1448")
 					(unit 1)
 				)
@@ -7765,19 +7765,19 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 160.02 170.18 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "89489a1f-bcf3-494f-828d-115242611f45")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "#PWR1101")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "#PWR1201")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "#PWR1301")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "#PWR1401")
 					(unit 1)
 				)
@@ -7810,19 +7810,19 @@
 
 (property "MPN" "SP40N01GHNK" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "abbeb812-cc97-477c-886f-9408982b5cd4")) (pin "3" (uuid "80d8e84a-6290-475e-a1a5-dba1568f3fcd")) (pin "2" (uuid "68f85150-450e-443f-b02a-303c3e1d05cf")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "Q1113")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "Q1213")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "Q1313")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "Q1413")
 					(unit 1)
 				)
@@ -7855,19 +7855,19 @@
 
 (property "MPN" "CL05B104KB54PNC" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "b125c1b6-6e0c-495c-adc8-1db374f76dd7")) (pin "2" (uuid "6dfea583-0fb8-4b98-bb14-d946b9beb9ac")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "C1108")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "C1208")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "C1308")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "C1408")
 					(unit 1)
 				)
@@ -7900,19 +7900,19 @@
 
 (property "MPN" "0201WMF150JTEE" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "1d7709e5-caef-484e-859b-d5a7021fa916")) (pin "2" (uuid "86d1869f-0a1e-445e-9888-00d157438541")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/a2a7e5f7-57cb-4dc9-ae09-137e000cb27b"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/5eb993f6-95c1-4092-b39f-1faaa5700d3c"
 					(reference "R1163")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/f10cb555-9003-4898-8549-ac2d79138c4a"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/3a2fc184-cf01-414c-a82e-bfb52513b142"
 					(reference "R1263")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/7bbec46a-e926-42a8-85ec-6ed2c67ec5b2"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/8a9a7222-eb39-4d53-9df0-8dd66db70d0a"
 					(reference "R1363")
 					(unit 1)
 				)
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/6a8f7568-461d-40f8-85e4-3382e4205419"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/2a9da298-ee9c-4720-925a-19e398bdbc44"
 					(reference "R1463")
 					(unit 1)
 				)

@@ -37,6 +37,7 @@ SHEETS = [
     ("blackbox", "blackbox.kicad_sch",           500, 6),
     ("pads",     "pads.kicad_sch",               600, 7),
     ("rx",       "rx_esp32c3_sx1281.kicad_sch",  700, 8),
+    ("esc_power", "esc_power.kicad_sch",         800, 13),
     ("esc1",     "ESC.kicad_sch",               1100, 9),
     ("esc2",     "ESC.kicad_sch",               1200, 10),
     ("esc3",     "ESC.kicad_sch",               1300, 11),
@@ -84,6 +85,12 @@ NETS = {
         "M1": "MOTOR1", "M2": "MOTOR2", "M3": "MOTOR3", "M4": "MOTOR4",
     },
     "rx":   {"ELRS_TX": "UART1_RX", "ELRS_RX": "UART1_TX"},  # crossed, TX->RX
+    # Battery entry, 0.1 mOhm shunt, INA186 current sense, +10 V gate rail and
+    # +3V3, lifted from the OpenESC-30x30 root. CURR is what finally drives
+    # ESC_CURRENT; M1-M4 are J1's breakout pins joining the DShot nets.
+    "esc_power": {"CURR": "ESC_CURRENT",
+                  "M1": "MOTOR1", "M2": "MOTOR2",
+                  "M3": "MOTOR3", "M4": "MOTOR4"},
     "esc1": {"dshot": "MOTOR1", "A": "M1_A", "B": "M1_B", "C": "M1_C"},
     "esc2": {"dshot": "MOTOR2", "A": "M2_A", "B": "M2_B", "C": "M2_C"},
     "esc3": {"dshot": "MOTOR3", "A": "M3_A", "B": "M3_B", "C": "M3_C"},
@@ -94,8 +101,46 @@ HIER = re.compile(
     r'\(hierarchical_label\s+"([^"]+)"\s*\(shape\s+(\w+)\)', re.S)
 
 
+STOCK_POWER = r"C:\Program Files\KiCad\10.0\share\kicad\symbols\power.kicad_sym"
+
+# DELIBERATELY EMPTY.
+#
+# +BATT and GND arrive on U3's pads, which ERC reads as passive pins, so the
+# rails look undriven and it reports power_pin_not_driven. The textbook answer
+# is a PWR_FLAG on each.
+#
+# It was tried and removed. The donor boards ship with these same findings --
+# OpenFC-Lite-Mini, which has flown, reports 8 power_pin_not_driven, and
+# OpenESC-30x30, which is in production, reports 24 pin_not_driven and 3
+# power_pin_not_driven. They are inherited, not introduced. Adding flags here
+# produced two *new* label_dangling errors instead of clearing the old ones,
+# and by the OpenDrone rule -- existing approved findings may remain, a new
+# type may not -- that trade is a regression.
+#
+# Chase these in KiCad against the real symbols, where you can see what each
+# pin is actually typed as. Do not let a generator paper over them.
+FLAGGED_RAILS = []
+
+
 def uid():
     return str(U.uuid4())
+
+
+def grab_symbol(path, name):
+    """Pull one symbol definition out of a .kicad_sym by balanced-paren scan."""
+    t = io.open(path, encoding="utf-8", errors="ignore").read()
+    k = t.find(f'(symbol "{name}"')
+    if k < 0:
+        raise KeyError(f"{name} not found in {path}")
+    depth = 0
+    for i in range(k, len(t)):
+        if t[i] == "(":
+            depth += 1
+        elif t[i] == ")":
+            depth -= 1
+            if depth == 0:
+                return t[k:i + 1]
+    raise ValueError("unbalanced symbol")
 
 
 def sheet_pins(path):
@@ -257,7 +302,35 @@ def main():
         sheets.append("\n".join(body))
         y += h + 7.62
 
-    txt = "\n".join(sheets + wires + labels)
+    # PWR_FLAG on each pad-fed rail. The flag symbol and a global label naming
+    # the rail sit on the same point, so their pins coincide and the flag lands
+    # on that net without needing a wire.
+    flags, fx, fy = [], 25.4, 396.24
+    for rail in FLAGGED_RAILS:
+        flags.append(
+            f'\t(symbol\n\t\t(lib_id "power:PWR_FLAG")\n'
+            f"\t\t(at {fx} {fy} 0)\n\t\t(unit 1)\n"
+            f"\t\t(exclude_from_sim no)\n\t\t(in_bom yes)\n\t\t(on_board yes)\n"
+            f"\t\t(dnp no)\n\t\t(fields_autoplaced yes)\n"
+            f'\t\t(uuid "{uid()}")\n'
+            f'\t\t(property "Reference" "#FLG{len(flags) + 1:02d}"'
+            f" (at {fx} {fy - 3.81} 0)"
+            f" (effects (font (size 1.27 1.27)) (hide yes)))\n"
+            f'\t\t(property "Value" "PWR_FLAG" (at {fx} {fy - 1.905} 0)'
+            f" (effects (font (size 1.27 1.27))))\n"
+            f'\t\t(instances\n\t\t\t(project "{PROJECT}"\n'
+            f'\t\t\t\t(path "/{root_uuid}"'
+            f' (reference "#FLG{len(flags) + 1:02d}") (unit 1))\n'
+            f"\t\t\t)\n\t\t)\n\t)")
+        flags.append(
+            f'\t(global_label "{rail}" (shape input) (at {fx} {fy} 0)'
+            f" (fields_autoplaced yes)"
+            f" (effects (font (size 1.27 1.27)) (justify left))"
+            f' (uuid "{uid()}"))')
+        fx += 25.4
+
+    libsyms = "\n".join(grab_symbol(STOCK_POWER, "PWR_FLAG").split("\n"))
+    txt = "\n".join(sheets + wires + labels + flags)
 
     pages = "\n".join(f'\t\t(path "/{su}" (page "{page}"))'
                       for _, _, _, page, su in placed)
@@ -267,7 +340,7 @@ def main():
         f'\t(uuid "{root_uuid}")\n\t(paper "A2")\n'
         "\t(title_block\n\t\t(title \"DrikrAIO -- Stage 1 integration\")\n"
         "\t\t(rev \"A\")\n\t)\n"
-        "\t(lib_symbols)\n"
+        "\t(lib_symbols\n" + libsyms + "\n\t)\n"
         + txt +
         "\n\t(sheet_instances\n\t\t(path \"/\" (page \"1\"))\n" + pages +
         "\n\t)\n\t(embedded_fonts no)\n)\n")

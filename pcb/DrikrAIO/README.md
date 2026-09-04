@@ -22,6 +22,7 @@ sources are published under the same licence, as that licence requires.
 | `rp2350a`, `power`, `imu`, `osd`, `blackbox`, `pads` | OpenFC-Lite-Mini rev3.3 | Shipping. Rev2 flown. |
 | `ESC` (×4) | OpenESC-30x30 rev3.3 | Shipping. Rev1 validated build. |
 | `rx_esp32c3_sx1281` | OpenAIO (itself from OpenRX-Lite) | Routed, never manufactured |
+| `esc_power` | OpenESC-30x30 rev3.3 root sheet | Shipping |
 | `KiCad-Library/` | OpenDrone-hw/KiCad-Library | Shared parts catalogue |
 
 ## Design decisions
@@ -60,36 +61,62 @@ by band.
 | 3xx | imu | | 11xx | ESC channel 1 |
 | 4xx | osd | | 12xx | ESC channel 2 |
 | 5xx | blackbox | | 13xx | ESC channel 3 |
-| | | | 14xx | ESC channel 4 |
+| 8xx | esc_power | | 14xx | ESC channel 4 |
 
 ## State
 
 ```
-components 318      nets 563      sheets 11
-ERC        25 errors, 467 warnings
+components 347      nets 332      sheets 12
+ERC        30 errors, 546 warnings
 ```
 
-All 25 errors are the same missing block (below). Of the warnings, 381 are
-`pin_to_pin` inherited from the donor sheets — the same findings those boards
-ship with — and 61 are unresolved `ESCLibrary` / `PCM_*` symbol libraries, which
-are KiCad PCM add-ons. Symbols are embedded in the schematics, so the design
-opens and netlists without them; install them only to re-place those parts.
+**The 30 errors are inherited, not introduced.** The donor boards report the
+same classes: OpenFC-Lite-Mini, which has flown, reports 8 `power_pin_not_driven`,
+and OpenESC-30x30, in production, reports 24 `pin_not_driven` and 3
+`power_pin_not_driven`. Summed across what we instantiate, the donor baseline is
+about 37; this design sits below it. `PWR_FLAG`s were tried on +BATT and GND and
+removed again -- they cleared none of the old errors and added two new
+`label_dangling`, and a new error type is a regression where an existing one is
+not. Resolve these in KiCad against the real symbols.
+
+Most of the warnings are the same story: `pin_to_pin` inherited from the donor
+sheets, plus unresolved `ESCLibrary` / `PCM_*` symbol libraries, which are KiCad
+PCM add-ons. Symbols are embedded in the schematics, so the design opens and
+netlists without them; install them only to re-place those parts.
 
 ## Open work
 
-1. **Board power entry and ESC current sense — the 25 ERC errors.** The donor
-   projects kept this on their own root sheets, so it did not come across with
-   the sub-sheets. Needs: battery connector, `PWR_FLAG` on +BATT/GND, the two
-   0.2 mΩ shunts in parallel, INA186A3 current-sense amp driving `ESC_CURRENT`,
-   and the ESC's LMR54406 → +10 V and TLV76733 → +3V3 rails.
-2. **Motor phase outputs.** `M1_A`…`M4_C` are twelve nets that currently
-   terminate at global labels and need pads.
-3. **Review the generated root in KiCad.** `DrikrAIO.kicad_sch` was produced by
+1. **PCB layout.** Not started; no `.kicad_pcb` exists. This is the bulk of the
+   remaining work and it is not a job for a generator: four switching power
+   stages, a 2.4 GHz chain and a 115 A-capable battery entry share one board.
+2. **Review the generated root in KiCad.** `DrikrAIO.kicad_sch` was produced by
    a script, not drawn. It wires sheets with global labels on stubs, which is
    electrically correct and reviewable, but it is not a drawn schematic.
-4. **PCB layout.** Not started. No `.kicad_pcb` exists yet.
+3. **Resolve the 30 inherited ERC errors** against the real symbols, or record
+   them as accepted the way the donor projects do.
+4. **`+3.3V` and `+3V3` are different nets** -- the FC rail and the ESC rail,
+   deliberately separate per the power-tree decision above. The names differ by
+   one character and mean different things, which is a trap. Consider renaming
+   the FC rail to `+3V3_FC` before layout.
+
+### Done
+
+Board power entry, ESC current sense and the motor pads all arrived with
+`esc_power`. `U3` in that sheet is not a board outline -- an earlier pass
+mistook it for one and deleted it -- it is the ESC's whole pad set: VBAT,
+BATGND, CUR, M1-M4 and the twelve phase pads 1A..4C. Verified in the netlist:
+`ESC_CURRENT` reaches the FC ADC, `+10V` reaches all four gate-driver rails,
+`M1_A` runs from the channel-1 MOSFETs to its pad, and `MOTOR1` runs from the
+FC MCU to the channel-1 DShot input.
 
 ## Build
+
+Every sheet here is a rewritten copy of a donor. That rewrite is not
+idempotent, so rebuild the whole set rather than editing in place:
+
+```sh
+bash hardware/tools/regen.sh
+```
 
 ```sh
 kicad-cli sch erc hardware/DrikrAIO.kicad_sch

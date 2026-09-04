@@ -5914,7 +5914,7 @@
 
 (property "LCSC" "C64890" (at 101.6 149.86 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "9e804196-46c8-47a9-8f47-d6513aadb33e")) (pin "1" (uuid "7216a858-3087-4fcd-97e1-58c178328df2")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "D204")
 					(unit 1)
 				)
@@ -5933,7 +5933,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"+5V\"" (at 99.06 135.89 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "885dd53d-ffea-4b8a-9680-2a4a19991b30")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR208")
 					(unit 1)
 				)
@@ -5958,7 +5958,7 @@
 
 (property "Manufacturer" "XINGLIGHT" (at -48.26 -3.81 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "7b0adb38-9428-4457-9484-a2fcc4c9d0f1")) (pin "1" (uuid "63bd1a08-ff07-4dac-b773-022548449d2f")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "D206")
 					(unit 1)
 				)
@@ -5983,7 +5983,7 @@
 
 (property "Manufacturer" "UNI-ROYAL" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "70672540-2b15-41ce-84de-7db303e5b35d")) (pin "2" (uuid "fb60c7a5-55c2-475e-91ff-d5d8ae488aa2")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "R203")
 					(unit 1)
 				)
@@ -6008,7 +6008,7 @@
 
 (property "Manufacturer" "Samsung Electro-Mechanics" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "323b45ee-9f55-4bd5-bd58-5ca2cea878c7")) (pin "2" (uuid "1a2131f5-2fd0-4e5a-b849-6ea953109cea")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "C205")
 					(unit 1)
 				)
@@ -6027,7 +6027,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"+5V\"" (at 77.47 142.24 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "b9fe4931-d93d-4cff-ad4d-2bb6875697ec")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR201")
 					(unit 1)
 				)
@@ -6052,7 +6052,7 @@
 
 (property "Manufacturer" "Texas Instruments" (at 0 15.24 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "d30c63fd-d8bc-4c7f-a7ce-6baecbe25ebf")) (pin "6" (uuid "01fd45a0-7a4b-4479-89b0-f9d7a60ba1ef")) (pin "3" (uuid "a350b0bb-8fa7-46a7-add4-b4a35e37bdb1")) (pin "7" (uuid "63482fb2-0df6-4a1b-acef-139d6b94fa50")) (pin "4" (uuid "f81bd538-03e8-4b88-939d-eb52e2629cbb")) (pin "5" (uuid "372cad0c-64bf-4644-9d26-b859d513392d")) (pin "1" (uuid "81bcc8a6-205f-4438-8884-10393876e80d")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "U204")
 					(unit 1)
 				)
@@ -6071,7 +6071,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 41.91 62.23 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "c8c16607-b4ce-4054-b4d7-bdf610ae2430")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR206")
 					(unit 1)
 				)
@@ -6096,7 +6096,7 @@
 
 (property "Manufacturer" "YAGEO" (at 195.58 173.99 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "8a6611bb-dda1-4c4f-bb99-1661c7f2dfa2")) (pin "2" (uuid "70793471-260c-4aeb-8fa4-453d27ee470f")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "R206")
 					(unit 1)
 				)
@@ -6121,7 +6121,7 @@
 
 (property "Manufacturer" "Samsung Electro-Mechanics" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "80eb34b7-94f3-4caf-a8e1-e9c4721e6728")) (pin "2" (uuid "5980ee38-608b-4c57-8381-6c9759f271e5")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "C201")
 					(unit 1)
 				)
@@ -6140,7 +6140,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 212.09 72.39 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "87550e88-e37d-40a6-9bec-18dc99989ec9")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR214")
 					(unit 1)
 				)
@@ -6159,7 +6159,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"+5V\"" (at 245.11 57.15 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "12790616-5c0f-49e2-be79-1d98d2a3ea9e")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR213")
 					(unit 1)
 				)
@@ -6178,7 +6178,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 259.08 71.12 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "d1f22f14-b03d-414c-9aee-0553b7eb7883")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR215")
 					(unit 1)
 				)
@@ -6203,7 +6203,7 @@
 
 (property "Manufacturer" "XINGLIGHT" (at -166.37 29.21 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "d69c66f4-3d24-41a5-8bc4-22a4858082e8")) (pin "1" (uuid "827b6e48-d63c-4ba9-868d-aac5d35f19c1")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "D203")
 					(unit 1)
 				)
@@ -6228,7 +6228,7 @@
 
 (property "LCSC" "C64890" (at 116.84 149.86 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "b39778d0-a5d1-47b8-99da-8527d0dccd06")) (pin "1" (uuid "8b522169-0185-486e-9932-b27112347b25")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "D201")
 					(unit 1)
 				)
@@ -6253,7 +6253,7 @@
 
 (property "Manufacturer" "XR" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "3379dcb2-c451-423f-b938-82eb0007d537")) (pin "1" (uuid "98ea409b-69a9-4cef-8e54-c92dcab3241f")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "L201")
 					(unit 1)
 				)
@@ -6272,7 +6272,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 218.44 129.54 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "3c18e0c5-7b91-4be4-baec-70026ee917c9")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR216")
 					(unit 1)
 				)
@@ -6291,7 +6291,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"+3.3V\"" (at 245.11 116.84 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "57276560-3095-4c1b-aa5c-80c9cbd2d0be")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR218")
 					(unit 1)
 				)
@@ -6310,7 +6310,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"+5V\"" (at 91.44 161.29 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "76b75561-d919-453d-8e45-d3c6420252af")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR205")
 					(unit 1)
 				)
@@ -6329,7 +6329,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"+3.3V\"" (at 227.33 62.23 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "76fe21c7-02ac-4cef-ad7a-643c73adb34e")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR217")
 					(unit 1)
 				)
@@ -6348,7 +6348,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"+12V\"" (at 140.97 38.1 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "1023843d-e048-47b6-a660-19e7813c2857")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR211")
 					(unit 1)
 				)
@@ -6373,7 +6373,7 @@
 
 (property "Manufacturer" "YAGEO" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "cc8d2fe5-9954-44b0-98ce-4a8172654809")) (pin "2" (uuid "fd37ed38-118a-471d-bcab-7dda1dbe7996")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "R204")
 					(unit 1)
 				)
@@ -6398,7 +6398,7 @@
 
 (property "Manufacturer" "Murata Electronics" (at 0 15.24 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "39b43ec9-0c17-4729-bc24-91b37d823df0")) (pin "2" (uuid "e05294a1-a4a9-4144-b4ff-ef84b3b117d8")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "C208")
 					(unit 1)
 				)
@@ -6423,7 +6423,7 @@
 
 (property "Manufacturer" "XINGLIGHT" (at -54.61 58.42 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "9bb1ca9d-dce7-4b03-b11d-e28bec234c85")) (pin "1" (uuid "5da78cbb-07cf-4369-8db1-a86fd0531b0f")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "D205")
 					(unit 1)
 				)
@@ -6448,7 +6448,7 @@
 
 (property "Manufacturer" "Texas Instruments" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "3" (uuid "4e129048-6449-45c8-9f6a-c86d6109d83d")) (pin "2" (uuid "0b1b5899-5fdd-4989-83c6-f491daaf7a6b")) (pin "1" (uuid "90911815-c850-40f6-8316-93672c2ac7cf")) (pin "5" (uuid "153a18a6-94ae-444f-a42d-e54ac8a9bd01")) (pin "4" (uuid "c3c0d72b-2772-4341-bc6d-1f541c2685bc")) (pin "6" (uuid "4266dd24-f23c-4b60-84fa-0ae46e0fb1f2")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "U203")
 					(unit 1)
 				)
@@ -6467,7 +6467,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"+5V\"" (at 83.82 135.89 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "c9bc0e4f-399c-46fc-8cfa-2dc3b3aed749")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR204")
 					(unit 1)
 				)
@@ -6492,7 +6492,7 @@
 
 (property "Manufacturer" "Murata Electronics" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "29777f15-fbee-4072-9a55-f7d322a2819c")) (pin "2" (uuid "3a780da1-a9bc-4cdc-ad7d-2fbd9fec95a3")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "C204")
 					(unit 1)
 				)
@@ -6517,7 +6517,7 @@
 
 (property "Manufacturer" "Samsung Electro-Mechanics" (at 7.62 -137.16 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "2d5fb48b-d94d-4629-9ab3-b3882f2f0072")) (pin "2" (uuid "7dbf4e06-22e8-4310-a55d-bb81043fcc73")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "C207")
 					(unit 1)
 				)
@@ -6542,7 +6542,7 @@
 
 (property "Manufacturer" "Murata" (at 7.62 2.54 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "1da1c6eb-d067-4be5-9d64-bc7845e8f697")) (pin "2" (uuid "95bb5ae4-1045-49fe-8ef1-00820a8992ee")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "C209")
 					(unit 1)
 				)
@@ -6561,7 +6561,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"+BATT\"" (at 41.91 80.01 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "03e2417e-da00-4b0b-b2c7-de3b725d6458")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR203")
 					(unit 1)
 				)
@@ -6586,7 +6586,7 @@
 
 (property "Manufacturer" "Murata Electronics" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "124efb97-f6fe-40f5-9f25-25aa7454fe37")) (pin "2" (uuid "80d974cb-44be-4c23-a018-8d47e37343c9")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "C203")
 					(unit 1)
 				)
@@ -6611,7 +6611,7 @@
 
 (property "Manufacturer" "UNI-ROYAL" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "1a12ade9-8b6a-4664-bbaf-3d1660a1c689")) (pin "2" (uuid "188fd4e6-e2e9-4af3-a66c-5863b864cc9d")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "R201")
 					(unit 1)
 				)
@@ -6630,7 +6630,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"+5V\"" (at 180.34 59.69 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "650d57d4-da02-4fe5-83ba-83b9abb7bf82")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR210")
 					(unit 1)
 				)
@@ -6655,7 +6655,7 @@
 
 (property "Manufacturer" "XR" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "2bf6ab44-22f9-4425-96bc-71b69a1366f5")) (pin "1" (uuid "e6797002-2fa8-41bb-b45e-c604b95011aa")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "L202")
 					(unit 1)
 				)
@@ -6680,7 +6680,7 @@
 
 (property "Manufacturer" "RALEC" (at -116.84 49.53 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "5c3e85ec-38f1-4937-8a21-795becb09297")) (pin "2" (uuid "6d12eac0-9568-4312-9ff6-014e23a0eed1")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "R208")
 					(unit 1)
 				)
@@ -6699,7 +6699,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"GND\" , ground" (at 92.71 104.14 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "206d4b86-b866-4760-b9a7-5bbb3744778c")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR207")
 					(unit 1)
 				)
@@ -6724,7 +6724,7 @@
 
 (property "Manufacturer" "Murata" (at 0 15.24 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "03206cc0-117d-4adf-a0cb-c7d3de0a5c8c")) (pin "2" (uuid "7e5964bf-9feb-4d81-a22e-5fd34cfce750")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "C210")
 					(unit 1)
 				)
@@ -6749,7 +6749,7 @@
 
 (property "Manufacturer" "YAGEO" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "fb79ea06-b9ce-41a3-9633-f1bf971f3783")) (pin "2" (uuid "7bdb18d3-6141-4056-9f72-a2cd810249e0")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "R202")
 					(unit 1)
 				)
@@ -6774,7 +6774,7 @@
 
 (property "Manufacturer" "YAGEO" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "c226f956-4cb4-4364-8ce8-3c4729c73617")) (pin "2" (uuid "d6ddbc0e-3003-4fa5-8dcf-d0e5108d44e2")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "R205")
 					(unit 1)
 				)
@@ -6793,7 +6793,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"+5V\"" (at 140.97 80.01 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "4a3e567e-c505-419d-bc6b-8ded0c7442a9")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR212")
 					(unit 1)
 				)
@@ -6818,7 +6818,7 @@
 
 (property "Manufacturer" "Samsung Electro-Mechanics" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "c2608d1a-e506-4882-88ab-b570bf2eba53")) (pin "2" (uuid "9a57dccb-795d-4582-aad9-1097f281bbfa")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "C206")
 					(unit 1)
 				)
@@ -6843,7 +6843,7 @@
 
 (property "Manufacturer" "Samsung Electro-Mechanics" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "79cbaf6a-2469-4fc8-9b0f-48d7fcc48851")) (pin "2" (uuid "381bbf75-cf7e-4fbb-b645-38176954bf27")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "C202")
 					(unit 1)
 				)
@@ -6862,7 +6862,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"+5V\"" (at 198.12 119.38 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "f438db5d-3c41-44e0-88d8-c80820db269a")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR209")
 					(unit 1)
 				)
@@ -6887,7 +6887,7 @@
 
 (property "Manufacturer" "XINGLIGHT" (at -166.37 -12.7 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "2" (uuid "a638cc45-4c7f-4500-81db-99b0f188fb07")) (pin "1" (uuid "b0b2ceab-91b7-418a-a11c-9de6aa6453de")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "D202")
 					(unit 1)
 				)
@@ -6906,7 +6906,7 @@
 
 (property "Description" "Power symbol creates a global label with name \"+BATT\"" (at 41.91 38.1 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "400c60a7-5fed-4afe-965d-4a808fad4578")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "#PWR202")
 					(unit 1)
 				)
@@ -6931,7 +6931,7 @@
 
 (property "Manufacturer" "Texas Instruments" (at 0 0 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "3" (uuid "aeae9177-e304-4b98-af19-60c490a9bdaf")) (pin "2" (uuid "c69623dc-ac34-42fd-9fc0-8734d83346e8")) (pin "1" (uuid "4d83a309-5adf-4ae3-adc6-11b1e9ed457f")) (pin "5" (uuid "7a8c4d1b-a4ee-4ad6-b89a-cd6f91dd8cf4")) (pin "4" (uuid "9e2a5d4a-d910-4b06-958d-567de5a1b0e7")) (pin "6" (uuid "6efb4441-90ef-48bc-aa00-60168e5bf15a")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "U202")
 					(unit 1)
 				)
@@ -6956,7 +6956,7 @@
 
 (property "LCSC" "C2876234" (at 205.74 83.82 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "5" (uuid "e5d0edc7-ff79-4565-8300-88a7889b8af1")) (pin "6" (uuid "7ce6c1b5-32d7-419f-9b33-00d5fd6ae763")) (pin "7" (uuid "07550081-ebd1-4792-a885-90f18b898f43")) (pin "3" (uuid "2db9b61b-5e5e-4b77-91d5-2e88a5ea6181")) (pin "4" (uuid "598f280d-e8cc-4d40-a4c0-81c4d28df93c")) (pin "2" (uuid "9f73bca4-fb65-4802-b0f4-426c55e4940a")) (pin "1" (uuid "da046abe-b3fc-436f-9d8f-27b9a076f1e5")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "U201")
 					(unit 1)
 				)
@@ -6981,7 +6981,7 @@
 
 (property "Manufacturer" "YAGEO" (at 0 16.51 0) (hide yes) (show_name no) (do_not_autoplace no) (effects (font (size 1.27 1.27)))) (pin "1" (uuid "aba66eac-2380-42fa-82d1-f56c183dd454")) (pin "2" (uuid "13f5e668-a9c3-42f2-9a10-3921b36e30b2")) (instances
 			(project "DrikrAIO"
-				(path "/4e5f69d9-2880-4710-8cf9-0003c5399789/d4b6775c-6b60-4d69-8202-39857b427212"
+				(path "/9a043283-429d-43b6-8a03-b5120ae2b50f/d50d103e-3d3d-4d0e-8c98-4535c7bd571d"
 					(reference "R207")
 					(unit 1)
 				)
