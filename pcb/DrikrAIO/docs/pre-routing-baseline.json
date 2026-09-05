@@ -1,6 +1,6 @@
 {
   "schema": "drikraio.pre-routing-baseline/1",
-  "revision": 4,
+  "revision": 5,
   "date": "2026-09-05",
   "status": "NO-GO",
   "routing_allowed": false,
@@ -402,5 +402,51 @@
       "dielectric_constraints is no; impedance classes not declared in the board file."
     ],
     "post_fab_reinforcement": "PROHIBITED - no bus bars, soldered copper or hand-added wire"
+  },
+  "power_architecture": {
+    "document": "docs/power-architecture.md",
+    "calculator": "hardware/tools/power_arch.py",
+    "status": "OPEN ITEMS (12)",
+    "vbat_bus": {
+      "layers": [
+        "F.Cu",
+        "In2.Cu",
+        "In3.Cu",
+        "B.Cu"
+      ],
+      "copper_mm2": 4.18,
+      "resistance_uohm": 103,
+      "drop_42A_mV": 4.3,
+      "drop_115A_mV": 11.8,
+      "current_sharing_pct": {
+        "outer_each": 33.3,
+        "inner_each": 16.7
+      },
+      "sharing_note": "NOT equal; must be verified against final via geometry"
+    },
+    "battery_entry": "U3 pads VBAT/BATGND 4.5x15 mm; J1 EXCLUDED (0.7 A/contact)",
+    "lowest_rated_device_on_vbat": {
+      "part": "LMR51430",
+      "vin_abs_max_v": 38,
+      "headroom_v": 12.8,
+      "note": "lower rated than the 60 V FET; bus transient at its input is OPEN"
+    },
+    "protection_absent": [
+      "reverse polarity",
+      "input fuse / current limiting",
+      "board-level OV/UV",
+      "input TVS (deliberate)"
+    ],
+    "ratings_open": [
+      "INA186A3",
+      "TLV76733",
+      "LP5912",
+      "DSK24"
+    ],
+    "via_requirements": {
+      "vbat_transition": 39,
+      "phase_transition": 16,
+      "fet_thermal_pad": 9
+    }
   }
 }
