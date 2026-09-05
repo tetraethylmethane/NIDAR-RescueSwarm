@@ -1,6 +1,6 @@
 {
   "schema": "drikraio.pre-routing-baseline/1",
-  "revision": 3,
+  "revision": 4,
   "date": "2026-09-05",
   "status": "NO-GO",
   "routing_allowed": false,
@@ -364,5 +364,43 @@
       "reason": "thermal resistance does not scale linearly with area"
     },
     "status": "PERMANENT. These must not reappear in any live document or model."
+  },
+  "stackup": {
+    "document": "docs/stackup.md",
+    "status": "PROPOSAL - NOT MANUFACTURER APPROVED",
+    "verifier": "hardware/tools/verify_stackup.py",
+    "layers": 6,
+    "outer_copper_oz": 2,
+    "inner_copper_oz": 1,
+    "finish": "ENIG",
+    "finished_thickness_target_mm": 1.6,
+    "board_file_thickness_mm": 1.67,
+    "ground_planes": [
+      "In1.Cu (L2)",
+      "In4.Cu (L5)"
+    ],
+    "power_planes": [
+      "In2.Cu (L3)",
+      "In3.Cu (L4)"
+    ],
+    "impedance_targets": {
+      "rf_single_ended_ohm": 50,
+      "usb_differential_ohm": 90,
+      "trace_widths": "NOT STATED - fabricator must calculate from actual laminate"
+    },
+    "high_current_layers": [
+      "F.Cu",
+      "In2.Cu",
+      "In3.Cu",
+      "B.Cu"
+    ],
+    "high_current_copper_mm2": 4.2,
+    "conflicts": [
+      "2 oz outer vs 0.4 mm pitch QFN: pads at exactly 0.200 mm, zero margin. AT32F421 x4 on the 2 oz power side. Decision A/B/C required.",
+      "Three footprints have 5-10 um copper pads and are unmanufacturable at any copper weight: U402, U403, U703.",
+      "Finished thickness 1.67-1.70 mm nominal vs 1.60 mm target; fab must redistribute dielectrics.",
+      "dielectric_constraints is no; impedance classes not declared in the board file."
+    ],
+    "post_fab_reinforcement": "PROHIBITED - no bus bars, soldered copper or hand-added wire"
   }
 }
