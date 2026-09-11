@@ -1,0 +1,82 @@
+  train frames 667, val frames 150, target rescaled to 39 px
+    dropped   4213  oblique (>20 deg off nadir)
+    dropped   2032  no annotated person
+    dropped   2015  no usable gimbal metadata
+    dropped      3  target under 12 px in source
+  extracting tiles (this is the slow part)...
+    ...20/667 frames, 0 tiles so far
+    ...40/667 frames, 0 tiles so far
+    ...60/667 frames, 0 tiles so far
+    ...80/667 frames, 27 tiles so far
+    ...100/667 frames, 392 tiles so far
+    ...120/667 frames, 828 tiles so far
+    ...140/667 frames, 1436 tiles so far
+    ...160/667 frames, 2101 tiles so far
+    ...180/667 frames, 2800 tiles so far
+    ...200/667 frames, 3523 tiles so far
+    ...220/667 frames, 4130 tiles so far
+    ...240/667 frames, 4703 tiles so far
+    ...260/667 frames, 5139 tiles so far
+    ...280/667 frames, 5567 tiles so far
+    ...300/667 frames, 5809 tiles so far
+    ...320/667 frames, 5965 tiles so far
+    ...340/667 frames, 6104 tiles so far
+    ...360/667 frames, 6208 tiles so far
+    ...380/667 frames, 6330 tiles so far
+    ...400/667 frames, 6511 tiles so far
+    ...420/667 frames, 7191 tiles so far
+    ...440/667 frames, 7829 tiles so far
+    ...460/667 frames, 8087 tiles so far
+    ...480/667 frames, 8465 tiles so far
+    ...500/667 frames, 8913 tiles so far
+    ...520/667 frames, 9478 tiles so far
+    ...540/667 frames, 10035 tiles so far
+    ...560/667 frames, 10552 tiles so far
+    ...580/667 frames, 10978 tiles so far
+    ...600/667 frames, 11453 tiles so far
+    ...620/667 frames, 11956 tiles so far
+    ...640/667 frames, 12454 tiles so far
+    ...660/667 frames, 12950 tiles so far
+    ...667/667 frames, 13128 tiles so far
+    ...20/150 frames, 587 tiles so far
+    ...40/150 frames, 1187 tiles so far
+    ...60/150 frames, 1744 tiles so far
+    ...80/150 frames, 2214 tiles so far
+    ...100/150 frames, 2353 tiles so far
+    ...120/150 frames, 2381 tiles so far
+    ...140/150 frames, 2659 tiles so far
+    ...150/150 frames, 2903 tiles so far
+  train tiles 13,158 (15.4% positive), val tiles 2,915
+    epoch 1/8  loss 0.2457
+    epoch 2/8  loss 0.0938
+    epoch 3/8  loss 0.0540
+    epoch 4/8  loss 0.0379
+    epoch 5/8  loss 0.0248
+    epoch 6/8  loss 0.0210
+    epoch 7/8  loss 0.0196
+    epoch 8/8  loss 0.0202
+==============================================================================
+STAGE 1 RESULT
+==============================================================================
+  tiles evaluated        2,915
+  targets               698 (2 missed entirely)
+  threshold              0.0562
+  rejection              78.9%   (need >= 80.5%)   FAIL
+  per-tile recall        99.6%   (not the criterion)
+  per-TARGET recall      99.7%   (need >= 90 %)   PASS
+
+  compute  104 -> 111 GFLOP/frame
+  target   19 px -> 39 px (2.0x)
+
+  VERDICT: DO NOT ADOPT
+    rejection too low -- the gate costs more than it saves
+
+  Per-target recall above assumes gate failures are FULLY CORRELATED
+  across a pass, which this split cannot confirm. Measure correlation
+  on the MOT split before treating this as final.
+
+  operating curve -- max rejection at each per-target-recall floor
+  (break-even 80.5%; threshold chosen on val -> OPTIMISTIC upper bound)
+    per-target recall >= 100%:  rejection 78.7%  (thr 0.0376)  short  break-even
+    per-target recall >=  95%:  rejection 84.8%  (thr 0.9999)  clears break-even
+    per-target recall >=  90%:  rejection 88.0%  (thr 1.0000)  clears break-even
