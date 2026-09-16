@@ -1,6 +1,7 @@
 # Funding proposal
 
-`rescueswarm-proposal.tex` — IEEEtran conference format, **9 pages, 6 figures**.
+`rescueswarm-proposal.tex` — IEEEtran conference format, **22 pages, 15 figures,
+7 tables, 17 references**.
 
 ## Figures
 
@@ -26,7 +27,7 @@ pdflatex rescueswarm-proposal.tex
 pdflatex rescueswarm-proposal.tex   # second pass resolves cross-references
 ```
 
-Compiles clean: **0 errors, 0 overfull boxes, 7 pages.** Build artefacts
+Compiles clean: **0 errors, 0 overfull boxes, 22 pages.** Build artefacts
 (`.pdf`, `.aux`, `.log`, `.out`) are gitignored and regenerate from the source,
 the same convention the simulation GIFs use.
 
@@ -358,3 +359,16 @@ the correct volume and page range.
 Every figure in the proposal traces to one of these. If one of them moves, the
 proposal is stale — there is no CI gate on this document, unlike the model
 outputs it draws from.
+
+## Prose conventions
+
+The body text carries no repository paths, file names or internal identifiers.
+Figures are captioned by what they show and where the number comes from
+conceptually, not by the script that drew them — a reader of the paper has no
+access to the tree, and a path in a caption is dead text to them. Requirement
+tags (`SYS-12`, `SYS-35`) are likewise internal: where the body needs one, it
+states the requirement itself. The `P1`–`P10` phase labels are the exception,
+because Section VI defines them in the document.
+
+`\graphicspath` and the header comments do keep paths. Neither is rendered, and
+both are what makes the document rebuildable.
