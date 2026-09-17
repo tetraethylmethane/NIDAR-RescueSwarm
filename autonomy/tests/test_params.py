@@ -13,7 +13,8 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..",
                                 "firmware", "ardupilot-params"))
 from params import (  # noqa: E402
-    BASE, PACK_MAH, REQUIRED_FAILSAFES, for_drone, to_parm, validate,
+    BASE, PACK_MAH, REQUIRED_FAILSAFES, WORST_MEASURED_DESCENT_S, for_drone,
+    to_parm, validate,
 )
 
 
@@ -44,20 +45,65 @@ def test_rtl_descents_are_sequenced_not_just_separated():
     aircraft at RTL_ALT so only one descends at a time.
     """
     loiters = [for_drone(i)["RTL_LOIT_TIME"] for i in (1, 2, 3)]
-    assert loiters == [0, 20000, 40000]                  # milliseconds
+    assert loiters == [0, 60000, 120000]                 # milliseconds
     assert len(set(loiters)) == 3, "coincident descents onto a 3.66 m pad"
     assert loiters[0] == 0, "the first aircraft home should not wait"
 
 
+def test_the_stagger_covers_the_measured_descent():
+    """The value that matters, asserted against the thing that sets it.
+
+    This test exists because the bare-number assertion above did not catch a
+    revert. RTL_LOIT_TIME was corrected to 0/60/120 s by hand in the .parm
+    files after a SITL re-fly measured a 3.10 m approach at 0/20/40 s, but
+    params.py -- the generator -- was never updated, so the next regeneration
+    silently put 0/20/40 back and the tests stayed green on it.
+
+    A stagger shorter than the descent it has to cover means the next aircraft
+    enters the corridor before the one below it has landed, which is exactly
+    the geometry that produced the breach. Assert the relationship, not the
+    number.
+    """
+    step_s = (for_drone(2)["RTL_LOIT_TIME"] - for_drone(1)["RTL_LOIT_TIME"]) / 1000.0
+    assert step_s >= WORST_MEASURED_DESCENT_S, (
+        f"each aircraft waits {step_s:.0f} s for a descent measured at "
+        f"{WORST_MEASURED_DESCENT_S:.0f} s — the queue overlaps by "
+        f"{WORST_MEASURED_DESCENT_S - step_s:.0f} s over a 3.66 m pad")
+
+
 def test_the_loiter_stagger_is_affordable_from_the_reserve():
-    """A sequencing fix that eats the reserve would trade one failure for another."""
+    """A sequencing fix that eats the reserve would trade one failure for another.
+
+    The bound here is deliberately weaker than it was. At 0/20/40 s this
+    asserted spend < reserve/3, which the collision-safe 0/60/120 s does not
+    meet: the last aircraft now holds 120 s = 30.4 Wh of a 58.4 Wh reserve,
+    52 % of it, where 40 s spent 17 %.
+
+    That is a real loss of margin and it is recorded rather than hidden. What
+    the reserve must still guarantee is a LANDING, so that is what is asserted:
+    the worst-placed aircraft must be able to hold its queue slot and still
+    fly its own descent, with the remainder kept at twice the descent cost so
+    a single unmodelled event does not consume it. Buying the margin back means
+    raising LAND_SPEED to shorten the descent, not shortening the queue -- see
+    the note in params.for_drone.
+
+    IT CURRENTLY PASSES BY 1.08 Wh OF 58.40, which is 1.9 %. That is not a
+    comfortable margin and it is not meant to read as one: the queue is very
+    nearly as long as the reserve can pay for, and a stagger of 61 s would fail
+    this. If you are here because this test just went red, the answer is almost
+    certainly LAND_SPEED (HANDOFF.md section 4.8), not a larger threshold.
+    """
     HOVER_W, PACK_WH = 913.0, 292.0
     worst_wait_s = max(for_drone(i)["RTL_LOIT_TIME"] for i in (1, 2, 3)) / 1000.0
     spent_wh = HOVER_W * worst_wait_s / 3600.0
+    descent_wh = HOVER_W * WORST_MEASURED_DESCENT_S / 3600.0
     reserve_wh = PACK_WH * (BASE["BATT_LOW_MAH"] / PACK_MAH)
-    assert spent_wh < reserve_wh / 3, (
-        f"last aircraft waits {worst_wait_s:.0f} s = {spent_wh:.1f} Wh against "
-        f"a {reserve_wh:.1f} Wh reserve — too much of the margin goes to queuing")
+    headroom_wh = reserve_wh - spent_wh - 2 * descent_wh
+    assert headroom_wh > 0, (
+        f"last aircraft waits {worst_wait_s:.0f} s = {spent_wh:.1f} Wh, then "
+        f"needs {descent_wh:.1f} Wh to land, against a {reserve_wh:.1f} Wh "
+        f"reserve — over by {-headroom_wh:.1f} Wh. The queue no longer leaves "
+        f"room to come down; shorten the DESCENT (LAND_SPEED), not the queue")
 
 
 def test_rtl_alt_is_centimetres_and_the_validator_knows():

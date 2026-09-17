@@ -41,6 +41,10 @@ BOM = [
   "https://onlyscrews.in/products/hexallen-socket-head-assorted-screw-pack-ss304"),
  ("instruments", "Threadlocker", "Loctite 243, 50 ml", 664, 1, 0,
   "https://www.amazon.in/Loctite-243-Threadlocker-Pack-Size/dp/B014MMG3AM"),
+ # A motor on a stand needs something to command it. The safety-pilot
+ # transmitter is not bought until phase 11, long after the thrust test.
+ ("instruments", "Throttle source", "Servo tester / ESC consistency tester, PPM", 111, 1, 0,
+  "https://robokits.co.in/motors/rc-servo-motor/servo-tester-esc-consistency-tester-ppm-generator"),
 
  # ---- per aircraft, avionics and sensing, phases 3-6 --------------------
  ("avionics", "Flight controller", "Holybro Pixhawk 6C Mini", 22049, 3, 1,
@@ -66,9 +70,16 @@ BOM = [
  # requirement with better than 2x margin.
  ("avionics", "GNSS RTK receiver", "Teravolt AeroNav-Pro RTK, aircraft 1 rover + ground base",
   25000, 2, 0, "https://teravolt.gitbook.io/teravolt/gps/aeronav-pro-rtk"),
- ("avionics", "GNSS receiver", "Holybro M9N, u-blox NEO-M9N with IST8310 compass",
-  7200, 2, 0,
-  "https://robokits.co.in/multirotor-spare-parts/gps-sensors/holybro-m9n-uart-gps-compatible-with-hex-pixhawk-cube"),
+ ("avionics", "GNSS receiver", "Holybro Micro M9N GPS with case, NEO-M9N and compass",
+  6939, 2, 0,
+  "https://indianrobostore.com/product/holybro-micro-m9n-gps-with-case-high-precision-multi-band-gnss"),
+ # True height above whatever is below -- water, ground or a rooftop. The
+ # release gate is specified at 6 m AGL and the barometer measures height above
+ # the launch point, which over floodwater of unknown level is a different
+ # quantity. 12 m indoors, about 7 m outdoors, so it acquires during the
+ # descent and gates the release; it does not see forward.
+ ("avionics", "Height rangefinder", "Benewake TFmini-S, 12 m lidar, UART", 2827, 3, 1,
+  "https://indianrobostore.com/product/benewake-12m-tfmini-s-micro-lidar-distance-sensor-for-drones-uav-uas-robots-uart"),
  ("avionics", "Camera + lens", "Arducam 12.3 MP 1/2.3 in HQ module, 6 mm CS lens", 6799, 3, 1,
   "https://robu.in/product/arducam-high-quality-camera-for-raspberry-pi-12-3mp-1-2-3-inch-hq-camera-module-with-6mm-cs-lens-for-pi-4b-3b-2b-3a-pi-zero-and-more/"),
  ("avionics", "Video transmitter", "SunRobotics TS832, 5.8 GHz, 600 mW", 4239, 3, 1,
@@ -181,14 +192,18 @@ BOM = [
 # ONE is measured before the other eleven are committed.
 PHASE_OF = {
     "Load-cell amplifier": (1,), "Load cell": (1,), "Thrust-stand mast": (1,),
-    "Fasteners": (1,), "Threadlocker": (1,),
-    "Motors": (2, 10, 20, 28), "Propellers": (10, 20, 28),
+    "Fasteners": (1,), "Threadlocker": (1,), "Throttle source": (1,),
+    "Motors": (2, 10, 20, 28), "Propellers": (2, 10, 20, 28),
     "Flight controller": (3, 13, 21), "FC vibration mount": (3, 13, 21),
     "Autopilot log card": (3, 13, 21),
     "Companion computer": (4, 14, 22), "AI accelerator": (4, 14, 22),
     "Compute cooling": (4, 14, 22), "Storage": (4, 14, 22),
-    "GNSS RTK receiver": (5, 29), "GNSS receiver": (15, 23),
-    "Camera + lens": (6, 16, 24), "Video transmitter": (6, 16, 24),
+    # Both RTK units in one step. A rover without its base is not an RTK
+    # receiver, it is an ordinary one, so splitting them across phases 5 and
+    # 29 would have left aircraft 1 flying uncorrected for the whole build
+    # and no ground truth surveyable until the programme was nearly over.
+    "GNSS RTK receiver": (5,), "GNSS receiver": (15, 23),
+    "Camera + lens": (6, 16, 24), "Height rangefinder": (6, 16, 24), "Video transmitter": (6, 16, 24),
     "Command receiver": (6, 16, 24), "Coordination radio": (6, 16, 24),
     "Arm tube": (7, 17, 25), "Frame plate stock": (7, 17, 25), "Motor mounts": (7, 17, 25),
     "Arm clamps": (7, 17, 25), "Landing gear": (7, 17, 25),
@@ -198,7 +213,7 @@ PHASE_OF = {
     "Pack retention": (8, 18, 26), "Pack interconnect": (8,),
     "Group interconnect": (8,), "Power module": (8, 18, 26),
     "BEC, primary": (8, 18, 26), "BEC, secondary": (8, 18, 26),
-    "Speed controllers": (9, 19, 27), "Release servos": (9, 19, 27),
+    "Speed controllers": (2, 19, 27), "Release servos": (9, 19, 27),
     "Power connectors": (9, 19, 27), "Signal connectors": (9, 19, 27),
     "Antenna feeders": (9, 19, 27), "Insulation": (9, 19, 27),
     "Main leads": (9,),
@@ -206,12 +221,21 @@ PHASE_OF = {
     "Pack health monitor": (11,),
     "Cable management": (12,), "Heat-shrink kit": (12,),
     "Mounting tape": (12,), "Hook and loop": (12,), "Consumables": (12,),
-    "Video receivers": (30,), "Receive antennas": (30,), "Video capture": (30,),
-    "Coordination base": (30,), "Base station mount": (30,),
+    "Video receivers": (29,), "Receive antennas": (29,), "Video capture": (29,),
+    "Coordination base": (29,), "Base station mount": (29,),
 }
 
 # One measured, then three to finish aircraft 1, then four per aircraft.
-PHASE_QTY_OVERRIDE = {"Motors": {2: 1, 10: 3, 20: 4, 28: 4}}
+# Phase 2 measures one motor. A motor alone measures nothing: it needs a
+# propeller to load it and a speed controller to drive it, so phase 2 buys the
+# whole test set. The controller it uses is aircraft 1's, brought forward from
+# phase 9 rather than bought twice -- the point of measuring with the hardware
+# that will fly is lost if the bench runs a different controller.
+PHASE_QTY_OVERRIDE = {
+    "Motors":            {2: 1, 10: 3, 20: 4, 28: 4},
+    "Propellers":        {2: 1, 10: 5, 20: 5, 28: 5},
+    "Speed controllers": {2: 1, 19: 1, 27: 1},
+}
 
 # ---------------------------------------------------------------------------
 # TAX TREATMENT
@@ -319,7 +343,10 @@ SHEET_OMITTED = 549 * 3 + 2 * 32 + 949  # landing gear, springs, filament
 # Two Teravolt units dropped (-50,000) and two Holybro M9N added (+14,400):
 ADDED_AFTER_SHEET = (-50000 + 7200 * 2   # two RTK units out, two M9N in
                      + 1549 * 3          # autopilot log cards, not shipped with it
-                     + 2895 * 3)         # frame plate stock, the arms bolt to it
+                     + 2895 * 3          # frame plate stock, the arms bolt to it
+                     + 111               # bench throttle source
+                     + 2827 * 3          # height rangefinders for the release gate
+                     - (7200 - 6939) * 2)  # M9N repriced from the team's listing
 
 PACK_PROTECTION = """Why there is no BMS in this BOM.
 

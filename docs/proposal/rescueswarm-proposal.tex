@@ -82,23 +82,21 @@ skumar6\_be24@thapar.edu}
 
 \begin{abstract}
 India recorded 5.4 million internal displacements from disasters in 2024, the
-highest figure in twelve years, and the binding constraint on survivor outcomes
-is the speed with which casualties are located and reached. Ground and boat-based search is slow and hazardous;
-helicopter search is fast but scarce and expensive. This proposal describes
-RescueSwarm, a three-aircraft autonomous unmanned aerial system that surveys a
-designated area, detects and geolocates survivors, and delivers a standardised
-relief kit to each, under a single operator and without any reliance on cellular
-or internet infrastructure. Components are sourced domestically where a
-qualifying part exists, principally because domestic lead times are roughly
-half those of imports and therefore buy flight-test days inside a
-schedule-limited programme; we state which lines were deferred and what each
-omission costs the system rather than the budget. We present the
-system architecture, the sizing and error models that fix its design point,
-the simulation evidence obtained to date, and a phased work plan. We are explicit throughout
-about which figures are measured, which are modelled, and which remain assumed;
-no aircraft has yet flown, and the proposal is structured so that a reviewer can
-distinguish demonstrated capability from projected capability without reading
-the source material.
+highest figure in twelve years. In post-flood search and rescue, locating
+survivors is consistently slower than reaching them: boat and ground parties
+cover ground slowly and at considerable risk to their crews, while rotary-wing
+assets are fast but scarce and are usually committed to evacuation rather than
+to systematic survey. This paper describes RescueSwarm, a three-aircraft
+autonomous unmanned aerial system that surveys a designated area, detects and
+geolocates survivors, and delivers a standardised relief kit to each, under a
+single operator and with no dependence on cellular or internet infrastructure.
+We present the system architecture, the sizing and geolocation error models
+that fix the design point, the simulation evidence obtained so far, and a
+phased work plan. Components are sourced domestically wherever a qualifying
+part exists, chiefly on schedule grounds: domestic lead times are roughly half
+those of imports, which in a schedule-limited programme buys flight-test days.
+No aircraft has yet flown, and measured, modelled and assumed quantities are
+labelled as such throughout.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -112,72 +110,70 @@ coverage path planning, RTK geolocation, edge inference, disaster response
 
 \subsection{The operational gap}
 
-India records among the highest disaster-displacement figures in the world. The
-Internal Displacement Monitoring Centre reports \textbf{5.4 million internal
-displacements in India during 2024} --- the highest in twelve years --- of which
+India records among the highest disaster-displacement figures in the world.
+The Internal Displacement Monitoring Centre reports 5.4 million internal
+displacements in India during 2024, the highest in twelve years, of which
 2.4 million were triggered by a single monsoon flood season in
-Assam~\cite{idmc2025grid}. The scale of the response problem is therefore not in
-question; what is in question is how quickly the people displaced by it can be
-found.
+Assam~\cite{idmc2025grid}. The scale of the response problem is well
+established. How quickly the displaced can be found is less so.
 
-Post-flood search and rescue in India is dominated by a single quantity: the
-elapsed time between the onset of the event and the moment a survivor is both
-\emph{located} and \emph{reached}. Nationally deployed capability addresses the
-second of these far better than the first. Boat teams and ground parties can
-reach a survivor once told where to go, but they search slowly, at high risk to
-the crew, and with poor coverage of debris fields and rooftops. Rotary-wing
-aircraft search quickly but are scarce, costly per flight hour, and are
-typically committed to evacuation rather than to systematic area survey.
+The governing quantity in post-flood search and rescue is the elapsed time
+between the onset of an event and the moment a survivor is both located and
+reached. Nationally deployed capability addresses the second far better than
+the first. Boat teams and ground parties reach survivors reliably once told
+where to go, but they search slowly, at high risk to their crews, and with poor
+coverage of debris fields and rooftops. Rotary-wing aircraft search quickly,
+yet they are scarce, costly per flight hour, and generally committed to
+evacuation rather than to systematic area survey.
 
-The consequence is that \emph{localisation} is the bottleneck. A search asset
-that can systematically cover an assigned polygon, detect human figures in
-cluttered post-flood imagery, and report each detection as a coordinate accurate
-to a few metres would materially change the tasking of every downstream
-resource.
+Localisation is therefore the bottleneck. An asset that could cover an assigned
+polygon systematically, detect human figures in cluttered post-flood imagery,
+and report each detection as a coordinate accurate to a few metres would change
+the tasking of every downstream resource.
 
-\subsection{Why a swarm rather than a single aircraft}
+\subsection{Coordination as the governing problem}
 
-A single multirotor with a useful payload and a fifteen-minute endurance covers
-a disappointing area. Coverage scales with the number of simultaneously
-operating aircraft, but so does operator workload, and a system requiring one
-pilot per aircraft does not deploy well in a disaster. The engineering problem
-is therefore not simply flight, but \emph{coordinated autonomous flight under a
-single operator}: area decomposition, task allocation, deconfliction, consolidated
-reporting, and graceful degradation when the command link is lost.
+A single multirotor carrying a useful payload, with a fifteen-minute
+endurance, covers a disappointing area. Coverage scales with the number of
+aircraft operating simultaneously; so does operator workload, and a system
+requiring one pilot per aircraft deploys badly in a disaster. The engineering
+problem is consequently one of coordinated autonomous flight under a single
+operator, which brings with it area decomposition, task allocation,
+deconfliction, consolidated reporting and graceful degradation when the command
+link is lost.
 
-\subsection{Why sourcing is a schedule decision}
+\subsection{Sourcing under a schedule constraint}
 
-Domestic sourcing is treated here as a schedule constraint rather than a
-policy position. Our supplier survey puts typical import lead times at four to
-six weeks against two to three weeks domestically. In a programme whose binding
-constraint is an eight-week flight-test window, that difference is not a
-procurement detail: it is the difference between two test campaigns and one.
-Suppliers are therefore named specifically throughout, and lead time is carried
-alongside price wherever a part is selected.
+We treat domestic sourcing as a schedule constraint. Our supplier survey puts
+typical import lead times at four to six weeks, against two to three weeks
+domestically. Within an eight-week flight-test window, that gap decides whether
+the programme gets one test campaign or two, so suppliers are named
+specifically throughout and lead time is carried alongside price wherever a
+part is selected.
 
-This argument cuts against a decision taken later in the document. The
-build defers the Indian autopilot and Indian propulsion on cost, and the
-imported parts replacing them carry the longer lead time just described as
-decisive. The mitigation is structural: every long-lead item is ordered in
-tranche~1, in month one, ahead of the software work that would normally precede
-procurement. Cost was traded against schedule margin deliberately, and the
-resulting schedule risk is carried in Table~\ref{tab:risk}.
+The argument cuts against a decision taken later in this paper. The build
+defers the Indian autopilot and Indian propulsion on cost, and the imported
+parts that replace them carry exactly the longer lead time just described as
+decisive. We mitigate this structurally, by ordering every long-lead item in
+month one, ahead of the software work that would ordinarily precede
+procurement. The trade of cost against schedule margin was deliberate, and the
+residual risk appears in Table~\ref{tab:risk}.
 
-\subsection{Contributions of the proposed work}
+\subsection{Contributions}
 
 \begin{enumerate}
   \item A three-aircraft autonomous survey-and-delivery system operable by a
-        single operator with no network dependency, sized line-by-line
-        against market-verified components.
+        single operator with no network dependency, sized line by line against
+        market-verified components.
   \item A geolocation error budget that treats survivor coordinate accuracy as
-        the primary system output, and an architecture that meets it using a
-        team-owned RTK base rather than any external correction service.
-  \item A coordination scheme --- static equal-area decomposition with
-        boustrophedon coverage and greedy claim-and-lock task allocation ---
-        selected for determinism and verifiability over optimality.
-  \item An evidence discipline in which every published number regenerates from
-        its model in continuous integration, and in which measured, modelled and
-        assumed quantities are separated by construction.
+        the primary system output, together with an architecture that meets it
+        from a team-owned RTK base and no external correction service.
+  \item A coordination scheme combining static equal-area decomposition,
+        boustrophedon in-region coverage and greedy claim-and-lock allocation,
+        selected for determinism and verifiability in preference to optimality.
+  \item A reproducibility regime in which every reported number regenerates
+        from the model that produced it, and in which measured, modelled and
+        assumed quantities are distinguished by construction.
 \end{enumerate}
 
 %=============================================================================
@@ -202,21 +198,20 @@ resulting schedule risk is carried in Table~\ref{tab:risk}.
 
 \subsection{Explicit non-objectives}
 
-These are stated because proposals of this kind are frequently over-scoped, and
-because each exclusion is a deliberate engineering decision rather than an
-omission.
+Each of the following is a deliberate exclusion, and each is recorded so that
+the claimed scope cannot be read more broadly than intended.
 
 \begin{itemize}
   \item \textbf{Not a casualty-evacuation platform.} The payload class is a
-        relief kit, not a person, and no growth path to the latter is claimed.
+        relief kit, and we claim no growth path toward carrying a person.
   \item \textbf{Not beyond-visual-line-of-sight certified.} The design operates
-        within a bounded geofence; regulatory expansion is future work.
+        within a bounded geofence. Regulatory expansion is future work.
   \item \textbf{Not a night or all-weather system.} The perception stack is
-        visible-band. Night capability is future work; Section~\ref{sec:future}
-        argues that near-infrared rather than thermal is the extension matched
-        to a target immersed in water.
-  \item \textbf{Not a survivor-triage system.} The system reports position and
-        delivers a kit; it makes no medical assessment.
+        visible-band. Section~\ref{sec:future} sets out the case for
+        near-infrared over thermal as the extension best matched to a target
+        immersed in water.
+  \item \textbf{Not a survivor-triage system.} The system reports position
+        and delivers a kit. It makes no medical assessment.
 \end{itemize}
 
 %=============================================================================
@@ -233,66 +228,65 @@ in-region motion primitive for sensor footprints that are rectangular in the
 body frame.
 
 We adopt a static equal-area partition with boustrophedon in-region coverage
-rather than a full DARP implementation. This is a deliberate trade of optimality
-for determinism: a static partition produces an identical, inspectable plan for
-identical inputs, which is a precondition for the verification regime described
-in Section~\ref{sec:evidence}. DARP is retained as design rationale and as a
-future-work path where dynamic reallocation becomes necessary.
+in place of a full DARP implementation, trading optimality for determinism. A
+static partition returns an identical and inspectable plan for identical
+inputs, which the verification regime of Section~\ref{sec:evidence} requires.
+DARP remains the reference for the design and the natural path forward should
+dynamic reallocation become necessary.
 
 \subsection{Multi-robot task allocation}
 
 The Consensus-Based Bundle Algorithm (CBBA) is the canonical decentralised
-auction method for multi-agent assignment~\cite{choi2009cbba}. Its guarantees
-depend on a consensus phase over a communication graph. For a three-aircraft
-system with a reliable star topology to a single ground station, we implement
-greedy claim-and-lock with a deterministic tie-break, which is materially
-simpler to verify and whose worst-case behaviour on three agents is well within
-acceptable bounds.
+auction method for multi-agent assignment~\cite{choi2009cbba}, and its
+guarantees rest on a consensus phase over a communication graph. Our system has
+three aircraft on a reliable star topology to one ground station, a regime in
+which those guarantees buy little. We therefore implement greedy claim-and-lock
+with a deterministic tie-break, which is substantially easier to verify and
+whose worst case over three agents remains within acceptable bounds.
 
 \subsection{Aerial detection of people}
 
-Small-object detection from altitude is the governing difficulty: a supine adult
-at survey altitude occupies a few tens of pixels. Slicing-aided hyper inference
-(SAHI) and related tiling strategies substantially improve small-object recall by
-running detection on overlapping crops rather than a downsampled full
-frame~\cite{akyon2022sahi}. The difficulty is quantified by the size bands used
-in the standard benchmarks: COCO classifies an object below
-32$^2$\,px$^2$ as small~\cite{lin2014coco}, and TinyPerson introduces finer
-\emph{tiny} bands specifically because aerial person detection falls below even
-that threshold~\cite{yu2020tinyperson}.
+Small-object detection from altitude is the governing difficulty, since a
+supine adult at survey altitude occupies a few tens of pixels. Slicing-aided
+hyper inference (SAHI) and related tiling strategies improve small-object
+recall substantially by running detection over overlapping crops instead of a
+downsampled full frame~\cite{akyon2022sahi}. Standard benchmarks quantify the
+problem: COCO classifies an object below 32$^2$\,px$^2$ as
+small~\cite{lin2014coco}, and TinyPerson introduces finer bands below that
+because aerial person detection falls beneath even the COCO
+threshold~\cite{yu2020tinyperson}.
 
 Purpose-built aerial person datasets provide the transfer-learning base.
 SARD~\cite{sambolek2021sard} covers land search and rescue and the broader
-VisDrone benchmark~\cite{zhu2021visdrone} covers urban aerial scenes, but the
-closest match to the target condition here is
-SeaDronesSee~\cite{varga2022seadronessee}, which annotates people in open water
-from a UAV and therefore shares both the low-contrast background and the
-head-and-shoulders target signature of a flood scene. None contains post-flood
-Indian terrain. A field data campaign is therefore the right answer; it is
-\emph{deferred} from this build (Section~\ref{sec:deferred}), which is why
-detection recall remains a modelled quantity and the leading entry in the risk
-register.
+VisDrone benchmark~\cite{zhu2021visdrone} covers urban aerial scenes. Closest
+to the condition of interest is SeaDronesSee~\cite{varga2022seadronessee},
+which annotates people in open water from a UAV and so shares both the
+low-contrast background and the head-and-shoulders target signature of a flood
+scene. None covers post-flood Indian terrain. A field data campaign is the
+proper remedy, and it is deferred from this build
+(Section~\ref{sec:deferred}); detection recall consequently remains a modelled
+quantity and the leading entry in the risk register.
 
 \subsection{Airborne payload delivery}
 
-The dominant error term in airborne delivery is release state --- velocity and
-wind --- rather than release altitude. Mathisen \emph{et al.} demonstrate
-autonomous ballistic airdrop from a small fixed-wing UAV and report a mean
-delivery error of 5.5\,m, with the release state computed dynamically against
-wind and vehicle velocity and re-optimised in flight precisely because that term
-dominates~\cite{mathisen2020airdrop}. This is the decisive argument for a
-multirotor in this role: a rotorcraft can null its groundspeed to near zero
-before release and thereby remove the dominant error term outright, which a
-fixed-wing cannot. The delivery budget in Section~\ref{sec:delivery} exploits
-exactly this.
+Release state, meaning vehicle velocity and wind, dominates the error in
+airborne delivery; release altitude matters far less. Mathisen \emph{et al.}
+demonstrate autonomous ballistic airdrop from a small fixed-wing UAV and report
+a mean delivery error of 5.5\,m, computing release state dynamically against
+wind and vehicle velocity and re-optimising it in flight because of that
+dominance~\cite{mathisen2020airdrop}. A rotorcraft can null its groundspeed to
+near zero before release and so remove the dominant term altogether, which a
+fixed-wing aircraft cannot. This is our principal reason for selecting a
+multirotor, and the delivery budget of Section~\ref{sec:delivery} is built on
+it.
 
 \subsection{Positioning}
 
-Real-time kinematic correction from a locally surveyed base is standard practice
-and is the only route to sub-metre relative positioning without an external
-network~\cite{takasu2009rtklib}. Since the system may not use internet or
-cellular services, a team-owned base station is not merely preferable but
-required.
+Real-time kinematic correction from a locally surveyed base is standard
+practice, and it is the only route to sub-metre relative positioning that does
+not depend on an external network~\cite{takasu2009rtklib}. Because the system
+may use neither internet nor cellular services, a team-owned base station is a
+requirement of the architecture.
 
 %=============================================================================
 \section{Proposed System Architecture}
@@ -301,15 +295,14 @@ required.
 \subsection{Design point}
 
 Table~\ref{tab:designpoint} states the aircraft design point. Every value is
-produced by a sizing model held in the repository and regenerated in continuous
-integration; none is transcribed by hand.
+computed by the sizing model described in this section and regenerated
+automatically; none is transcribed by hand.
 
-This is the reference design point, and one line of it is not yet verified for
-the aircraft actually being built. The adopted configuration
-(Section~\ref{sec:deferred}) uses generic motors that publish no thrust curve, so the
-thrust-to-weight figure below is a requirement rather than a measurement until
-the P5 thrust stand runs. Nothing else in the table moves: mass, energy,
-altitude, speed and payload are all set by the mission.
+One line of the table is not yet verified for the aircraft being built. The
+adopted configuration (Section~\ref{sec:deferred}) uses generic motors that
+publish no thrust curve, so the thrust-to-weight figure is a requirement rather
+than a measurement until the P5 thrust stand runs. The remaining entries are
+fixed by the mission: mass, energy, altitude, speed and payload.
 
 \begin{table}[t]
 \caption{Air vehicle design point (per aircraft)}
@@ -368,15 +361,14 @@ are available but a smaller aircraft is not.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{fig-mass.pdf}
-\caption{Mass budget per aircraft. Generated from
-\protect\path{docs/sizing/model-output.txt}. \emph{Avionics} includes the wiring
-harness and \emph{magazine} the release mechanism. The fleet figure of 19\,081\,g carries
+\caption{Mass budget per aircraft, from the sizing model. Avionics includes
+the wiring harness, and the magazine entry the release mechanism. The fleet figure of 19\,081\,g carries
 4\,919\,g of growth allowance against a 24\,kg internal target --- 26\,\% build
 overweight tolerated --- inside the 25\,kg regulatory cap.}
 \label{fig:mass}
 \end{figure}
 
-\subsection{Energy: the decisions behind the pack}
+\subsection{Energy storage and the reserve policy}
 \label{sec:energy}
 
 \begin{figure*}[t]
@@ -416,11 +408,11 @@ exists because a search finding nothing on its first pass is a normal outcome
 rather than a failure; the loiter term exists because a recovery queue of three
 aircraft is not instantaneous.
 
-Two things about the result are decisions rather than arithmetic, and they
-belong here rather than in a derivation.
+Two features of the result are design decisions, not consequences of the
+arithmetic, and are set out here for that reason.
 
-\textbf{Why cylindrical Li-ion rather than LiPo.} We record this as a trade
-rather than a preference, because LiPo wins part of it. A LiPo pack of equal
+\textbf{Cylindrical Li-ion in preference to LiPo.} The comparison is genuinely
+close, and LiPo wins part of it. A LiPo pack of equal
 energy would roughly halve the internal resistance --- about 2.5\,V of sag at
 peak against 4.6\,V --- and would carry far more current headroom, and it would
 remove the pack-assembly step entirely. It loses on three grounds that matter
@@ -601,7 +593,7 @@ RTK buys \textbf{0.16\,m of CEP50} over SBAS. Every class clears the 5\,m
 delivery requirement with more than three times margin. The simulation is
 checked against the analytic result for a circular Gaussian, CEP50~$=
 0.8326\times$RSS, and fails rather than reports if the two disagree; the RTK row
-reproduces the \texttt{SYS-12} requirement of 0.75\,m independently.
+reproduces the 0.75\,m attitude-limited requirement independently.
 
 A second consideration compounds this. The base station is set from its own
 first three-dimensional fix rather than a survey-in
@@ -634,9 +626,9 @@ three was buying three copies of a measurement that only needs taking once.
 \label{sec:receivers}
 
 The trade above compares three receivers. The question that keeps returning in
-review is broader --- why not GPS on its own, or NavIC, which is Indian and
-costs a fifth of the RTK unit --- and it deserves an answer with a number
-rather than a preference.
+review is broader: why not GPS on its own, or NavIC, which is Indian and costs
+a fifth of the RTK unit? The answer should be quantitative, and we give it
+below.
 
 \emph{NavIC is not an alternative to RTK.} The two are different layers: NavIC
 is a constellation, alongside GPS, GLONASS, Galileo and BeiDou, while RTK is a
@@ -652,7 +644,7 @@ it. Adding a receiver term $\sigma_g$ in quadrature and converting to the
 \begin{equation}
 \mathrm{CEP95} = 1.7308\sqrt{\sigma_{\mathrm{rest}}^{2} + \sigma_g^{2}}
 \;\le\; 5\,\text{m}
-\quad\Longrightarrow\quad
+\;\Longrightarrow\;
 \sigma_g \le 2.75\,\text{m}.
 \label{eq:gnssbreak}
 \end{equation}
@@ -769,8 +761,7 @@ to twelve frames the geometry supplies for free already sit past the knee.
 code the aircraft flies. (a) Single-frame horizontal error against GNSS fix
 quality, typical attitude, on a logarithmic scale; the dashed line is the 5\,m
 delivery requirement. (b) Effect of fusing multiple observations of the same
-target, RTK fixed. Generated by \protect\path{figures/make_figures.py} from
-\protect\path{docs/sizing/geotag-accuracy-output.txt}.}
+target, RTK fixed.}
 \label{fig:geotag}
 \end{figure*}
 
@@ -860,11 +851,10 @@ cascade a throughput argument rather than an accuracy one.}
 
 This is the single most benchmark-sensitive figure in the design. Published
 throughput for comparable models on comparable hardware spans roughly 24 to 41
-frames per second, and the lower end of that range leaves no margin. Hardware
-benchmarking before design freeze is accordingly a funded, scheduled activity
-rather than an assumption.
+frames per second, and the lower end of that range leaves no margin. We
+therefore schedule and fund hardware benchmarking before design freeze.
 
-\subsection{Why the compute stack is three parts}
+\subsection{Partitioning of the compute stack}
 \label{sec:compute}
 
 The air vehicle carries a sensor, a single-board host and a neural accelerator.
@@ -886,8 +876,8 @@ So the three parts are a sensor, an image pipeline with a CPU, and a matrix
 engine. Removing any one of them does not simplify the aircraft; it stops the
 detection chain working.
 
-\emph{One alternative would genuinely remove a box, and it was rejected on a
-measurable ground rather than a preference.} Sensors now exist with an
+\emph{One alternative would genuinely remove a box, and we rejected it on a
+measurable ground.} Sensors now exist with an
 inference engine on the die --- the imager runs the network itself and emits
 detections instead of pixels, at roughly 40\,\% lower power than a discrete
 accelerator, and it would delete the accelerator line entirely. It does not fit
@@ -1118,7 +1108,7 @@ rather than descend uncommanded partway home.
 \node[blk, below=of setup] (arm) {Arm; gate on 3-D fix};
 \node[blk, below=of arm] (to) {Staggered take-off\\delay 0 / 15 / 30\,s};
 \node[blk, below=of to] (tr) {Transit at 20 / 25 / 30\,m\\(vertical deconfliction)};
-\node[blk, below=of tr] (sw) {Boustrophedon sweep\\60\,m AGL $\cdot$ 8\,m/s};
+\node[blk, below=of tr] (sw) {Boustrophedon sweep\\40\,m AGL $\cdot$ 8\,m/s};
 \node[dec, below=5mm of sw] (det) {detection?};
 \node[blk, below=5mm of det] (conf) {Temporal confirm\\$\geq$2 frames, fuse position};
 \node[blk, below=of conf] (del) {Descend, null groundspeed\\$<$0.3\,m/s, release at 6\,m};
@@ -1306,7 +1296,7 @@ Nominal edge clearance is 0.523\,m --- one airframe radius --- so no part of a
 stationary aircraft lies outside the box, and the geometric requirement is met
 by construction.
 
-That is compliance with no margin, and it is worth stating plainly. The
+That is compliance with no margin, which we state plainly. The
 rules admit no part of any aircraft outside the box during launch and landing.
 Touchdown dispersion of $\pm$0.5\,m, the figure this programme uses elsewhere
 for landing accuracy, would put up to half a metre of airframe over the edge.
@@ -1364,16 +1354,15 @@ the lowest state of charge of the flight.}
 \centering
 \includegraphics[width=0.94\textwidth]{gcs-dark.png}
 \caption{Ground control station, captured unretouched from the running client
-and backend. \textbf{The telemetry is synthetic}: a mission driver
-(\protect\path{scripts/sim_mission.py}) emits MAVLink and 5\,Hz mission-state
-documents for three aircraft, so every display can be exercised before an
-aircraft exists. No aircraft, autopilot or radio is involved.
+and backend. \textbf{The telemetry is synthetic}: a mission driver emits
+MAVLink and 5\,Hz mission-state documents for three aircraft, so every display
+can be exercised before an aircraft exists. No aircraft, autopilot or radio is involved.
 Visible here: the three assigned search regions on a satellite basemap served
 from a local tile cache, so nothing depends on a network; three aircraft armed
 and in \textsc{auto}, two with an RTK-fixed solution and the third in float,
 which is the degraded case the display must distinguish; and the mission
-counters, where the 15:00 figure is the \texttt{SYS-35} fast-completion
-threshold rather than the flight-time limit.
+counters, where the 15:00 figure is the fast-completion threshold rather
+than the flight-time limit.
 The run is caught after delivery, with six survivors located and six kits
 released, which is what puts the per-survivor rows on screen. Those rows carry
 the point Section~\ref{sec:receivers} argues: five survivors are tagged
@@ -1398,7 +1387,66 @@ The geolocation Monte Carlo reconciles with the independent analytic budget to
 within one per cent, and the geotag projection has been verified
 self-consistent between two independent formulations to $7.8\times10^{-10}$\,m.
 
-\subsection{Assumed, or not yet implemented}
+\subsection{Obstacle sensing and its limits}
+\label{sec:obstacles}
+
+The aircraft flies its sweep with no command from the ground, so what keeps it
+away from a building has to be designed in rather than flown around. Three
+things do, and a fourth deliberately does not.
+
+\emph{Altitude clears low-rise structures and nothing else.} The sweep is at
+40\,m AGL, which clears the two-to-four-storey construction of a rural or
+peri-urban flood plain by a wide margin. It does not clear an urban one.
+Chennai and Mumbai --- the flooding this system is aimed at --- contain a great
+deal of building well above 40\,m, and the sweep altitude is below all of it.
+
+\emph{And the aircraft cannot climb over it.} This is the constraint that
+governs, and it is not a sensor problem. The survey altitude is pinned by
+detection: at 40\,m a person in water is 1498\,px\textsuperscript{2} and clears
+the COCO small-object floor, and by 50\,m the same target is
+959\,px\textsuperscript{2} and does not. There is no
+altitude that both clears a 60\,m building and resolves a 0.4\,m target with
+this camera. Vertical avoidance is therefore unavailable, and every obstacle
+taller than the sweep must be avoided \emph{laterally}.
+
+\emph{Lateral avoidance is by declared exclusion, not by sensing.} The operator
+draws the search region at the site, and ArduPilot's polygon exclusion fences
+let a pylon, a tower or a tall block be declared as a volume the aircraft
+refuses to enter. This is enforced by the autopilot rather than by the mission
+planner, so it holds even if the plan is wrong. It depends entirely on a human
+having seen the obstacle and drawn it.
+
+\emph{Height is measured, not inferred.} A downward lidar gives true height
+above whatever is beneath the aircraft. This matters most at the release: the
+kit is specified to leave at 6\,m AGL, and a barometer reports height above the
+launch point, which over floodwater of unknown and changing level is a
+different quantity. An error here is not a nuisance --- Section~\ref{sec:delivery}
+shows impact velocity and dispersion both scale with release height, so a kit
+released from a believed 6\,m that is really 15\,m is a different ballistic
+problem from the one that was analysed. The sensor reaches about 7\,m outdoors,
+so it acquires during the descent and gates the release; it does not see
+forward, and is not an obstacle sensor.
+
+\emph{The aircraft has no forward obstacle detection. We state this as a
+limitation of the design.} Nothing on board can see a structure ahead of
+it, whatever the structure is made of --- an optical sensor would additionally
+struggle with glass, but that is moot when there is no sensor at all. An
+undeclared tall building is therefore invisible to the system, and the aircraft
+would fly into it.
+
+\emph{The scope this forces is explicit.} The system as funded is for open
+water and low-rise flooding, where 40\,m is above everything and the exclusion
+fence covers the isolated pylon. It is \emph{not} for urban flooding among
+high-rise, and the reason is structural rather than a missing part: even with a
+forward sensor the aircraft could only stop or turn, not climb, so operating
+there needs a route planner that solves around obstacles at a fixed altitude,
+which is a different programme. A 360-degree lidar is of order INR 10,000 and
+190\,g against a 4.9\,kg growth allowance and would be worth carrying as a
+last-resort stop --- but unfunded, untested, and first flown at a competition
+it is a worse risk than the one it removes. P6 is where it should be flown if
+it is bought at all.
+
+\subsection{Assumed or not yet implemented}
 \label{sec:notimpl}
 
 Boresight calibration residual, achieved RTK accuracy in the field, and battery
@@ -1432,7 +1480,7 @@ This document describes an integrated system; the funding request is held
 separately and is not part of it. What belongs here is not what the build costs but \emph{what it does and does
 not contain}, because several arguments earlier in this document depend on it.
 
-\subsection{What this build deliberately does not include}
+\subsection{Deferred scope}
 
 Each of the following was deferred rather than judged unnecessary. Stating them
 is not padding: a reviewer should be able to see what the lowest-cost
@@ -1484,7 +1532,7 @@ mitigation is procurement lead time rather than inventory.
 and the Drone Rules before any flight takes place.} This is the one deferral
 that is not purely a performance trade.
 
-\subsection{One caveat on how ground truth will be measured}
+\subsection{A caveat on ground-truth measurement}
 
 The ground-truth apparatus is fabricated rather than bought. Survivor targets are
 clothed forms of the correct size and outline; what a detector responds to is
@@ -1524,7 +1572,7 @@ all three links in delicensed bands with no infrastructure between them and the
 ground station, which removes remote attack surface entirely rather than
 defending it.
 
-\subsection{What the links require}
+\subsection{Link security requirements}
 
 The mission data link carries survivor coordinates, so it is encrypted:
 WPA3-SAE on the data path, and a per-programme ExpressLRS binding phrase that is
@@ -1540,7 +1588,7 @@ launch gate gives the operator an explicit fix-quality check before the mission
 starts. Integrity monitoring on the receiver is an open procurement question
 recorded in Section~\ref{sec:deferred}.
 
-\subsection{Survivor data is personal data}
+\subsection{Survivor data as personal data}
 
 This system produces precise geographic locations of identifiable individuals in
 distress, together with aerial imagery of them. Under the Digital Personal Data
@@ -1680,7 +1728,7 @@ it can be evaluated against public imagery before any hardware is bought. The
 two are complementary rather than alternative: thermal for survivors on dry
 ground at night, near-infrared for survivors in water.
 
-\subsection{Where the compute cliff falls}
+\subsection{The compute cliff}
 
 Section~\ref{sec:perception} establishes that this task cannot be met by
 shrinking the input, because person-pixels and coverage rate trade against one
@@ -1735,22 +1783,22 @@ regardless of what follows it.
 \section{Conclusion}
 %=============================================================================
 
-We propose an autonomous three-aircraft system that addresses the localisation
-bottleneck in post-flood search and rescue, engineered under a verification
-discipline that distinguishes what has been demonstrated from what has merely
-been designed. Where a part was deferred it was deferred on cost, not on
-capability, and Section~\ref{sec:deferred} states what each omission costs the
+We have described an autonomous three-aircraft system aimed at the
+localisation bottleneck in post-flood search and rescue, developed under a
+verification regime that separates demonstrated behaviour from designed
+behaviour. Deferrals in the current build were made on cost rather than on
+capability, and Section~\ref{sec:deferred} records what each one costs the
 system.
 
-The system's design point, error budgets and cost basis are established and
-reproducible. Its coordination and failsafe behaviour have been demonstrated in
+The design point, the error budgets and the cost basis are established and
+reproducible. Coordination and failsafe behaviour have been demonstrated in
 hardware-in-the-loop simulation across three simultaneous autopilots. What
 remains is to build the aircraft, fly them, and replace the modelled and
-assumed quantities in Section~\ref{sec:evidence} with measured ones.
+assumed quantities of Section~\ref{sec:evidence} with measured ones.
 
-The resources this requires are documented separately. What this document
-undertakes is narrower: that every number in it is
-checkable, and that those not yet measured say so.
+The claim we make for the present work is a narrow one: every figure reported
+here is checkable against the model that produced it, and every figure not yet
+measured is identified as such.
 
 %=============================================================================
 \section*{Acknowledgment}

@@ -1,0 +1,37 @@
+SEPARATION, RECOMPUTED FROM THE COMMITTED TELEMETRY
+======================================================================
+ground threshold   1.0 m   pad radius 60 m   minimum 5.0 m
+
+mission-telemetry.json
+  SIM_SPEEDUP 3, RTL_LOIT_TIME 0/20/40 s -- SUPERSEDED, see below
+  speedup 3   346 samples/aircraft   search deck 40 m
+  launch phase ends at sample 40 (last aircraft reaches the deck)
+  clock: max forward gap 453.93 s, 0 backward step(s), worst 0.00 s
+
+    launch            64.80 m   at t =    10.5 s   drones 1-2
+    en route          29.19 m   at t =   132.7 s   drones 1-2
+    recovery           5.51 m   at t =   145.7 s   drones 2-3
+    whole flight       5.51 m   at t =   145.7 s   drones 2-3
+
+mission-telemetry-speedup1.json
+  SIM_SPEEDUP 1, RTL_LOIT_TIME 0/60/120 s -- current configuration
+  speedup 1   1201 samples/aircraft   search deck 40 m
+  launch phase ends at sample 139 (last aircraft reaches the deck)
+  clock: max forward gap 0.55 s, 17 backward step(s), worst -2.14 s
+
+    launch            26.96 m   at t =    31.2 s   drones 2-3
+    en route          35.16 m   at t =   376.6 s   drones 1-2
+    recovery           5.34 m   at t =   455.5 s   drones 2-3
+    whole flight       5.34 m   at t =   455.5 s   drones 2-3
+
+======================================================================
+All current recordings hold the minimum between airborne aircraft.
+
+The superseded recording is kept and reported, not deleted: it is
+the evidence that the 0/20/40 s stagger was not sufficient, and the
+figures in simulations/recordings/ are still rendered from it.
+
+NEITHER recording has a clean clock. The speedup-3 one jumps 453.93 s
+forward once; the speedup-1 one steps backwards 17 times. Separation
+is computed by SAMPLE INDEX and is unaffected, but every t= above is
+a label from that clock and should not be quoted as a mission time.

@@ -1,0 +1,216 @@
+(footprint "IND-SMD_L1.6-W0.8_FTC160865SR47MBCA"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "IND-SMD_L1.6-W0.8_FTC160865SR47MBCA footprint")
+	(tags "IND-SMD_L1.6-W0.8_FTC160865SR47MBCA footprint C48391583")
+	(property "Reference" "REF**"
+		(at -0.006731 -2.669723 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "ab444e63-1f2f-4afc-be99-f7afa9b637ad")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "XRIM160808SR47MBCD"
+		(at -0.006731 2.651486 0)
+		(layer "F.Fab")
+		(uuid "a00f3e92-57cb-427d-9f24-b11da6ce177e")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "https://atta.szlcsc.com/upload/public/pdf/source/20230602/8FFEDA9C0247A92A0D4B67554BFE4091.pdf"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "a39506e5-6c59-41d1-a626-7da6889bbc7c")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "37fe0409-abe5-493b-a12d-5e29ea448241")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "LCSC" "C48391583"
+		(at 0 0 180)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "7963f390-da15-49d2-b4ac-9d93ffff4f6b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -1.424105 -0.517297)
+		(end -1.271679 -0.669723)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "c119842e-76d2-4b3b-9412-03411668e0f3")
+	)
+	(fp_line
+		(start -1.424105 0.499136)
+		(end -1.424105 -0.517297)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "4d1039a2-d8fa-4c1d-b097-f5641be75ca4")
+	)
+	(fp_line
+		(start -1.271679 -0.669723)
+		(end -0.509677 -0.669723)
+		(stroke
+			(width 0.151994)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "0f91ca3e-eeba-45c3-9c9d-ae29209ae8b5")
+	)
+	(fp_line
+		(start -1.271679 0.651486)
+		(end -1.424105 0.499136)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "28f619c6-41ff-43f5-ba6a-89847bd9b980")
+	)
+	(fp_line
+		(start -1.271679 0.651486)
+		(end -0.509677 0.651486)
+		(stroke
+			(width 0.151994)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "92e5d2e4-327d-44a0-8fbb-504fd53dab89")
+	)
+	(fp_line
+		(start 1.258344 -0.669723)
+		(end 0.496342 -0.669723)
+		(stroke
+			(width 0.151994)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "44dff5a4-1800-4819-8cc2-9810b6a3c3bb")
+	)
+	(fp_line
+		(start 1.258344 -0.669723)
+		(end 1.410643 -0.517297)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "c90c7c32-6393-4a85-92dc-d200128a984a")
+	)
+	(fp_line
+		(start 1.258344 0.651486)
+		(end 0.496342 0.651486)
+		(stroke
+			(width 0.151994)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "b0ccd666-0764-4f7b-a249-4173df52ec38")
+	)
+	(fp_line
+		(start 1.410643 -0.517297)
+		(end 1.410643 0.499136)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "3c19983c-3521-483d-93a2-1e1c476d6708")
+	)
+	(fp_line
+		(start 1.410643 0.499136)
+		(end 1.258344 0.651486)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "094b69f5-c623-4104-92b7-1c0a02af2602")
+	)
+	(fp_circle
+		(center 0.800102 -0.400051)
+		(end 0.830074 -0.400051)
+		(stroke
+			(width 0.059995)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "07bde257-cfc7-4a88-ad5d-68dbc1e8427f")
+	)
+	(fp_text user "REF**"
+		(at -0.006731 4.651486 0)
+		(layer "F.Fab")
+		(uuid "931a6477-2e24-4f5b-83f4-18a80f36ee7b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd rect
+		(at 0.700025 0)
+		(size 0.8 0.864008)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "22152cf6-7bb3-48d4-8ab3-c200443fb3f8")
+	)
+	(pad "2" smd rect
+		(at -0.700025 0)
+		(size 0.8 0.864008)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "5ad143e9-d93e-4048-b71e-0f9b72726fc5")
+	)
+	(embedded_fonts no)
+	(model "${KICAD10_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_Changjiang_FTC160808S.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

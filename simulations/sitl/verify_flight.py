@@ -166,6 +166,24 @@ def main(path):
           + (f"; {len(big)} gap(s) exceed it: {[round(g,1) for g in big]}"
              if big else ""))
 
+    # A CLOCK CAN ALSO RUN BACKWARDS, AND THIS DID NOT LOOK.
+    #
+    # The test above is `g > MAX_CLOCK_GAP_S`, which only ever sees the clock
+    # jumping forward. A negative gap is not greater than 5, so it passes in
+    # silence -- and the speedup-1 recording, reported as having a clean clock
+    # on the strength of "max gap 0.55 s", steps BACKWARDS 17 times, worst
+    # -2.14 s. One clock defect was fixed and a different one was not looked
+    # for, which is the same shape as every other defect in this repository:
+    # the check was real, and it was not checking the thing that broke.
+    #
+    # This does not invalidate the separation results, which pair samples by
+    # INDEX. It does mean the timestamps are labels, not mission times.
+    back = [g for g in gaps if g < 0]
+    check("the clock never runs backwards", not back,
+          f"{len(back)} backward step(s)"
+          + (f", worst {min(back):.2f} s" if back else ""),
+          severity="WARN")
+
     got = all(s.get("got", True) for i in ids for s in t[i])
     check("every sample carries a real position fix", got,
           "no placeholder samples" if got else "some samples lack a fix")

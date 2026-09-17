@@ -37,13 +37,21 @@ pass a single `home` to all three missions, so all three RTLs terminated at the
 identical lat/lon: the planner contradicted the compliance argument, and three
 aircraft descending on one point is a collision, not a landing.
 
-`pad_slots()` places them in that row. Separation alone is not enough at 1.22 m
-spacing, so the descents are also SEQUENCED, by a staggered RTL_LOIT_TIME in
-firmware/ardupilot-params/params.py. That is a parameter and not code on
-purpose: the battery failsafe RTL is a mode change inside the flight
-controller, so a mission-item sequence would not cover the case that matters
-most -- three aircraft on one pack design hitting low battery within seconds of
-each other and all turning for home at once.
+`pad_slots()` places them at the CORNERS, not in that row -- a row is the
+worst packing on a square, giving 1.22 m where the corners give 2.61 m for the
+same pad at no cost. See the function's own docstring for the geometry.
+
+Separation alone is not enough even at 2.61 m, because it only governs where
+they come to REST. The descents are therefore also SEQUENCED, by a staggered
+RTL_LOIT_TIME in firmware/ardupilot-params/params.py. That is a parameter and
+not code on purpose: the battery failsafe RTL is a mode change inside the
+flight controller, so a mission-item sequence would not cover the case that
+matters most -- three aircraft on one pack design hitting low battery within
+seconds of each other and all turning for home at once.
+
+The stagger is 0/60/120 s because the descent was MEASURED at 53 s. It was
+0/20/40 s until a SIM_SPEEDUP 1 re-fly caught two aircraft closing to 3.10 m.
+See TRAPS.md section 4.
 """
 from __future__ import annotations
 

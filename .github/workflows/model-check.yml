@@ -70,6 +70,21 @@ jobs:
           # not drift, and because it seeds from crc32 rather than hash() so it
           # reproduces byte for byte regardless of PYTHONHASHSEED.
           python perception/geotagging/accuracy.py              > /tmp/geotag-accuracy-output.txt
+          # Recomputes the separation results from the committed SITL telemetry
+          # rather than trusting the figures' captions. Three separation numbers
+          # lived in HANDOFF.md as prose and two did not reproduce; the phase
+          # definitions now live in the script, so a disagreement between a
+          # document and a recording is a CI failure rather than an argument.
+          # It exits non-zero if any CURRENT recording puts two airborne
+          # aircraft closer than the 5 m minimum.
+          python tools/separation/recompute_separation.py       > /tmp/separation-output.txt
+          # The .parm files are GENERATED, and were the last generated artifact
+          # nothing compared. RTL_LOIT_TIME was corrected to 0/60/120 s by hand
+          # in the .parm files after a SITL re-fly measured a 3.10 m approach at
+          # 0/20/40 s -- but params.py, the generator, was never updated, so the
+          # next regeneration silently put the breach back and every test stayed
+          # green. This is the check that would have caught it.
+          python firmware/ardupilot-params/params.py --drones 3 --out firmware/ardupilot-params
 
       # --strip-trailing-cr because the comparison is about the NUMBERS, not the
       # line terminators. The outputs were committed from Windows with CRLF and
@@ -94,6 +109,21 @@ jobs:
               fail=1
             fi
           done
+          if diff -q --strip-trailing-cr                "simulations/recordings/separation-output.txt"                "/tmp/separation-output.txt" > /dev/null; then
+            echo "ok    separation-output.txt"
+          else
+            echo "DRIFT separation-output.txt -- the committed separation"
+            echo "results do not match what the telemetry recomputes."
+            diff -u --strip-trailing-cr               "simulations/recordings/separation-output.txt"               "/tmp/separation-output.txt" | head -40 || true
+            fail=1
+          fi
+          if ! git diff --quiet -- firmware/ardupilot-params; then
+            echo "DRIFT firmware/ardupilot-params/*.parm -- a .parm file was"
+            echo "hand-edited, or params.py changed without regenerating them."
+            echo "The .parm files are generated; params.py is the source."
+            git diff -- firmware/ardupilot-params | head -40
+            fail=1
+          fi
           if ! git diff --quiet -- hardware/cad/rescueswarm-frame-equations.txt; then
             echo "DRIFT hardware/cad/rescueswarm-frame-equations.txt"
             git diff -- hardware/cad/rescueswarm-frame-equations.txt | head -30

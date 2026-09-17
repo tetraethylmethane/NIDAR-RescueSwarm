@@ -259,7 +259,13 @@ def fig_battery(end, out):
         if down:
             ax.plot(down["t"], 0, marker="v", ms=9, color=COL[i], mec="k",
                     zorder=6)
-    style(ax, "altitude — descents sequenced by RTL_LOIT_TIME 0/20/40 s",
+    # The recording this plots was flown at RTL_LOIT_TIME 0/20/40 s, which is
+    # NOT the current parameter set: the stagger is now 0/60/120 s, because at
+    # 0/20/40 two aircraft closed to 3.10 m on the descent. The caption says
+    # what was FLOWN, not what is configured, and the figure is superseded
+    # until the mission is re-recorded. See HANDOFF.md.
+    style(ax, "altitude — descents sequenced by RTL_LOIT_TIME 0/20/40 s "
+              "(superseded; now 0/60/120 s)",
           "wall-clock s (SIM_SPEEDUP 20)", "alt (m)")
     fig.tight_layout(rect=[0, 0, 1, 0.88])
     fig.savefig(out, dpi=130)

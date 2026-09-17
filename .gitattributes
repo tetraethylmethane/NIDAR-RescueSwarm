@@ -11,6 +11,7 @@
 # --strip-trailing-cr so the comparison stays about the NUMBERS rather than the
 # line terminators, and so it gives the same answer run from Windows or Linux.
 docs/sizing/*.txt   text eol=lf
+simulations/recordings/separation-output.txt   text eol=lf
 
 # Shell scripts must be LF regardless of platform: CRLF makes the kernel look
 # for an interpreter called "/usr/bin/env bash\r", which fails obscurely.
