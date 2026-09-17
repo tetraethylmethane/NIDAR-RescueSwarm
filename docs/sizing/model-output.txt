@@ -35,8 +35,9 @@ FINAL DESIGN POINT  -  'RS-1' search & delivery quad
     Propellers (4)                                      288 g    4.5%
     Battery pack                                       1449 g   22.8%
     Avionics + wiring harness                           925 g   14.5%
-    Payload magazine + release                          240 g    3.8%
-    Survivor kits (4 x 200 g)                           800 g   12.6%
+    Release/magazine mechanism + servos                 240 g    3.8%
+    4 x survivor kit @200 g                             800 g   12.6%
+    Recovery parachute + mount                          300 g    4.7%
     MTOW                                               6360 g
     Fleet of 3 (weigh-in figure)                      19081 g
     Growth allowance to 24.0 kg fleet target           4919 g  = 26% build overweight tolerated
@@ -216,8 +217,9 @@ CORRECTION 1  ANGULAR MOTION BLUR (previous run had a unit error)
     body rate 45 deg/s, 1/2000 s ->  1.65 px angular smear   <-- exceeds 1 px
 
   Translational smear at 8 m/s, 1/1000 s = 0.44 px. Angular smear dominates only in
-  aggressive turns. Rule: gate detections on |body rate| < 15 deg/s, and use 1/1000 s or
-  faster. Both are easily met on straight transects; suppress inference in the turn arcs.
+  aggressive turns. At 1/1000 s, 1 px of smear occurs at 13.63 deg/s, so the
+  rule is: gate detections on |body rate| < 13 deg/s and use 1/1000 s or faster.
+  Both are easily met on straight transects; suppress inference in the turn arcs.
 
 ================================================================================
 CORRECTION 2  RF LINK BUDGET WITH LEGAL POWER AND REAL ANTENNAS

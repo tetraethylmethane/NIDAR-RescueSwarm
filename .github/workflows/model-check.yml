@@ -152,6 +152,8 @@ jobs:
           import glob, os, re, sys
           bad = 0
           for md in glob.glob('**/*.md', recursive=True):
+              if md.startswith('pcb/'):   # vendored third-party projects, not linted here
+                  continue
               base = os.path.dirname(md)
               for m in re.finditer(r'\[([^\]]*)\]\(([^)]+)\)', open(md, encoding='utf-8').read()):
                   t = m.group(2).split('#')[0].strip()
