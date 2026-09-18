@@ -14,12 +14,11 @@ Two things do change rather than truncate:
 
   1. The ground segment (phase 29 of 29 in the full programme) is scaled from
      three video chains to one, and renumbered 13. One aircraft needs one
-     receiver, one antenna and one capture adapter; the coordination base and
-     the tripod are single-unit either way.
+     digital receiver and its two antennas; the coordination base and the
+     tripod are single-unit either way.
 
-  2. The GNSS receiver line leaves entirely. It exists to fly aircraft 2 and 3
-     on SBAS while aircraft 1 carries RTK. With only aircraft 1 built, its
-     allocated quantity is zero and the row drops out on its own.
+  2. Nothing else changes: every aircraft now carries the same F9P rover, and
+     phase 5 already buys the RTK base alongside aircraft 1's.
 
 Emits: docs/proposal/generated-single-schedule.tex
        docs/proposal/generated-single-tables.tex
@@ -51,7 +50,7 @@ GROUND_PHASE = 13          # the full programme's phase 29, renumbered
 
 # Ground-segment quantities for a one-aircraft system. Three video chains
 # become one; the base radio and the tripod were single units already.
-GROUND_QTY = {"Video receivers": 1, "Receive antennas": 1, "Video capture": 1,
+GROUND_QTY = {"Video receivers": 1, "Receive antennas": 2,
               "Coordination base": 1, "Base station mount": 1}
 
 PHASES = {"instruments": "1--2", "avionics": "3--6", "airframe": "7--10",

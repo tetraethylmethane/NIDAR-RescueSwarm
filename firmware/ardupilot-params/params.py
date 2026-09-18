@@ -26,6 +26,16 @@ from __future__ import annotations
 import argparse
 
 # 6S 21700 Li-ion, 13.5 Ah. Voltage thresholds are per-cell x 6.
+#
+# STALE AGAINST THE BOM SINCE 2026-09-19, DELIBERATELY. The BOM now buys a 6S
+# LiPo whose capacity is not yet frozen. These values, the pack model in
+# tools/sizing-model/battery_pack.py and the tests that check both still
+# describe the 292 Wh Li-ion pack, because they were validated together and
+# must move together. Do NOT fly the LiPo on these: BATT_CAPACITY 13500 on a
+# 12000 mAh pack turns the 20 % reserve into ~10 %, and the Li-ion voltage
+# floors are wrong for LiPo. Also note that test_params' landing-queue check
+# needs >= 57.3 Wh of reserve, i.e. >= ~287 Wh nameplate at 20 %, i.e. >= ~13 Ah
+# at 6S. The 12 Ah candidate (266 Wh) fails it.
 CELLS = 6
 PACK_MAH = 13500
 LOW_V_PER_CELL = 3.40          # ~20 % SoC resting for 21700 NMC

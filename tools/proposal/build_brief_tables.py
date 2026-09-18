@@ -51,8 +51,9 @@ RATIONALE = {
    "joint can still be undone.",
 
  "Flight controller":
-   "The autopilot: flies the aircraft and runs its safety behaviours. "
-   "Previously a quotation, now ordinary retail.",
+   "The autopilot: flies the aircraft and runs its safety behaviours. The same "
+   "flight software as the larger board it replaces, at under half the price, "
+   "and it stacks directly on the speed controller.",
  "Autopilot log card":
    "The autopilot ships without one and records nothing without it. This is a "
    "different slot on a different board from the computer's card above.",
@@ -64,7 +65,8 @@ RATIONALE = {
    "its sensors.",
  "Companion computer":
    "The computer the autonomy runs on. The accelerator and the camera both "
-   "plug into it, so neither works without it.",
+   "plug into it, so neither works without it. The 4 GB model: detection runs "
+   "on the accelerator, so more memory would buy nothing.",
  "AI accelerator":
    "Runs the person-detection model fast enough to search at flying speed.",
  "Compute cooling":
@@ -73,15 +75,19 @@ RATIONALE = {
  "Storage":
    "Records every frame and detection for a whole mission. Ordinary cards wear "
    "out at that rate.",
- "GNSS RTK receiver":
-   "Centimetre positioning for aircraft 1 and the ground station it corrects "
-   "against. Only one aircraft carries it: all three are the same machine, so "
-   "measuring one against surveyed ground is what tells us how well the design "
-   "works. Quoted by the supplier; this line was an estimate before.",
- "GNSS receiver":
-   "Positioning for aircraft 2 and 3, accurate to about two metres against a "
-   "five metre requirement. Carries the compass the flight controller needs, "
-   "and plugs straight into it.",
+ "GNSS RTK rover":
+   "Centimetre positioning on every aircraft. Receiver, antenna and compass in "
+   "one 20-gram unit. The compass matters: the new autopilot has none.",
+ "GNSS RTK base":
+   "The fixed ground receiver the three aircraft correct against. It is ours, "
+   "so no internet connection is needed at the site.",
+ "GNSS antenna, base":
+   "The base's antenna. Every aircraft's accuracy is only as good as this one "
+   "fixed point, so it gets the better antenna.",
+ "GNSS feeder, base": "Adapts the base receiver's miniature socket to the antenna cable.",
+ "RTK base radio":
+   "Sends the base's corrections to the aircraft on the same radio type they "
+   "already carry.",
  "Height rangefinder":
    "Measures true height above whatever is below --- water, ground or a "
    "rooftop. The kit is released at 6 m, and the barometer measures height "
@@ -90,19 +96,22 @@ RATIONALE = {
    "The search sensor, chosen so a person in water is large enough in the "
    "picture to be found.",
  "Video transmitter":
-   "Sends the live picture down, one channel per aircraft.",
+   "Sends the live picture down as digital video, one channel per aircraft. "
+   "The computer draws its detections onto the picture first, so the judges "
+   "see what the aircraft sees.",
+ "Video antennas": "Two per aircraft, one for each of the radio's two channels.",
  "Command receiver":
    "Carries the safety pilot's control and the aircraft's reporting on a "
    "single link, which saves a second radio.",
  "Coordination radio":
    "How the three aircraft tell each other what they have found. The most "
    "robust link on the aircraft, which is where survivor positions belong.",
- "Power module":
-   "Reports battery voltage and current to the autopilot, which is what "
-   "triggers a low-battery return.",
  "BEC, primary":
    "Powers the computer. Deliberately oversized: losing it in flight is the "
    "failure this line exists to prevent.",
+ "BEC, video radio":
+   "A separate supply for the video radio, which draws nearly two amps and "
+   "would otherwise load the computer's supply.",
  "BEC, secondary":
    "A separate supply for the servos, so a jammed servo cannot disturb the "
    "autopilot.",
@@ -114,8 +123,9 @@ RATIONALE = {
    "Sixteen for twelve positions. The item most often broken in flight "
    "testing, and the whole of our spares policy.",
  "Speed controllers":
-   "One board drives all four motors. Made in India, and previously a "
-   "quotation.",
+   "One board drives all four motors, with more than twice the current the "
+   "motors are expected to draw. Confirmed on the thrust stand before the "
+   "other two are bought.",
  "Arm tube":
    "The four arms. Carbon, and comfortably strong --- the joints, not the "
    "tubes, are what limit the airframe.",
@@ -137,19 +147,11 @@ RATIONALE = {
  "Release servos":
    "Open the four kit stations. Metal gears, because a plastic one can drop a "
    "kit without anyone knowing.",
- "Cells":
-   "The battery: enough for the mission, a second full search, and four "
-   "minutes in hand.",
- "Cell holders":
-   "Hold the cells in place and keep them apart, so one failing cell does not "
-   "take its neighbours with it.",
- "Pack interconnect":
-   "Joins the cells. Pure nickel, because the cheaper plated strip runs hot at "
-   "the current this battery delivers.",
- "Group interconnect": "Joins the battery's groups, where the current is highest.",
- "Balance leads":
-   "How the charger checks each cell. With no battery board fitted, this is "
-   "our only per-cell check --- and it happens on every charge.",
+ "Battery pack":
+   "266 Wh against the 244 Wh the sizing model requires of any chemistry, and "
+   "25\\,C (300\\,A) against a 115\\,A peak. Bought rather than built, so no "
+   "spot welder and no cell-level assembly. Capacity is confirmed against the "
+   "final weight before ordering.",
  "Pack fusing":
    "Protects against a short circuit without cutting power at full throttle.",
  "Pack retention":
@@ -174,8 +176,6 @@ RATIONALE = {
  "Battery charger":
    "Two batteries recharged between flights is what sets how many tests fit "
    "into a day.",
- "Pack health monitor":
-   "A bench instrument for tracking how the batteries age over the programme.",
  "Cable management": "Ties long enough to dress wiring around a one-metre airframe.",
  "Heat-shrink kit": "Insulates the signal wiring during assembly.",
  "Mounting tape":
@@ -189,12 +189,11 @@ RATIONALE = {
    "itemising it would be false precision.",
 
  "Video receivers":
-   "Three, so the ground station can show all three aircraft at once, which "
-   "the rules require.",
+   "Three, one per aircraft's channel, so the ground station can show all "
+   "three at once, which the rules require. Digital, so no capture hardware.",
  "Receive antennas":
-   "The ground antennas. Most of the video range comes from these rather than "
-   "from the transmitters.",
- "Video capture": "Brings the three pictures into the ground station computer.",
+   "The ground antennas, two per receiver. A directional antenna is still "
+   "being chosen and would replace these.",
  "Coordination base":
    "The ground end of the link the aircraft use to report what they find.",
  "Base station mount":
@@ -205,6 +204,8 @@ RATIONALE = {
 SUPPLIER = [("robu.in", "Robu"), ("robokits", "Robokits"), ("amazon.in", "Amazon India"),
             ("flipkart", "Flipkart"), ("indiamart", "IndiaMART"), ("zbotic", "zBotic"),
             ("robocraze", "Robocraze"), ("hubtronics", "Hubtronics"),
+            ("indianrobostore", "Indian Robo Store"), ("yantronix", "Yantronix"),
+            ("kitsguru", "KitsGuru"), ("rcmumbai", "RC Mumbai"),
             ("teravolt", "Teravolt"), ("iscaleindia", "iScale"),
             ("onlyscrews", "OnlyScrews"), ("desertcart", "Desertcart"),
             ("njour", "Njour")]
@@ -265,17 +266,17 @@ SCHEDULE = [
  (2,  "Measure one motor, propeller and speed controller on the stand", "Instruments commissioned"),
  (3,  "Aircraft 1 --- autopilot and control link", r"\textbf{Thrust verified}"),
  (4,  "Aircraft 1 --- onboard computer and AI accelerator", "Autopilot bench-tested"),
- (5,  "Aircraft 1 --- centimetre positioning: RTK rover and ground base", "Compute stack operating"),
+ (5,  "Aircraft 1 --- centimetre positioning: RTK rover, compass and ground base", "Compute stack operating"),
  (6,  "Aircraft 1 --- camera and the three radios", "Position fix acquired"),
  (7,  "Aircraft 1 --- airframe fabrication", "Avionics integrated"),
  (8,  "Aircraft 1 --- battery pack and power distribution", "Airframe fabricated"),
  (9,  "Aircraft 1 --- release servos and wiring", "Pack bench-discharged"),
  (10, "Aircraft 1 --- propulsion completed", "Drive train installed"),
- (11, "Charging, pack instrumentation and manual override", "Aircraft assembled and weighed"),
+ (11, "Charging and manual override", "Aircraft assembled and weighed"),
  (12, "Field consumables and assembly materials", "Charging verified"),
  (13, "Aircraft 2 --- autopilot and control link", r"\textbf{Aircraft 1 flew a full mission}"),
  (14, "Aircraft 2 --- onboard computer and AI accelerator", "Autopilot bench-tested"),
- (15, "Aircraft 2 --- satellite positioning and compass", "Compute stack operating"),
+ (15, "Aircraft 2 --- RTK rover and compass", "Compute stack operating"),
  (16, "Aircraft 2 --- camera and the three radios", "Position fix acquired"),
  (17, "Aircraft 2 --- airframe fabrication", "Avionics integrated"),
  (18, "Aircraft 2 --- battery pack and power distribution", "Airframe fabricated"),
@@ -283,7 +284,7 @@ SCHEDULE = [
  (20, "Aircraft 2 --- propulsion completed", "Drive train installed"),
  (21, "Aircraft 3 --- autopilot and control link", r"\textbf{Two aircraft, separation verified}"),
  (22, "Aircraft 3 --- onboard computer and AI accelerator", "Autopilot bench-tested"),
- (23, "Aircraft 3 --- satellite positioning and compass", "Compute stack operating"),
+ (23, "Aircraft 3 --- RTK rover and compass", "Compute stack operating"),
  (24, "Aircraft 3 --- camera and the three radios", "Position fix acquired"),
  (25, "Aircraft 3 --- airframe fabrication", "Avionics integrated"),
  (26, "Aircraft 3 --- battery pack and power distribution", "Airframe fabricated"),

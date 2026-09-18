@@ -10,13 +10,9 @@ because it is unnecessary to the finished system.
 
 DERIVED, NOT RE-ENTERED. The quantities come from build_single_brief.SINGLE,
 which comes from hardware/bom/sourced_bom.py by its own allocation rule. This
-file only removes rows and swaps the battery, so a price change in the BOM
-moves all three briefs together.
-
-THE ONE PART THAT IS NOT FROM THE SOURCED SHEET is the bought battery pack.
-It is defined here, with its caveats attached, rather than edited into
-sourced_bom.py -- that file is the transcription of the three-aircraft basket
-and carries an assertion tying it to the source sheet's own total.
+file only removes rows, so a price change in the BOM moves all three briefs
+together. (It used to swap the DIY Li-ion pack for a bought LiPo as well; since
+2026-09-19 the LiPo is the BOM's own pack, so there is nothing left to swap.)
 
 Emits: docs/proposal/generated-mvp-schedule.tex
        docs/proposal/generated-mvp-tables.tex
@@ -49,67 +45,31 @@ RS = chr(92) + "rs"        # see build_single_brief: "\rs" in a plain string is 
 # ---------------------------------------------------------------------------
 # WHAT THE MVP DOES NOT BUY, and why it can still fly the mission without it.
 CUT = {
- "GNSS RTK receiver":
-   "research instrument. The delivery requirement is 5 m and the M9N gives "
-   "about 2 m; RTK exists to MEASURE geolocation against surveyed ground, "
-   "which is a publication objective, not a flight one",
- "Video transmitter":   "FPV downlink. The mission is autonomous -- nothing "
-                        "has to watch it live",
+ "GNSS RTK base":       "the RTK base. The aircraft's own F9P rover, flown "
+                        "uncorrected, gives about 2 m against a 5 m delivery "
+                        "requirement; RTK exists to MEASURE geolocation "
+                        "against surveyed ground, a publication objective",
+ "GNSS antenna, base":  "antenna for the same base",
+ "GNSS feeder, base":   "cable for the same base",
+ "RTK base radio":      "carries the base's corrections, and there is no base",
+ "Video transmitter":   "digital downlink. The mission is autonomous -- "
+                        "nothing has to watch it live",
+ "Video antennas":      "antennas for the same downlink",
  "Video receivers":     "ground end of the same downlink",
  "Receive antennas":    "ground end of the same downlink",
- "Video capture":       "ground end of the same downlink",
  "Coordination radio":  "aircraft-to-aircraft link, and there is one aircraft",
  "Coordination base":   "ground end of the same link. Telemetry reaches the "
                         "laptop over ExpressLRS native MAVLink instead",
- "Pack health monitor": "bench instrument for tracking pack ageing; does not fly",
  "Height rangefinder":  "gates the release at 6 m over water of unknown level. "
                         "The barometer suffices over dry ground, which is where "
                         "the MVP flies",
  "Base station mount":  "tripod for the RTK base that is no longer bought",
 }
 
-# The custom 6S3P pack and everything that exists only to build it.
-PACK_OUT = {"Cells", "Cell holders", "Pack interconnect", "Group interconnect",
-            "Balance leads"}
+ALL_RATIONALE = RATIONALE
 
 # ---------------------------------------------------------------------------
-# The one part not transcribed from the sourced sheet.
-#
-# The design requires, in the sizing model's own chemistry-agnostic words,
-# "minimum nameplate, ANY chemistry: 244 Wh (6S, >=115 A continuous)". This
-# pack is 266 Wh and 25 C (300 A), so it clears both -- with far more current
-# margin than the 6S3P Li-ion it replaces, which ran 8.2 C at the peak.
-#
-# TWO THINGS TO CONFIRM BEFORE ORDERING, recorded here so they travel with the
-# line rather than living in a chat log:
-#   1. The Robokits listing title conflates 10000 mAh and 12000 mAh, and
-#      9,088 and 8,320 both appear on their pages. Confirm in the cart.
-#   2. The 1424 g mass is from an equivalent-class HRB pack, not GenX's own
-#      sheet. It feeds MTOW, so confirm it on arrival.
-LIPO = ("airframe", "Battery pack",
-        "GenX 22.2V 6S 12000mAh 25C/50C LiPo, XT90", 9088, 1, 1,
-        "https://robokits.co.in/batteries-chargers/drone-batteries/"
-        "genx-power-premium-lipo-battery/genxpower-22.2v-lipo-batteries/"
-        "genx-22.2v-6s-10000mah-25c-50c-premium-lipo-battery-with-xt-90-connector")
-LIPO_PHASE = 8
-
-EXTRA_RATIONALE = {
- "Battery pack":
-   "266 Wh against the 244 Wh the sizing model requires of any chemistry, and "
-   "25\\,C (300\\,A) against a 115\\,A peak. Bought rather than built: the "
-   "custom 18-cell pack it replaces needs a spot welder, and this is lighter, "
-   "cheaper and has more current margin.",
-}
-ALL_RATIONALE = dict(RATIONALE, **EXTRA_RATIONALE)
-
-# ---------------------------------------------------------------------------
-MVP = [(r, q) for r, q in One.SINGLE if r[1] not in CUT and r[1] not in PACK_OUT]
-MVP.append((LIPO, 1))
-
-# The SBAS receiver the single-aircraft build did not carry, because there it
-# flew the RTK rover. With RTK cut, the aircraft still has to know where it is.
-M9N = [r for r in S.BOM if r[1] == "GNSS receiver"][0]
-MVP.append((M9N, 1))
+MVP = [(r, q) for r, q in One.SINGLE if r[1] not in CUT]
 
 
 def total():
@@ -145,10 +105,6 @@ def alloc_of(r, q):
     of each is bought in phase 2 and measured on the stand before the rest are
     committed, which is the whole point of the schedule."""
     item = r[1]
-    if item == LIPO[1]:
-        return {LIPO_PHASE: q}
-    if item == M9N[1]:
-        return {5: q}                 # replaces the RTK rover in that step
     a = {p: n for p, n in S._alloc(r).items() if p in One.KEPT and n}
     assert sum(a.values()) == q, f"{item}: {a} != {q}"
     return a

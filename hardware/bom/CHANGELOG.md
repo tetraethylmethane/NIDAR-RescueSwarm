@@ -7,6 +7,44 @@ programmatic edit, run the recalculation check before trusting a number.
 
 ---
 
+## 2026-09-19 — architecture revision: parts ₹5.81 L → ₹4.80 L
+
+Applied the team's BOM improvement list to `sourced_bom.py`, which is the
+authoritative BOM. The xlsx/CSV system is not touched; it was already
+superseded (HANDOFF §4.6). Every generated brief, schedule and letter is
+regenerated, and the transcription guard carries the revision as signed
+per-line deltas (`REVISED_2026_09_19`), so it still catches a mistyped row.
+
+| | ₹ |
+|---|--:|
+| Parts | 5,81,034 → **4,79,628** (57 lines) |
+| Released | 6,85,532 → **5,54,483** |
+
+| Change | Why |
+|---|---|
+| Pixhawk 6C Mini → **Kakute H7 V1.5** | Same ArduPilot, less than half the price, stacks on the 4-in-1. It has no compass and uses all 8 outputs (4 motors + 4 servos); the E22 goes on the Pi to free a UART |
+| Pi 5 8 GB → **4 GB** | Inference runs on the Hailo |
+| Teravolt RTK + M9N → **3× GenX F9P Air** rovers | RTK on every aircraft; the helix antenna and compass are built in, ~20 g |
+| Teravolt base → **SmartElex F9P + LS-125-A survey antenna + E22** | Local base, no NTRIP. The E22 is primarily for RTCM, trimmed to MSM4 at 1 Hz |
+| TS832 / RC832S / patches / capture → **BL-M8812EU2 + wfb-ng** | Digital video on stock Pi OS carries the CV overlay; one ground receiver per aircraft channel |
+| PM07 ×3 and PM08-CAN → **removed** | The ESC's current sensor reaches the Kakute over the stack cable |
+| 8 A UBEC **kept** for Pi + HAT; **Hobbywing 3 A** added for the video radio | The 8812EU draws up to 1.8 A by itself |
+| Vishnu 50 A → **XRotor G2 65 A** (candidate) | Decided on the phase-2 stand: desync, current and temperature on 18 in + 340 KV |
+| DIY 6S3P P45B pack → **bought 6S LiPo ×3** | Placeholder is the 12 Ah GenX (266 Wh); capacity is not frozen |
+
+**Open before ordering.** (1) LiPo capacity. The landing-queue reserve test
+in `autonomy/tests/test_params.py` needs ≥ 57.3 Wh at 20 %, which means ≥ ~287 Wh,
+or ≥ ~13 Ah at 6S. The 12 Ah placeholder fails it, and the 22 Ah pack adds
+very roughly 1.2–1.4 kg. (2) `params.py` and the pack model still describe the
+Li-ion pack. They must change together with the LiPo decision; see the note
+in `params.py`. (3) Confirm the GenX F9P Air's bands (L1/L2) and the
+10 vs 12 Ah listing in the cart. (4) Choose the ground directional antenna and
+a powered USB hub for the three receivers. (5) The technical proposal's prose
+still describes Teravolt RTK and analog video; it is not regenerated from the
+BOM and needs a manual pass.
+
+---
+
 ## 2026-08-18 — per-line tax audit: the ask falls to ₹8.24 L
 
 The budget added 22 % duty and 18 % GST to the whole subtotal. That was right
