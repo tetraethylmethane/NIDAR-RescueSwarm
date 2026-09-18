@@ -336,7 +336,7 @@ Geofence radius          & 600\,m \\
 \end{table}
 
 The thrust-to-weight ratio of 2.0 and the hover endurance of 15.3 minutes
-against a 7.7-minute design mission are reserve policies rather than performance
+against a 7.6-minute design mission are reserve policies rather than performance
 targets, because the failure mode that ends a sortie is an
 aircraft that does not return. The energy reserve is stated precisely
 in Section~\ref{sec:sizing}; it, and not the design mission, is what sizes the
@@ -351,7 +351,13 @@ choice.
 The itemisation closes to maximum take-off mass exactly, and the model asserts
 that it does. The largest discretionary line is the recovery parachute and its
 mount at 300\,g, 4.7\,\% of the aircraft and the only mass carried against loss
-of the airframe rather than against the mission. The survivor kits are 800\,g
+of the airframe rather than against the mission. \textbf{That allowance is
+retained in the sizing although the parachute itself is deferred from this
+build} (Section~\ref{sec:deferred}). Retaining it is deliberate and
+conservative: the aircraft is sized to fly with the canopy fitted, so adding it
+later consumes growth allowance rather than invalidating the design point. The
+as-built aircraft is correspondingly 300\,g lighter than the 6.36\,kg quoted
+here, and every margin in this section improves by that amount. The survivor kits are 800\,g
 --- 12.6\,\% of MTOW and fixed by the mission at four kits of exactly 200\,g ---
 so payload is an input to the sizing loop, not an output of it. This is why propulsion and energy resist cost
 reduction in a way that avionics does not: they are
@@ -1645,8 +1651,8 @@ Moving-baseline heading unavailable on the selected receiver
 Flight-test window compressed by procurement delay
 & High & \textbf{Raised by deferral of the training airframe and of spares.} Lead time is now the only mitigation, so long-lead items are ordered in tranche~1 \\
 \addlinespace
-Recovery parachute sizing and supply
-& Medium & No domestic supplier identified; import lead time and correct mass rating are open procurement actions \\
+Recovery parachute deferred
+& Medium & The 300\,g allowance is carried in the sizing but the unit is not bought, so a crash is unmitigated. No domestic supplier is identified; correct mass rating and lead time remain open if the deferral is reversed \\
 \addlinespace
 Setup time exceeds allowance
 & Medium & Currently modelled, not measured; timed drills are the highest-priority early test \\

@@ -23,6 +23,14 @@ corrected elsewhere:
      is what confirms the range and not the arithmetic is at fault.
   2. Its cost-per-drone column multiplies the 4-in-1 speed controller by four.
      One 4-in-1 ESC drives all four motors, so the correct figure is one.
+  3. It does the same to the arm clamps: cost/drone 12,048.44 is four packs,
+     but the programme quantity is 3, i.e. one pack per aircraft. The quantity
+     column is the consistent one and is what ac_qty follows.
+  4. Its own Qty column sums to 311, not the 276 it states, and its
+     weight-per-drone (4,516 g) and cost-per-drone (182,547.44) footers do not
+     reproduce from its own columns (4,746 g and 178,458.44) -- the two ESC and
+     arm-clamp errors above account for most of that gap. None of these footers
+     is used here; the line rows are.
 
 Run:  python hardware/bom/sourced_bom.py
 """
@@ -338,15 +346,34 @@ GROUPS = [("instruments", "Measurement instruments", "1--2"),
 GST = 0.18
 
 # What the source sheet stated for itself, kept so the discrepancy stays visible.
-SHEET_STATED_TOTAL = 592572.09
+SHEET_STATED_TOTAL = 556450.09
 SHEET_OMITTED = 549 * 3 + 2 * 32 + 949  # landing gear, springs, filament
-# Two Teravolt units dropped (-50,000) and two Holybro M9N added (+14,400):
-ADDED_AFTER_SHEET = (-50000 + 7200 * 2   # two RTK units out, two M9N in
-                     + 1549 * 3          # autopilot log cards, not shipped with it
-                     + 2895 * 3          # frame plate stock, the arms bolt to it
-                     + 111               # bench throttle source
-                     + 2827 * 3          # height rangefinders for the release gate
-                     - (7200 - 6939) * 2)  # M9N repriced from the team's listing
+
+# CORRECTED 2026-09-18 against the source sheet itself.
+#
+# SHEET_STATED_TOTAL read 592,572.09 against a sheet that states 556,450.09 --
+# an anchor 36,122 too high. ADDED_AFTER_SHEET carried a compensating
+# -50,000 + 7,200*2 - (7,200-6,939)*2 for "two RTK units out, two M9N in,
+# M9N repriced", and those adjustments had ALREADY been applied to the sheet:
+# it now shows RTK qty 2 and M9N qty 2 at 6,939 directly. So the repository was
+# re-applying a change the sheet already contained and absorbing the error in a
+# wrong anchor. Both sides were wrong by the same 36,122, the assertion below
+# subtracted one from the other, and it passed.
+#
+# Nothing in the parts list moved: every one of the 55 sheet rows agrees with
+# this file line for line, and total() was and remains 581,034.09. What was
+# wrong was only the audit trail -- which is the one thing this block exists to
+# be, so it is worth having right.
+#
+# The reconciliation is now the straightforward one:
+#     556,450.09  the sheet's own stated total
+#     +   2,660    its SUM range starts below the three landing-gear rows
+#     +  21,924    four parts added after the sheet was frozen
+#     = 581,034.09
+ADDED_AFTER_SHEET = (1549 * 3          # autopilot log cards, not shipped with it
+                     + 2895 * 3        # frame plate stock, the arms bolt to it
+                     + 111             # bench throttle source
+                     + 2827 * 3)       # height rangefinders for the release gate
 
 PACK_PROTECTION = """Why there is no BMS in this BOM.
 
