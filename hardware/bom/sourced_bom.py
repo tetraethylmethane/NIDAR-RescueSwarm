@@ -98,12 +98,16 @@ BOM = [
  ("avionics", "GNSS antenna, base", "LS-125-A L1/L2/L5 survey antenna", 8123, 1, 0,
   "https://robokits.co.in/multirotor-spare-parts/gps-sensors/rtk-gps-base-station-survey-grade-cors-high-precision-industrial-l1-l2-l5-antenna"),
  # CHECKED 2026-09-19: the LS-125-A has a TNC connector, so this pigtail does
- # NOT reach it by itself. It takes the board's U.FL to an SMA bulkhead; the run
- # from there to the antenna on its tripod needs a TNC-male to SMA-male RG58
- # cable (3-5 m). That cable is not yet a line: no Indian listing with a
- # readable price was found. See the open items.
+ # NOT reach it by itself. It takes the board's U.FL to an SMA bulkhead, and
+ # the "GNSS cable, base" line below runs from there to the antenna.
  ("avionics", "GNSS feeder, base", "U.FL to SMA female pigtail, 10 cm", 49, 1, 0,
   "https://robocraze.com/products/mini-pci-u-fl-to-sma-female-pigtail-cable-10cm-ipx-to-sma-extension"),
+ # Made up by a local RF cable shop (team's decision, 2026-09-20): no Indian
+ # retail listing is RG58 in this configuration, and the one TNC listing found
+ # was 5 m of RG316 at 4,011. PRICE IS AN ESTIMATE (RG58 ~3 m, a TNC and an
+ # SMA crimp connector, labour), not a quote. Get the quote before ordering.
+ # 50 ohm: TNC male at the antenna, SMA male into the pigtail's bulkhead.
+ ("avionics", "GNSS cable, base", "RG58 50 ohm, 3 m, TNC-M to SMA-M, made locally", 600, 1, 0, ""),
  # The E22 is kept PRIMARILY for RTK: four-constellation RTCM is ~16-32 kbps
  # against a 62.5 kbps air-rate ceiling. Trim the base to MSM4 at 1 Hz, and do
  # not load swarm traffic onto this link as well.
@@ -247,11 +251,21 @@ BOM = [
  # list wants to avoid one receiver per drone, but OpenHD/wfb-ng puts each
  # aircraft on its own channel and each adapter listens on one channel, so
  # three are bought. Same module as the air side: 1.8 A each, so it needs a
- # powered USB hub, not laptop ports. The directional ground antenna is still
- # open; these omnis are the placeholder until it is chosen.
+ # powered USB hub, not laptop ports.
+ #
+ # ANTENNAS (2026-09-20): one 14 dBi panel per receiver, aimed at its own
+ # aircraft, on one port, and one omni on the OTHER port. Both ports must be
+ # terminated, because wfb-ng transmits from the ground too (uplink, RTCM
+ # tunnel), and a PA driving an open port can damage the radio. The omni also
+ # holds the link close in, where a narrow panel beam is easily mis-aimed. The
+ # listing's "15 km" range is for analog FPV, not a wfb-ng budget.
  ("ground", "Video receivers", "LB-Link BL-M8812EU2, RTL8812EU, one per aircraft channel", 1849, 3, 0,
   "https://hubtronics.in/BL-M8812EU2"),
- ("ground", "Receive antennas", "6 dBi 5 GHz dipole + U.FL lead, 2 per receiver", 75, 6, 0,
+ ("ground", "Receive panels", "5.8 GHz 14 dBi directional panel, RP-SMA, 62x55 mm", 566, 3, 0,
+  "https://www.flyrobo.in/long-range-rp-sma-5.8g-14dbi-panel-antenna"),
+ ("ground", "Panel pigtails", "U.FL to RP-SMA female pigtail, RG178", 99, 3, 0,
+  "https://www.indiamart.com/proddetail/ufl-ipx-ipex-to-rp-sma-female-rg-178-coaxial-pigtail-jumper-cable-2851725889755.html"),
+ ("ground", "Receive antennas", "6 dBi 5 GHz dipole + U.FL lead, second port", 75, 3, 0,
   "https://robocraze.com/products/6dbi-2-4ghz-5ghz-dual-band-wifi-rp-sma-antenna-20cm-u-fl-ipex-cable"),
  # Three receivers at up to 1.8 A each exceed laptop USB ports. On the ground
  # they mostly receive, so the average draw is far below the peak. Still,
@@ -291,6 +305,7 @@ PHASE_OF = {
     # and no ground truth surveyable until the programme was nearly over.
     "GNSS RTK rover": (5, 15, 23), "GNSS RTK base": (5,),
     "GNSS antenna, base": (5,), "GNSS feeder, base": (5,), "RTK base radio": (5,),
+    "GNSS cable, base": (5,),
     "Camera + lens": (6, 16, 24), "Height rangefinder": (6, 16, 24), "Video transmitter": (6, 16, 24),
     "Video antennas": (6, 16, 24),
     "Command receiver": (6, 16, 24), "Coordination radio": (6, 16, 24),
@@ -310,7 +325,7 @@ PHASE_OF = {
     "Mounting tape": (12,), "Hook and loop": (12,), "Consumables": (12,),
     "Video receivers": (29,), "Receive antennas": (29,),
     "Coordination base": (29,), "Base station mount": (29,),
-    "Receiver USB hub": (29,),
+    "Receiver USB hub": (29,), "Receive panels": (29,), "Panel pigtails": (29,),
 }
 
 # One measured, then three to finish aircraft 1, then four per aircraft.
@@ -472,7 +487,9 @@ REVISED_2026_09_19 = (
     + 12197 * 3                        # bought 6S 16 Ah HV LiPo, one per aircraft
     - 9058                             # PM08-CAN out
     + (1849 - 4399) * 3                # RC832S -> BL-M8812EU2 ground receivers
-    + 75 * 6 - 839 * 3                 # patches -> omnis, 2 per receiver
+    + 75 * 3 - 839 * 3                 # patches -> one omni per receiver
+    + 566 * 3 + 99 * 3                 # 14 dBi panel + pigtail per receiver
+    + 600                              # base TNC-SMA cable, local, estimate
     - 399 * 3                          # analog capture cards out
     + 2653)                            # powered USB hub for the ground receivers
 

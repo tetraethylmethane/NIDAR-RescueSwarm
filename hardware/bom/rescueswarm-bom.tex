@@ -18,20 +18,20 @@
 \newcommand{\grouphead}[2]{\multicolumn{5}{@{}l}{\rule{0pt}{13pt}\textbf{\color{accent}#1}} & \multicolumn{2}{r@{}}{\textbf{\color{accent}#2}} \\ \cmidrule{1-7}}
 \pagestyle{fancy}\fancyhf{}
 \renewcommand{\headrulewidth}{0pt}
-\fancyfoot[L]{\footnotesize NIDAR RescueSwarm --- Bill of Materials, rev.\ 2026-09-19}
+\fancyfoot[L]{\footnotesize NIDAR RescueSwarm --- Bill of Materials, rev.\ 2026-09-20}
 \fancyfoot[R]{\footnotesize \thepage\ / \pageref{LastPage}}
 \setlength{\parindent}{0pt}
 
 \begin{document}
 
 {\LARGE\bfseries\color{accent} NIDAR RescueSwarm --- Bill of Materials}\\[2pt]
-{\large Three-aircraft programme \quad$\cdot$\quad Revision 2026-09-19 \quad$\cdot$\quad all prices INR}
+{\large Three-aircraft programme \quad$\cdot$\quad Revision 2026-09-20 \quad$\cdot$\quad all prices INR}
 
 \vspace{8pt}
 \begin{tabularx}{\textwidth}{@{}Xr@{\hspace{18pt}}Xr@{}}
 \toprule
-Parts, three aircraft & \textbf{4{,}91{,}608} & Parts per aircraft & \textbf{1{,}37{,}509} \\
-Released (tax where owed $+$ 15\,\% contingency) & \textbf{5{,}68{,}260} & Line items & \textbf{58} \\
+Parts, three aircraft & \textbf{4{,}93{,}978} & Parts per aircraft & \textbf{1{,}37{,}509} \\
+Released (tax where owed $+$ 15\,\% contingency) & \textbf{5{,}71{,}171} & Line items & \textbf{61} \\
 \bottomrule
 \end{tabularx}
 
@@ -53,12 +53,12 @@ Released (tax where owed $+$ 15\,\% contingency) & \textbf{5{,}68{,}260} & Line 
 \textbf{Group} & \textbf{Lines} & \textbf{Per aircraft} & \textbf{Programme} \\
 \midrule
 Test instruments & 6 & -- & 3{,}246 \\
-Avionics, sensing and RTK & 21 & 72{,}317 & 2{,}44{,}077 \\
+Avionics, sensing and RTK & 22 & 72{,}317 & 2{,}44{,}677 \\
 Airframe, propulsion and power & 19 & 65{,}192 & 2{,}03{,}243 \\
 Flight-test support & 7 & -- & 29{,}867 \\
-Ground station & 5 & -- & 11{,}175 \\
+Ground station & 7 & -- & 12{,}945 \\
 \midrule
-\textbf{Total parts} & \textbf{58} & \textbf{1{,}37{,}509} & \textbf{4{,}91{,}608} \\
+\textbf{Total parts} & \textbf{61} & \textbf{1{,}37{,}509} & \textbf{4{,}93{,}978} \\
 \bottomrule
 \end{tabularx}
 
@@ -86,7 +86,7 @@ Thrust-stand mast & SURYAKUSH metal 2.1 m tripod & -- & 1 & 373 & 373 & \href{ht
 Fasteners & Hex socket-head assortment M3/M4/M5, SS304 & -- & 1 & 1{,}140 & 1{,}140 & \href{https://onlyscrews.in/products/hexallen-socket-head-assorted-screw-pack-ss304}{OnlyScrews} \\
 Threadlocker & Loctite 243, 50 ml & -- & 1 & 664 & 664 & \href{https://www.amazon.in/Loctite-243-Threadlocker-Pack-Size/dp/B014MMG3AM}{Amazon India} \\
 Throttle source & Servo tester / ESC consistency tester, PPM & -- & 1 & 111 & 111 & \href{https://robokits.co.in/motors/rc-servo-motor/servo-tester-esc-consistency-tester-ppm-generator}{Robokits} \\
-\grouphead{Avionics, sensing and RTK}{2{,}44{,}077}
+\grouphead{Avionics, sensing and RTK}{2{,}44{,}677}
 Flight controller & Holybro Kakute H7 V1.5, no Bluetooth & 1 & 3 & 9{,}269 & 27{,}807 & \href{https://indianrobostore.com/product/holybro-kakute-h7-v15-flight-controller-without-bluetooth}{Indian Robo Store} \\
 FC vibration mount & Glass-fibre anti-vibration shock absorber & 1 & 3 & 161 & 483 & \href{https://robu.in/product/glass-fiber-flight-controller-anti-vibration-set-shock-absorber-apmkkmwc/}{Robu} \\
 Autopilot log card & SanDisk 32 GB microSDHC, class 10 & 1 & 3 & 1{,}549 & 4{,}647 & \href{https://robocraze.com/products/sandisk-32gb-micro-sd-sdhc-card}{Robocraze} \\
@@ -98,6 +98,7 @@ GNSS RTK rover & GenX F9P Air: ZED-F9P L1/L2 + helix + QMC5883 compass, $\sim$20
 GNSS RTK base & SmartElex ZED-F9P-04B RTK board, U.FL & -- & 1 & 17{,}965 & 17{,}965 & \href{https://robocraze.com/products/smartelex-gps-rtk-board-ufl-zed-f9p-04b}{Robocraze} \\
 GNSS antenna, base & LS-125-A L1/L2/L5 survey antenna & -- & 1 & 8{,}123 & 8{,}123 & \href{https://robokits.co.in/multirotor-spare-parts/gps-sensors/rtk-gps-base-station-survey-grade-cors-high-precision-industrial-l1-l2-l5-antenna}{Robokits} \\
 GNSS feeder, base & U.FL to SMA female pigtail, 10 cm & -- & 1 & 49 & 49 & \href{https://robocraze.com/products/mini-pci-u-fl-to-sma-female-pigtail-cable-10cm-ipx-to-sma-extension}{Robocraze} \\
+GNSS cable, base & RG58 50 ohm, 3 m, TNC-M to SMA-M, made locally & -- & 1 & 600 & 600 & local \\
 RTK base radio & EByte E22-900T22D-V2, SX1262, 22 dBm & -- & 1 & 989 & 989 & \href{https://robu.in/product/lora-868mhz-wireless-module-uart/}{Robu} \\
 Height rangefinder & Benewake TFmini-S, 12 m lidar, UART & 1 & 3 & 2{,}827 & 8{,}481 & \href{https://indianrobostore.com/product/benewake-12m-tfmini-s-micro-lidar-distance-sensor-for-drones-uav-uas-robots-uart}{Indian Robo Store} \\
 Camera + lens & Arducam 12.3 MP 1/2.3 in HQ module, 6 mm CS lens & 1 & 3 & 6{,}799 & 20{,}397 & \href{https://robu.in/product/arducam-high-quality-camera-for-raspberry-pi-12-3mp-1-2-3-inch-hq-camera-module-with-6mm-cs-lens-for-pi-4b-3b-2b-3a-pi-zero-and-more/}{Robu} \\
@@ -136,20 +137,22 @@ Heat-shrink kit & 328 pcs assorted 2:1 heat-shrink & -- & 1 & 159 & 159 & \href{
 Mounting tape & 3M VHB 5952, 6 mm x 8.2 m & -- & 1 & 560 & 560 & \href{https://www.amazon.in/sc-tch-5952-Tape-size/dp/B0F43FP3CJ}{Amazon India} \\
 Hook and loop & Self-adhesive hook and loop, 25 mm x 2 m & -- & 1 & 145 & 145 & \href{https://www.amazon.in/INSTITCH-Self-Adhesive-Gripping-Perfect-Crafting/dp/B0DVLVCDH6}{Amazon India} \\
 Consumables & Fasteners, tape, connectors, filament & -- & 1 & 5{,}000 & 5{,}000 & local \\
-\grouphead{Ground station}{11{,}175}
+\grouphead{Ground station}{12{,}945}
 Video receivers & LB-Link BL-M8812EU2, RTL8812EU, one per aircraft channel & -- & 3 & 1{,}849 & 5{,}547 & \href{https://hubtronics.in/BL-M8812EU2}{Hubtronics} \\
-Receive antennas & 6 dBi 5 GHz dipole + U.FL lead, 2 per receiver & -- & 6 & 75 & 450 & \href{https://robocraze.com/products/6dbi-2-4ghz-5ghz-dual-band-wifi-rp-sma-antenna-20cm-u-fl-ipex-cable}{Robocraze} \\
+Receive panels & 5.8 GHz 14 dBi directional panel, RP-SMA, 62x55 mm & -- & 3 & 566 & 1{,}698 & \href{https://www.flyrobo.in/long-range-rp-sma-5.8g-14dbi-panel-antenna}{FlyRobo} \\
+Panel pigtails & U.FL to RP-SMA female pigtail, RG178 & -- & 3 & 99 & 297 & \href{https://www.indiamart.com/proddetail/ufl-ipx-ipex-to-rp-sma-female-rg-178-coaxial-pigtail-jumper-cable-2851725889755.html}{IndiaMART} \\
+Receive antennas & 6 dBi 5 GHz dipole + U.FL lead, second port & -- & 3 & 75 & 225 & \href{https://robocraze.com/products/6dbi-2-4ghz-5ghz-dual-band-wifi-rp-sma-antenna-20cm-u-fl-ipex-cable}{Robocraze} \\
 Receiver USB hub & Transcend HUB3 powered 4-port USB hub + adapter & -- & 1 & 2{,}653 & 2{,}653 & \href{https://www.flipkart.com/transcend-super-fast-speed-usb-3-0-4-port-3-hub-power-adaptor-hub3/p/itmdkg5bsmjqvfqn}{Flipkart} \\
 Coordination base & EByte E22-900T22U, SX1262, USB & -- & 1 & 1{,}646 & 1{,}646 & \href{https://hubtronics.in/e22-900t22u}{Hubtronics} \\
 Base station mount & Photographic tripod and adapter & -- & 1 & 879 & 879 & \href{https://www.amazon.in/Amazon-Basics-Tripod-Camera-Operating/dp/B0CX5DSRCQ}{Amazon India} \\
 \midrule
-\multicolumn{5}{@{}l}{\textbf{Total parts, three aircraft}} & \multicolumn{2}{r@{}}{\textbf{4{,}91{,}608}} \\
+\multicolumn{5}{@{}l}{\textbf{Total parts, three aircraft}} & \multicolumn{2}{r@{}}{\textbf{4{,}93{,}978}} \\
 \end{longtable}}
 
 {\footnotesize \textit{/AC} = fitted per aircraft (-- = bought once for the programme).
 \textit{Qty} = programme quantity, including spares. Retail listings are
 GST-inclusive; GST is added only to quotation and B2B lines
-(14{,}064 of parts). Every source name links to the listing the price came from.}
+(14{,}961 of parts). Every source name links to the listing the price came from.}
 
 \vspace{10pt}
 {\large\bfseries\color{accent} Battery selection}\\[3pt]
@@ -176,8 +179,9 @@ LiPo 14 Ah & $\sim$1636 & 311 & 6.55 & 1.94 & 2.06 & +2.5 \\
 \item \textbf{Battery: weigh it.} GenX publishes no mass; 1880--2211\,g is bracketed from 165--194\,Wh/kg. The cost of 16\,Ah is thrust-to-weight: 1.8--1.9 on the same motors unless the stand shows $\geq$\,3.55\,kgf per motor. Charge it as LiHV. Its AS150 plug needs AS150 mates, not XT90S. The 150\,A fuse is now the tightest margin against a $\sim$136\,A peak.
 \item \textbf{Failsafe parameters.} \texttt{params.py} and the pack model still describe the Li-ion pack. Once the LiPo arrives, measure its sag curve, then update both. Do not fly before that.
 \item \textbf{ESC.} The 65\,A is a candidate. It is confirmed on the thrust stand for current, temperature and desync with 18\,in props and 340\,KV motors.
-\item \textbf{Base antenna cable.} The LS-125-A has a TNC connector. The U.FL$\to$SMA pigtail needs a TNC-male to SMA-male RG58 cable (3--5\,m) to the tripod. No Indian listing with a price was found, so it is not yet a line.
-\item \textbf{Ground directional antenna.} Still open: no Indian listing was found. The omnis are the placeholder. Also check the USB hub adapter's rating when it arrives.
+\item \textbf{Base antenna cable.} 3\,m of RG58, 50\,$\Omega$, TNC-male to SMA-male, made by a local RF cable shop. The INR~600 is an estimate, so get the quote before ordering.
+\item \textbf{Ground antennas.} Each receiver gets a 14\,dBi panel aimed at its own aircraft, plus an omni on its second port: wfb-ng transmits from the ground too, so neither port can be left open. Aim the panels and confirm the polarisation, which the listing does not state. The listed range is for analog FPV, not wfb-ng. Coax lengths depend on the ground-station layout.
+\item \textbf{USB hub.} Check the adapter's rating when it arrives.
 \item \textbf{Confirmed:} the GenX F9P Air is dual-band (GPS L1/L2, Galileo E1/E5b, BDS B1/B2, GLONASS G1/G2), with a QMC5883 compass.
 \end{itemize}
 

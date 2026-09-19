@@ -50,7 +50,8 @@ GROUND_PHASE = 13          # the full programme's phase 29, renumbered
 
 # Ground-segment quantities for a one-aircraft system. Three video chains
 # become one; the base radio and the tripod were single units already.
-GROUND_QTY = {"Video receivers": 1, "Receive antennas": 2,
+GROUND_QTY = {"Video receivers": 1, "Receive antennas": 1,
+              "Receive panels": 1, "Panel pigtails": 1,
               # One receiver draws up to 1.8 A: still more than a laptop port.
               "Receiver USB hub": 1,
               "Coordination base": 1, "Base station mount": 1}
@@ -93,13 +94,12 @@ def schedule_rows():
     assert len(rows) == len(KEPT), "lost a phase between SCHEDULE and KEPT"
 
     # The ground phase is priced here rather than read from phase_released(),
-    # because its quantities changed. Every ground line is Indian retail, so
-    # the tax is already paid and only contingency applies -- asserted, not
-    # assumed, so a future ex-GST supplier on one of these lines fails loudly.
+    # because its quantities changed. Retail lines are already tax-paid and
+    # ex-GST lines (the IndiaMART panel pigtail) are not, so it goes through
+    # the same rule every other phase uses.
     ground = [(r, q) for r, q in SINGLE if r[0] == "ground"]
-    assert not any(S.is_ex_gst(r[6]) for r, _ in ground), \
-        "a ground line is now ex-GST; price it through S.released() instead"
-    amt = S.released(sum(r[3] * q for r, q in ground), 0.0)
+    amt = S.released(sum(r[3] * q for r, q in ground if not S.is_ex_gst(r[6])),
+                     sum(r[3] * q for r, q in ground if S.is_ex_gst(r[6])))
     rows.append(GROUND_ROW + (amt,))
     return rows
 

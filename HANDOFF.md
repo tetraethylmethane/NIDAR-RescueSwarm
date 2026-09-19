@@ -27,8 +27,8 @@ simulated; the evidence table in §2 says which is which.
 
 | | |
 |---|---|
-| Funding ask | **INR 5,68,260**, in 29 staged releases, first is INR 3,733 |
-| Parts | **INR 4,91,608**, 58 lines, every one a live listing with a URL (2026-09-19 revision, see `hardware/bom/CHANGELOG.md`) |
+| Funding ask | **INR 5,71,171**, in 29 staged releases, first is INR 3,733 |
+| Parts | **INR 4,93,978**, 61 lines, every one a live listing with a URL (2026-09-19 revision, see `hardware/bom/CHANGELOG.md`) |
 | Technical proposal | 22 pages, 64 automated checks passing |
 | Mentor brief | 37 pages: 7 of brief, then 29 DoSA approval letters, one per phase |
 | Ground station | Runs; captured live for the paper with synthetic telemetry |
@@ -406,13 +406,13 @@ Until one is chosen, sync the copies before trusting either test suite.
 
 ### 4.6 Which BOM is authoritative — `sourced_bom.py`, and there are still two — **P1**
 
-`hardware/bom/sourced_bom.py` **wins**. 58 lines, every one a live listing from
+`hardware/bom/sourced_bom.py` **wins**. 61 lines, every one a live listing from
 a named Indian supplier with a URL, transcribed from the team's own sourcing
 sheet. It is a Python module, not a workbook, because three documents generate
 from it and a spreadsheet cannot be asserted against.
 
 ```
-parts        4,91,608      released   5,68,260      29 phases
+parts        4,93,978      released   5,71,171      29 phases
 ```
 
 It carries a **transcription guard**: the module asserts its own total equals
@@ -440,7 +440,7 @@ the other.**
 
 ### 4.7 The funding ask, and what moved it
 
-The ask is **₹5,68,260** against **₹4,91,608** of parts (was ₹6,85,532 / ₹5,81,034 before the 2026-09-19 revision). The released figure is
+The ask is **₹5,71,171** against **₹4,93,978** of parts (was ₹6,85,532 / ₹5,81,034 before the 2026-09-19 revision). The released figure is
 parts plus tax where tax is still owed plus 15 % contingency — *not* duty plus
 GST on everything, which is what an earlier revision did and which overstated
 the ask by about a lakh. These are Indian retail listings; a listed retail price

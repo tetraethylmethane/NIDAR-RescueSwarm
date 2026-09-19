@@ -7,6 +7,25 @@ programmatic edit, run the recalculation check before trusting a number.
 
 ---
 
+## 2026-09-20 — base RTK cable and ground panel antennas added
+
+Parts ₹4,91,608 → **₹4,93,978** (61 lines); released ₹5,68,260 → **₹5,71,171**.
+
+- **Base cable:** 3 m RG58, 50 Ω, TNC-M → SMA-M, made by a local RF cable shop.
+  ₹600 is an **estimate** (the line has no listing), so get the quote first.
+  The one TNC listing found was 5 m of RG316 at ₹4,011, and was rejected.
+- **Ground antennas:** 3× FlyRobo 5.8 GHz 14 dBi RP-SMA panels (₹566), one
+  aimed at each aircraft, each with a U.FL → RP-SMA pigtail (IndiaMART, ₹99).
+  The omnis drop from 6 to 3 and stay on each receiver's **second port**.
+  wfb-ng transmits from the ground as well, so an unterminated port is not an
+  option, and the omni covers close in where the panel's beam is easily missed.
+  The listing doesn't state polarisation, so confirm it matches the aircraft's
+  dipoles.
+- `build_single_brief.py` no longer asserts that the ground segment is all
+  retail. It prices ex-GST lines through `S.released()` like every other phase.
+
+---
+
 ## 2026-09-20 — battery resized to 16 Ah; base cable, hub, GNSS checked
 
 Parts ₹4,79,628 → **₹4,91,608** (58 lines); released ₹5,54,483 → **₹5,68,260**.

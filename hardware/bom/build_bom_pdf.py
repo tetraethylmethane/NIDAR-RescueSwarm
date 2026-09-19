@@ -26,7 +26,7 @@ import sourced_bom as S                                    # noqa: E402
 from build_brief_tables import money, supplier_of          # noqa: E402
 
 OUT = os.path.join(HERE, "rescueswarm-bom.tex")
-REVISION = "2026-09-19"
+REVISION = "2026-09-20"
 
 GROUP_TITLE = {
     "instruments": "Test instruments",
@@ -71,12 +71,15 @@ OPEN_ITEMS = [
     r"update both. Do not fly before that.",
     r"\textbf{ESC.} The 65\,A is a candidate. It is confirmed on the thrust stand for "
     r"current, temperature and desync with 18\,in props and 340\,KV motors.",
-    r"\textbf{Base antenna cable.} The LS-125-A has a TNC connector. The U.FL$\to$SMA "
-    r"pigtail needs a TNC-male to SMA-male RG58 cable (3--5\,m) to the tripod. "
-    r"No Indian listing with a price was found, so it is not yet a line.",
-    r"\textbf{Ground directional antenna.} Still open: no Indian listing was found. "
-    r"The omnis are the placeholder. Also check the USB hub adapter's rating when "
-    r"it arrives.",
+    r"\textbf{Base antenna cable.} 3\,m of RG58, 50\,$\Omega$, TNC-male to "
+    r"SMA-male, made by a local RF cable shop. The INR~600 is an estimate, so "
+    r"get the quote before ordering.",
+    r"\textbf{Ground antennas.} Each receiver gets a 14\,dBi panel aimed at its "
+    r"own aircraft, plus an omni on its second port: wfb-ng transmits from the "
+    r"ground too, so neither port can be left open. Aim the panels and confirm "
+    r"the polarisation, which the listing does not state. The listed range is "
+    r"for analog FPV, not wfb-ng. Coax lengths depend on the ground-station layout.",
+    r"\textbf{USB hub.} Check the adapter's rating when it arrives.",
     r"\textbf{Confirmed:} the GenX F9P Air is dual-band (GPS L1/L2, Galileo E1/E5b, "
     r"BDS B1/B2, GLONASS G1/G2), with a QMC5883 compass.",
 ]

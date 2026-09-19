@@ -25,7 +25,7 @@ Throttle source & Servo tester / ESC consistency tester, PPM & 111 & A motor on 
 \end{longtable}
 \endgroup
 
-\subsubsection*{Per aircraft, avionics and sensing --- phases 3--6, repeated at 13--16 and 21--24 \quad \rs{72{,}317} per aircraft, \rs{2{,}44{,}077} in all}
+\subsubsection*{Per aircraft, avionics and sensing --- phases 3--6, repeated at 13--16 and 21--24 \quad \rs{72{,}317} per aircraft, \rs{2{,}44{,}677} in all}
 
 \begingroup\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
@@ -48,6 +48,7 @@ GNSS RTK rover & GenX F9P Air: ZED-F9P L1/L2 + helix + QMC5883 compass, ~20 g, 3
 GNSS RTK base & SmartElex ZED-F9P-04B RTK board, U.FL & 17{,}965 & The fixed ground receiver the three aircraft correct against. It is ours, so no internet connection is needed at the site. \textit{Robocraze} \\
 GNSS antenna, base & LS-125-A L1/L2/L5 survey antenna & 8{,}123 & The base's antenna. Every aircraft's accuracy is only as good as this one fixed point, so it gets the better antenna. \textit{Robokits} \\
 GNSS feeder, base & U.FL to SMA female pigtail, 10 cm & 49 & Adapts the base receiver's miniature socket to the antenna cable. \textit{Robocraze} \\
+GNSS cable, base & RG58 50 ohm, 3 m, TNC-M to SMA-M, made locally & 600 & Carries the signal from the antenna on its tripod down to the base receiver. Made to length locally; the price is an estimate. \textit{in-house} \\
 RTK base radio & EByte E22-900T22D-V2, SX1262, 22 dBm & 989 & Sends the base's corrections to the aircraft on the same radio type they already carry. \textit{Robu} \\
 Height rangefinder & Benewake TFmini-S, 12 m lidar, UART, 3 off & 8{,}481 & Measures true height above whatever is below --- water, ground or a rooftop. The kit is released at 6 m, and the barometer measures height above the launch point, which over floodwater is a different thing. \textit{Indian Robo Store} \\
 Camera + lens & Arducam 12.3 MP 1/2.3 in HQ module, 6 mm CS lens, 3 off & 20{,}397 & The search sensor, chosen so a person in water is large enough in the picture to be found. \textit{Robu} \\
@@ -120,7 +121,7 @@ Consumables & Fasteners, tape, connectors, filament & 5{,}000 & Solder, abrasive
 \end{longtable}
 \endgroup
 
-\subsubsection*{Ground segment and statutory --- phases 29--32 \quad \rs{11{,}175} of parts}
+\subsubsection*{Ground segment and statutory --- phases 29--32 \quad \rs{12{,}945} of parts}
 
 \begingroup\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
@@ -133,7 +134,9 @@ Consumables & Fasteners, tape, connectors, filament & 5{,}000 & Solder, abrasive
 \midrule
 \endhead
 Video receivers & LB-Link BL-M8812EU2, RTL8812EU, one per aircraft channel, 3 off & 5{,}547 & Three, one per aircraft's channel, so the ground station can show all three at once, which the rules require. Digital, so no capture hardware. \textit{Hubtronics} \\
-Receive antennas & 6 dBi 5 GHz dipole + U.FL lead, 2 per receiver, 6 off & 450 & The ground antennas, two per receiver. A directional antenna is still being chosen and would replace these. \textit{Robocraze} \\
+Receive panels & 5.8 GHz 14 dBi directional panel, RP-SMA, 62x55 mm, 3 off & 1{,}698 & One directional antenna per aircraft, pointed at it, for range. \textit{FlyRobo} \\
+Panel pigtails & U.FL to RP-SMA female pigtail, RG178, 3 off & 297 & Connects each receiver to its panel. \textit{IndiaMART} \\
+Receive antennas & 6 dBi 5 GHz dipole + U.FL lead, second port, 3 off & 225 & A second, all-round antenna on each receiver, which holds the link close in where the panel's narrow beam is easy to miss. \textit{Robocraze} \\
 Receiver USB hub & Transcend HUB3 powered 4-port USB hub + adapter & 2{,}653 & Powers the three ground receivers, which together draw more than a laptop's ports can supply. \textit{Flipkart} \\
 Coordination base & EByte E22-900T22U, SX1262, USB & 1{,}646 & The ground end of the link the aircraft use to report what they find. \textit{Hubtronics} \\
 Base station mount & Photographic tripod and adapter & 879 & Holds the ground receiver still during a mission. Survey-grade accuracy is unnecessary; not moving is what matters. \textit{Amazon India} \\

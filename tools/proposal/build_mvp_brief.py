@@ -51,6 +51,7 @@ CUT = {
                         "against surveyed ground, a publication objective",
  "GNSS antenna, base":  "antenna for the same base",
  "GNSS feeder, base":   "cable for the same base",
+ "GNSS cable, base":    "cable for the same base",
  "RTK base radio":      "carries the base's corrections, and there is no base",
  "Video transmitter":   "digital downlink. The mission is autonomous -- "
                         "nothing has to watch it live",
@@ -58,6 +59,8 @@ CUT = {
  "Video receivers":     "ground end of the same downlink",
  "Receive antennas":    "ground end of the same downlink",
  "Receiver USB hub":    "powers the ground end of the same downlink",
+ "Receive panels":      "ground end of the same downlink",
+ "Panel pigtails":      "ground end of the same downlink",
  "Coordination radio":  "aircraft-to-aircraft link, and there is one aircraft",
  "Coordination base":   "ground end of the same link. Telemetry reaches the "
                         "laptop over ExpressLRS native MAVLink instead",

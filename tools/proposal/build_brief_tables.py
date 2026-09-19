@@ -84,6 +84,9 @@ RATIONALE = {
  "GNSS antenna, base":
    "The base's antenna. Every aircraft's accuracy is only as good as this one "
    "fixed point, so it gets the better antenna.",
+ "GNSS cable, base":
+   "Carries the signal from the antenna on its tripod down to the base "
+   "receiver. Made to length locally; the price is an estimate.",
  "GNSS feeder, base": "Adapts the base receiver's miniature socket to the antenna cable.",
  "RTK base radio":
    "Sends the base's corrections to the aircraft on the same radio type they "
@@ -191,9 +194,12 @@ RATIONALE = {
  "Video receivers":
    "Three, one per aircraft's channel, so the ground station can show all "
    "three at once, which the rules require. Digital, so no capture hardware.",
+ "Receive panels":
+   "One directional antenna per aircraft, pointed at it, for range.",
+ "Panel pigtails": "Connects each receiver to its panel.",
  "Receive antennas":
-   "The ground antennas, two per receiver. A directional antenna is still "
-   "being chosen and would replace these.",
+   "A second, all-round antenna on each receiver, which holds the link close "
+   "in where the panel's narrow beam is easy to miss.",
  "Receiver USB hub":
    "Powers the three ground receivers, which together draw more than a "
    "laptop's ports can supply.",
@@ -209,6 +215,7 @@ SUPPLIER = [("robu.in", "Robu"), ("robokits", "Robokits"), ("amazon.in", "Amazon
             ("robocraze", "Robocraze"), ("hubtronics", "Hubtronics"),
             ("indianrobostore", "Indian Robo Store"), ("yantronix", "Yantronix"),
             ("kitsguru", "KitsGuru"), ("rcmumbai", "RC Mumbai"),
+            ("flyrobo", "FlyRobo"),
             ("teravolt", "Teravolt"), ("iscaleindia", "iScale"),
             ("onlyscrews", "OnlyScrews"), ("desertcart", "Desertcart"),
             ("njour", "Njour")]
