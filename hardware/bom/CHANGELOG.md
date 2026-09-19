@@ -7,6 +7,37 @@ programmatic edit, run the recalculation check before trusting a number.
 
 ---
 
+## 2026-09-20 — battery resized to 16 Ah; base cable, hub, GNSS checked
+
+Parts ₹4,79,628 → **₹4,91,608** (58 lines); released ₹5,54,483 → **₹5,68,260**.
+
+**Battery 12 Ah → GenX 6S 16 Ah HV (₹12,197).** Each candidate was run
+through the sizing model at its own mass, with the motors held fixed:
+
+| Pack | Mass g | Wh | MTOW | T/W | Endurance | Queue reserve |
+|---|--:|--:|--:|--:|--:|--:|
+| Li-ion 6S3P (was) | 1449 | 292 | 6.36 | 2.00 | 2.02× | +1.1 Wh |
+| LiPo 12 Ah | 1424 | 266 | 6.34 | 2.01 | 1.85× ✗ | −3.7 Wh ✗ |
+| LiPo 13 Ah | ~1519 | 289 | 6.43 | 1.98 | 1.96× ✗ | −0.5 Wh ✗ |
+| LiPo 14 Ah | ~1636 | 311 | 6.55 | 1.94 | 2.06× | +2.5 Wh |
+| **LiPo 16 Ah HV** | 1880–2211 | 365 | 6.8–7.1 | 1.8–1.9 | 2.1–2.3× | +5 to +9 Wh |
+
+"≥ 13 Ah" is not enough, because the pack's own weight raises hover power
+faster than 13 Ah adds reserve. About 14 Ah is the floor, and 16 Ah is the
+smallest Indian listing above it. The cost is T/W, which falls to 1.8–1.9
+unless the thrust stand shows ≥ 3.55 kgf per motor. Masses are bracketed
+(165–194 Wh/kg) because GenX publishes none. The briefs now say "about 7 kg".
+
+**Checked:** the GenX F9P Air is dual-band (GPS L1/L2, Galileo E1/E5b, BDS
+B1/B2, GLONASS G1/G2) with a QMC5883 compass. The LS-125-A is **TNC**, so the
+base needs a TNC-male to SMA-male RG58 cable. **Added:** a Transcend HUB3
+powered USB hub (₹2,653) for the ground receivers. **Still open:** the base
+cable and the directional antenna (no priced Indian listings found), plus
+`params.py` and the pack model, which must be updated from the real pack's
+measured sag before flight.
+
+---
+
 ## 2026-09-19 — architecture revision: parts ₹5.81 L → ₹4.80 L
 
 Applied the team's BOM improvement list to `sourced_bom.py`, which is the

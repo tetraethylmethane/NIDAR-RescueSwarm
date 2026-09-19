@@ -51,6 +51,8 @@ GROUND_PHASE = 13          # the full programme's phase 29, renumbered
 # Ground-segment quantities for a one-aircraft system. Three video chains
 # become one; the base radio and the tripod were single units already.
 GROUND_QTY = {"Video receivers": 1, "Receive antennas": 2,
+              # One receiver draws up to 1.8 A: still more than a laptop port.
+              "Receiver USB hub": 1,
               "Coordination base": 1, "Base station mount": 1}
 
 PHASES = {"instruments": "1--2", "avionics": "3--6", "airframe": "7--10",

@@ -57,6 +57,7 @@ CUT = {
  "Video antennas":      "antennas for the same downlink",
  "Video receivers":     "ground end of the same downlink",
  "Receive antennas":    "ground end of the same downlink",
+ "Receiver USB hub":    "powers the ground end of the same downlink",
  "Coordination radio":  "aircraft-to-aircraft link, and there is one aircraft",
  "Coordination base":   "ground end of the same link. Telemetry reaches the "
                         "laptop over ExpressLRS native MAVLink instead",

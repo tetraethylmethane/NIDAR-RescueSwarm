@@ -83,8 +83,11 @@ BOM = [
  # Rovers: GenX F9P Air, which has the ZED-F9P, a dual-band helix AND a compass
  # in one ~20 g unit. The compass matters because the Kakute H7 has none and the
  # M9N that used to carry one is gone. It wires straight to the FC's GPS UART
- # plus I2C. CONFIRM L1/L2 in the cart: the listing does not state its bands.
- ("avionics", "GNSS RTK rover", "GenX F9P Air: ZED-F9P + helix + compass, ~20 g",
+ # plus I2C. Bands CONFIRMED dual-band from GenX's datasheet: GPS L1/L2,
+ # GLONASS G1/G2, BDS B1/B2, Galileo E1/E5b, QZSS L1/L2. Compass is a QMC5883,
+ # which ArduPilot supports. (Robokits also lists the same RKI-3023 at 17,038
+ # under GPS & Sensors; the price below is from the GenX UAV category page.)
+ ("avionics", "GNSS RTK rover", "GenX F9P Air: ZED-F9P L1/L2 + helix + QMC5883 compass, ~20 g",
   15392, 3, 1,
   "https://robokits.co.in/multirotor-spare-parts/genx-uav-product/genx-uav-zed-f9p-air-lightweight-rtk-gnss-module-with-integrated-helical-antenna-and-compass-made-in-india"),
  # The base: a bare F9P board, a survey antenna and its own E22, so it sends
@@ -94,8 +97,11 @@ BOM = [
   "https://robocraze.com/products/smartelex-gps-rtk-board-ufl-zed-f9p-04b"),
  ("avionics", "GNSS antenna, base", "LS-125-A L1/L2/L5 survey antenna", 8123, 1, 0,
   "https://robokits.co.in/multirotor-spare-parts/gps-sensors/rtk-gps-base-station-survey-grade-cors-high-precision-industrial-l1-l2-l5-antenna"),
- # The board is U.FL. Check the survey antenna's connector (usually TNC) on
- # arrival; this pigtail covers U.FL to SMA only.
+ # CHECKED 2026-09-19: the LS-125-A has a TNC connector, so this pigtail does
+ # NOT reach it by itself. It takes the board's U.FL to an SMA bulkhead; the run
+ # from there to the antenna on its tripod needs a TNC-male to SMA-male RG58
+ # cable (3-5 m). That cable is not yet a line: no Indian listing with a
+ # readable price was found. See the open items.
  ("avionics", "GNSS feeder, base", "U.FL to SMA female pigtail, 10 cm", 49, 1, 0,
   "https://robocraze.com/products/mini-pci-u-fl-to-sma-female-pigtail-cable-10cm-ipx-to-sma-extension"),
  # The E22 is kept PRIMARILY for RTK: four-constellation RTCM is ~16-32 kbps
@@ -176,18 +182,34 @@ BOM = [
   "https://robocraze.com/products/mg90s-servo-motor"),
  # REVISED 2026-09-19: the DIY 6S3P Li-ion pack (54 P45B cells, holders, nickel,
  # braid and balance leads) is replaced by a bought 6S LiPo, one per aircraft.
- # CAPACITY IS NOT FROZEN. This is the 12,000 mAh pack already vetted for the
- # MVP: 266 Wh against the 244 Wh the sizing model requires of any chemistry,
- # 25 C (300 A) against the 115 A peak, and ~1424 g, about what the Li-ion pack
- # weighed, so the T/W 2.0 design point holds. The team's alternative, GenX
- # 22,000 mAh 25C at 13,815 (AS150), is ~2x the energy and very roughly
- # +1.2-1.4 kg, which the design point does not carry. Size it from the final
- # AUW and hover current before ordering. Confirm 10,000 vs 12,000 mAh in the
- # cart: the Robokits listing conflates them.
- ("airframe", "Battery pack", "GenX 22.2V 6S 12000mAh 25C/50C LiPo, XT90", 9088, 3, 1,
+ #
+ # 16 Ah, NOT 12 (changed 2026-09-19 after running the candidates through the
+ # sizing model at their own mass, with the motors held fixed):
+ #
+ #   pack               mass g   Wh   MTOW  T/W   endurance  queue reserve
+ #   Li-ion 6S3P (was)   1449   292   6.36  2.00    2.02x      +1.1 Wh
+ #   LiPo 12 Ah          1424   266   6.34  2.01    1.85x FAIL -3.7 Wh FAIL
+ #   LiPo 13 Ah         ~1519   289   6.43  1.98    1.96x FAIL -0.5 Wh FAIL
+ #   LiPo 14 Ah         ~1636   311   6.55  1.94    2.06x      +2.5 Wh
+ #   LiPo 16 Ah HV   1880-2211  365   6.8-7.1 1.8-1.9  2.1-2.3x  +5 to +9 Wh
+ #
+ # ">= 13 Ah" is not enough: the heavier pack raises hover power faster than
+ # 13 Ah adds reserve. ~14 Ah is the floor, and 16 Ah is the smallest Indian
+ # listing at or above it. The mass range is not the maker's (GenX publishes
+ # none): it brackets 165 Wh/kg (the model's LiPo figure) and 194 Wh/kg (a
+ # Tattu 6S 16 Ah at 1830 g). WEIGH IT ON ARRIVAL.
+ #
+ # THE COST IS T/W. The motors were sized for 2.0 at 6.36 kg, which is
+ # 12.7 kgf. At 6.8-7.1 kg that is 1.8-1.9 unless the thrust stand shows
+ # >= ~3.55 kgf per motor. Peak current rises to ~126-136 A against 400 A
+ # (25 C) of pack and 150 A ANL fusing -- the fuse is now the tightest margin.
+ #
+ # HV pack (4.35 V/cell max, 22.8 V nominal): the M6D charger must be set to
+ # LiHV. AS150 connector: the pack side needs AS150 mates, not the XT90S pairs.
+ ("airframe", "Battery pack", "GenX 22.8V 6S 16000mAh 25C/40C HV LiPo, AS150", 12197, 3, 1,
   "https://robokits.co.in/batteries-chargers/drone-batteries/"
   "genx-power-premium-lipo-battery/genxpower-22.2v-lipo-batteries/"
-  "genx-22.2v-6s-10000mah-25c-50c-premium-lipo-battery-with-xt-90-connector"),
+  "genx-22.8v-6s-16000mah-25c-40c-premium-lithium-polymer-hv-battery"),
  ("airframe", "Pack fusing", "ANL fuse holder + 150 A ANL fuses", 3000.08, 3, 1,
   "https://njour.com/categories/tools-and-home-improvement/PC61p6RfDup2b7A"),
  ("airframe", "Pack retention", "300 mm LiPo strap, reusable", 62, 6, 2,
@@ -231,6 +253,12 @@ BOM = [
   "https://hubtronics.in/BL-M8812EU2"),
  ("ground", "Receive antennas", "6 dBi 5 GHz dipole + U.FL lead, 2 per receiver", 75, 6, 0,
   "https://robocraze.com/products/6dbi-2-4ghz-5ghz-dual-band-wifi-rp-sma-antenna-20cm-u-fl-ipex-cable"),
+ # Three receivers at up to 1.8 A each exceed laptop USB ports. On the ground
+ # they mostly receive, so the average draw is far below the peak. Still,
+ # confirm the adapter's rating in the box (Flipkart does not state it) and
+ # measure all three receiving at once.
+ ("ground", "Receiver USB hub", "Transcend HUB3 powered 4-port USB hub + adapter", 2653, 1, 0,
+  "https://www.flipkart.com/transcend-super-fast-speed-usb-3-0-4-port-3-hub-power-adaptor-hub3/p/itmdkg5bsmjqvfqn"),
  ("ground", "Coordination base", "EByte E22-900T22U, SX1262, USB", 1646, 1, 0,
   "https://hubtronics.in/e22-900t22u"),
  ("ground", "Base station mount", "Photographic tripod and adapter", 879, 1, 0,
@@ -282,6 +310,7 @@ PHASE_OF = {
     "Mounting tape": (12,), "Hook and loop": (12,), "Consumables": (12,),
     "Video receivers": (29,), "Receive antennas": (29,),
     "Coordination base": (29,), "Base station mount": (29,),
+    "Receiver USB hub": (29,),
 }
 
 # One measured, then three to finish aircraft 1, then four per aircraft.
@@ -440,11 +469,12 @@ REVISED_2026_09_19 = (
     + 369 * 3                          # own 3 A BEC for the video radio
     + (6500 - 5189) * 3                # Vishnu 50 A -> XRotor G2 65 A
     - 509 * 54 - 12 * 54 - 6500 - 500 - 123.9 * 3   # DIY 21700 pack out
-    + 9088 * 3                         # bought 6S LiPo, one per aircraft
+    + 12197 * 3                        # bought 6S 16 Ah HV LiPo, one per aircraft
     - 9058                             # PM08-CAN out
     + (1849 - 4399) * 3                # RC832S -> BL-M8812EU2 ground receivers
     + 75 * 6 - 839 * 3                 # patches -> omnis, 2 per receiver
-    - 399 * 3)                         # analog capture cards out
+    - 399 * 3                          # analog capture cards out
+    + 2653)                            # powered USB hub for the ground receivers
 
 PACK_PROTECTION = """Why there is no BMS in this BOM.
 

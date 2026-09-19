@@ -148,10 +148,10 @@ RATIONALE = {
    "Open the four kit stations. Metal gears, because a plastic one can drop a "
    "kit without anyone knowing.",
  "Battery pack":
-   "266 Wh against the 244 Wh the sizing model requires of any chemistry, and "
-   "25\\,C (300\\,A) against a 115\\,A peak. Bought rather than built, so no "
-   "spot welder and no cell-level assembly. Capacity is confirmed against the "
-   "final weight before ordering.",
+   "About 365 Wh, the smallest listed size that still keeps the reserve for "
+   "three aircraft landing in turn once its own weight is counted. Bought "
+   "rather than built, so no spot welder and no cell-level assembly. It is "
+   "heavier than the pack it replaces, which the thrust stand has to cover.",
  "Pack fusing":
    "Protects against a short circuit without cutting power at full throttle.",
  "Pack retention":
@@ -194,6 +194,9 @@ RATIONALE = {
  "Receive antennas":
    "The ground antennas, two per receiver. A directional antenna is still "
    "being chosen and would replace these.",
+ "Receiver USB hub":
+   "Powers the three ground receivers, which together draw more than a "
+   "laptop's ports can supply.",
  "Coordination base":
    "The ground end of the link the aircraft use to report what they find.",
  "Base station mount":

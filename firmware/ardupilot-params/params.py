@@ -31,11 +31,15 @@ import argparse
 # LiPo whose capacity is not yet frozen. These values, the pack model in
 # tools/sizing-model/battery_pack.py and the tests that check both still
 # describe the 292 Wh Li-ion pack, because they were validated together and
-# must move together. Do NOT fly the LiPo on these: BATT_CAPACITY 13500 on a
-# 12000 mAh pack turns the 20 % reserve into ~10 %, and the Li-ion voltage
-# floors are wrong for LiPo. Also note that test_params' landing-queue check
-# needs >= 57.3 Wh of reserve, i.e. >= ~287 Wh nameplate at 20 %, i.e. >= ~13 Ah
-# at 6S. The 12 Ah candidate (266 Wh) fails it.
+# must move together. Do NOT fly the LiPo on these: the Li-ion voltage floors
+# are wrong for a LiPo, and doubly so for the HV pack chosen (4.35 V/cell max).
+#
+# The BOM now buys a GenX 6S 16 Ah HV pack (see sourced_bom.py for why 16 and
+# not 12 or 13). When it arrives: weigh it, run a loaded discharge to get its
+# sag curve, give battery_pack.py a LiPo model from that, then set PACK_MAH =
+# 16000 and the LiPo thresholds here, and update test_params' PACK_WH and
+# hover power for the heavier aircraft. At 6.8-7.1 kg the landing-queue check
+# needs 62-67 Wh of reserve; 20 % of 365 Wh is 73 Wh, so it should pass.
 CELLS = 6
 PACK_MAH = 13500
 LOW_V_PER_CELL = 3.40          # ~20 % SoC resting for 21700 NMC

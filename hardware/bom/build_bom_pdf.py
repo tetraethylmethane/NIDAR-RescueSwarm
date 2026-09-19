@@ -45,22 +45,40 @@ ARCHITECTURE = [
     ("Video", "Digital, wfb-ng on Pi OS (BL-M8812EU2), CV overlay on the feed; "
               "one ground receiver per aircraft"),
     ("Links", "ELRS 2.4 GHz safety pilot (TX12 MKII); E22 868 MHz primarily for RTCM"),
-    ("Power", "6S LiPo; ESC current sensor to FC; 8 A UBEC for Pi, "
+    ("Power", "6S 16 Ah HV LiPo; ESC current sensor to FC; 8 A UBEC for Pi, "
               "3 A UBEC for video radio, separate servo UBEC"),
 ]
 
+# Model results behind the battery choice (sourced_bom.py carries the table).
+BATTERY_TABLE = [
+    # pack, mass g, Wh, MTOW kg, T/W, endurance x mission, landing-queue reserve Wh
+    ("Li-ion 6S3P (previous)", "1449", "292", "6.36", "2.00", "2.02", "+1.1"),
+    ("LiPo 12 Ah", "1424", "266", "6.34", "2.01", r"1.85 \textbf{fail}", r"$-$3.7 \textbf{fail}"),
+    ("LiPo 13 Ah", r"$\sim$1519", "289", "6.43", "1.98", r"1.96 \textbf{fail}", r"$-$0.5 \textbf{fail}"),
+    ("LiPo 14 Ah", r"$\sim$1636", "311", "6.55", "1.94", "2.06", "+2.5"),
+    (r"\textbf{LiPo 16 Ah HV (chosen)}", "1880--2211", "365", "6.8--7.1",
+     "1.8--1.9", "2.1--2.3", "+5 to +9"),
+]
+
 OPEN_ITEMS = [
-    r"\textbf{LiPo capacity.} The 12\,Ah pack is a placeholder. The landing-queue "
-    r"reserve needs $\geq$\,287\,Wh ($\approx$\,13\,Ah at 6S), which it misses. "
-    r"Size the pack from the final AUW and hover current.",
+    r"\textbf{Battery: weigh it.} GenX publishes no mass; 1880--2211\,g is "
+    r"bracketed from 165--194\,Wh/kg. The cost of 16\,Ah is thrust-to-weight: "
+    r"1.8--1.9 on the same motors unless the stand shows $\geq$\,3.55\,kgf per "
+    r"motor. Charge it as LiHV. Its AS150 plug needs AS150 mates, not XT90S. The "
+    r"150\,A fuse is now the tightest margin against a $\sim$136\,A peak.",
     r"\textbf{Failsafe parameters.} \texttt{params.py} and the pack model still "
-    r"describe the Li-ion pack. Update them with the LiPo, and before flying it.",
-    r"\textbf{ESC.} 65\,A vs 50\,A is decided on the thrust stand: desync, current "
-    r"and temperature on 18\,in props with 340\,KV motors.",
-    r"\textbf{Confirm in the cart:} the GenX F9P Air's bands (L1/L2), the LiPo's "
-    r"capacity (10 vs 12\,Ah on the listing), and the survey antenna's connector.",
-    r"\textbf{Not yet in this BOM:} the ground directional antenna and a powered "
-    r"USB hub for the three video receivers.",
+    r"describe the Li-ion pack. Once the LiPo arrives, measure its sag curve, then "
+    r"update both. Do not fly before that.",
+    r"\textbf{ESC.} The 65\,A is a candidate. It is confirmed on the thrust stand for "
+    r"current, temperature and desync with 18\,in props and 340\,KV motors.",
+    r"\textbf{Base antenna cable.} The LS-125-A has a TNC connector. The U.FL$\to$SMA "
+    r"pigtail needs a TNC-male to SMA-male RG58 cable (3--5\,m) to the tripod. "
+    r"No Indian listing with a price was found, so it is not yet a line.",
+    r"\textbf{Ground directional antenna.} Still open: no Indian listing was found. "
+    r"The omnis are the placeholder. Also check the USB hub adapter's rating when "
+    r"it arrives.",
+    r"\textbf{Confirmed:} the GenX F9P Air is dual-band (GPS L1/L2, Galileo E1/E5b, "
+    r"BDS B1/B2, GLONASS G1/G2), with a QMC5883 compass.",
 ]
 
 
@@ -113,6 +131,7 @@ def main():
 
     arch = "\n".join(rf"\textbf{{{a}}} & {b} \\" for a, b in ARCHITECTURE)
     opens = "\n".join(rf"\item {t}" for t in OPEN_ITEMS)
+    batt = "\n".join(" & ".join(r) + r" \\" for r in BATTERY_TABLE)
     summary = "\n".join(
         rf"{GROUP_TITLE[k]} & {sum(1 for r in S.BOM if r[0] == k)} & "
         rf"{rs(S.per_aircraft(k)) if S.per_aircraft(k) else '--'} & "
@@ -199,6 +218,21 @@ Released (tax where owed $+$ {S.CONTINGENCY * 100:.0f}\,\% contingency) & \textb
 \textit{{Qty}} = programme quantity, including spares. Retail listings are
 GST-inclusive; GST is added only to quotation and B2B lines
 ({rs(ex)} of parts). Every source name links to the listing the price came from.}}
+
+\vspace{{10pt}}
+{{\large\bfseries\color{{accent}} Battery selection}}\\[3pt]
+{{\footnotesize Each pack was run through the sizing model at its own mass,
+with the motors fixed. \emph{{Endurance}} is hover time over mission time, and
+the policy needs $\geq$\,2.0. \emph{{Queue}} is the 20\,\% reserve left after the
+third aircraft's 120\,s hold plus two 53\,s descents.}}\\[3pt]
+{{\footnotesize
+\begin{{tabularx}}{{\textwidth}}{{@{{}}XR{{1.7cm}}R{{0.9cm}}R{{1.5cm}}R{{1.3cm}}R{{2.2cm}}R{{2.3cm}}@{{}}}}
+\toprule
+\textbf{{Pack}} & \textbf{{Mass, g}} & \textbf{{Wh}} & \textbf{{MTOW, kg}} & \textbf{{T/W}} & \textbf{{Endurance, $\times$}} & \textbf{{Queue, Wh}} \\
+\midrule
+{batt}
+\bottomrule
+\end{{tabularx}}}}
 
 \vspace{{10pt}}
 {{\large\bfseries\color{{accent}} Open before ordering}}

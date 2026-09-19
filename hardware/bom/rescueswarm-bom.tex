@@ -30,8 +30,8 @@
 \vspace{8pt}
 \begin{tabularx}{\textwidth}{@{}Xr@{\hspace{18pt}}Xr@{}}
 \toprule
-Parts, three aircraft & \textbf{4{,}79{,}628} & Parts per aircraft & \textbf{1{,}34{,}400} \\
-Released (tax where owed $+$ 15\,\% contingency) & \textbf{5{,}54{,}483} & Line items & \textbf{57} \\
+Parts, three aircraft & \textbf{4{,}91{,}608} & Parts per aircraft & \textbf{1{,}37{,}509} \\
+Released (tax where owed $+$ 15\,\% contingency) & \textbf{5{,}68{,}260} & Line items & \textbf{58} \\
 \bottomrule
 \end{tabularx}
 
@@ -43,7 +43,7 @@ Released (tax where owed $+$ 15\,\% contingency) & \textbf{5{,}54{,}483} & Line 
 \textbf{Positioning} & ZED-F9P RTK on every aircraft (GenX F9P Air, compass built in); local F9P base, RTCM over E22 LoRa, no NTRIP \\
 \textbf{Video} & Digital, wfb-ng on Pi OS (BL-M8812EU2), CV overlay on the feed; one ground receiver per aircraft \\
 \textbf{Links} & ELRS 2.4 GHz safety pilot (TX12 MKII); E22 868 MHz primarily for RTCM \\
-\textbf{Power} & 6S LiPo; ESC current sensor to FC; 8 A UBEC for Pi, 3 A UBEC for video radio, separate servo UBEC \\
+\textbf{Power} & 6S 16 Ah HV LiPo; ESC current sensor to FC; 8 A UBEC for Pi, 3 A UBEC for video radio, separate servo UBEC \\
 \end{tabularx}
 
 \vspace{10pt}
@@ -54,11 +54,11 @@ Released (tax where owed $+$ 15\,\% contingency) & \textbf{5{,}54{,}483} & Line 
 \midrule
 Test instruments & 6 & -- & 3{,}246 \\
 Avionics, sensing and RTK & 21 & 72{,}317 & 2{,}44{,}077 \\
-Airframe, propulsion and power & 19 & 62{,}083 & 1{,}93{,}916 \\
+Airframe, propulsion and power & 19 & 65{,}192 & 2{,}03{,}243 \\
 Flight-test support & 7 & -- & 29{,}867 \\
-Ground station & 4 & -- & 8{,}522 \\
+Ground station & 5 & -- & 11{,}175 \\
 \midrule
-\textbf{Total parts} & \textbf{57} & \textbf{1{,}34{,}400} & \textbf{4{,}79{,}628} \\
+\textbf{Total parts} & \textbf{58} & \textbf{1{,}37{,}509} & \textbf{4{,}91{,}608} \\
 \bottomrule
 \end{tabularx}
 
@@ -94,7 +94,7 @@ Companion computer & Raspberry Pi 5, 4 GB & 1 & 3 & 11{,}049 & 33{,}147 & \href{
 AI accelerator & Raspberry Pi AI HAT+, 26 TOPS & 1 & 3 & 11{,}749 & 35{,}247 & \href{https://robu.in/product/raspberry-pi-ai-hat-26-tops/}{Robu} \\
 Compute cooling & Official Raspberry Pi 5 active cooler & 1 & 3 & 519 & 1{,}557 & \href{https://robu.in/product/official-raspberry-pi-5-active-cooler/}{Robu} \\
 Storage & SanDisk High Endurance 128 GB microSD & 1 & 3 & 3{,}989 & 11{,}967 & \href{https://www.flipkart.com/sandisk-high-endurance-128-gb-microsd-card-class-10-100-mb-s-memory/p/itmb71522dd1ecd0}{Flipkart} \\
-GNSS RTK rover & GenX F9P Air: ZED-F9P + helix + compass, $\sim$20 g & 1 & 3 & 15{,}392 & 46{,}176 & \href{https://robokits.co.in/multirotor-spare-parts/genx-uav-product/genx-uav-zed-f9p-air-lightweight-rtk-gnss-module-with-integrated-helical-antenna-and-compass-made-in-india}{Robokits} \\
+GNSS RTK rover & GenX F9P Air: ZED-F9P L1/L2 + helix + QMC5883 compass, $\sim$20 g & 1 & 3 & 15{,}392 & 46{,}176 & \href{https://robokits.co.in/multirotor-spare-parts/genx-uav-product/genx-uav-zed-f9p-air-lightweight-rtk-gnss-module-with-integrated-helical-antenna-and-compass-made-in-india}{Robokits} \\
 GNSS RTK base & SmartElex ZED-F9P-04B RTK board, U.FL & -- & 1 & 17{,}965 & 17{,}965 & \href{https://robocraze.com/products/smartelex-gps-rtk-board-ufl-zed-f9p-04b}{Robocraze} \\
 GNSS antenna, base & LS-125-A L1/L2/L5 survey antenna & -- & 1 & 8{,}123 & 8{,}123 & \href{https://robokits.co.in/multirotor-spare-parts/gps-sensors/rtk-gps-base-station-survey-grade-cors-high-precision-industrial-l1-l2-l5-antenna}{Robokits} \\
 GNSS feeder, base & U.FL to SMA female pigtail, 10 cm & -- & 1 & 49 & 49 & \href{https://robocraze.com/products/mini-pci-u-fl-to-sma-female-pigtail-cable-10cm-ipx-to-sma-extension}{Robocraze} \\
@@ -108,7 +108,7 @@ Coordination radio & EByte E22-900T22D-V2, SX1262, 22 dBm & 1 & 3 & 989 & 2{,}96
 BEC, primary & 8 A UBEC, 5/6 V out, 2-6S in & 1 & 3 & 3{,}939 & 11{,}817 & \href{https://www.amazon.in/FEICHAO-Output-7V-25-5V-Switch-Helicopters/dp/B07DD9L6P6}{Amazon India} \\
 BEC, video radio & Hobbywing 3 A UBEC, 5/6 V, 5 A peak, 2-6S & 1 & 3 & 369 & 1{,}107 & \href{https://kitsguru.com/products/hobbywing-3a-ubec-5v-6v-max-5a-lowest-rf-noise-be-hwbec?variant=40708943577269}{KitsGuru} \\
 BEC, secondary & ReadytoSky 2-6S 5V/3A + 12V/3A switchable UBEC & 1 & 3 & 279 & 837 & \href{https://robu.in/product/readytosky-2-6s-5v-3a-and-12v-3a-switchable-ubec/}{Robu} \\
-\grouphead{Airframe, propulsion and power}{1{,}93{,}916}
+\grouphead{Airframe, propulsion and power}{2{,}03{,}243}
 Motors & Tarot TL96020, 5008, 340 KV & 4 & 12 & 4{,}703 & 56{,}436 & \href{https://robokits.co.in/multirotor-spare-parts/brushless-motor-propeller-esc/brushless-motor/tarot-tl96020-5008-340kv-high-power-brushless-motor}{Robokits} \\
 Propellers & 1855 counter-rotating carbon fibre, CW+CCW pair & 4 & 16 & 1{,}641 & 26{,}256 & \href{https://robokits.co.in/multirotor-spare-parts/brushless-motor-propeller-esc/propellers/11-to-20-inch/counter-rotating-carbon-fiber-propeller-1855-cw-ccw}{Robokits} \\
 Speed controllers & Hobbywing XRotor FPV G2, 4-in-1, 65 A, 3-6S & 1 & 3 & 6{,}500 & 19{,}500 & \href{https://rcmumbai.com/hobbywing-xrotor-fpv-g2-65a-4in1-esc.html}{RC Mumbai} \\
@@ -120,7 +120,7 @@ Landing gear & F450/F550 landing skid & 1 & 3 & 549 & 1{,}647 & \href{http://rob
 Suspension springs & 5 mm stainless double torsion spring & 10 & 32 & 2 & 64 & \href{https://www.indiamart.com/proddetail/5mm-ss-double-torsion-spring-18969709097.html}{IndiaMART} \\
 Printed parts & Pro-Range PETG-CF filament, 1.75 mm, 1 kg & -- & 1 & 949 & 949 & \href{https://robu.in/product/pro-range-petg-cf-filament-1-75mm-1-kg-spool-black/}{Robu} \\
 Release servos & MG90S mini servo, 180 deg & 4 & 12 & 149 & 1{,}788 & \href{https://robocraze.com/products/mg90s-servo-motor}{Robocraze} \\
-Battery pack & GenX 22.2V 6S 12000mAh 25C/50C LiPo, XT90 & 1 & 3 & 9{,}088 & 27{,}264 & \href{https://robokits.co.in/batteries-chargers/drone-batteries/genx-power-premium-lipo-battery/genxpower-22.2v-lipo-batteries/genx-22.2v-6s-10000mah-25c-50c-premium-lipo-battery-with-xt-90-connector}{Robokits} \\
+Battery pack & GenX 22.8V 6S 16000mAh 25C/40C HV LiPo, AS150 & 1 & 3 & 12{,}197 & 36{,}591 & \href{https://robokits.co.in/batteries-chargers/drone-batteries/genx-power-premium-lipo-battery/genxpower-22.2v-lipo-batteries/genx-22.8v-6s-16000mah-25c-40c-premium-lithium-polymer-hv-battery}{Robokits} \\
 Pack fusing & ANL fuse holder + 150 A ANL fuses & 1 & 3 & 3{,}000 & 9{,}000 & \href{https://njour.com/categories/tools-and-home-improvement/PC61p6RfDup2b7A}{Njour} \\
 Pack retention & 300 mm LiPo strap, reusable & 2 & 6 & 62 & 372 & \href{https://robu.in/product/30cm-lipo-battery-strap-belt-reusable-cable-tie-wrap/}{Robu} \\
 Main leads & 10 AWG ultra-flexible silicone wire & -- & 1 & 149 & 149 & \href{https://robu.in/product/high-quality-ultra-flexible-10awg-silicone-wire-200m-red/}{Robu} \\
@@ -136,13 +136,14 @@ Heat-shrink kit & 328 pcs assorted 2:1 heat-shrink & -- & 1 & 159 & 159 & \href{
 Mounting tape & 3M VHB 5952, 6 mm x 8.2 m & -- & 1 & 560 & 560 & \href{https://www.amazon.in/sc-tch-5952-Tape-size/dp/B0F43FP3CJ}{Amazon India} \\
 Hook and loop & Self-adhesive hook and loop, 25 mm x 2 m & -- & 1 & 145 & 145 & \href{https://www.amazon.in/INSTITCH-Self-Adhesive-Gripping-Perfect-Crafting/dp/B0DVLVCDH6}{Amazon India} \\
 Consumables & Fasteners, tape, connectors, filament & -- & 1 & 5{,}000 & 5{,}000 & local \\
-\grouphead{Ground station}{8{,}522}
+\grouphead{Ground station}{11{,}175}
 Video receivers & LB-Link BL-M8812EU2, RTL8812EU, one per aircraft channel & -- & 3 & 1{,}849 & 5{,}547 & \href{https://hubtronics.in/BL-M8812EU2}{Hubtronics} \\
 Receive antennas & 6 dBi 5 GHz dipole + U.FL lead, 2 per receiver & -- & 6 & 75 & 450 & \href{https://robocraze.com/products/6dbi-2-4ghz-5ghz-dual-band-wifi-rp-sma-antenna-20cm-u-fl-ipex-cable}{Robocraze} \\
+Receiver USB hub & Transcend HUB3 powered 4-port USB hub + adapter & -- & 1 & 2{,}653 & 2{,}653 & \href{https://www.flipkart.com/transcend-super-fast-speed-usb-3-0-4-port-3-hub-power-adaptor-hub3/p/itmdkg5bsmjqvfqn}{Flipkart} \\
 Coordination base & EByte E22-900T22U, SX1262, USB & -- & 1 & 1{,}646 & 1{,}646 & \href{https://hubtronics.in/e22-900t22u}{Hubtronics} \\
 Base station mount & Photographic tripod and adapter & -- & 1 & 879 & 879 & \href{https://www.amazon.in/Amazon-Basics-Tripod-Camera-Operating/dp/B0CX5DSRCQ}{Amazon India} \\
 \midrule
-\multicolumn{5}{@{}l}{\textbf{Total parts, three aircraft}} & \multicolumn{2}{r@{}}{\textbf{4{,}79{,}628}} \\
+\multicolumn{5}{@{}l}{\textbf{Total parts, three aircraft}} & \multicolumn{2}{r@{}}{\textbf{4{,}91{,}608}} \\
 \end{longtable}}
 
 {\footnotesize \textit{/AC} = fitted per aircraft (-- = bought once for the programme).
@@ -151,13 +152,33 @@ GST-inclusive; GST is added only to quotation and B2B lines
 (14{,}064 of parts). Every source name links to the listing the price came from.}
 
 \vspace{10pt}
+{\large\bfseries\color{accent} Battery selection}\\[3pt]
+{\footnotesize Each pack was run through the sizing model at its own mass,
+with the motors fixed. \emph{Endurance} is hover time over mission time, and
+the policy needs $\geq$\,2.0. \emph{Queue} is the 20\,\% reserve left after the
+third aircraft's 120\,s hold plus two 53\,s descents.}\\[3pt]
+{\footnotesize
+\begin{tabularx}{\textwidth}{@{}XR{1.7cm}R{0.9cm}R{1.5cm}R{1.3cm}R{2.2cm}R{2.3cm}@{}}
+\toprule
+\textbf{Pack} & \textbf{Mass, g} & \textbf{Wh} & \textbf{MTOW, kg} & \textbf{T/W} & \textbf{Endurance, $\times$} & \textbf{Queue, Wh} \\
+\midrule
+Li-ion 6S3P (previous) & 1449 & 292 & 6.36 & 2.00 & 2.02 & +1.1 \\
+LiPo 12 Ah & 1424 & 266 & 6.34 & 2.01 & 1.85 \textbf{fail} & $-$3.7 \textbf{fail} \\
+LiPo 13 Ah & $\sim$1519 & 289 & 6.43 & 1.98 & 1.96 \textbf{fail} & $-$0.5 \textbf{fail} \\
+LiPo 14 Ah & $\sim$1636 & 311 & 6.55 & 1.94 & 2.06 & +2.5 \\
+\textbf{LiPo 16 Ah HV (chosen)} & 1880--2211 & 365 & 6.8--7.1 & 1.8--1.9 & 2.1--2.3 & +5 to +9 \\
+\bottomrule
+\end{tabularx}}
+
+\vspace{10pt}
 {\large\bfseries\color{accent} Open before ordering}
 \begin{itemize}[leftmargin=14pt,itemsep=2pt,topsep=3pt]
-\item \textbf{LiPo capacity.} The 12\,Ah pack is a placeholder. The landing-queue reserve needs $\geq$\,287\,Wh ($\approx$\,13\,Ah at 6S), which it misses. Size the pack from the final AUW and hover current.
-\item \textbf{Failsafe parameters.} \texttt{params.py} and the pack model still describe the Li-ion pack. Update them with the LiPo, and before flying it.
-\item \textbf{ESC.} 65\,A vs 50\,A is decided on the thrust stand: desync, current and temperature on 18\,in props with 340\,KV motors.
-\item \textbf{Confirm in the cart:} the GenX F9P Air's bands (L1/L2), the LiPo's capacity (10 vs 12\,Ah on the listing), and the survey antenna's connector.
-\item \textbf{Not yet in this BOM:} the ground directional antenna and a powered USB hub for the three video receivers.
+\item \textbf{Battery: weigh it.} GenX publishes no mass; 1880--2211\,g is bracketed from 165--194\,Wh/kg. The cost of 16\,Ah is thrust-to-weight: 1.8--1.9 on the same motors unless the stand shows $\geq$\,3.55\,kgf per motor. Charge it as LiHV. Its AS150 plug needs AS150 mates, not XT90S. The 150\,A fuse is now the tightest margin against a $\sim$136\,A peak.
+\item \textbf{Failsafe parameters.} \texttt{params.py} and the pack model still describe the Li-ion pack. Once the LiPo arrives, measure its sag curve, then update both. Do not fly before that.
+\item \textbf{ESC.} The 65\,A is a candidate. It is confirmed on the thrust stand for current, temperature and desync with 18\,in props and 340\,KV motors.
+\item \textbf{Base antenna cable.} The LS-125-A has a TNC connector. The U.FL$\to$SMA pigtail needs a TNC-male to SMA-male RG58 cable (3--5\,m) to the tripod. No Indian listing with a price was found, so it is not yet a line.
+\item \textbf{Ground directional antenna.} Still open: no Indian listing was found. The omnis are the placeholder. Also check the USB hub adapter's rating when it arrives.
+\item \textbf{Confirmed:} the GenX F9P Air is dual-band (GPS L1/L2, Galileo E1/E5b, BDS B1/B2, GLONASS G1/G2), with a QMC5883 compass.
 \end{itemize}
 
 \end{document}
