@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
-r"""Generate the printable BOM (LaTeX -> PDF) from sourced_bom.py.
+r"""Generate the Bill of Materials submitted to the faculty mentors (LaTeX -> PDF).
 
 WHY GENERATED. A hand-typed BOM document disagrees with the BOM it copies
 within one revision. Every line, quantity, price and total here is read from
-sourced_bom.py, and the totals are asserted against it before anything is
-written. The only hand-written text is the short architecture summary and the
-open items, which are decisions rather than numbers.
+sourced_bom.py, and the mentors, team and submitter are read from the approval
+letter generator, so this document cannot disagree with either. The cost
+breakdown is recomputed from its parts and asserted against the phase
+schedule's total before anything is written.
+
+The hand-written parts are decisions and checks, not numbers: the system
+configuration, the battery-selection table (model results) and the
+verification plan.
 
 Emits: hardware/bom/rescueswarm-bom.tex (and .pdf, if pdflatex is on PATH)
 Run:   python hardware/bom/build_bom_pdf.py
@@ -24,64 +29,83 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, "tools", "proposal"))
 import sourced_bom as S                                    # noqa: E402
 from build_brief_tables import money, supplier_of          # noqa: E402
+import build_approval_letters as L                         # noqa: E402
 
 OUT = os.path.join(HERE, "rescueswarm-bom.tex")
-REVISION = "2026-09-20"
+REVISION = "Revision 3"
+DATE = "21 September 2026"
 
 GROUP_TITLE = {
     "instruments": "Test instruments",
-    "avionics":    "Avionics, sensing and RTK",
+    "avionics":    "Avionics, sensing and RTK positioning",
     "airframe":    "Airframe, propulsion and power",
     "flighttest":  "Flight-test support",
     "ground":      "Ground station",
 }
 
-# Decisions, not numbers -- the one part of this document that is hand-written.
-ARCHITECTURE = [
-    ("Flight controller", "Holybro Kakute H7 V1.5 (ArduPilot), stacked on a 4-in-1 ESC"),
-    ("Companion", "Raspberry Pi 5 4 GB + AI HAT+ 26 TOPS; Arducam 12.3 MP, 6 mm lens"),
-    ("Positioning", "ZED-F9P RTK on every aircraft (GenX F9P Air, compass built in); "
-                    "local F9P base, RTCM over E22 LoRa, no NTRIP"),
-    ("Video", "Digital, wfb-ng on Pi OS (BL-M8812EU2), CV overlay on the feed; "
-              "one ground receiver per aircraft"),
-    ("Links", "ELRS 2.4 GHz safety pilot (TX12 MKII); E22 868 MHz primarily for RTCM"),
-    ("Power", "6S 16 Ah HV LiPo; ESC current sensor to FC; 8 A UBEC for Pi, "
-              "3 A UBEC for video radio, separate servo UBEC"),
+CONFIG = [
+    ("Airframe", "Quadrotor, 18\\,in carbon propellers, Tarot 5008 340\\,KV motors, "
+                 "carbon-tube arms; about 7\\,kg take-off mass with four relief kits"),
+    ("Flight control", "Holybro Kakute H7 V1.5 running ArduPilot, stacked on a "
+                       "4-in-1 65\\,A speed controller"),
+    ("Onboard computing", "Raspberry Pi 5 (4\\,GB) with AI HAT+ (26\\,TOPS) for "
+                          "person detection; 12.3\\,MP camera, 6\\,mm lens"),
+    ("Positioning", "Centimetre-level RTK on every aircraft (ZED-F9P, dual-band, "
+                    "with compass); own ground base station, so no internet is needed"),
+    ("Video", "Digital downlink (wfb-ng) carrying the camera feed with detections "
+              "drawn on; one directional ground receiver per aircraft"),
+    ("Links", "2.4\\,GHz ExpressLRS for the safety pilot; 868\\,MHz LoRa for RTK "
+              "corrections"),
+    ("Power", "6S 16\\,Ah LiHV lithium-polymer pack; separate regulators for the "
+              "computer, the video radio and the servos"),
 ]
 
-# Model results behind the battery choice (sourced_bom.py carries the table).
+# Model results behind the battery choice. sourced_bom.py carries the same table.
 BATTERY_TABLE = [
-    # pack, mass g, Wh, MTOW kg, T/W, endurance x mission, landing-queue reserve Wh
-    ("Li-ion 6S3P (previous)", "1449", "292", "6.36", "2.00", "2.02", "+1.1"),
-    ("LiPo 12 Ah", "1424", "266", "6.34", "2.01", r"1.85 \textbf{fail}", r"$-$3.7 \textbf{fail}"),
-    ("LiPo 13 Ah", r"$\sim$1519", "289", "6.43", "1.98", r"1.96 \textbf{fail}", r"$-$0.5 \textbf{fail}"),
-    ("LiPo 14 Ah", r"$\sim$1636", "311", "6.55", "1.94", "2.06", "+2.5"),
-    (r"\textbf{LiPo 16 Ah HV (chosen)}", "1880--2211", "365", "6.8--7.1",
-     "1.8--1.9", "2.1--2.3", "+5 to +9"),
+    ("Li-ion 6S3P, in-house (previous)", "1.45", "292", "6.36", "2.00", "2.02", "+1.1"),
+    ("LiPo 12\\,Ah", "1.42", "266", "6.34", "2.01", "1.85$^\\ast$", "$-$3.7$^\\ast$"),
+    ("LiPo 13\\,Ah", "1.52", "289", "6.43", "1.98", "1.96$^\\ast$", "$-$0.5$^\\ast$"),
+    ("LiPo 14\\,Ah", "1.64", "311", "6.55", "1.94", "2.06", "+2.5"),
+    ("\\textbf{LiPo 16\\,Ah LiHV (selected)}", "\\textbf{1.88--2.21}", "\\textbf{365}",
+     "\\textbf{6.8--7.1}", "\\textbf{1.8--1.9}", "\\textbf{2.1--2.3}", "\\textbf{+5 to +9}"),
 ]
 
-OPEN_ITEMS = [
-    r"\textbf{Battery: weigh it.} GenX publishes no mass; 1880--2211\,g is "
-    r"bracketed from 165--194\,Wh/kg. The cost of 16\,Ah is thrust-to-weight: "
-    r"1.8--1.9 on the same motors unless the stand shows $\geq$\,3.55\,kgf per "
-    r"motor. Charge it as LiHV. Its AS150 plug needs AS150 mates, not XT90S. The "
-    r"150\,A fuse is now the tightest margin against a $\sim$136\,A peak.",
-    r"\textbf{Failsafe parameters.} \texttt{params.py} and the pack model still "
-    r"describe the Li-ion pack. Once the LiPo arrives, measure its sag curve, then "
-    r"update both. Do not fly before that.",
-    r"\textbf{ESC.} The 65\,A is a candidate. It is confirmed on the thrust stand for "
-    r"current, temperature and desync with 18\,in props and 340\,KV motors.",
-    r"\textbf{Base antenna cable.} 3\,m of RG58, 50\,$\Omega$, TNC-male to "
-    r"SMA-male, made by a local RF cable shop. The INR~600 is an estimate, so "
-    r"get the quote before ordering.",
-    r"\textbf{Ground antennas.} Each receiver gets a 14\,dBi panel aimed at its "
-    r"own aircraft, plus an omni on its second port: wfb-ng transmits from the "
-    r"ground too, so neither port can be left open. Aim the panels and confirm "
-    r"the polarisation, which the listing does not state. The listed range is "
-    r"for analog FPV, not wfb-ng. Coax lengths depend on the ground-station layout.",
-    r"\textbf{USB hub.} Check the adapter's rating when it arrives.",
-    r"\textbf{Confirmed:} the GenX F9P Air is dual-band (GPS L1/L2, Galileo E1/E5b, "
-    r"BDS B1/B2, GLONASS G1/G2), with a QMC5883 compass.",
+# (item, check, acceptance, stage, status)
+VERIFY = [
+    ("Battery mass", "Weigh each pack on receipt.",
+     "Expected 1.88--2.21\\,kg. The measured mass replaces the estimate in the "
+     "take-off mass.", "On receipt", "Open"),
+    ("Motor thrust", "Thrust-stand test of one motor, propeller and speed controller.",
+     "$\\geq$\\,3.55\\,kgf per motor, which keeps thrust-to-weight at 2.0 at the "
+     "heaviest expected mass.", "Phase 2", "Open"),
+    ("Battery charging", "Set the charger profile.",
+     "LiHV, 4.35\\,V per cell maximum.", "Before first charge", "Open"),
+    ("Battery connector", "Fit mating connectors.",
+     "AS150 mates on the aircraft harness, not XT90S.", "Before ordering", "Open"),
+    ("Pack fuse", "Log peak current on the stand and in the first flights.",
+     "The 150\\,A fuse must hold against a $\\sim$136\\,A peak. This is the "
+     "tightest electrical margin.", "Phase 2", "Open"),
+    ("Failsafe parameters", "Weigh the pack, measure its voltage sag under load, "
+     "then update the pack model and the failsafe parameters and re-test.",
+     "The current parameters describe the previous Li-ion pack. "
+     "\\textbf{No flight before this is complete.}", "Before first flight", "Open"),
+    ("Speed controller (65\\,A)", "Thrust-stand test with 18\\,in propellers and 340\\,KV motors.",
+     "Current, temperature and freedom from desynchronisation confirmed before "
+     "the remaining two are bought.", "Phase 2", "Candidate"),
+    ("Base RTK antenna cable", "Obtain a quote from a local RF cable shop.",
+     "3\\,m RG58, 50\\,$\\Omega$, TNC-male to SMA-male. The \\rs{600} in this BOM is an "
+     "estimate until quoted.", "Before ordering", "Open"),
+    ("Ground video antennas", "Install one 14\\,dBi panel per receiver, aimed at its "
+     "aircraft, and an omni on the second port.",
+     "Confirm polarisation before installation. Measure the range on our own link, "
+     "not the listing's analog-FPV figure. Set coax lengths from the station layout.",
+     "Ground-station build", "Open"),
+    ("USB hub", "Check the supplied power adapter.",
+     "Rated for three receivers (up to 1.8\\,A each when transmitting).", "On receipt",
+     "Open"),
+    ("RTK rover (GenX F9P Air)", "Check the maker's specification.",
+     "Dual-band: GPS L1/L2, Galileo E1/E5b, BDS B1/B2, GLONASS G1/G2; QMC5883 "
+     "compass.", "Before ordering", "Verified"),
 ]
 
 
@@ -100,157 +124,312 @@ def rs(v: float) -> str:
     return money(v)
 
 
-def group_rows(key):
-    rows, n = [], 0
-    for r in S.BOM:
-        if r[0] != key:
-            continue
-        n += 1
-        _, item, model, unit, qty, ac, link = r
-        sup = supplier_of(link) if link else "local"
-        if sup == "in-house":
-            sup = "local"
-        src = rf"\href{{{url(link)}}}{{{sup}}}" if link else sup
-        acq = str(ac) if ac else "--"
-        rows.append(rf"{tex(item)} & {tex(model)} & {acq} & {qty} & "
-                    rf"{rs(unit)} & {rs(unit * qty)} & {src} \\")
-    return rows, n
+def bom_rows():
+    out, n = [], 0
+    for key, title in GROUP_TITLE.items():
+        out.append(rf"\grouphead{{{title}}}{{{rs(S.group_total(key))}}}")
+        for r in S.BOM:
+            if r[0] != key:
+                continue
+            n += 1
+            _, item, model, unit, qty, ac, link = r
+            if link:
+                sup = supplier_of(link)
+                src = rf"\href{{{url(link)}}}{{{sup}}}"
+            else:
+                src = r"Estimate$^\dagger$"
+            acq = str(ac) if ac else "--"
+            out.append(rf"{n} & {tex(item)} & {tex(model)} & {acq} & {qty} & "
+                       rf"{rs(unit)} & {rs(unit * qty)} & {src} \\")
+    return "\n".join(out), n
+
+
+TEMPLATE = r"""%=============================================================================
+% GENERATED FILE -- do not edit.
+% Produced by hardware/bom/build_bom_pdf.py from hardware/bom/sourced_bom.py.
+%=============================================================================
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage[margin=19mm,top=22mm,bottom=22mm]{geometry}
+\usepackage{array,booktabs,longtable,tabularx}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{titlesec}
+\usepackage{fancyhdr,lastpage}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{../../docs/proposal/images/}}
+\newcommand{\rs}[1]{\mbox{INR~#1}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+\newcommand{\grouphead}[2]{\multicolumn{6}{@{}l}{\rule{0pt}{12pt}\textbf{#1}} & \multicolumn{2}{r@{}}{\textbf{#2}} \\ \cmidrule{1-8}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.6em}{}
+\titlespacing*{\section}{0pt}{12pt}{4pt}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small RescueSwarm --- Bill of Materials}
+\fancyhead[R]{\small @@REVISION@@, @@DATE@@}
+\fancyfoot[C]{\small Page \thepage\ of \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}\fancyfoot[C]{\small Page \thepage\ of \pageref{LastPage}}}
+
+\begin{document}
+\thispagestyle{plain}
+
+\noindent
+\raisebox{-0.5\height}{\includegraphics[height=16mm]{brainwave.pdf}}%
+\hfill
+\raisebox{-0.5\height}{\includegraphics[height=15mm]{thapar_logo.png}}
+
+\vspace{3mm}\hrule\vspace{5mm}
+
+\begin{center}
+{\LARGE\bfseries Bill of Materials}\\[2mm]
+{\large RescueSwarm: An Autonomous Multi-UAV System for\\
+Post-Disaster Search, Localisation and Payload Delivery}\\[3mm]
+{\normalsize Three-aircraft programme \quad$\cdot$\quad @@REVISION@@ \quad$\cdot$\quad @@DATE@@}
+\end{center}
+
+\vspace{1mm}\hrule\vspace{4mm}
+
+\noindent
+\begin{tabularx}{\textwidth}{@{}L{3.2cm}X@{}}
+\textbf{Submitted to} & @@MENTORS@@, Faculty Mentors \\
+\textbf{Submitted by} & @@SUBMITTER@@, on behalf of the RescueSwarm team \\
+\textbf{Accompanies} & The programme brief and its phase-wise approval letters \\
+\end{tabularx}
+
+\section{Purpose}
+
+This document lists every component needed to build, test and operate the
+three RescueSwarm aircraft and their ground station, with quantities, unit
+prices and the supplier each price was taken from. Every price is from a dated
+Indian listing, and each supplier name in Section~\ref{sec:bom} links to it. Two
+lines have no listing and are marked as estimates. The totals are the same as
+those in the programme brief and the approval letters, because all three are
+generated from one parts list.
+
+\section{Cost summary}
+
+\begin{center}
+\begin{tabular}{@{}lr@{}}
+\toprule
+Parts at retail, GST already included (@@NINCL@@ lines) & @@INCL@@ \\
+Parts quoted before GST, and estimates (@@NEX@@ lines) & @@EX@@ \\
+\midrule
+\textbf{Parts total, three aircraft (@@LINES@@ lines)} & \textbf{@@TOTAL@@} \\
+GST at 18\,\% on the pre-GST lines only & @@GST@@ \\
+Contingency, 15\,\% & @@CONT@@ \\
+\midrule
+\textbf{Total requested} & \textbf{\rs{@@REQ@@}} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The components fitted to one aircraft cost \rs{@@PERAC@@}. The request is
+released in 29 phases, each only after the previous one has produced its
+result. The first release is \rs{@@PH1@@}, and nothing above \rs{26{,}000} is
+spent until a motor has been measured on the thrust stand.
+
+\begin{center}
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Group} & \textbf{Lines} & \textbf{Per aircraft} & \textbf{All three} \\
+\midrule
+@@GROUPS@@
+\midrule
+\textbf{Total} & \textbf{@@LINES@@} & \textbf{@@PERAC@@} & \textbf{@@TOTAL@@} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{System configuration}
+
+\noindent
+\begin{tabularx}{\textwidth}{@{}L{3.2cm}X@{}}
+\toprule
+@@CONFIG@@
+\bottomrule
+\end{tabularx}
+
+\section{Bill of materials}\label{sec:bom}
+
+All prices are in INR. \emph{Per AC} is the number fitted to one aircraft; a
+dash means the item is bought once for the whole programme. \emph{Qty} is the
+programme quantity, including spares.
+
+{\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}R{0.45cm}L{2.7cm}L{5.55cm}R{0.85cm}R{0.6cm}R{1.2cm}R{1.35cm}L{2.2cm}@{}}
+\toprule
+\textbf{\#} & \textbf{Item} & \textbf{Part} & \textbf{Per AC} & \textbf{Qty} & \textbf{Unit} & \textbf{Amount} & \textbf{Source} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{\#} & \textbf{Item} & \textbf{Part} & \textbf{Per AC} & \textbf{Qty} & \textbf{Unit} & \textbf{Amount} & \textbf{Source} \\
+\midrule
+\endhead
+\midrule \multicolumn{8}{r@{}}{\emph{continued on next page}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+@@ROWS@@
+\midrule
+\multicolumn{6}{@{}l}{\textbf{Parts total, three aircraft}} & \multicolumn{2}{r@{}}{\textbf{@@TOTAL@@}} \\
+\multicolumn{8}{@{}p{16.35cm}@{}}{\rule{0pt}{11pt}$^\dagger$\,No listing. The base antenna cable is to be made up by
+a local RF cable shop, and consumables are a round allowance. Both are carried as
+pre-GST and have GST and contingency applied.} \\
+\end{longtable}}
+
+\section{Battery selection}
+
+The battery is the largest single design decision in this revision. The
+previous design used a pack built in-house from eighteen cells. A bought
+lithium-polymer pack avoids spot-welding cells in a student lab. It has to be
+large enough to keep the mission's energy reserve \emph{after} its own extra
+weight is counted, because a heavier aircraft needs more power to hover. Each
+candidate was run through the project's sizing model at its own mass:
+
+\begin{center}
+\footnotesize
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+\textbf{Pack} & \textbf{Mass} & \textbf{Energy} & \textbf{Take-off} & \textbf{Thrust/} & \textbf{Endurance} & \textbf{Landing} \\
+ & \textbf{kg} & \textbf{Wh} & \textbf{mass, kg} & \textbf{weight} & \textbf{ratio} & \textbf{reserve, Wh} \\
+\midrule
+@@BATT@@
+\bottomrule
+\end{tabular}
+\end{center}
+
+{\footnotesize \emph{Endurance ratio} is hover time divided by mission time; the
+design requires at least 2.0. \emph{Landing reserve} is the energy left after the
+third aircraft waits its turn and descends, and must be positive. $^\ast$\,Fails
+the requirement. The 16\,Ah pack's mass is a range because the maker does not
+publish it.\par}
+
+The 12 and 13\,Ah packs fail both requirements, and about 14\,Ah is the smallest
+that passes. The 16\,Ah pack is the smallest suitable size on sale in India. Its
+cost is weight: on the same motors, thrust-to-weight falls from 2.0 to about
+1.8--1.9 unless the thrust stand measures at least 3.55\,kgf per motor. That
+measurement is the first gate in Section~\ref{sec:verify}.
+
+\section{Verification before purchase and flight}\label{sec:verify}
+
+The following are checked before the relevant purchase or before first flight.
+Each is either a measurement this programme exists to make, or a confirmation
+that a listing cannot give.
+
+{\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}R{0.4cm}L{2.6cm}L{4.1cm}L{5.4cm}L{2.0cm}L{1.4cm}@{}}
+\toprule
+\textbf{\#} & \textbf{Item} & \textbf{Check} & \textbf{Acceptance} & \textbf{When} & \textbf{Status} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{\#} & \textbf{Item} & \textbf{Check} & \textbf{Acceptance} & \textbf{When} & \textbf{Status} \\
+\midrule
+\endhead
+@@VERIFY@@
+\bottomrule
+\end{longtable}}
+
+\section{Basis of prices}
+
+\begin{itemize}[leftmargin=14pt,itemsep=1pt,topsep=2pt]
+\item Prices were taken from Indian supplier listings on 19--20 September 2026. Where
+      a supplier blocked automated checking, the same part's price at another
+      Indian retailer was used, and that retailer is the one linked.
+\item Retail listings already include GST and are used as listed. Pre-GST quotations,
+      B2B listings and estimates have 18\,\% GST added (\rs{@@GST@@}).
+\item A 15\,\% contingency is applied to the whole, for price movement between
+      now and each phase's purchase.
+\item Customs duty does not apply: every part is bought from a supplier in India.
+\end{itemize}
+
+\section{Team and approval}
+
+\noindent
+\begin{center}
+\footnotesize
+\begin{tabular}{@{}L{3.2cm}L{6.4cm}ll@{}}
+\toprule
+\textbf{Name} & \textbf{Department} & \textbf{Batch} & \textbf{Roll No.} \\
+\midrule
+@@TEAM@@
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{12mm}
+\noindent
+\begin{tabular}{@{}p{5.4cm}p{5.4cm}p{5.4cm}@{}}
+\hrulefill & \hrulefill & \hrulefill \\
+\textbf{@@MENTORA@@} & \textbf{@@MENTORB@@} & \textbf{@@SUBNAME@@} \\
+{\small Faculty Mentor} & {\small Faculty Mentor} & {\small Submitted on behalf of the team} \\
+{\small Date:} & {\small Date:} & {\small Date:} \\
+\end{tabular}
+
+\end{document}
+"""
 
 
 def main():
     total = S.total()
-    released = sum(S.phase_released().values())
-    per_ac = sum(r[3] * r[5] for r in S.BOM)
     ex = sum(S.line_total(r) for r in S.BOM if S.is_ex_gst(r[6]))
+    incl = total - ex
+    gst = ex * S.GST
+    cont = (total + gst) * S.CONTINGENCY
+    req = total + gst + cont
+    released = sum(S.phase_released().values())
+    assert abs(req - released) < 1.0, f"breakdown {req:.2f} != phase schedule {released:.2f}"
     assert abs(sum(S.group_total(k) for k in GROUP_TITLE) - total) < 0.01
-    assert abs(released - S.released(total - ex, ex)) < 1.0, "phase sum disagrees"
+    per_ac = sum(r[3] * r[5] for r in S.BOM)
+    ph1 = S.phase_released()[1]
 
-    body = []
-    for key in GROUP_TITLE:
-        rows, n = group_rows(key)
-        body.append(rf"\grouphead{{{GROUP_TITLE[key]}}}{{{rs(S.group_total(key))}}}")
-        body.extend(rows)
-    lines = len(S.BOM)
-
-    arch = "\n".join(rf"\textbf{{{a}}} & {b} \\" for a, b in ARCHITECTURE)
-    opens = "\n".join(rf"\item {t}" for t in OPEN_ITEMS)
-    batt = "\n".join(" & ".join(r) + r" \\" for r in BATTERY_TABLE)
-    summary = "\n".join(
+    rows, n = bom_rows()
+    assert n == len(S.BOM)
+    groups = "\n".join(
         rf"{GROUP_TITLE[k]} & {sum(1 for r in S.BOM if r[0] == k)} & "
         rf"{rs(S.per_aircraft(k)) if S.per_aircraft(k) else '--'} & "
         rf"{rs(S.group_total(k))} \\" for k in GROUP_TITLE)
+    config = "\n".join(rf"\textbf{{{a}}} & {b} \\" for a, b in CONFIG)
+    batt = "\n".join(" & ".join(r) + r" \\" for r in BATTERY_TABLE)
+    verify = "\n".join(
+        rf"{i} & {it} & {chk} & {acc} & {when} & "
+        + (rf"\textbf{{{st}}}" if st == "Open" else st) + r" \\"
+        for i, (it, chk, acc, when, st) in enumerate(VERIFY, 1))
+    team = "\n".join(rf"{nm} & {dept} & {L.BATCH} & {roll} \\" for nm, dept, roll in L.TEAM)
+    sub_name, _sub_dept, _sub_roll = L.SUBMITTER
 
-    doc = rf"""%{'=' * 76}
-% GENERATED FILE -- do not edit.
-% Produced by hardware/bom/build_bom_pdf.py from hardware/bom/sourced_bom.py.
-%{'=' * 76}
-\documentclass[10pt,a4paper]{{article}}
-\usepackage[T1]{{fontenc}}
-\usepackage[scaled=0.92]{{helvet}}
-\renewcommand{{\familydefault}}{{\sfdefault}}
-\usepackage[margin=14mm,top=16mm,bottom=18mm]{{geometry}}
-\usepackage{{booktabs,longtable,array,tabularx}}
-\usepackage{{xcolor}}
-\usepackage{{enumitem}}
-\usepackage{{fancyhdr,lastpage}}
-\usepackage[hidelinks]{{hyperref}}
-\definecolor{{accent}}{{HTML}}{{1F4E79}}
-\newcolumntype{{L}}[1]{{>{{\raggedright\arraybackslash}}p{{#1}}}}
-\newcolumntype{{R}}[1]{{>{{\raggedleft\arraybackslash}}p{{#1}}}}
-\newcommand{{\grouphead}}[2]{{\multicolumn{{5}}{{@{{}}l}}{{\rule{{0pt}}{{13pt}}\textbf{{\color{{accent}}#1}}}} & \multicolumn{{2}}{{r@{{}}}}{{\textbf{{\color{{accent}}#2}}}} \\ \cmidrule{{1-7}}}}
-\pagestyle{{fancy}}\fancyhf{{}}
-\renewcommand{{\headrulewidth}}{{0pt}}
-\fancyfoot[L]{{\footnotesize NIDAR RescueSwarm --- Bill of Materials, rev.\ {REVISION}}}
-\fancyfoot[R]{{\footnotesize \thepage\ / \pageref{{LastPage}}}}
-\setlength{{\parindent}}{{0pt}}
+    doc = TEMPLATE
+    for k, v in {
+        "REVISION": REVISION, "DATE": DATE,
+        "MENTORS": " and ".join(L.MENTORS),
+        "MENTORA": L.MENTORS[0], "MENTORB": L.MENTORS[1],
+        "SUBMITTER": sub_name, "SUBNAME": sub_name,
+        "NINCL": str(sum(1 for r in S.BOM if not S.is_ex_gst(r[6]))),
+        "NEX": str(sum(1 for r in S.BOM if S.is_ex_gst(r[6]))),
+        "INCL": rs(incl), "EX": rs(ex), "TOTAL": rs(total), "GST": rs(gst),
+        "CONT": rs(cont), "REQ": rs(req), "PERAC": rs(per_ac), "PH1": rs(ph1),
+        "LINES": str(len(S.BOM)), "GROUPS": groups, "CONFIG": config,
+        "ROWS": rows, "BATT": batt, "VERIFY": verify, "TEAM": team,
+    }.items():
+        doc = doc.replace(f"@@{k}@@", v)
+    assert "@@" not in doc, "unreplaced template key"
+    assert not any(ord(c) < 32 and c != "\n" for c in doc), "control char in document"
 
-\begin{{document}}
-
-{{\LARGE\bfseries\color{{accent}} NIDAR RescueSwarm --- Bill of Materials}}\\[2pt]
-{{\large Three-aircraft programme \quad$\cdot$\quad Revision {REVISION} \quad$\cdot$\quad all prices INR}}
-
-\vspace{{8pt}}
-\begin{{tabularx}}{{\textwidth}}{{@{{}}Xr@{{\hspace{{18pt}}}}Xr@{{}}}}
-\toprule
-Parts, three aircraft & \textbf{{{rs(total)}}} & Parts per aircraft & \textbf{{{rs(per_ac)}}} \\
-Released (tax where owed $+$ {S.CONTINGENCY * 100:.0f}\,\% contingency) & \textbf{{{rs(released)}}} & Line items & \textbf{{{lines}}} \\
-\bottomrule
-\end{{tabularx}}
-
-\vspace{{10pt}}
-{{\large\bfseries\color{{accent}} Architecture}}\\[3pt]
-\begin{{tabularx}}{{\textwidth}}{{@{{}}L{{3.0cm}}X@{{}}}}
-{arch}
-\end{{tabularx}}
-
-\vspace{{10pt}}
-{{\large\bfseries\color{{accent}} Summary by group}}\\[3pt]
-\begin{{tabularx}}{{\textwidth}}{{@{{}}XR{{1.4cm}}R{{2.6cm}}R{{2.6cm}}@{{}}}}
-\toprule
-\textbf{{Group}} & \textbf{{Lines}} & \textbf{{Per aircraft}} & \textbf{{Programme}} \\
-\midrule
-{summary}
-\midrule
-\textbf{{Total parts}} & \textbf{{{lines}}} & \textbf{{{rs(per_ac)}}} & \textbf{{{rs(total)}}} \\
-\bottomrule
-\end{{tabularx}}
-
-\vspace{{10pt}}
-{{\large\bfseries\color{{accent}} Line items}}\\[3pt]
-{{\footnotesize
-\setlength{{\tabcolsep}}{{3.5pt}}
-\begin{{longtable}}{{@{{}}L{{2.9cm}}L{{6.2cm}}R{{0.7cm}}R{{0.8cm}}R{{1.4cm}}R{{1.6cm}}L{{2.6cm}}@{{}}}}
-\toprule
-\textbf{{Item}} & \textbf{{Part}} & \textbf{{/AC}} & \textbf{{Qty}} & \textbf{{Unit}} & \textbf{{Total}} & \textbf{{Source}} \\
-\midrule
-\endfirsthead
-\toprule
-\textbf{{Item}} & \textbf{{Part}} & \textbf{{/AC}} & \textbf{{Qty}} & \textbf{{Unit}} & \textbf{{Total}} & \textbf{{Source}} \\
-\midrule
-\endhead
-\midrule \multicolumn{{7}}{{r@{{}}}}{{\emph{{continued}}}} \\
-\endfoot
-\bottomrule
-\endlastfoot
-{chr(10).join(body)}
-\midrule
-\multicolumn{{5}}{{@{{}}l}}{{\textbf{{Total parts, three aircraft}}}} & \multicolumn{{2}}{{r@{{}}}}{{\textbf{{{rs(total)}}}}} \\
-\end{{longtable}}}}
-
-{{\footnotesize \textit{{/AC}} = fitted per aircraft (-- = bought once for the programme).
-\textit{{Qty}} = programme quantity, including spares. Retail listings are
-GST-inclusive; GST is added only to quotation and B2B lines
-({rs(ex)} of parts). Every source name links to the listing the price came from.}}
-
-\vspace{{10pt}}
-{{\large\bfseries\color{{accent}} Battery selection}}\\[3pt]
-{{\footnotesize Each pack was run through the sizing model at its own mass,
-with the motors fixed. \emph{{Endurance}} is hover time over mission time, and
-the policy needs $\geq$\,2.0. \emph{{Queue}} is the 20\,\% reserve left after the
-third aircraft's 120\,s hold plus two 53\,s descents.}}\\[3pt]
-{{\footnotesize
-\begin{{tabularx}}{{\textwidth}}{{@{{}}XR{{1.7cm}}R{{0.9cm}}R{{1.5cm}}R{{1.3cm}}R{{2.2cm}}R{{2.3cm}}@{{}}}}
-\toprule
-\textbf{{Pack}} & \textbf{{Mass, g}} & \textbf{{Wh}} & \textbf{{MTOW, kg}} & \textbf{{T/W}} & \textbf{{Endurance, $\times$}} & \textbf{{Queue, Wh}} \\
-\midrule
-{batt}
-\bottomrule
-\end{{tabularx}}}}
-
-\vspace{{10pt}}
-{{\large\bfseries\color{{accent}} Open before ordering}}
-\begin{{itemize}}[leftmargin=14pt,itemsep=2pt,topsep=3pt]
-{opens}
-\end{{itemize}}
-
-\end{{document}}
-"""
     io.open(OUT, "w", encoding="utf-8", newline="\n").write(doc)
-    print(f"  wrote {os.path.relpath(OUT, ROOT)}  ({lines} lines, parts {total:,.0f}, "
-          f"released {released:,.0f})")
+    print(f"  wrote {os.path.relpath(OUT, ROOT)}  ({len(S.BOM)} lines, parts {total:,.0f}, "
+          f"requested {req:,.0f})")
 
     if shutil.which("pdflatex"):
-        for _ in range(2):          # second pass resolves the page count
+        for _ in range(2):          # second pass resolves page count and references
             r = subprocess.run(["pdflatex", "-interaction=nonstopmode",
                                 "-halt-on-error", os.path.basename(OUT)],
                                cwd=HERE, capture_output=True, text=True)
