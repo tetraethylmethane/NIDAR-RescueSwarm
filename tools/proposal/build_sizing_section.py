@@ -681,9 +681,10 @@ sheds the frame rate rather than pretending the channel is unchanged.
 
 \subsubsection{What degrades first, by construction}
 
-The ordering is deliberate and follows the margins. Video is analog, so it
-degrades continuously into noise rather than dropping a digital link, and it is
-the path permitted to fail. Coordination degrades next, from GFSK to LoRa SF7 to
+The ordering is deliberate and follows the margins. Video is the path permitted
+to fail: it is digital, so it holds a clean picture until its margin is spent
+and then drops frames, and losing it costs the operator a view, not the
+aircraft a decision. Coordination degrades next, from GFSK to LoRa SF7 to
 a shed frame rate. Command and abort are last, on ExpressLRS at @@mcmd@@\,dB,
 and are never traded --- if that link is lost the aircraft executes its failsafe
 rather than waiting for it to return. Every band is licence-exempt in India: the

@@ -31,14 +31,23 @@ import math
 GEOFENCE_M = 600.0
 
 LINKS = [
-    dict(name="Analog video, 5.8 GHz", f_mhz=5800, tx_dbm=27.8,
-         g_tx_dbi=2, g_rx_dbi=12, sens_dbm=-90, adopted=True,
-         hw="800 mW VTX, 5.8 GHz dipole to a 12 dBi patch at the GCS",
-         role="Video downlink, one channel per aircraft"),
+    # Digital since 2026-09-19 (was an 800 mW analog VTX into a 12 dBi patch,
+    # 28.5 dB). The Pi encodes the camera feed WITH the detections drawn on and
+    # sends it over wfb-ng on an RTL8812EU. TX power: the module is rated above
+    # 29 dBm (OpenIPC); 27 dBm is carried as the operating level, below the
+    # rating, because the module's current and heat rise steeply above it.
+    # Gains are the BOM's antennas: the 6 dBi air dipole and the 14 dBi ground
+    # panel. Sensitivity -86 dBm is a typical RTL8812-class figure for MCS1
+    # (QPSK 1/2) at 20 MHz, the usual wfb-ng video mode -- an ASSUMPTION, not
+    # a BL-M8812EU2 datasheet value, which is not published. P5 measures it.
+    dict(name="Digital video, 5.8 GHz", f_mhz=5800, tx_dbm=27,
+         g_tx_dbi=6, g_rx_dbi=14, sens_dbm=-86, adopted=True,
+         hw="BL-M8812EU2 (RTL8812EU), wfb-ng MCS1 20 MHz, 6 dBi dipole to a 14 dBi panel",
+         role="Video downlink with detections overlaid, one channel per aircraft"),
     dict(name="ExpressLRS, 2.4 GHz", f_mhz=2400, tx_dbm=20,
          g_tx_dbi=2, g_rx_dbi=2, sens_dbm=-108, adopted=True,
          hw="ELRS 2.4 GHz, 100 mW, LR12 packet rate",
-         role="Command, abort, and RTK corrections"),
+         role="Command, abort and telemetry"),
     dict(name="LoRa, 865 MHz SF7", f_mhz=865, tx_dbm=14,
          g_tx_dbi=2, g_rx_dbi=2, sens_dbm=-123, adopted=True,
          hw="SX1262, 865--867 MHz delicensed SRD band, 25 mW",

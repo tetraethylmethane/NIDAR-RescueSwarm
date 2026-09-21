@@ -7,6 +7,32 @@ programmatic edit, run the recalculation check before trusting a number.
 
 ---
 
+## 2026-09-21 — briefs and technical proposal brought in line with the BOM
+
+No price changed. The BOM document is now a mentor submission (the revision
+label is gone). The documents that describe the hardware now describe this one:
+
+- **Mentor briefs (all three):** the stale "only one aircraft carries RTK /
+  computer ₹19,999 / ask down ₹67,000" paragraphs are replaced. The ask is down
+  about ₹1,14,000 on the previous brief, the two estimate lines are named, and
+  each brief points to the separate Bill of Materials.
+- **Technical proposal:** it now names the Kakute H7, ZED-F9P RTK on all three
+  aircraft with the team's own base, RTCM over 865 MHz, and digital wfb-ng
+  video. The battery reversal (Li-ion → 16 Ah LiPo) is argued, with the
+  candidate table. The encode-contention risk is reopened, the moving-baseline
+  risk no longer cites Teravolt, and Teravolt is gone from the bibliography.
+  The design-point table is labelled as modelled with the 6S3P pack until the
+  model is re-run on the LiPo's measured mass.
+- **Link model:** the analog video row became digital (27 dBm, 6 + 14 dBi,
+  −86 dBm assumed for MCS1). Margin is 28.5 → **29.7 dB**. Section V, the
+  verifier and `model.json` follow.
+- **Found while doing it:** OpenIPC says the BL-M8812EU2 draws 5 V at 2 A or
+  more at high power, wants a >3 A supply, and needs a heatsink with a fan. The
+  3 A video BEC is borderline and the fan is not a line; this is now a
+  verification item.
+
+---
+
 ## 2026-09-20 — base RTK cable and ground panel antennas added
 
 Parts ₹4,91,608 → **₹4,93,978** (61 lines); released ₹5,68,260 → **₹5,71,171**.

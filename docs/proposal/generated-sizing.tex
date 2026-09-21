@@ -318,7 +318,7 @@ the best figure on the datasheet. Table~\ref{tab:links} evaluates
  & $P_{\mathrm{tx}}$ & $\Sigma G$ & $S_{\mathrm{rx}}$ & FSPL & $M$ \\
 \textbf{Link} & (dBm) & (dBi) & (dBm) & (dB) & (dB) \\
 \midrule
-Analog video, 5.8\,GHz & 27.8 & 14 & $-90$ & 103.3 & \textbf{28.5} \\
+Digital video, 5.8\,GHz & 27.0 & 20 & $-86$ & 103.3 & \textbf{29.7} \\
 ExpressLRS, 2.4\,GHz & 20.0 & 4 & $-108$ & 95.6 & \textbf{36.4} \\
 LoRa, 865\,MHz SF7 & 14.0 & 4 & $-123$ & 86.7 & \textbf{54.3} \\
 \bottomrule
@@ -332,8 +332,8 @@ Run (\ref{eq:margin}) on the 802.11 configuration it replaced --- 20\,dBm into
 of path loss leaves \textbf{8.7\,dB}. That is the thinnest path in the
 system and simultaneously the one carrying the most data, which is the worst
 possible pairing: the link most likely to break is the one whose loss costs
-most. The three-radio split leaves every remaining path above 28.5\,dB, an
-improvement of 19.8\,dB on the video path alone (Fig.~\ref{fig:links}a).
+most. The three-radio split leaves every remaining path above 29.7\,dB, an
+improvement of 21.0\,dB on the video path alone (Fig.~\ref{fig:links}a).
 
 Meshing does not repair this, and the reason is worth stating because it is the
 argument that was originally made for the mesh. A relay hop through a second
@@ -349,8 +349,8 @@ The withdrawn link is not useless --- it reaches its sensitivity floor at
 (Fig.~\ref{fig:links}b). Margin is not headroom, though. Rain, body blocking, a
 banked airframe and antenna misalignment all draw on it, none of them is in
 (\ref{eq:margin}), and 8.7\,dB does not cover them. The adopted video link
-carries 28.5\,dB to the same geofence and reaches zero only at
-16.0\,km.
+carries 29.7\,dB to the same geofence and reaches zero only at
+18.4\,km.
 
 \begin{figure*}[t]
 \centering
@@ -428,9 +428,10 @@ sheds the frame rate rather than pretending the channel is unchanged.
 
 \subsubsection{What degrades first, by construction}
 
-The ordering is deliberate and follows the margins. Video is analog, so it
-degrades continuously into noise rather than dropping a digital link, and it is
-the path permitted to fail. Coordination degrades next, from GFSK to LoRa SF7 to
+The ordering is deliberate and follows the margins. Video is the path permitted
+to fail: it is digital, so it holds a clean picture until its margin is spent
+and then drops frames, and losing it costs the operator a view, not the
+aircraft a decision. Coordination degrades next, from GFSK to LoRa SF7 to
 a shed frame rate. Command and abort are last, on ExpressLRS at 36.4\,dB,
 and are never traded --- if that link is lost the aircraft executes its failsafe
 rather than waiting for it to return. Every band is licence-exempt in India: the

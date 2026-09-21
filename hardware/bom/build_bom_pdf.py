@@ -32,7 +32,6 @@ from build_brief_tables import money, supplier_of          # noqa: E402
 import build_approval_letters as L                         # noqa: E402
 
 OUT = os.path.join(HERE, "rescueswarm-bom.tex")
-REVISION = "Revision 3"
 DATE = "21 September 2026"
 
 GROUP_TITLE = {
@@ -100,6 +99,11 @@ VERIFY = [
      "Confirm polarisation before installation. Measure the range on our own link, "
      "not the listing's analog-FPV figure. Set coax lengths from the station layout.",
      "Ground-station build", "Open"),
+    ("Video radio power and cooling", "Bench-run the BL-M8812EU2 at the set TX power "
+     "on its 3\\,A regulator.",
+     "It draws about 2\\,A or more at high power and needs a heatsink with a fan. "
+     "The 3\\,A regulator must hold without sagging, or a larger one is fitted.",
+     "Before first flight", "Open"),
     ("USB hub", "Check the supplied power adapter.",
      "Rated for three receivers (up to 1.8\\,A each when transmitting).", "On receipt",
      "Open"),
@@ -171,7 +175,7 @@ TEMPLATE = r"""%================================================================
 \titlespacing*{\section}{0pt}{12pt}{4pt}
 \pagestyle{fancy}\fancyhf{}
 \fancyhead[L]{\small RescueSwarm --- Bill of Materials}
-\fancyhead[R]{\small @@REVISION@@, @@DATE@@}
+\fancyhead[R]{\small @@DATE@@}
 \fancyfoot[C]{\small Page \thepage\ of \pageref{LastPage}}
 \renewcommand{\headrulewidth}{0.4pt}
 \fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}\fancyfoot[C]{\small Page \thepage\ of \pageref{LastPage}}}
@@ -190,7 +194,7 @@ TEMPLATE = r"""%================================================================
 {\LARGE\bfseries Bill of Materials}\\[2mm]
 {\large RescueSwarm: An Autonomous Multi-UAV System for\\
 Post-Disaster Search, Localisation and Payload Delivery}\\[3mm]
-{\normalsize Three-aircraft programme \quad$\cdot$\quad @@REVISION@@ \quad$\cdot$\quad @@DATE@@}
+{\normalsize Three-aircraft programme \quad$\cdot$\quad @@DATE@@}
 \end{center}
 
 \vspace{1mm}\hrule\vspace{4mm}
@@ -287,7 +291,7 @@ pre-GST and have GST and contingency applied.} \\
 
 \section{Battery selection}
 
-The battery is the largest single design decision in this revision. The
+The battery is the largest single design decision in this parts list. The
 previous design used a pack built in-house from eighteen cells. A bought
 lithium-polymer pack avoids spot-welding cells in a student lab. It has to be
 large enough to keep the mission's energy reserve \emph{after} its own extra
@@ -409,7 +413,7 @@ def main():
 
     doc = TEMPLATE
     for k, v in {
-        "REVISION": REVISION, "DATE": DATE,
+        "DATE": DATE,
         "MENTORS": " and ".join(L.MENTORS),
         "MENTORA": L.MENTORS[0], "MENTORB": L.MENTORS[1],
         "SUBMITTER": sub_name, "SUBNAME": sub_name,

@@ -181,13 +181,14 @@ four kits it carries. It cannot show the operator live video, because there is
 no downlink; the ground station sees the aircraft's position, state and
 reported findings over the same radio the safety pilot uses, which is what the
 mission actually turns on. And it cannot prove \emph{how accurately} it locates
-people, because the centimetre-accurate receiver that would measure that
-against surveyed ground is the single most expensive line in the programme and
-is a publication objective rather than a flight requirement.
+people, because the RTK base station that would measure that against surveyed
+ground is left out: it serves a publication objective rather than a flight
+requirement.
 
 The last one deserves emphasis, because it is the one real loss. The aircraft
-still locates survivors --- it flies a two-metre receiver against a five-metre
-delivery requirement, better than twice the margin it needs. What we cannot yet
+still locates survivors --- without a base its receiver works to about two
+metres against a five-metre delivery requirement, better than twice the margin it
+needs. What we cannot yet
 publish is a \emph{measured} figure for how well it does so.
 
 \subsection{One change to the design: the battery is bought, not built}
@@ -288,24 +289,16 @@ radio --- would come to \rs{2{,}43{,}874}, and the full three-aircraft
 programme to \rs{5{,}71{,}171}. Each step is asked for only on the evidence
 produced by the one before it.
 
-\textbf{Every line below is a current listing from a named Indian supplier,
-priced and linked.} The schedule, the tables and the approval letters are all
-generated from that one list, so they cannot drift apart --- and they are
-generated from the same list as the single-aircraft and three-aircraft
-versions of this brief, so none of the three can disagree with another about a
-price. \textbf{One line is the exception and is marked as such: the bought
-battery pack}, which is not in the sourced sheet because that sheet describes a
-pack we would have built. Its listing needs confirming in the cart --- the
-supplier's page conflates two capacities --- and its mass is taken from an
-equivalent pack rather than the maker's own sheet.
+\textbf{Every line below but one is a current listing from a named Indian
+supplier, priced and linked;} the consumables are a round allowance. The
+schedule, the tables and the approval letters are all generated from that one
+list, so they cannot drift apart --- and they are generated from the same list
+as the single-aircraft and three-aircraft versions of this brief, so none of the
+three can disagree with another about a price. The battery's maker does not
+publish its mass, so it is weighed on arrival.
 
-Three corrections from an earlier costing are carried here. The onboard
-computer was budgeted at \rs{8{,}000} against a real \rs{19{,}999}. The
-certified scale has left the ask entirely, because the department owns one. And
-the earlier version added customs duty and GST to every line, which was right
-for estimates but wrong for Indian retail prices, where the tax is already
-paid; duty and GST are now charged only on the supplier quotations that are
-genuinely quoted before tax.
+GST is charged only on lines quoted before tax; Indian retail prices already
+include it. The full parts list, with every listing linked and the checks each part must pass before it is bought or flown, is submitted alongside this brief as a separate Bill of Materials.
 
 \needspace{7\baselineskip}
 Terms used below. \emph{RTK}: satellite positioning corrected against
@@ -363,10 +356,7 @@ rather than merely designed for.
 ten hectares in eight minutes. The replication is cheaper per aircraft than the
 first, because the instruments, the charger, the safety-pilot transmitter and
 the ground station are bought once and are already in this ask, and because
-only one aircraft ever needs the costly centimetre receiver --- all three are
-the same machine, so measuring one against surveyed ground tells us how well
-the design works, and the other two fly a two-metre receiver against a
-five-metre requirement.
+one RTK base station serves all three aircraft.
 
 %-----------------------------------------------------------------------------
 \section{Future work}

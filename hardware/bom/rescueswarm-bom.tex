@@ -25,7 +25,7 @@
 \titlespacing*{\section}{0pt}{12pt}{4pt}
 \pagestyle{fancy}\fancyhf{}
 \fancyhead[L]{\small RescueSwarm --- Bill of Materials}
-\fancyhead[R]{\small Revision 3, 21 September 2026}
+\fancyhead[R]{\small 21 September 2026}
 \fancyfoot[C]{\small Page \thepage\ of \pageref{LastPage}}
 \renewcommand{\headrulewidth}{0.4pt}
 \fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}\fancyfoot[C]{\small Page \thepage\ of \pageref{LastPage}}}
@@ -44,7 +44,7 @@
 {\LARGE\bfseries Bill of Materials}\\[2mm]
 {\large RescueSwarm: An Autonomous Multi-UAV System for\\
 Post-Disaster Search, Localisation and Payload Delivery}\\[3mm]
-{\normalsize Three-aircraft programme \quad$\cdot$\quad Revision 3 \quad$\cdot$\quad 21 September 2026}
+{\normalsize Three-aircraft programme \quad$\cdot$\quad 21 September 2026}
 \end{center}
 
 \vspace{1mm}\hrule\vspace{4mm}
@@ -216,7 +216,7 @@ pre-GST and have GST and contingency applied.} \\
 
 \section{Battery selection}
 
-The battery is the largest single design decision in this revision. The
+The battery is the largest single design decision in this parts list. The
 previous design used a pack built in-house from eighteen cells. A bought
 lithium-polymer pack avoids spot-welding cells in a student lab. It has to be
 large enough to keep the mission's energy reserve \emph{after} its own extra
@@ -277,8 +277,9 @@ that a listing cannot give.
 7 & Speed controller (65\,A) & Thrust-stand test with 18\,in propellers and 340\,KV motors. & Current, temperature and freedom from desynchronisation confirmed before the remaining two are bought. & Phase 2 & Candidate \\
 8 & Base RTK antenna cable & Obtain a quote from a local RF cable shop. & 3\,m RG58, 50\,$\Omega$, TNC-male to SMA-male. The \rs{600} in this BOM is an estimate until quoted. & Before ordering & \textbf{Open} \\
 9 & Ground video antennas & Install one 14\,dBi panel per receiver, aimed at its aircraft, and an omni on the second port. & Confirm polarisation before installation. Measure the range on our own link, not the listing's analog-FPV figure. Set coax lengths from the station layout. & Ground-station build & \textbf{Open} \\
-10 & USB hub & Check the supplied power adapter. & Rated for three receivers (up to 1.8\,A each when transmitting). & On receipt & \textbf{Open} \\
-11 & RTK rover (GenX F9P Air) & Check the maker's specification. & Dual-band: GPS L1/L2, Galileo E1/E5b, BDS B1/B2, GLONASS G1/G2; QMC5883 compass. & Before ordering & Verified \\
+10 & Video radio power and cooling & Bench-run the BL-M8812EU2 at the set TX power on its 3\,A regulator. & It draws about 2\,A or more at high power and needs a heatsink with a fan. The 3\,A regulator must hold without sagging, or a larger one is fitted. & Before first flight & \textbf{Open} \\
+11 & USB hub & Check the supplied power adapter. & Rated for three receivers (up to 1.8\,A each when transmitting). & On receipt & \textbf{Open} \\
+12 & RTK rover (GenX F9P Air) & Check the maker's specification. & Dual-band: GPS L1/L2, Galileo E1/E5b, BDS B1/B2, GLONASS G1/G2; QMC5883 compass. & Before ordering & Verified \\
 \bottomrule
 \end{longtable}}
 

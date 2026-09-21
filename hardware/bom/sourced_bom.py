@@ -141,8 +141,13 @@ BOM = [
  # The Pi 5 + AI HAT+ + camera draw ~3-4 A, so the 8 A unit stays for them alone.
  ("avionics", "BEC, primary", "8 A UBEC, 5/6 V out, 2-6S in", 3939, 3, 1,
   "https://www.amazon.in/FEICHAO-Output-7V-25-5V-Switch-Helicopters/dp/B07DD9L6P6"),
- # The BL-M8812EU2 draws up to 1.8 A at 5 V, so it gets its own regulator
- # instead of sharing the Pi's rail or loading the Pi's USB port.
+ # The BL-M8812EU2 draws up to 1.8 A at 5 V (Hubtronics), so it gets its own
+ # regulator instead of sharing the Pi's rail or loading the Pi's USB port.
+ # CHECK (OpenIPC wiki, 2026-09-21): at high TX power it draws 5 V / 2.x A,
+ # OpenIPC asks for a >3 A supply, and it needs a HEATSINK WITH A FAN. This
+ # 3 A UBEC is therefore borderline at high power: confirm it holds at the TX
+ # power actually set (27 dBm is the link budget's figure), or use a larger BEC.
+ # The heatsink and fan are not yet lines.
  ("avionics", "BEC, video radio", "Hobbywing 3 A UBEC, 5/6 V, 5 A peak, 2-6S", 369, 3, 1,
   "https://kitsguru.com/products/hobbywing-3a-ubec-5v-6v-max-5a-lowest-rf-noise-be-hwbec?variant=40708943577269"),
  # The servo rail, kept apart so a jammed servo cannot sag the autopilot.

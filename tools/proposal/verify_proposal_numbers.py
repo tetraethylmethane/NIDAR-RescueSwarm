@@ -234,7 +234,7 @@ results.append((1.7308 * math.sqrt(_rest2 + 5.00 ** 2) > 5.0, "IV-D",
 # document any more, so the check was passing against nothing. What matters
 # now is that the margins hand-typed into the Section IV-H table still equal
 # what radio_links.py computes, and that the generated Section V agrees.
-for _label, _stated in (("Analog video, 5.8 GHz", 28.5),
+for _label, _stated in (("Digital video, 5.8 GHz", 29.7),
                         ("ExpressLRS, 2.4 GHz", 36.4),
                         ("LoRa, 865 MHz SF7", 54.3),
                         ("802.11, 5.8 GHz (withdrawn)", 8.7)):

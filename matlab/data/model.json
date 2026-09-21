@@ -105,13 +105,13 @@
  },
  "links": [
   {
-   "name": "Analog video, 5.8 GHz",
+   "name": "Digital video, 5.8 GHz",
    "f_mhz": 5800,
-   "tx_dbm": 27.8,
-   "g_tx_dbi": 2,
-   "g_rx_dbi": 12,
-   "sens_dbm": -90,
-   "role": "Video downlink, one channel per aircraft"
+   "tx_dbm": 27,
+   "g_tx_dbi": 6,
+   "g_rx_dbi": 14,
+   "sens_dbm": -86,
+   "role": "Video downlink with detections overlaid, one channel per aircraft"
   },
   {
    "name": "ExpressLRS, 2.4 GHz",
@@ -120,7 +120,7 @@
    "g_tx_dbi": 2,
    "g_rx_dbi": 2,
    "sens_dbm": -108,
-   "role": "Command, abort, and RTK corrections"
+   "role": "Command, abort and telemetry"
   },
   {
    "name": "LoRa, 865 MHz SF7",

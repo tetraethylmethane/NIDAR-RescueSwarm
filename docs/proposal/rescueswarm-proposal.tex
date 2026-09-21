@@ -3,7 +3,9 @@
 %  IEEEtran conference format.  Compile:  pdflatex x3 (no bibtex; the
 %  bibliography is a manual thebibliography environment).
 %
-%  Design point: 18 in rotors, 6.36 kg MTOW, 6S3P. Authority for every derived
+%  Design point: 18 in rotors, 6.36 kg MTOW, 6S3P -- as modelled. The flight
+%  pack is now a bought 6S 16 Ah LiHV LiPo (Section IV-B states its figures);
+%  the model is re-run on the pack's measured mass. Authority for every derived
 %  number in Section V is tools/sizing-model/rescueswarm_sizing_model.py, from
 %  which docs/proposal/generated-sizing.tex is produced. Do not hand-edit that
 %  file. Claims are checked against the model by
@@ -304,8 +306,15 @@ publish no thrust curve, so the thrust-to-weight figure is a requirement rather
 than a measurement until the P5 thrust stand runs. The remaining entries are
 fixed by the mission: mass, energy, altitude, speed and payload.
 
+\textbf{The battery rows describe the pack the model was sized with, not the
+one now specified.} The flight pack has since changed from an 18-cell Li-ion
+pack built in-house to a bought 6S 16\,Ah lithium-polymer pack.
+Section~\ref{sec:energy} gives that pack's figures and the reason for it. The
+model is re-run on its measured mass before first flight, and this table
+follows it.
+
 \begin{table}[t]
-\caption{Air vehicle design point (per aircraft)}
+\caption{Air vehicle design point (per aircraft), as modelled with the 6S3P pack}
 \label{tab:designpoint}
 \centering
 \small
@@ -403,7 +412,8 @@ exceeds the static estimate by 1.2\,V because the diffusion terms add to the
 instantaneous ohmic drop. A failsafe set on instantaneous pack voltage would
 therefore command a return-to-land on a healthy pack mid-search. The internal
 resistance is calibrated to the static assumption rather than measured; P2
-replaces it with a measured value.}
+replaces it with a measured value. Modelled for the previous 6S3P Li-ion pack;
+the LiPo is re-characterised from its measured sag before flight.}
 \label{fig:sag}
 \end{figure*}
 
@@ -417,21 +427,55 @@ aircraft is not instantaneous.
 Two features of the result are design decisions, not consequences of the
 arithmetic, and are set out here for that reason.
 
-\textbf{Cylindrical Li-ion in preference to LiPo.} The comparison is genuinely
-close, and LiPo wins part of it. A LiPo pack of equal
-energy would roughly halve the internal resistance --- about 2.5\,V of sag at
-peak against 4.6\,V --- and would carry far more current headroom, and it would
-remove the pack-assembly step entirely. It loses on three grounds that matter
-more to this programme: it is approximately 400\,g heavier per aircraft at equal
-energy, which spends fleet margin; its cycle life is two to three times worse
-across a long flight-test campaign; and it is not domestically sourced, which
-would remove one of only four remaining Indian lines in
-Section~\ref{sec:deferred}. The decision is therefore made on campaign cost and
-sourcing, not on the electrical argument, which points the other way.
+\textbf{A bought LiPo pack in preference to a built Li-ion one.} An earlier
+revision chose cylindrical Li-ion on mass, cycle life and domestic sourcing, and
+said at the time that the electrical argument pointed the other way. The
+decision has been reversed, for three reasons. A 6S LiPo pack is now available
+from an Indian retailer, so sourcing no longer separates them. A bought pack
+removes the spot-welding of eighteen cells in a student lab, which was the most
+hazardous step in the build. And the electrical case is strong: a 25\,C, 16\,Ah
+pack supplies 400\,A against a peak near 136\,A, where the built pack supplied
+about 110\,A, and it roughly halves the voltage sag.
+
+The pack had to be sized again rather than substituted, because a heavier
+aircraft needs more power to hover. Each candidate was evaluated in the sizing
+model at its own mass, with the motors held fixed:
+
+\begin{table}[h]
+\caption{Flight pack candidates, evaluated at their own mass}
+\label{tab:packs}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+\textbf{Pack} & \textbf{kg} & \textbf{Wh} & \textbf{T/W} & \textbf{Endur.} & \textbf{Queue, Wh} \\
+\midrule
+Li-ion 6S3P (was) & 1.45 & 292 & 2.00 & 2.02 & $+$1.1 \\
+LiPo 12\,Ah       & 1.42 & 266 & 2.01 & 1.85$^\ast$ & $-$3.7$^\ast$ \\
+LiPo 13\,Ah       & 1.52 & 289 & 1.98 & 1.96$^\ast$ & $-$0.5$^\ast$ \\
+LiPo 14\,Ah       & 1.64 & 311 & 1.94 & 2.06 & $+$2.5 \\
+\textbf{LiPo 16\,Ah HV} & \textbf{1.88--2.21} & \textbf{365} & \textbf{1.8--1.9} & \textbf{2.1--2.3} & \textbf{$+$5 to $+$9} \\
+\bottomrule
+\multicolumn{6}{@{}p{8.4cm}@{}}{\footnotesize Endurance is hover time over
+mission time (policy $\geq$\,2.0). Queue is the 20\,\% reserve left after the
+third aircraft's 120\,s hold and two 53\,s descents. $^\ast$\,Fails. The
+16\,Ah mass is bracketed from 165--194\,Wh/kg: the maker does not publish it.}
+\end{tabular}
+\end{table}
+
+A 12 or 13\,Ah pack fails both the endurance policy and the landing-queue
+reserve, and about 14\,Ah is the smallest that passes. The 16\,Ah pack is the
+smallest suitable size on sale in India. \textbf{The cost is thrust-to-weight}:
+at 6.8--7.1\,kg the motors sized for 2.0 at 6.36\,kg give 1.8--1.9, unless the
+P2 thrust stand measures at least 3.55\,kgf per motor. The pack is weighed on
+arrival, and its voltage sag is measured before the battery failsafe
+thresholds are set. Fig.~\ref{fig:sag} and the failsafe values still describe
+the Li-ion pack until then, and no flight precedes that step.
 
 \textbf{Where the reserve is evaluated.} A reserve policy is only meaningful at
-the mass the aircraft actually flies. The pack is rounded up to a buildable 18
-cells, which lifts maximum take-off mass roughly 0.7\,kg above the value at
+the mass the aircraft actually flies. In the model, the Li-ion pack is rounded up
+to a buildable 18 cells, which lifts maximum take-off mass roughly 0.7\,kg above the value at
 which the sizing loop converges, so the requirement is re-evaluated at the final
 design point rather than at the solve. Evaluated there it is about a fifth
 higher, and the chemistry-agnostic nameplate floor rises with it. The pack meets
@@ -478,7 +522,7 @@ The system comprises three segments, shown in Fig.~\ref{fig:arch}.
 
 \draw[flow] (rad.east) -- ++(5mm,0) |- (gcs.east)
       node[lbl, pos=0.25, right, align=left]
-      {mission data (LoRa)\\3 analog video\\detections};
+      {mission data (LoRa)\\3 digital video\\detections};
 \draw[dflow] (gcs.north) -- (gcs.north|-gnd.north) -- ++(0,3mm)
       node[lbl, above, align=center] {abort / recall only};
 \draw[flow] (rtk.west) -- ++(-5mm,0) |- (air.west)
@@ -493,14 +537,17 @@ the operator rather than the algorithm.}
 \end{figure}
 
 \subsubsection{Air segment}
-Three identical quadrotors, each carrying a Pixhawk-standard autopilot running
-ArduPilot~\cite{ardupilot}, a multi-band NavIC/GNSS receiver providing RTK
-position (Teravolt AeroNav-Pro RTK, tracking NavIC, GPS, GLONASS, Galileo,
-BeiDou and QZSS on L1/L2/L5/L6 at 25\,Hz, specified at
-1\,cm~$+$~1\,ppm in RTK~\cite{teravoltaeronav}), a nadir-mounted 12\,MP camera, an edge inference module, a four-station
-kit magazine with positive-lock detents, a 5.8\,GHz analog video transmitter,
-an 865\,MHz LoRa module for mission data, and a 2.4\,GHz ExpressLRS link
-carrying safety-pilot control, abort and RTK corrections independently of the
+Three identical quadrotors. Each carries a Holybro Kakute~H7 autopilot running
+ArduPilot~\cite{ardupilot}, stacked on a 4-in-1 speed controller whose current
+sensor feeds the autopilot's battery monitor. Each also carries a dual-band RTK
+receiver built on the u-blox ZED-F9P, tracking GPS L1/L2, GLONASS G1/G2, Galileo
+E1/E5b and BeiDou B1/B2~\cite{ubloxzedf9p}, with its helical antenna and a
+compass in one 20\,g unit. The autopilot itself has no compass, so the
+receiver's is the heading source. The rest of the air segment is a
+nadir-mounted 12\,MP camera, a Raspberry Pi~5 with a 26\,TOPS inference
+accelerator, a four-station kit magazine with positive-lock detents, a
+5.8\,GHz digital video radio, an 865\,MHz LoRa module, and a 2.4\,GHz
+ExpressLRS link carrying safety-pilot control and abort independently of the
 autonomy stack.
 
 \subsubsection{Ground segment}
@@ -518,11 +565,10 @@ three-dimensional fix rather than an RTK fix; the first geotag is gated on
 RTK-fixed, and detections made before convergence are geotagged in float and
 re-fused once fixed.
 
-\emph{What that decoupling costs and buys is now a supplier figure rather than
-an estimate.} The supplier specifies a survey-in of ten to twenty minutes to
-place the base to $\pm$5\,cm~\cite{teravoltaeronav}. Skipping it removes that
-entire block from the setup window, which is a far larger saving than the
-ninety seconds previously claimed here. It is not free: a base set from its own
+\emph{What that decoupling costs and buys.} The base is a second ZED-F9P
+with a survey-grade antenna on a tripod. A survey-in places it to a few
+centimetres, but it runs for many minutes. Skipping it removes that entire block
+from the setup window. It is not free: a base set from its own
 first three-dimensional fix inherits that fix's \emph{absolute} error, of order
 a metre, and every reported survivor coordinate is offset by the same amount.
 What RTK preserves is the \emph{relative} accuracy in Table~\ref{tab:geotag} ---
@@ -537,25 +583,16 @@ is worth running whenever the base can be set up before the window opens, and
 P7--P8 use it, because a measured accuracy figure must be referenced to
 something better than the system being measured.
 
-A second receiver from the same supplier, the AeroNav-X5, was evaluated
-against the baseline part and rejected on cost.
-It is built on a Septentrio GNSS+ core with 448 tracking channels and
-specifies 0.6\,cm~$+$~0.5\,ppm horizontal RTK against the baseline part's
-1\,cm~$+$~1\,ppm, with AIM+ interference mitigation. The supplier quotes it at
-six times the price of the baseline receiver, so the four units this programme
-needs would consume the greater part of the whole budget. The geolocation
-budget in Section~\ref{sec:geotag} is met by the baseline part, and a
-four-millimetre improvement in a term that is not dominant does not justify
-that. The baseline receiver is adopted.
-
-Corrections reach the aircraft over the existing command link rather than a
-dedicated correction radio. This is a documented mode of both the autopilot and
-the receiver rather than an assumption on our part: ArduPilot's
-\texttt{GPS\_INJECT\_TO} forwards RTCM~3.x received over telemetry to the
-receiver's second serial port, which is the format and port the receiver
-specifies~\cite{teravoltaeronav}. Removing that radio saves mass, a serial port
-and a cost line on every aircraft. The same receiver falls back to SBAS when
-corrections are lost, so the degraded mode needs no additional hardware either.
+Corrections leave the base on its own 865\,MHz LoRa module and reach each
+aircraft on the matching module, which is connected to the companion computer
+rather than the autopilot because the autopilot's serial ports are fully
+allocated. The companion forwards the RTCM~3.x stream to the autopilot as
+MAVLink, and ArduPilot's \texttt{GPS\_INJECT\_TO} passes it to the
+receiver~\cite{ardupilot}. The corrections therefore take a path independent of
+both the command link and the video link. The base is limited to MSM4 messages
+at 1\,Hz to keep the stream within the radio's capacity. The receiver falls back
+to SBAS when corrections are lost, so the degraded mode needs no additional
+hardware.
 
 \subsection{Geolocation error budget}
 \label{sec:geotag}
@@ -619,14 +656,13 @@ requirement for the mission --- and if the programme is funded below the level
 that supports it, dropping to SBAS costs 0.16\,m of CEP50 and the ability to
 measure the system against itself, in that order of importance.
 
-\emph{Only one aircraft carries it.} Reading RTK as instrumentation rather than
-as an accuracy requirement has a consequence the earlier revision missed: an
-instrument characterises a design, and all three airframes are the same
-hardware running the same software. One rover and the ground base are therefore
-enough for P7--P8 to measure recall and delivery error against surveyed truth,
-and the remaining two aircraft fly SBAS, which Table~\ref{tab:receiver} shows
-clears the delivery requirement with better than twice the margin. Fitting all
-three was buying three copies of a measurement that only needs taking once.
+\emph{All three aircraft carry it.} An earlier revision fitted RTK to one
+aircraft only, on the argument that an instrument characterises a design and
+all three airframes are the same. That argument still holds; the price does
+not. A ZED-F9P rover with its antenna and compass now costs about what the
+ordinary receiver it replaces did together with a separate compass, so RTK on
+every aircraft costs no more than RTK on one. It also means any aircraft can be
+the instrumented one, and a loss in testing does not remove the instrument.
 
 \subsubsection{How good the receiver actually has to be}
 \label{sec:receivers}
@@ -695,7 +731,8 @@ would be as an additional constellation tracked alongside the others, which
 improves geometry and costs nothing if the chosen module already supports it.
 GPS on its own is marginal at 4.59\,m against a 5\,m requirement --- it passes
 arithmetically and leaves nothing for the day the geometry is poor. SBAS clears
-it at 1.85\,m, which is why the two uninstrumented aircraft fly it.
+it at 1.85\,m, which is why it is an acceptable fallback when corrections are
+lost.
 
 \emph{The sensitivity is where the honesty is.} The SBAS term is carried at
 0.60\,m, which is optimistic; field figures for code-phase augmentation are
@@ -1014,7 +1051,7 @@ band it occupies is not the one that fails first.
 \toprule
 \textbf{Link} & \textbf{Received} & \textbf{Margin} \\
 \midrule
-Analog video, 5.8\,GHz, 600\,mW & $-61.5$\,dBm & 28.5\,dB \\
+Digital video, 5.8\,GHz         & $-56.3$\,dBm & 29.7\,dB \\
 ExpressLRS, 2.4\,GHz            & $-71.6$\,dBm & 36.4\,dB \\
 LoRa, 865\,MHz, SF7             & $-68.7$\,dBm & \textbf{54.3\,dB} \\
 \midrule
@@ -1023,18 +1060,22 @@ LoRa, 865\,MHz, SF7             & $-68.7$\,dBm & \textbf{54.3\,dB} \\
 \end{tabular}
 \end{table}
 
-\textbf{Video: analog, 5.8\,GHz, one channel per aircraft.} Three transmitters
-on separate channels, three receivers at the ground station, and no shared
-medium to contend for. This is a downlink only --- there is no return path and
-nothing to negotiate --- and it removes video from the data network entirely.
+\textbf{Video: digital, 5.8\,GHz, one channel per aircraft.} Each companion
+computer draws its detections onto the camera frame and sends the result over
+wfb-ng~\cite{wfbng} on an RTL8812EU radio. The operator and the judges
+therefore see what the aircraft's software sees, not a raw feed that has to be
+interpreted separately. Three aircraft use three channels. The ground station
+has one receiver per channel, each with a 14\,dBi panel aimed at its aircraft
+and an omnidirectional antenna on the second port. The second port also serves
+the short uplink the protocol needs, so neither port is left unterminated.
 
-The decisive argument is not the radio but the processor behind it. The
-companion computer has no hardware video encoder, so three H.264 streams would
-be encoded in software on the same board that runs tiled inference. Those two
-loads contend, and the documented fallback was a reduced tile count on a centre
-crop --- which would undo the perception argument in
-Section~\ref{sec:perception}. Analog video removes the encode load rather than
-scheduling it.
+An earlier revision chose analog video to avoid encoding on the companion
+computer, which has no hardware video encoder. That load is now accepted, and
+it is bounded: each computer encodes only its own stream, the detection model
+runs on the accelerator rather than the processor, and the stream's resolution
+and frame rate are what give way under load. The tile count, which the
+perception argument of Section~\ref{sec:perception} depends on, does not. P5
+measures processor headroom with both loads running.
 
 \textbf{Mission data and coordination: SX1262, 865--867\,MHz.} Position, mode,
 battery, fix quality, survivor tags and delivery state, as one compact binary
@@ -1061,9 +1102,8 @@ the topology rather than from any access control.
 it.} ExpressLRS carries MAVLink natively from version~3.5, so the same receiver
 that gives the safety pilot manual control also carries the autopilot's command
 and telemetry stream, and the ArduPilot side is a serial port set to MAVLink
-v2~\cite{elrsmavlink}. RTK corrections ride the same path by MAVLink injection,
-which the receiver supplier confirms as its documented
-route~\cite{teravoltaeronav}.
+v2~\cite{elrsmavlink}. RTK corrections do not use this link; they arrive on
+865\,MHz from the team's base (Section~\ref{sec:geotag}).
 
 \emph{An 802.11 mesh was the original design and was withdrawn on the link
 budget.} At the geofence it had 8.7\,dB of margin --- the thinnest path in the
@@ -1507,15 +1547,12 @@ allocation into the case-C budget costs \textbf{18\,mm}. The case for it was
 never the error budget --- it was insurance against a magnetometer sitting near
 a high-current bus, which the budget does not model.
 
-The supplier has since confirmed that although both candidate receivers operate
-as RTK rovers, moving-baseline dual-antenna heading remains under
-development~\cite{teravoltaeronav}. The capability is therefore not purchasable
-at the time of writing at any price, which settles the question for this build
-and removes it from the cost-reduction argument entirely. \textbf{P6
-characterises achieved heading accuracy on the built aircraft; if it exceeds
-roughly 1$^\circ$, a heading source must be reinstated} --- by then either
-through firmware maturity at this supplier or through an imported
-dual-antenna receiver.
+The adopted receiver makes the capability purchasable: two ZED-F9P receivers
+on one airframe, one in moving-base mode, give heading, and ArduPilot supports
+that configuration. It is deferred on mass and cost rather than availability.
+Heading rests on the compass in the rover unit. \textbf{P6 characterises
+achieved heading accuracy on the built aircraft; if it exceeds roughly
+1$^\circ$, a second receiver is fitted} for moving-baseline heading.
 
 \emph{The sub-gigahertz safety radio is deferred, and that deferral rests on a
 configuration rather than on a judgement.} The primary link must run in a mode
@@ -1581,7 +1618,7 @@ defending it.
 \subsection{Link security requirements}
 
 The mission data link carries survivor coordinates, so it is encrypted:
-WPA3-SAE on the data path, and a per-programme ExpressLRS binding phrase that is
+wfb-ng's key-pair encryption on the digital link, and a per-programme ExpressLRS binding phrase that is
 not committed to the repository and is not shared across airframes. Neither
 costs measurable latency. An unencrypted data link would also weaken the
 regulatory position, since rule~8.4 prohibits public networks and an open link
@@ -1589,7 +1626,7 @@ is harder to distinguish from one.
 
 The realistic positioning threat in a disaster area is interference, not a
 targeted spoofer: congested spectrum, other responders, and multipath off water
-and structures. NavIC gives constellation diversity if GPS degrades, and the
+and structures. Four constellations on two bands give diversity if one degrades, and the
 launch gate gives the operator an explicit fix-quality check before the mission
 starts. Integrity monitoring on the receiver is an open procurement question
 recorded in Section~\ref{sec:deferred}.
@@ -1643,10 +1680,10 @@ Detection recall below target on real imagery
 & High & \textbf{Raised by deferral of the field data campaign.} Public aerial-person datasets carry the model; tiling and fusion parameters remain tunable without hardware change \\
 \addlinespace
 Inference and video encode contend on one board
-& \emph{Retired} & The compute has no hardware H.264 encoder, and the stated fallback was a reduced tile count -- which would have undone the perception argument. Moving video to an analog downlink removes the encode load entirely rather than scheduling it \\
+& Medium & \textbf{Reopened by the move to digital video.} The companion has no hardware video encoder, so each aircraft encodes its own annotated stream in software. Inference runs on the accelerator, and under load the stream's resolution and frame rate give way, never the tile count. P5 measures processor headroom with both running \\
 \addlinespace
-Moving-baseline heading unavailable on the selected receiver
-& Medium & \textbf{Downgraded from High.} The supplier has confirmed RTK rover operation on both candidate receivers, closing the primary concern, but reports moving-baseline dual-antenna heading as still under development~\cite{teravoltaeronav}. Heading therefore rests on the magnetometer, which costs 18\,mm in the case-C budget; P6 measures achieved heading accuracy and reinstates a dedicated source if it exceeds 1$^\circ$ \\
+Heading rests on a compass near high-current wiring
+& Medium & Moving-baseline heading is available on the adopted receiver but deferred on mass and cost, so heading rests on the compass in the rover unit, which costs 18\,mm in the case-C budget. P6 measures achieved heading accuracy and fits a second receiver if it exceeds 1$^\circ$ \\
 \addlinespace
 Flight-test window compressed by procurement delay
 & High & \textbf{Raised by deferral of the training airframe and of spares.} Lead time is now the only mitigation, so long-lead items are ordered in tranche~1 \\
@@ -1661,7 +1698,7 @@ Airframe overhangs the pad edge on touchdown
 & Medium & Nominal clearance is exactly one airframe radius, so dispersion has no margin. Measure touchdown dispersion in P6 before accepting the slot geometry \\
 \addlinespace
 Motor thrust below the datasheet claim
-& High & Selected motors publish no thrust curve, and the stand cannot precede the motors. Thrust is measured in P5 on arrival; a shortfall then forces a propulsion change with the flight-test window already open \\
+& High & Selected motors publish no thrust curve, and the stand cannot precede the motors. \textbf{Raised by the heavier LiPo pack:} holding thrust-to-weight at 2.0 at 7.1\,kg needs 3.55\,kgf per motor. Thrust is measured on arrival; a shortfall then forces a propulsion change with the flight-test window already open \\
 \addlinespace
 Airframe loss during test
 & High & \textbf{Raised by deferral of spares.} Structure set and consumables retained; a second loss in the same week is uncovered \\
@@ -1897,12 +1934,16 @@ ArduPilot Development Team,
 ``ArduPilot: open source autopilot software suite,'' 2026.
 [Online]. Available: \url{https://ardupilot.org/}
 
-\bibitem{teravoltaeronav}
-Teravolt,
-``AeroNav-Pro RTK'' and ``AeroNav-X5'' product documentation, 2026.
-[Online]. Available:
-\url{https://teravolt.gitbook.io/teravolt/gps/aeronav-pro-rtk},
-\url{https://teravolt.gitbook.io/teravolt/gps/aeronav-x5}
+\bibitem{ubloxzedf9p}
+u-blox,
+``ZED-F9P high precision GNSS module: data sheet and integration manual,'' 2024.
+[Online]. Available: \url{https://www.u-blox.com/en/product/zed-f9p-module}
+
+\bibitem{wfbng}
+wfb-ng contributors,
+``wfb-ng: WiFi broadcast, a long-range packet radio link based on raw WiFi,''
+2024. [Online]. Available: \url{https://github.com/svpcom/wfb-ng}
+
 
 \bibitem{elrsmavlink}
 ExpressLRS Project,
