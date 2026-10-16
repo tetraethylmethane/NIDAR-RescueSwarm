@@ -1,241 +1,111 @@
 # CAD brief — RescueSwarm airframe
 
-**If this document ever disagrees with
-[`frame-design-constraints.md`](../../docs/frame-design-constraints.md) or with
-a file in [`docs/sizing/`](../../docs/sizing/), those win and this is wrong.**
-That rule exists because it has already been broken once — see §7.
+For the mechanical team. Binding list:
+[`frame-design-constraints.md`](../../docs/frame-design-constraints.md). Numbers:
+[`docs/sizing/`](../../docs/sizing/) and [`sourced_bom.py`](../bom/sourced_bom.py).
+**If this brief disagrees with them, they win.**
 
 ---
 
-## 1. Start here
+## 1. The job
 
-Three aircraft. Quadrotor. They search 10 ha of flood plain, find people, and
-drop medical kits next to them. One operator, no pilot, five minutes from boxes
-on the ground to airborne.
+Three identical quadrotors. Each one autonomously searches part of a flood
+plain, geotags survivors and drops up to four 200 g medical kits. The team has
+five minutes to go from boxes to airborne.
 
-The numbers you cannot change:
+**Custom frame, no kit.** Rule 8.2 bans ready-to-fly airframes, and Design
+Review item 3 scores our own design (indigenisation). Bought components are fine.
 
-| | value | source |
+## 2. Fixed numbers
+
+| | Value | Note |
 |:--|:--|:--|
-| MTOW | **6360 g** | model |
-| Fleet, weighed together | **19 081 g** vs a **25 kg** limit | rule |
-| Wheelbase, motor to motor | **761 mm** diagonal | sized for 20 in props + 30 mm |
-| Overall footprint | **1046 mm** square | 3 aircraft must fit a 3.66 m box |
-| Battery | **6S3P, 18 × 21700**, 1449 g | model |
-| Payload | **4 kits**, each 200 × 100 × 50 mm, 200 g | rule |
+| Structure budget | **1495 g** | Frame, arms, landing gear and hardware. Everything structural. |
+| MTOW | **6.8–7.1 kg** | With the 16 Ah LiPo. The model's 6.36 kg is the old Li-ion point. |
+| Fleet limit | **25 kg**, all 3 weighed together | About 21 kg expected |
+| Wheelbase | **761 mm** diagonal | Arms take **16–20 in** props (18 in now) with 30 mm tip clearance |
+| Footprint | **≤ 1046 mm** square, unfolded | Launch box is 12 ft (3.66 m). No part may leave it. |
+| Payload | **4 kits**, each 200 × 100 × 50 mm, 200 g | Fixed by rule |
+| Battery | **GenX 6S 16 Ah HV LiPo**, 1880–2211 g, AS150 | **Dimensions unpublished. Measure on arrival.** |
+| Arm root moment | 10.7 N·m at T/W 2 | Bending isn't the driver. Clamps and vibration fatigue are. |
 
-The mass statement you are building to:
+> ⚠ **Battery bay:** the `bay_*` variables in
+> [`rescueswarm-frame-equations.txt`](rescueswarm-frame-equations.txt) still
+> describe the old 6S3P Li-ion pack. **Don't use them.** Use a placeholder of
+> about 200 × 75 × 65 mm (typical 6S 16 Ah) as a named variable until the real
+> pack is measured.
 
-```
-Structure: frame, arms, landing gear, hardware   1495 g   23.5%   <- yours
-Motors (4)                                        640 g   10.1%
-ESCs (4)                                          224 g    3.5%
-Propellers (4)                                    288 g    4.5%
-Battery pack                                     1449 g   22.8%
-Avionics + wiring harness                         925 g   14.5%
-Payload magazine + release                        240 g    3.8%
-Survivor kits (4 x 200 g)                         800 g   12.6%
-MTOW                                             6360 g
-```
+## 3. Bought parts the frame must take
 
-**1495 g is your budget for everything structural.** Fleet margin to the 25 kg
-cap is 5.9 kg, so there is room — but the endurance reserve is at 2.05× against
-a self-imposed ≥2.0× policy, and **every 100 g you add comes off that.**
-
----
-
-## 2. Get the parametric variables into your part
-
-```
-python tools/cad/sw_build_skeleton.py
-```
-
-Launches SolidWorks, makes a part in MMGS, pushes in 25 named variables, and
-draws the layout sketch — four motor axes, prop-tip circles, and the bay,
-magazine and footprint rectangles.
-
-**Then `Save As` under your own filename immediately.** The generated
-`rescueswarm-skeleton.SLDPRT` is gitignored and gets overwritten every time
-anyone runs the script.
-
-Drive dimensions by expression rather than typing numbers:
-
-| dimension | expression |
+| Part | Interface |
 |:--|:--|
-| motor mount from centre | `= "wheelbase_diag" / 2` |
-| battery pocket | `= "bay_length"`, `= "bay_width"`, `= "bay_depth"` |
-| magazine cut-out | `= "magazine_length"` |
-| camera mount hole spacing | `= "cam_fastener_spacing"` |
+| Arms | 3K CF tube **OD25 × ID23**, cut from 1000 mm |
+| Centre plates | 3K CF sheet **300 × 200 × 2 mm**, one sheet per aircraft (top + bottom) |
+| Motor mounts | **Tarot TL9602**, 25 mm tube clamp |
+| Motors / props | Tarot 5008 340 KV / 1855 CF |
+| Arm clamps | SS304 T-bolt clamps, 23–25 mm |
+| Landing gear | F450/F550 skid + 5 mm torsion springs |
+| FC + ESC | Kakute H7 + Hobbywing 4-in-1, **30.5 mm stack**, soft-mounted |
+| Compute | Raspberry Pi 5 + AI HAT+ + active cooler |
+| Camera | Arducam 12.3 MP HQ + 6 mm CS lens, **nadir** |
+| GNSS | **GenX F9P Air**: one module with an integrated compass |
+| Rangefinder | TFmini-S, facing down, clear view |
+| Video link | BL-M8812EU2 + **heatsink and fan**, 2 × 5 GHz dipoles |
+| Radios | ELRS RX24T, E22-900 |
+| Release | 4 × MG90S servos |
+| Printed parts | PETG-CF |
 
-When the model changes, `cad_equations.py` regenerates the file and the
-dimensions follow. Nobody retypes 761.
+Use vendor drawings for hole patterns.
 
-> The **Tools → Equations → Link to external file** route is the documented
-> workflow and may well be better, because it updates on rebuild. It could not
-> be made to work through the API and is **untested** — if it works for you,
-> use it and tell me. Details in [`README.md`](README.md).
+## 4. Decided. Don't reopen these.
 
----
+1. **Quadrotor, 4 arms.**
+2. **Folding is optional.** If you fold, deploy + lock + verify must take **≤ 22 s per aircraft**. Use quick-release clamps and a lock indicator visible from 1 m, not bolts. **Folds go only outboard of the sensor core.**
+3. **Battery tray:** side-loading, captive latch, hard stop. The position must be repeatable, not adjustable, because 10 mm of error means about 1.2 % permanent trim.
+4. **Pack CG in the rotor plane.** Don't sling it low. If the pack needs more room, grow the tray wider or longer, not deeper.
+5. **Magazine:** 4 kits centred on the CG, laid out for packaging and a clear drop path. Don't optimise it for CG.
+6. **Payload release:** a positive mechanical lock that holds without servo power. A brownout must not drop a kit.
+7. **Parachute:** top-centre with a clear deployment cone, 300 g budget. It has to be designed in. A retrofit fouls the props.
+8. **Cooling fan** on the main bus, running from power-on, not gated on arming.
+9. **Setup-proof:** captive fasteners, keyed connectors, and folds that can't be assembled wrong.
 
-## 3. Decided — do not re-open these
+## 5. Accuracy rules. These earn the points.
 
-| # | Constraint | The one-line reason |
-|:--|:--|:--|
-| 1 | **Quadrotor, 4 arms** | Hex/octo win marginally on physics and lose badly on integration time across 3 aircraft. Reopens only if the organisers require motor-out tolerance. |
-| 2 | **Arms accept 16–20 in props** | 18 in is provisional and settles on a bench in P5. Late binding is free now. |
-| 2a | **Folding arms allowed**, deploy + lock + **verify ≤ 22 s per aircraft** | Measured: free up to 22 s because it hides in the 75 s companion-boot shadow. Over the window at 30 s. Needs quick-release clamps and a lock indicator visible from a metre — **not achievable with bolts**. |
-| 3 | **Battery bay 6S3P** — block 126 × 70 × 63 mm, allow ≈140 × 84 × 72 mm | ⚠ This said *6S2P, 12 cells* until recently. See §7. |
-| 4 | **Magazine: lay out for packaging**, not for CG | CG excursion during release is 3.7–4.0 mm at best order, under 4 % of hover thrust. Layout is worth 0.3 mm. Don't optimise it. |
-| 4a | **Battery tray side-loading**, captive latch, hard stop | Repeatability *is* trim repeatability: 10 mm of placement error is ~1.2 % permanent trim. A strap is adjustable, which is the problem. |
-| 4b | **Pack CG in the rotor plane** | Slinging the heaviest mass low is a fixed-wing instinct. On a multirotor it makes a pendulum the controller fights during exactly the slow precise hover a delivery needs. Take the extra 21 mm **wider or longer, not deeper.** |
-| 5 | **Parachute top-centre**, clear deployment cone | Permitted and worth fitting. Must be designed in — a retrofit fouls props or deploys into an arm. |
-| 9 | **≤ 1046 mm square** | 3 × 1046 = 3138 mm inside the 3.66 m box, **unfolded**. Folding is for transport, not the box. |
-| 10 | **Payload release: positive mechanical lock**, independent of servo power | A brownout must not drop a kit. |
-| 11 | **Cooling fan on the main bus, running at power-on** | Not gated on arming. The worst thermal case is the setup window with props stopped. |
-| 12 | **Captive fasteners, keyed connectors, folds that cannot be assembled wrongly** | Unpack-to-armed is the binding constraint of the whole mission. |
+Geotag accuracy gates 450 of the 600 flight points, and three of its error terms are mechanical.
 
----
+- **One rigid sensor core.** Camera, FC/IMU and the GNSS module go on a single stiff part. No fold or soft joint between them.
+- **Camera mount: ≤ 0.21 mm differential movement over 80 mm, for the airframe's life.** An M3 clearance hole alone has 0.2–0.4 mm of slop, so use **dowel pins or a bonded joint**, not bolt friction. Use a CF bracket, not aluminium, which bends like a bimetallic strip with temperature.
+- **Don't share structure** between the camera bracket and the compute bay. Compute heat rotates the camera.
+- **Lever-arm datum:** a feature callipers can reach between the GNSS module and the camera face. It's one dimension on the drawing.
+- **GNSS placement:** clear sky view, outside the parachute cone, and away from carbon plates, power leads and the ESC because of the onboard compass.
 
-## 4. The three that fight each other
+## 6. Order of work
 
-Satisfy these **together**, not one at a time.
+1. Payload magazine and release (fixed by rule, needs nothing else).
+2. Rigid sensor core.
+3. Arms and motor mounts, driven by `wheelbase_diag`. Decide fold or fixed.
+4. Battery tray, parametric until the pack is measured.
+5. Compute bay and airflow, thermally separate from the sensor core.
+6. Parachute mount, with its cone checked as a swept volume against the GNSS and props.
+7. Landing gear, clear of the magazine and the drop path.
 
-**Parachute cone vs GNSS antennas.** Both want the top centre. Antenna masts
-either side of centre sit in the canopy path, and a chute that snags deploys
-asymmetrically — worse than not fitting one. Put the antennas outboard on booms
-or arms, keep them symmetric about the CG, and prove the cone clear with a
-**swept-volume check in CAD**, not by eye.
-
-**Folds vs boresight.** Every folding joint between the camera and the GNSS
-antennas is a lever arm that changes on each unpack. That invalidates SYS-48 and
-silently degrades every geotag. **Camera, IMU and both antenna mounts on one
-rigid core; folds only outboard of it.**
-
-**Compute heat vs camera calibration.** A sealed bay runs 42.9 K hot; that
-reaches the camera bracket and rotates it. Small in absolute terms (0.07 m at
-60 m) but **systematic**, and it tracks compute load — so it moves once the
-detector starts working. The fix is free: **don't share structure between the
-camera bracket and the compute bay.**
-
----
-
-## 5. The tolerance that will surprise you
-
-**Camera mount: 0.21 mm of differential movement across an 80 mm fastener
-spacing. Total. For the life of the airframe** — through transport, vibration
-and every landing.
-
-That comes from the 0.153° boresight allocation at 60 m AGL. An M3 clearance
-hole carries **0.2–0.4 mm of radial slop on its own**, and one hard landing
-takes it up. Hence **dowel pins or a bonded joint, not bolt friction.**
-
-Two things that stop this being over-engineering:
-
-- **Don't chase better than 0.16 m.** At budget, boresight is 3.3 % of geotag
-  variance. Tightening it buys almost nothing.
-- **Do stop it moving.** At 1° it becomes the largest term in the stack and
-  costs ~0.5 m of geotag — **silently**. Nothing on the operator's screen says
-  the camera shifted.
-
-**Thermal:** a 100 mm aluminium bracket on a CF plate is a bimetallic strip —
-0.066 mm over a 30 K day–night swing, a third of the whole allowance. Use CF,
-or constrain it kinematically so growth translates instead of rotating.
-
-**Lever arm:** measuring it to 1 cm instead of 10 cm is worth **0.005 m**. It
-justifies no design compromise at all. What it justifies is **a measurable
-datum** — a feature callipers can reach between the antenna phase centre and the
-camera face. One dimension on a drawing.
-
----
-
-## 6. Suggested order of work
-
-Things that are fixed by rule and independent of everything else come first, so
-they can be built while other decisions settle.
-
-1. **Payload magazine and release** — dimensions fixed by rule, needs nothing
-   else to exist. Positive lock independent of servo power.
-2. **The rigid sensor core** — camera, IMU, both GNSS antennas, with the datum
-   between antenna phase centre and camera face. Everything accurate depends on
-   this one part.
-3. **Battery tray** — side-load, hard stop, captive latch.
-4. **Arms and motor mounts** — driven by `wheelbase_diag`; decide fold or fixed.
-5. **Compute bay** — fan path clear on the ground *and* folded, thermally
-   separate from the sensor core.
-6. **Parachute mount and cone**, checked against the antennas as a swept volume.
-7. **Landing gear** — must clear the magazine and the kit drop path.
-
----
-
-## 6a. Check your work against the model
+## 7. Tools
 
 ```
-python tools/cad/cad_check.py path\to\your.SLDASM     # or the active document
+python tools/cad/sw_build_skeleton.py      # skeleton part with 25 driven variables
+python tools/cad/cad_check.py your.SLDASM  # asserts the model; exit 1 on failure
 ```
 
-Opens the document and asserts it against the sizing model. Exit code 1 if
-anything fails, so it can gate a design review.
+- **Save As your own filename immediately.** The generated skeleton is overwritten on every run.
+- Drive dimensions by expression (`= "wheelbase_diag" / 2`). Never type 761.
+- `cad_check` checks variables, mass (±10 %), CG offset (fails at > 25 mm), footprint, launch box, interference and tip clearance. It doesn't yet check the parachute cone, so model the cone as a dummy solid and the interference check will catch it.
+- `cad_check` still asserts the old Li-ion MTOW and bay. Expect those two to be off until the model is updated.
 
-| check | fails when |
+## 8. Open. These don't block CAD.
+
+| Question | Meanwhile |
 |:--|:--|
-| parametric variables | a dimension in the part disagrees with the generated file |
-| mass vs budget | >10 % off (structure 1495 g, or MTOW 6360 g for an assembly) |
-| CG on the rotor centroid | lateral offset >25 mm; warns at 10 mm |
-| footprint | bounding box exceeds 1046 mm square |
-| launch box | 3 × footprint exceeds 3.66 m |
-| interference | any component interference in an assembly |
-| prop tip clearance | geometric, from the model — runs with no CAD at all |
-
-Verified against a 100 mm aluminium cube of known mass: it reads **2700 g** and
-a CoM of **(0, 50, 0) mm**, both correct to the gram and the millimetre.
-
-**Not automated yet:** the parachute cone versus the GNSS antennas. That needs
-a cone body in the assembly to interfere against. Model the deployment cone as
-a surface or dummy solid from the mount and the check becomes real instead of a
-reminder — it is the conflict in §4 most likely to be settled by eye.
-
----
-
-## 7. Why this document is so insistent about sources
-
-The battery bay entry in the constraints document specified a **12-cell 6S2P
-pack when the design uses 18 cells and 6S3P** — a whole extra row and +483 g. It
-got there by being transcribed from the model into prose, after which the model
-moved and the prose didn't. Its own "~20 % volume growth" allowance covered 14.4
-cells, so a bay built to it **could not have taken the real pack even with the
-stated margin.**
-
-A markdown table is cheap to correct. A frame is not.
-
-That is why the driving dimensions now come from a generated file, why
-`cad_equations.py` refuses to emit anything if it disagrees with the committed
-model output, and why CI fails on drift.
-
-**If a number here looks wrong, check
-[`docs/sizing/`](../../docs/sizing/) before believing this file.**
-
----
-
-## 8. Where every number comes from
-
-| topic | generated by | output |
-|:--|:--|:--|
-| Mass, MTOW, pack, power | `rescueswarm_sizing_model.py` | [`model-output.txt`](../../docs/sizing/model-output.txt) |
-| Folding-arm time budget | `setup_budget.py` | [`setup-budget-output.txt`](../../docs/sizing/setup-budget-output.txt) |
-| CG excursion, tray, release order | `cg_budget.py` | [`cg-budget-output.txt`](../../docs/sizing/cg-budget-output.txt) |
-| Camera mount tolerance, lever arm | `boresight_budget.py` | [`boresight-budget-output.txt`](../../docs/sizing/boresight-budget-output.txt) |
-| Cooling, thermal coupling | `thermal_budget.py` | [`thermal-budget-output.txt`](../../docs/sizing/thermal-budget-output.txt) |
-| Delivery accuracy, geotag stack | `delivery_accuracy.py` | [`delivery-accuracy-output.txt`](../../docs/sizing/delivery-accuracy-output.txt) |
-| CAD variables | `cad_equations.py` | [`rescueswarm-frame-equations.txt`](rescueswarm-frame-equations.txt) |
-
-All of these regenerate in CI on every push, and a mismatch fails the build.
-
----
-
-## 9. Open questions — do not let these block you
-
-| Question | Blocks | What to do meanwhile |
-|:--|:--|:--|
-| Is motor-out tolerance required? | Quadrotor vs hex | **Build the quad.** If it forces a hex, payload, avionics and ground segment all carry over; only frame and propulsion are lost. |
-| 40 m or 60 m search altitude? | Nothing mechanical | Affects the camera's required resolution, not the mount. |
-| Do we need to fold at all? | Arms | Depends on whether you drive or fly to the venue. The launch box does **not** require it. |
+| GenX pack real mass and size | Keep the bay parametric. Weigh and measure on arrival. |
+| Motor-out tolerance required? | Build the quad. A hex would reuse everything except frame and propulsion. |
+| Fold or fixed arms? | Depends on transport to the venue. The launch box doesn't need folding. |
+| Search altitude | Affects the camera choice, not the mount. |
