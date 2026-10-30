@@ -94,9 +94,9 @@ VERIFY = [
     ("Speed controller (65\\,A)", "Thrust-stand test with 18\\,in propellers and 340\\,KV motors.",
      "Current, temperature and freedom from desynchronisation confirmed before "
      "@@ESCREST@@ bought.", "Phase 2", "Planned"),
-    ("Base RTK antenna cable", "Obtain a quote from a local RF cable shop.",
-     "3\\,m RG58, 50\\,$\\Omega$, TNC-male to SMA-male. The \\rs{600} in this BOM is an "
-     "estimate until quoted.", "Before ordering", "Open"),
+    ("Base RTK antenna cable", "Check both pieces on receipt.",
+     "Standard SMA and TNC, not reverse-polarity, and both RG58. The antenna "
+     "reports a fix through the full 3\\,m run.", "On receipt", "Planned"),
     ("Ground video antennas", "Install one 14\\,dBi panel per receiver, aimed at its "
      "aircraft, and an omni on the second port.",
      "Confirm polarisation before installation. Measure the range on our own link, "
@@ -214,8 +214,8 @@ Post-Disaster Search, Localisation and Payload Delivery}\\[3mm]
 This document lists every component needed to build, test and operate
 @@WHAT@@ and @@GSPOSS@@ ground station, with quantities, unit
 prices and the supplier each price was taken from. Every price is from a dated
-Indian listing, and each supplier name in Section~\ref{sec:bom} links to it. Two
-lines have no listing and are marked as estimates. The totals are the same as
+Indian listing, and each supplier name in Section~\ref{sec:bom} links to it,
+except the consumables, which are a marked allowance. The totals are the same as
 those in @@BRIEFREF@@ and the approval letters, because all three are
 generated from one parts list.
 
@@ -287,9 +287,8 @@ dash means the item is bought once for the whole @@ONCEFOR@@. \emph{Qty} is
 @@ROWS@@
 \midrule
 \multicolumn{6}{@{}l}{\textbf{Parts total, @@SCOPESHORT@@}} & \multicolumn{2}{r@{}}{\textbf{@@TOTAL@@}} \\
-\multicolumn{8}{@{}p{16.35cm}@{}}{\rule{0pt}{11pt}$^\dagger$\,No listing. The base antenna cable is to be made up by
-a local RF cable shop, and consumables are a round allowance. Both are carried as
-pre-GST and have GST and contingency applied.} \\
+\multicolumn{8}{@{}p{16.35cm}@{}}{\rule{0pt}{11pt}$^\dagger$\,No listing. Consumables are a round allowance,
+carried as pre-GST with GST and contingency applied.} \\
 \end{longtable}}
 
 \section{Battery selection}
@@ -330,7 +329,7 @@ measurement is the first gate in Section~\ref{sec:verify}.
 The following are checked when the parts arrive or before first flight. Each
 is either a measurement this programme exists to make, or a confirmation that
 a listing cannot give. \emph{Planned} means the test is scheduled at the stage
-shown; \emph{Open} means an action is still needed before ordering.
+shown.
 
 {\footnotesize
 \setlength{\tabcolsep}{3pt}

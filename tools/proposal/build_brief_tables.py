@@ -86,7 +86,9 @@ RATIONALE = {
    "fixed point, so it gets the better antenna.",
  "GNSS cable, base":
    "Carries the signal from the antenna on its tripod down to the base "
-   "receiver. Made to length locally; the price is an estimate.",
+   "receiver. Converts the antenna's TNC plug to SMA.",
+ "GNSS cable extension, base":
+   "Extends that cable to 3 m, so the antenna can stand clear of the station.",
  "GNSS feeder, base": "Adapts the base receiver's miniature socket to the antenna cable.",
  "RTK base radio":
    "Sends the base's corrections to the aircraft on the same radio type they "

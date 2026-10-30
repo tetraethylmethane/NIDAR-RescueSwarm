@@ -102,12 +102,16 @@ BOM = [
  # the "GNSS cable, base" line below runs from there to the antenna.
  ("avionics", "GNSS feeder, base", "U.FL to SMA female pigtail, 10 cm", 49, 1, 0,
   "https://robocraze.com/products/mini-pci-u-fl-to-sma-female-pigtail-cable-10cm-ipx-to-sma-extension"),
- # Made up by a local RF cable shop (team's decision, 2026-09-20): no Indian
- # retail listing is RG58 in this configuration, and the one TNC listing found
- # was 5 m of RG316 at 4,011. PRICE IS AN ESTIMATE (RG58 ~3 m, a TNC and an
- # SMA crimp connector, labour), not a quote. Get the quote before ordering.
- # 50 ohm: TNC male at the antenna, SMA male into the pigtail's bulkhead.
- ("avionics", "GNSS cable, base", "RG58 50 ohm, 3 m, TNC-M to SMA-M, made locally", 600, 1, 0, ""),
+ # 3 m of RG58 from antenna to bulkhead, in two stock pieces from one IndiaMART
+ # seller (3AN Telecom, Bhopal), priced ex-GST:
+ #   antenna TNC-F <- [TNC-M, 1 m, SMA-M] -> [SMA-F, 2 m, SMA-M] -> bulkhead SMA-F
+ # No Indian listing is one 3 m TNC-SMA RG58 piece. Until 2026-10-30 this was
+ # a 600 estimate for a cable made up locally; the extra SMA joint costs a
+ # fraction of a dB, nothing against an active survey antenna.
+ ("avionics", "GNSS cable, base", "RG58 50 ohm, 1 m, TNC-M to SMA-M", 150, 1, 0,
+  "https://www.indiamart.com/proddetail/sma-male-to-tnc-male-cable-using-rg58-19095509397.html"),
+ ("avionics", "GNSS cable extension, base", "RG58, 2 m, SMA-F to SMA-M", 210, 1, 0,
+  "https://www.indiamart.com/proddetail/antenna-extension-coaxial-cable-rg58-2m-sma-female-to-sma-male-21920241733.html"),
  # The E22 is kept PRIMARILY for RTK: four-constellation RTCM is ~16-32 kbps
  # against a 62.5 kbps air-rate ceiling. Trim the base to MSM4 at 1 Hz, and do
  # not load swarm traffic onto this link as well.
@@ -317,7 +321,7 @@ PHASE_OF = {
     # and no ground truth surveyable until the programme was nearly over.
     "GNSS RTK rover": (5, 15, 23), "GNSS RTK base": (5,),
     "GNSS antenna, base": (5,), "GNSS feeder, base": (5,), "RTK base radio": (5,),
-    "GNSS cable, base": (5,),
+    "GNSS cable, base": (5,), "GNSS cable extension, base": (5,),
     "Camera + lens": (6, 16, 24), "Height rangefinder": (6, 16, 24), "Video transmitter": (6, 16, 24),
     "Video antennas": (6, 16, 24), "Video radio cooling": (6, 16, 24),
     "Command receiver": (6, 16, 24), "Coordination radio": (6, 16, 24),
@@ -509,7 +513,8 @@ REVISED_2026_09_19 = (
 REVISED_2026_10_30 = (
     (959 - 369) * 3                    # video-radio BEC, 3 A -> 5 A
     + 122 * 3                          # heatsink + fan for the video radio
-    + (533.36 - 180) * 12)             # XT90S -> AS150, to mate with the pack
+    + (533.36 - 180) * 12              # XT90S -> AS150, to mate with the pack
+    + 150 + 210 - 600)                 # base cable: two IndiaMART pieces, not an estimate
 
 PACK_PROTECTION = """Why there is no BMS in this BOM.
 

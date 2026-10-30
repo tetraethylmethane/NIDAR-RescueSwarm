@@ -62,8 +62,8 @@ This document lists every component needed to build, test and operate
 the
 first RescueSwarm aircraft and its ground station, with quantities, unit
 prices and the supplier each price was taken from. Every price is from a dated
-Indian listing, and each supplier name in Section~\ref{sec:bom} links to it. Two
-lines have no listing and are marked as estimates. The totals are the same as
+Indian listing, and each supplier name in Section~\ref{sec:bom} links to it,
+except the consumables, which are a marked allowance. The totals are the same as
 those in the first-aircraft brief and the approval letters, because all three are
 generated from one parts list.
 
@@ -73,13 +73,13 @@ generated from one parts list.
 \begin{tabular}{@{}lr@{}}
 \toprule
 Parts at retail, GST already included (57 lines) & 2{,}03{,}902 \\
-Parts quoted before GST, and estimates (5 lines) & 8{,}719 \\
+Parts quoted before GST, and estimates (6 lines) & 8{,}479 \\
 \midrule
-\textbf{Parts total, first aircraft (62 lines)} & \textbf{2{,}12{,}621} \\
-GST at 18\,\% on the pre-GST lines only & 1{,}569 \\
-Contingency, 15\,\% & 32{,}129 \\
+\textbf{Parts total, first aircraft (63 lines)} & \textbf{2{,}12{,}381} \\
+GST at 18\,\% on the pre-GST lines only & 1{,}526 \\
+Contingency, 15\,\% & 32{,}086 \\
 \midrule
-\textbf{Total requested} & \textbf{\rs{2{,}46{,}319}} \\
+\textbf{Total requested} & \textbf{\rs{2{,}45{,}993}} \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -96,12 +96,12 @@ spent until a motor has been measured on the thrust stand. If this aircraft meet
 \textbf{Group} & \textbf{Lines} & \textbf{Amount} \\
 \midrule
 Test instruments & 6 & 3{,}246 \\
-Avionics, sensing and RTK positioning & 23 & 1{,}00{,}755 \\
+Avionics, sensing and RTK positioning & 24 & 1{,}00{,}515 \\
 Airframe, propulsion and power & 19 & 70{,}986 \\
 Flight-test support & 7 & 29{,}867 \\
 Ground station & 7 & 7{,}767 \\
 \midrule
-\textbf{Total} & \textbf{62} & \textbf{2{,}12{,}621} \\
+\textbf{Total} & \textbf{63} & \textbf{2{,}12{,}381} \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -150,7 +150,7 @@ quantity bought for this aircraft, including spares.
 4 & Fasteners & Hex socket-head assortment M3/M4/M5, SS304 & -- & 1 & 1{,}140 & 1{,}140 & \href{https://onlyscrews.in/products/hexallen-socket-head-assorted-screw-pack-ss304}{OnlyScrews} \\
 5 & Threadlocker & Loctite 243, 50 ml & -- & 1 & 664 & 664 & \href{https://www.amazon.in/Loctite-243-Threadlocker-Pack-Size/dp/B014MMG3AM}{Amazon India} \\
 6 & Throttle source & Servo tester / ESC consistency tester, PPM & -- & 1 & 111 & 111 & \href{https://robokits.co.in/motors/rc-servo-motor/servo-tester-esc-consistency-tester-ppm-generator}{Robokits} \\
-\grouphead{Avionics, sensing and RTK positioning}{1{,}00{,}755}
+\grouphead{Avionics, sensing and RTK positioning}{1{,}00{,}515}
 7 & Flight controller & Holybro Kakute H7 V1.5, no Bluetooth & 1 & 1 & 9{,}269 & 9{,}269 & \href{https://indianrobostore.com/product/holybro-kakute-h7-v15-flight-controller-without-bluetooth}{Indian Robo Store} \\
 8 & FC vibration mount & Glass-fibre anti-vibration shock absorber & 1 & 1 & 161 & 161 & \href{https://robu.in/product/glass-fiber-flight-controller-anti-vibration-set-shock-absorber-apmkkmwc/}{Robu} \\
 9 & Autopilot log card & SanDisk 32 GB microSDHC, class 10 & 1 & 1 & 1{,}549 & 1{,}549 & \href{https://robocraze.com/products/sandisk-32gb-micro-sd-sdhc-card}{Robocraze} \\
@@ -162,59 +162,59 @@ quantity bought for this aircraft, including spares.
 15 & GNSS RTK base & SmartElex ZED-F9P-04B RTK board, U.FL & -- & 1 & 17{,}965 & 17{,}965 & \href{https://robocraze.com/products/smartelex-gps-rtk-board-ufl-zed-f9p-04b}{Robocraze} \\
 16 & GNSS antenna, base & LS-125-A L1/L2/L5 survey antenna & -- & 1 & 8{,}123 & 8{,}123 & \href{https://robokits.co.in/multirotor-spare-parts/gps-sensors/rtk-gps-base-station-survey-grade-cors-high-precision-industrial-l1-l2-l5-antenna}{Robokits} \\
 17 & GNSS feeder, base & U.FL to SMA female pigtail, 10 cm & -- & 1 & 49 & 49 & \href{https://robocraze.com/products/mini-pci-u-fl-to-sma-female-pigtail-cable-10cm-ipx-to-sma-extension}{Robocraze} \\
-18 & GNSS cable, base & RG58 50 ohm, 3 m, TNC-M to SMA-M, made locally & -- & 1 & 600 & 600 & Estimate$^\dagger$ \\
-19 & RTK base radio & EByte E22-900T22D-V2, SX1262, 22 dBm & -- & 1 & 989 & 989 & \href{https://robu.in/product/lora-868mhz-wireless-module-uart/}{Robu} \\
-20 & Height rangefinder & Benewake TFmini-S, 12 m lidar, UART & 1 & 1 & 2{,}827 & 2{,}827 & \href{https://indianrobostore.com/product/benewake-12m-tfmini-s-micro-lidar-distance-sensor-for-drones-uav-uas-robots-uart}{Indian Robo Store} \\
-21 & Camera + lens & Arducam 12.3 MP 1/2.3 in HQ module, 6 mm CS lens & 1 & 1 & 6{,}799 & 6{,}799 & \href{https://robu.in/product/arducam-high-quality-camera-for-raspberry-pi-12-3mp-1-2-3-inch-hq-camera-module-with-6mm-cs-lens-for-pi-4b-3b-2b-3a-pi-zero-and-more/}{Robu} \\
-22 & Video transmitter & LB-Link BL-M8812EU2, RTL8812EU, 5 GHz 2T2R & 1 & 1 & 1{,}849 & 1{,}849 & \href{https://hubtronics.in/BL-M8812EU2}{Hubtronics} \\
-23 & Video antennas & 6 dBi 5 GHz dipole + 165 mm U.FL lead & 2 & 2 & 75 & 150 & \href{https://robocraze.com/products/6dbi-2-4ghz-5ghz-dual-band-wifi-rp-sma-antenna-20cm-u-fl-ipex-cable}{Robocraze} \\
-24 & Command receiver & ExpressLRS RX24T, 2.4 GHz & 1 & 1 & 1{,}439 & 1{,}439 & \href{https://robu.in/product/expresslrs-rx24t-2-4g-receiver/}{Robu} \\
-25 & Coordination radio & EByte E22-900T22D-V2, SX1262, 22 dBm & 1 & 1 & 989 & 989 & \href{https://robu.in/product/lora-868mhz-wireless-module-uart/}{Robu} \\
-26 & BEC, primary & 8 A UBEC, 5/6 V out, 2-6S in & 1 & 1 & 3{,}939 & 3{,}939 & \href{https://www.amazon.in/FEICHAO-Output-7V-25-5V-Switch-Helicopters/dp/B07DD9L6P6}{Amazon India} \\
-27 & BEC, video radio & 2-6S 5 V 5 A switching BEC & 1 & 1 & 959 & 959 & \href{https://robu.in/product/2-13s-5v-5a-bec-for-quadcopter-drone/}{Robu} \\
-28 & Video radio cooling & Aluminium heatsink 50 x 25 x 10 mm + 3010 5 V fan & 1 & 1 & 122 & 122 & \href{https://robu.in/?p=1187563}{Robu} \\
-29 & BEC, secondary & ReadytoSky 2-6S 5V/3A + 12V/3A switchable UBEC & 1 & 1 & 279 & 279 & \href{https://robu.in/product/readytosky-2-6s-5v-3a-and-12v-3a-switchable-ubec/}{Robu} \\
+18 & GNSS cable, base & RG58 50 ohm, 1 m, TNC-M to SMA-M & -- & 1 & 150 & 150 & \href{https://www.indiamart.com/proddetail/sma-male-to-tnc-male-cable-using-rg58-19095509397.html}{IndiaMART} \\
+19 & GNSS cable extension, base & RG58, 2 m, SMA-F to SMA-M & -- & 1 & 210 & 210 & \href{https://www.indiamart.com/proddetail/antenna-extension-coaxial-cable-rg58-2m-sma-female-to-sma-male-21920241733.html}{IndiaMART} \\
+20 & RTK base radio & EByte E22-900T22D-V2, SX1262, 22 dBm & -- & 1 & 989 & 989 & \href{https://robu.in/product/lora-868mhz-wireless-module-uart/}{Robu} \\
+21 & Height rangefinder & Benewake TFmini-S, 12 m lidar, UART & 1 & 1 & 2{,}827 & 2{,}827 & \href{https://indianrobostore.com/product/benewake-12m-tfmini-s-micro-lidar-distance-sensor-for-drones-uav-uas-robots-uart}{Indian Robo Store} \\
+22 & Camera + lens & Arducam 12.3 MP 1/2.3 in HQ module, 6 mm CS lens & 1 & 1 & 6{,}799 & 6{,}799 & \href{https://robu.in/product/arducam-high-quality-camera-for-raspberry-pi-12-3mp-1-2-3-inch-hq-camera-module-with-6mm-cs-lens-for-pi-4b-3b-2b-3a-pi-zero-and-more/}{Robu} \\
+23 & Video transmitter & LB-Link BL-M8812EU2, RTL8812EU, 5 GHz 2T2R & 1 & 1 & 1{,}849 & 1{,}849 & \href{https://hubtronics.in/BL-M8812EU2}{Hubtronics} \\
+24 & Video antennas & 6 dBi 5 GHz dipole + 165 mm U.FL lead & 2 & 2 & 75 & 150 & \href{https://robocraze.com/products/6dbi-2-4ghz-5ghz-dual-band-wifi-rp-sma-antenna-20cm-u-fl-ipex-cable}{Robocraze} \\
+25 & Command receiver & ExpressLRS RX24T, 2.4 GHz & 1 & 1 & 1{,}439 & 1{,}439 & \href{https://robu.in/product/expresslrs-rx24t-2-4g-receiver/}{Robu} \\
+26 & Coordination radio & EByte E22-900T22D-V2, SX1262, 22 dBm & 1 & 1 & 989 & 989 & \href{https://robu.in/product/lora-868mhz-wireless-module-uart/}{Robu} \\
+27 & BEC, primary & 8 A UBEC, 5/6 V out, 2-6S in & 1 & 1 & 3{,}939 & 3{,}939 & \href{https://www.amazon.in/FEICHAO-Output-7V-25-5V-Switch-Helicopters/dp/B07DD9L6P6}{Amazon India} \\
+28 & BEC, video radio & 2-6S 5 V 5 A switching BEC & 1 & 1 & 959 & 959 & \href{https://robu.in/product/2-13s-5v-5a-bec-for-quadcopter-drone/}{Robu} \\
+29 & Video radio cooling & Aluminium heatsink 50 x 25 x 10 mm + 3010 5 V fan & 1 & 1 & 122 & 122 & \href{https://robu.in/?p=1187563}{Robu} \\
+30 & BEC, secondary & ReadytoSky 2-6S 5V/3A + 12V/3A switchable UBEC & 1 & 1 & 279 & 279 & \href{https://robu.in/product/readytosky-2-6s-5v-3a-and-12v-3a-switchable-ubec/}{Robu} \\
 \grouphead{Airframe, propulsion and power}{70{,}986}
-30 & Motors & Tarot TL96020, 5008, 340 KV & 4 & 4 & 4{,}703 & 18{,}812 & \href{https://robokits.co.in/multirotor-spare-parts/brushless-motor-propeller-esc/brushless-motor/tarot-tl96020-5008-340kv-high-power-brushless-motor}{Robokits} \\
-31 & Propellers & 1855 counter-rotating carbon fibre, CW+CCW pair & 4 & 6 & 1{,}641 & 9{,}846 & \href{https://robokits.co.in/multirotor-spare-parts/brushless-motor-propeller-esc/propellers/11-to-20-inch/counter-rotating-carbon-fiber-propeller-1855-cw-ccw}{Robokits} \\
-32 & Speed controllers & Hobbywing XRotor FPV G2, 4-in-1, 65 A, 3-6S & 1 & 1 & 6{,}500 & 6{,}500 & \href{https://rcmumbai.com/hobbywing-xrotor-fpv-g2-65a-4in1-esc.html}{RC Mumbai} \\
-33 & Arm tube & 3K carbon fibre, OD25 x ID23 x 1000 mm & 2 & 2 & 2{,}259 & 4{,}518 & \href{https://robu.in/product/3k-carbon-fiber-tube-hollow-od25-x-id23-x-l1000-mm/}{Robu} \\
-34 & Frame plate stock & 3K carbon fibre sheet, 300 x 200 x 2 mm & 1 & 1 & 2{,}895 & 2{,}895 & \href{https://indianrobostore.com/product/3k-carbon-fiber-sheet-300mm200mm2mm}{Indian Robo Store} \\
-35 & Motor mounts & Tarot 25 mm motor mount, TL9602 & 4 & 4 & 1{,}119 & 4{,}476 & \href{https://robu.in/product/tarot-25mm-motor-mount-multicopter-orange-tl9602/}{Robu} \\
-36 & Arm clamps & T-bolt hose clamps 23-25 mm, SS304, 4 pcs & 1 & 1 & 3{,}012 & 3{,}012 & \href{https://www.amazon.in/T-Bolt-Clamps-Adjust-23-25mm-Stainless/dp/B0BHW1SCDL}{Amazon India} \\
-37 & Landing gear & F450/F550 landing skid & 1 & 1 & 549 & 549 & \href{http://robu.in/product/f450-f550-frame-landing-gear-landing-skid/}{Robu} \\
-38 & Suspension springs & 5 mm stainless double torsion spring & 10 & 10 & 2 & 20 & \href{https://www.indiamart.com/proddetail/5mm-ss-double-torsion-spring-18969709097.html}{IndiaMART} \\
-39 & Printed parts & Pro-Range PETG-CF filament, 1.75 mm, 1 kg & -- & 1 & 949 & 949 & \href{https://robu.in/product/pro-range-petg-cf-filament-1-75mm-1-kg-spool-black/}{Robu} \\
-40 & Release servos & MG90S mini servo, 180 deg & 4 & 4 & 149 & 596 & \href{https://robocraze.com/products/mg90s-servo-motor}{Robocraze} \\
-41 & Battery pack & GenX 22.8V 6S 16000mAh 25C/40C HV LiPo, AS150 & 1 & 1 & 12{,}197 & 12{,}197 & \href{https://robokits.co.in/batteries-chargers/drone-batteries/genx-power-premium-lipo-battery/genxpower-22.2v-lipo-batteries/genx-22.8v-6s-16000mah-25c-40c-premium-lithium-polymer-hv-battery}{Robokits} \\
-42 & Pack fusing & ANL fuse holder + 150 A ANL fuses & 1 & 1 & 3{,}000 & 3{,}000 & \href{https://njour.com/categories/tools-and-home-improvement/PC61p6RfDup2b7A}{Njour} \\
-43 & Pack retention & 300 mm LiPo strap, reusable & 2 & 2 & 62 & 124 & \href{https://robu.in/product/30cm-lipo-battery-strap-belt-reusable-cable-tie-wrap/}{Robu} \\
-44 & Main leads & 10 AWG ultra-flexible silicone wire & -- & 1 & 149 & 149 & \href{https://robu.in/product/high-quality-ultra-flexible-10awg-silicone-wire-200m-red/}{Robu} \\
-45 & Power connectors & Amass AS150 anti-spark, gold-plated, M/F pair & 4 & 4 & 533 & 2{,}133 & \href{https://zbotic.in/product/as150-anti-spark-self-insulating-gold-plated-connector-1-pair/}{zBotic} \\
-46 & Signal connectors & JST ZH 6-pin, 200 mm leads & 1 & 1 & 23 & 23 & \href{https://robu.in/product/jst-sh-6-pin-connectors-1-0mm-pin-spacing-with-200mm-wires/}{Robu} \\
-47 & Antenna feeders & SMA M-F bulkhead RG316, 150 mm + adapters & 1 & 1 & 1{,}139 & 1{,}139 & \href{https://www.desertcart.in/products/441705703-sma-cable-sma-male-to-sma-female-bulkhead-rg316-6}{Desertcart} \\
-48 & Insulation & PVC heat-shrink sleeve, 150 mm & 1 & 1 & 47 & 47 & \href{https://robu.in/product/pvc-heat-shrink-sleeve-150mm-black/}{Robu} \\
+31 & Motors & Tarot TL96020, 5008, 340 KV & 4 & 4 & 4{,}703 & 18{,}812 & \href{https://robokits.co.in/multirotor-spare-parts/brushless-motor-propeller-esc/brushless-motor/tarot-tl96020-5008-340kv-high-power-brushless-motor}{Robokits} \\
+32 & Propellers & 1855 counter-rotating carbon fibre, CW+CCW pair & 4 & 6 & 1{,}641 & 9{,}846 & \href{https://robokits.co.in/multirotor-spare-parts/brushless-motor-propeller-esc/propellers/11-to-20-inch/counter-rotating-carbon-fiber-propeller-1855-cw-ccw}{Robokits} \\
+33 & Speed controllers & Hobbywing XRotor FPV G2, 4-in-1, 65 A, 3-6S & 1 & 1 & 6{,}500 & 6{,}500 & \href{https://rcmumbai.com/hobbywing-xrotor-fpv-g2-65a-4in1-esc.html}{RC Mumbai} \\
+34 & Arm tube & 3K carbon fibre, OD25 x ID23 x 1000 mm & 2 & 2 & 2{,}259 & 4{,}518 & \href{https://robu.in/product/3k-carbon-fiber-tube-hollow-od25-x-id23-x-l1000-mm/}{Robu} \\
+35 & Frame plate stock & 3K carbon fibre sheet, 300 x 200 x 2 mm & 1 & 1 & 2{,}895 & 2{,}895 & \href{https://indianrobostore.com/product/3k-carbon-fiber-sheet-300mm200mm2mm}{Indian Robo Store} \\
+36 & Motor mounts & Tarot 25 mm motor mount, TL9602 & 4 & 4 & 1{,}119 & 4{,}476 & \href{https://robu.in/product/tarot-25mm-motor-mount-multicopter-orange-tl9602/}{Robu} \\
+37 & Arm clamps & T-bolt hose clamps 23-25 mm, SS304, 4 pcs & 1 & 1 & 3{,}012 & 3{,}012 & \href{https://www.amazon.in/T-Bolt-Clamps-Adjust-23-25mm-Stainless/dp/B0BHW1SCDL}{Amazon India} \\
+38 & Landing gear & F450/F550 landing skid & 1 & 1 & 549 & 549 & \href{http://robu.in/product/f450-f550-frame-landing-gear-landing-skid/}{Robu} \\
+39 & Suspension springs & 5 mm stainless double torsion spring & 10 & 10 & 2 & 20 & \href{https://www.indiamart.com/proddetail/5mm-ss-double-torsion-spring-18969709097.html}{IndiaMART} \\
+40 & Printed parts & Pro-Range PETG-CF filament, 1.75 mm, 1 kg & -- & 1 & 949 & 949 & \href{https://robu.in/product/pro-range-petg-cf-filament-1-75mm-1-kg-spool-black/}{Robu} \\
+41 & Release servos & MG90S mini servo, 180 deg & 4 & 4 & 149 & 596 & \href{https://robocraze.com/products/mg90s-servo-motor}{Robocraze} \\
+42 & Battery pack & GenX 22.8V 6S 16000mAh 25C/40C HV LiPo, AS150 & 1 & 1 & 12{,}197 & 12{,}197 & \href{https://robokits.co.in/batteries-chargers/drone-batteries/genx-power-premium-lipo-battery/genxpower-22.2v-lipo-batteries/genx-22.8v-6s-16000mah-25c-40c-premium-lithium-polymer-hv-battery}{Robokits} \\
+43 & Pack fusing & ANL fuse holder + 150 A ANL fuses & 1 & 1 & 3{,}000 & 3{,}000 & \href{https://njour.com/categories/tools-and-home-improvement/PC61p6RfDup2b7A}{Njour} \\
+44 & Pack retention & 300 mm LiPo strap, reusable & 2 & 2 & 62 & 124 & \href{https://robu.in/product/30cm-lipo-battery-strap-belt-reusable-cable-tie-wrap/}{Robu} \\
+45 & Main leads & 10 AWG ultra-flexible silicone wire & -- & 1 & 149 & 149 & \href{https://robu.in/product/high-quality-ultra-flexible-10awg-silicone-wire-200m-red/}{Robu} \\
+46 & Power connectors & Amass AS150 anti-spark, gold-plated, M/F pair & 4 & 4 & 533 & 2{,}133 & \href{https://zbotic.in/product/as150-anti-spark-self-insulating-gold-plated-connector-1-pair/}{zBotic} \\
+47 & Signal connectors & JST ZH 6-pin, 200 mm leads & 1 & 1 & 23 & 23 & \href{https://robu.in/product/jst-sh-6-pin-connectors-1-0mm-pin-spacing-with-200mm-wires/}{Robu} \\
+48 & Antenna feeders & SMA M-F bulkhead RG316, 150 mm + adapters & 1 & 1 & 1{,}139 & 1{,}139 & \href{https://www.desertcart.in/products/441705703-sma-cable-sma-male-to-sma-female-bulkhead-rg316-6}{Desertcart} \\
+49 & Insulation & PVC heat-shrink sleeve, 150 mm & 1 & 1 & 47 & 47 & \href{https://robu.in/product/pvc-heat-shrink-sleeve-150mm-black/}{Robu} \\
 \grouphead{Flight-test support}{29{,}867}
-49 & Safety-pilot transmitter & RadioMaster TX12 MKII ELRS + RP1 receiver & -- & 1 & 16{,}519 & 16{,}519 & \href{https://zbotic.in/product/radiomaster-tx12-mkii-expresslrs-edgetx-transmitter-with-rp1-expresslrs-2-4ghz-nano-receiver/}{zBotic} \\
-50 & Battery charger & ToolKitRC M6D, 500 W, 25 A, dual & -- & 1 & 7{,}349 & 7{,}349 & \href{https://robu.in/product/toolkitrc-m6d-500w-25a-1-6s-dc-dual-smart-charger/}{Robu} \\
-51 & Cable management & Nylon zip ties, 350 mm, 100 pcs & -- & 1 & 135 & 135 & \href{https://robu.in/product/nylon-cable-zip-ties-350-mm-white/}{Robu} \\
-52 & Heat-shrink kit & 328 pcs assorted 2:1 heat-shrink & -- & 1 & 159 & 159 & \href{https://robu.in/product/328pcs-heat-shrink-tube-heat-shrink-tube-kit/}{Robu} \\
-53 & Mounting tape & 3M VHB 5952, 6 mm x 8.2 m & -- & 1 & 560 & 560 & \href{https://www.amazon.in/sc-tch-5952-Tape-size/dp/B0F43FP3CJ}{Amazon India} \\
-54 & Hook and loop & Self-adhesive hook and loop, 25 mm x 2 m & -- & 1 & 145 & 145 & \href{https://www.amazon.in/INSTITCH-Self-Adhesive-Gripping-Perfect-Crafting/dp/B0DVLVCDH6}{Amazon India} \\
-55 & Consumables & Fasteners, tape, connectors, filament & -- & 1 & 5{,}000 & 5{,}000 & Estimate$^\dagger$ \\
+50 & Safety-pilot transmitter & RadioMaster TX12 MKII ELRS + RP1 receiver & -- & 1 & 16{,}519 & 16{,}519 & \href{https://zbotic.in/product/radiomaster-tx12-mkii-expresslrs-edgetx-transmitter-with-rp1-expresslrs-2-4ghz-nano-receiver/}{zBotic} \\
+51 & Battery charger & ToolKitRC M6D, 500 W, 25 A, dual & -- & 1 & 7{,}349 & 7{,}349 & \href{https://robu.in/product/toolkitrc-m6d-500w-25a-1-6s-dc-dual-smart-charger/}{Robu} \\
+52 & Cable management & Nylon zip ties, 350 mm, 100 pcs & -- & 1 & 135 & 135 & \href{https://robu.in/product/nylon-cable-zip-ties-350-mm-white/}{Robu} \\
+53 & Heat-shrink kit & 328 pcs assorted 2:1 heat-shrink & -- & 1 & 159 & 159 & \href{https://robu.in/product/328pcs-heat-shrink-tube-heat-shrink-tube-kit/}{Robu} \\
+54 & Mounting tape & 3M VHB 5952, 6 mm x 8.2 m & -- & 1 & 560 & 560 & \href{https://www.amazon.in/sc-tch-5952-Tape-size/dp/B0F43FP3CJ}{Amazon India} \\
+55 & Hook and loop & Self-adhesive hook and loop, 25 mm x 2 m & -- & 1 & 145 & 145 & \href{https://www.amazon.in/INSTITCH-Self-Adhesive-Gripping-Perfect-Crafting/dp/B0DVLVCDH6}{Amazon India} \\
+56 & Consumables & Fasteners, tape, connectors, filament & -- & 1 & 5{,}000 & 5{,}000 & Estimate$^\dagger$ \\
 \grouphead{Ground station}{7{,}767}
-56 & Video receivers & LB-Link BL-M8812EU2, RTL8812EU, one per aircraft channel & -- & 1 & 1{,}849 & 1{,}849 & \href{https://hubtronics.in/BL-M8812EU2}{Hubtronics} \\
-57 & Receive panels & 5.8 GHz 14 dBi directional panel, RP-SMA, 62x55 mm & -- & 1 & 566 & 566 & \href{https://www.flyrobo.in/long-range-rp-sma-5.8g-14dbi-panel-antenna}{FlyRobo} \\
-58 & Panel pigtails & U.FL to RP-SMA female pigtail, RG178 & -- & 1 & 99 & 99 & \href{https://www.indiamart.com/proddetail/ufl-ipx-ipex-to-rp-sma-female-rg-178-coaxial-pigtail-jumper-cable-2851725889755.html}{IndiaMART} \\
-59 & Receive antennas & 6 dBi 5 GHz dipole + U.FL lead, second port & -- & 1 & 75 & 75 & \href{https://robocraze.com/products/6dbi-2-4ghz-5ghz-dual-band-wifi-rp-sma-antenna-20cm-u-fl-ipex-cable}{Robocraze} \\
-60 & Receiver USB hub & Transcend HUB3 powered 4-port USB hub + adapter & -- & 1 & 2{,}653 & 2{,}653 & \href{https://www.flipkart.com/transcend-super-fast-speed-usb-3-0-4-port-3-hub-power-adaptor-hub3/p/itmdkg5bsmjqvfqn}{Flipkart} \\
-61 & Coordination base & EByte E22-900T22U, SX1262, USB & -- & 1 & 1{,}646 & 1{,}646 & \href{https://hubtronics.in/e22-900t22u}{Hubtronics} \\
-62 & Base station mount & Photographic tripod and adapter & -- & 1 & 879 & 879 & \href{https://www.amazon.in/Amazon-Basics-Tripod-Camera-Operating/dp/B0CX5DSRCQ}{Amazon India} \\
+57 & Video receivers & LB-Link BL-M8812EU2, RTL8812EU, one per aircraft channel & -- & 1 & 1{,}849 & 1{,}849 & \href{https://hubtronics.in/BL-M8812EU2}{Hubtronics} \\
+58 & Receive panels & 5.8 GHz 14 dBi directional panel, RP-SMA, 62x55 mm & -- & 1 & 566 & 566 & \href{https://www.flyrobo.in/long-range-rp-sma-5.8g-14dbi-panel-antenna}{FlyRobo} \\
+59 & Panel pigtails & U.FL to RP-SMA female pigtail, RG178 & -- & 1 & 99 & 99 & \href{https://www.indiamart.com/proddetail/ufl-ipx-ipex-to-rp-sma-female-rg-178-coaxial-pigtail-jumper-cable-2851725889755.html}{IndiaMART} \\
+60 & Receive antennas & 6 dBi 5 GHz dipole + U.FL lead, second port & -- & 1 & 75 & 75 & \href{https://robocraze.com/products/6dbi-2-4ghz-5ghz-dual-band-wifi-rp-sma-antenna-20cm-u-fl-ipex-cable}{Robocraze} \\
+61 & Receiver USB hub & Transcend HUB3 powered 4-port USB hub + adapter & -- & 1 & 2{,}653 & 2{,}653 & \href{https://www.flipkart.com/transcend-super-fast-speed-usb-3-0-4-port-3-hub-power-adaptor-hub3/p/itmdkg5bsmjqvfqn}{Flipkart} \\
+62 & Coordination base & EByte E22-900T22U, SX1262, USB & -- & 1 & 1{,}646 & 1{,}646 & \href{https://hubtronics.in/e22-900t22u}{Hubtronics} \\
+63 & Base station mount & Photographic tripod and adapter & -- & 1 & 879 & 879 & \href{https://www.amazon.in/Amazon-Basics-Tripod-Camera-Operating/dp/B0CX5DSRCQ}{Amazon India} \\
 \midrule
-\multicolumn{6}{@{}l}{\textbf{Parts total, first aircraft}} & \multicolumn{2}{r@{}}{\textbf{2{,}12{,}621}} \\
-\multicolumn{8}{@{}p{16.35cm}@{}}{\rule{0pt}{11pt}$^\dagger$\,No listing. The base antenna cable is to be made up by
-a local RF cable shop, and consumables are a round allowance. Both are carried as
-pre-GST and have GST and contingency applied.} \\
+\multicolumn{6}{@{}l}{\textbf{Parts total, first aircraft}} & \multicolumn{2}{r@{}}{\textbf{2{,}12{,}381}} \\
+\multicolumn{8}{@{}p{16.35cm}@{}}{\rule{0pt}{11pt}$^\dagger$\,No listing. Consumables are a round allowance,
+carried as pre-GST with GST and contingency applied.} \\
 \end{longtable}}
 
 \section{Battery selection}
@@ -259,7 +259,7 @@ measurement is the first gate in Section~\ref{sec:verify}.
 The following are checked when the parts arrive or before first flight. Each
 is either a measurement this programme exists to make, or a confirmation that
 a listing cannot give. \emph{Planned} means the test is scheduled at the stage
-shown; \emph{Open} means an action is still needed before ordering.
+shown.
 
 {\footnotesize
 \setlength{\tabcolsep}{3pt}
@@ -277,7 +277,7 @@ shown; \emph{Open} means an action is still needed before ordering.
 3 & Pack fuse & Log peak current on the stand and in the first flights. & The 150\,A fuse must hold against a $\sim$136\,A peak. This is the tightest electrical margin. & Phase 2 & Planned \\
 4 & Battery failsafe & Loaded discharge of the received pack at hover current. & Failsafe parameters are set for the 16\,Ah LiPo (land with 20\,\% left). The discharge confirms the voltage backstop fires near 20\,\%. \textbf{No flight before this is done.} & Before first flight & Planned \\
 5 & Speed controller (65\,A) & Thrust-stand test with 18\,in propellers and 340\,KV motors. & Current, temperature and freedom from desynchronisation confirmed before more are bought. & Phase 2 & Planned \\
-6 & Base RTK antenna cable & Obtain a quote from a local RF cable shop. & 3\,m RG58, 50\,$\Omega$, TNC-male to SMA-male. The \rs{600} in this BOM is an estimate until quoted. & Before ordering & \textbf{Open} \\
+6 & Base RTK antenna cable & Check both pieces on receipt. & Standard SMA and TNC, not reverse-polarity, and both RG58. The antenna reports a fix through the full 3\,m run. & On receipt & Planned \\
 7 & Ground video antennas & Install one 14\,dBi panel per receiver, aimed at its aircraft, and an omni on the second port. & Confirm polarisation before installation. Measure the range on our own link, not the listing's analog-FPV figure. Set coax lengths from the station layout. & Ground-station build & Planned \\
 8 & Video radio power and cooling & Bench-run the BL-M8812EU2 at the set TX power on its 5\,A regulator, with heatsink and fan. & Supply holds 5\,V without sagging and the radio does not throttle over a mission-length run. & Before first flight & Planned \\
 9 & USB hub & Check the supplied power adapter. & Powers the receiver (up to 1.8\,A when transmitting), more than a laptop port supplies. & On receipt & Planned \\
@@ -292,7 +292,7 @@ shown; \emph{Open} means an action is still needed before ordering.
       a supplier blocked automated checking, the same part's price at another
       Indian retailer was used, and that retailer is the one linked.
 \item Retail listings already include GST and are used as listed. Pre-GST quotations,
-      B2B listings and estimates have 18\,\% GST added (\rs{1{,}569}).
+      B2B listings and estimates have 18\,\% GST added (\rs{1{,}526}).
 \item A 15\,\% contingency is applied to the whole, for price movement between
       now and each phase's purchase.
 \item Customs duty does not apply: every part is bought from a supplier in India.

@@ -23,11 +23,16 @@ list, not tests, and are fixed:
   The voltage floors are provisional until a loaded discharge on the real pack;
   the landing-queue test now runs at 365 Wh and the 7.1 kg hover power.
 
-Ask: three aircraft ₹5,71,171 → **₹5,78,504**; first aircraft ₹2,43,874 →
-**₹2,46,319**; MVP ₹1,96,225 → **₹1,98,670**. Brief prose updated to match.
+- **Base antenna cable:** the ₹600 local-make estimate is replaced by two stock
+  RG58 pieces from one IndiaMART seller (3AN Telecom, Bhopal), ex-GST: 1 m
+  TNC-M→SMA-M (₹150) and a 2 m SMA-F→SMA-M extension (₹210). Consumables are
+  now the only unlisted line.
+
+Ask: three aircraft ₹5,71,171 → **₹5,78,179**; first aircraft ₹2,43,874 →
+**₹2,45,993**; MVP ₹1,96,225 → **₹1,98,670**. Brief prose updated to match.
 
 The BOM document's section is now **Test plan**: scheduled measurements read
-*Planned*; only the base antenna cable quote is *Open*. The charger-profile and
+*Planned*; nothing is *Open*. The charger-profile and
 connector rows are gone (the first is now in the system configuration). A
 one-aircraft BOM (`rescueswarm-bom-single.pdf`, `build_bom_pdf.py --single`)
 accompanies `mentor-brief-single`.
