@@ -144,12 +144,16 @@ BOM = [
  # The BL-M8812EU2 draws up to 1.8 A at 5 V (Hubtronics), so it gets its own
  # regulator instead of sharing the Pi's rail or loading the Pi's USB port.
  # CHECK (OpenIPC wiki, 2026-09-21): at high TX power it draws 5 V / 2.x A,
- # OpenIPC asks for a >3 A supply, and it needs a HEATSINK WITH A FAN. This
- # 3 A UBEC is therefore borderline at high power: confirm it holds at the TX
- # power actually set (27 dBm is the link budget's figure), or use a larger BEC.
- # The heatsink and fan are not yet lines.
- ("avionics", "BEC, video radio", "Hobbywing 3 A UBEC, 5/6 V, 5 A peak, 2-6S", 369, 3, 1,
-  "https://kitsguru.com/products/hobbywing-3a-ubec-5v-6v-max-5a-lowest-rf-noise-be-hwbec?variant=40708943577269"),
+ # OpenIPC asks for a >3 A supply, and it needs a HEATSINK WITH A FAN.
+ # 2026-10-30: the 3 A Hobbywing (369) was borderline against that, so this is
+ # now a 5 A unit, and the heatsink and fan are a line of their own below.
+ # Robu's listing is the dearest of four Indian ones seen (785-959).
+ ("avionics", "BEC, video radio", "2-6S 5 V 5 A switching BEC", 959, 3, 1,
+  "https://robu.in/product/2-13s-5v-5a-bec-for-quadcopter-drone/"),
+ # 30 mm 5 V fan (73) on a 50 x 25 x 10 mm aluminium heatsink (49,
+ # robu.in/?p=872062), both Robu. Runs off the video radio's own 5 A rail.
+ ("avionics", "Video radio cooling", "Aluminium heatsink 50 x 25 x 10 mm + 3010 5 V fan",
+  122, 3, 1, "https://robu.in/?p=1187563"),
  # The servo rail, kept apart so a jammed servo cannot sag the autopilot.
  ("avionics", "BEC, secondary", "ReadytoSky 2-6S 5V/3A + 12V/3A switchable UBEC", 279, 3, 1,
   "https://robu.in/product/readytosky-2-6s-5v-3a-and-12v-3a-switchable-ubec/"),
@@ -214,7 +218,7 @@ BOM = [
  # (25 C) of pack and 150 A ANL fusing -- the fuse is now the tightest margin.
  #
  # HV pack (4.35 V/cell max, 22.8 V nominal): the M6D charger must be set to
- # LiHV. AS150 connector: the pack side needs AS150 mates, not the XT90S pairs.
+ # LiHV. AS150 connector: the harness uses AS150 throughout (Power connectors).
  ("airframe", "Battery pack", "GenX 22.8V 6S 16000mAh 25C/40C HV LiPo, AS150", 12197, 3, 1,
   "https://robokits.co.in/batteries-chargers/drone-batteries/"
   "genx-power-premium-lipo-battery/genxpower-22.2v-lipo-batteries/"
@@ -225,8 +229,11 @@ BOM = [
   "https://robu.in/product/30cm-lipo-battery-strap-belt-reusable-cable-tie-wrap/"),
  ("airframe", "Main leads", "10 AWG ultra-flexible silicone wire", 149, 1, 0,
   "https://robu.in/product/high-quality-ultra-flexible-10awg-silicone-wire-200m-red/"),
- ("airframe", "Power connectors", "Amass XT90S anti-spark, M/F pair", 180, 12, 4,
-  "https://robokits.co.in/batteries-chargers/plugs-and-connectors/amass-xt90s-anti-spark-connectors-male-female-pair-original"),
+ # 2026-10-30: was Amass XT90S (180/pair). XT90S does not mate with the pack's
+ # AS150, and XT90 is a ~90 A connector against a ~136 A peak. AS150 is rated
+ # 150 A continuous. Zbotic blocks automated fetches; price from its listing.
+ ("airframe", "Power connectors", "Amass AS150 anti-spark, gold-plated, M/F pair", 533.36, 12, 4,
+  "https://zbotic.in/product/as150-anti-spark-self-insulating-gold-plated-connector-1-pair/"),
  ("airframe", "Signal connectors", "JST ZH 6-pin, 200 mm leads", 23, 3, 1,
   "https://robu.in/product/jst-sh-6-pin-connectors-1-0mm-pin-spacing-with-200mm-wires/"),
  ("airframe", "Antenna feeders", "SMA M-F bulkhead RG316, 150 mm + adapters", 1139, 3, 1,
@@ -312,7 +319,7 @@ PHASE_OF = {
     "GNSS antenna, base": (5,), "GNSS feeder, base": (5,), "RTK base radio": (5,),
     "GNSS cable, base": (5,),
     "Camera + lens": (6, 16, 24), "Height rangefinder": (6, 16, 24), "Video transmitter": (6, 16, 24),
-    "Video antennas": (6, 16, 24),
+    "Video antennas": (6, 16, 24), "Video radio cooling": (6, 16, 24),
     "Command receiver": (6, 16, 24), "Coordination radio": (6, 16, 24),
     "Arm tube": (7, 17, 25), "Frame plate stock": (7, 17, 25), "Motor mounts": (7, 17, 25),
     "Arm clamps": (7, 17, 25), "Landing gear": (7, 17, 25),
@@ -498,6 +505,12 @@ REVISED_2026_09_19 = (
     - 399 * 3                          # analog capture cards out
     + 2653)                            # powered USB hub for the ground receivers
 
+# 2026-10-30, closing three verification items in the mentor BOM.
+REVISED_2026_10_30 = (
+    (959 - 369) * 3                    # video-radio BEC, 3 A -> 5 A
+    + 122 * 3                          # heatsink + fan for the video radio
+    + (533.36 - 180) * 12)             # XT90S -> AS150, to mate with the pack
+
 PACK_PROTECTION = """Why there is no BMS in this BOM.
 
 (Written for the DIY 6S3P Li-ion pack. Since 2026-09-19 the pack is a bought
@@ -549,10 +562,10 @@ def total():
 # after it, must be what we hold. This is the transcription guard: it fails if
 # any line is mistyped, dropped or double-counted.
 assert abs(total() - (SHEET_STATED_TOTAL + SHEET_OMITTED + ADDED_AFTER_SHEET
-                      + REVISED_2026_09_19)) < 1.0, (
+                      + REVISED_2026_09_19 + REVISED_2026_10_30)) < 1.0, (
     f"transcription drift: {total():.2f} vs sheet {SHEET_STATED_TOTAL:.2f} "
     f"+ omitted {SHEET_OMITTED} + added {ADDED_AFTER_SHEET} "
-    f"+ revised {REVISED_2026_09_19:.2f}")
+    f"+ revised {REVISED_2026_09_19:.2f} + {REVISED_2026_10_30:.2f}")
 
 if __name__ == "__main__":
     print(f"\n  {'group':<40}{'lines':>6}{'per ac':>11}{'programme':>12}")

@@ -7,6 +7,31 @@ programmatic edit, run the recalculation check before trusting a number.
 
 ---
 
+## 2026-10-30 — three verification items closed; test plan relabelled
+
+Three items in the mentor BOM's verification table were defects in the parts
+list, not tests, and are fixed:
+
+- **Power connectors:** Amass XT90S (₹180/pair) → **AS150** (₹533.36, Zbotic).
+  XT90S does not mate with the pack's AS150, and XT90 is a ~90 A part against a
+  ~136 A peak.
+- **Video radio supply:** Hobbywing 3 A UBEC (₹369) → **2–6S 5 V 5 A BEC**
+  (₹959, Robu). New line **Video radio cooling**: 50×25×10 mm heatsink + 3010
+  5 V fan (₹122, Robu), which OpenIPC requires and was not in the BOM.
+- **Failsafe parameters:** `params.py` now describes the 16 Ah LiPo
+  (16,000 mAh, low/critical 3.60/3.50 V per cell, ArduPilot's LiPo values).
+  The voltage floors are provisional until a loaded discharge on the real pack;
+  the landing-queue test now runs at 365 Wh and the 7.1 kg hover power.
+
+Ask: three aircraft ₹5,71,171 → **₹5,78,504**; first aircraft ₹2,43,874 →
+**₹2,46,319**; MVP ₹1,96,225 → **₹1,98,670**. Brief prose updated to match.
+
+The BOM document's section is now **Test plan**: scheduled measurements read
+*Planned*; only the base antenna cable quote is *Open*. The charger-profile and
+connector rows are gone (the first is now in the system configuration). A
+one-aircraft BOM (`rescueswarm-bom-single.pdf`, `build_bom_pdf.py --single`)
+accompanies `mentor-brief-single`.
+
 ## 2026-09-21 — briefs and technical proposal brought in line with the BOM
 
 No price changed. The BOM document is now a mentor submission (the revision

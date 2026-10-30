@@ -61,7 +61,8 @@ CONFIG = [
               "drawn on; one directional ground receiver per aircraft"),
     ("Links", "2.4\\,GHz ExpressLRS for the safety pilot; 868\\,MHz LoRa for RTK "
               "corrections"),
-    ("Power", "6S 16\\,Ah LiHV lithium-polymer pack; separate regulators for the "
+    ("Power", "6S 16\\,Ah LiHV lithium-polymer pack, charged on the LiHV profile "
+              "(4.35\\,V per cell); AS150 connectors; separate regulators for the "
               "computer, the video radio and the servos"),
 ]
 
@@ -79,24 +80,20 @@ BATTERY_TABLE = [
 VERIFY = [
     ("Battery mass", "Weigh each pack on receipt.",
      "Expected 1.88--2.21\\,kg. The measured mass replaces the estimate in the "
-     "take-off mass.", "On receipt", "Open"),
+     "take-off mass.", "On receipt", "Planned"),
     ("Motor thrust", "Thrust-stand test of one motor, propeller and speed controller.",
      "$\\geq$\\,3.55\\,kgf per motor, which keeps thrust-to-weight at 2.0 at the "
-     "heaviest expected mass.", "Phase 2", "Open"),
-    ("Battery charging", "Set the charger profile.",
-     "LiHV, 4.35\\,V per cell maximum.", "Before first charge", "Open"),
-    ("Battery connector", "Fit mating connectors.",
-     "AS150 mates on the aircraft harness, not XT90S.", "Before ordering", "Open"),
+     "heaviest expected mass.", "Phase 2", "Planned"),
     ("Pack fuse", "Log peak current on the stand and in the first flights.",
      "The 150\\,A fuse must hold against a $\\sim$136\\,A peak. This is the "
-     "tightest electrical margin.", "Phase 2", "Open"),
-    ("Failsafe parameters", "Weigh the pack, measure its voltage sag under load, "
-     "then update the pack model and the failsafe parameters and re-test.",
-     "The current parameters describe the previous Li-ion pack. "
-     "\\textbf{No flight before this is complete.}", "Before first flight", "Open"),
+     "tightest electrical margin.", "Phase 2", "Planned"),
+    ("Battery failsafe", "Loaded discharge of the received pack at hover current.",
+     "Failsafe parameters are set for the 16\\,Ah LiPo (land with 20\\,\\% "
+     "left). The discharge confirms the voltage backstop fires near 20\\,\\%. "
+     "\\textbf{No flight before this is done.}", "Before first flight", "Planned"),
     ("Speed controller (65\\,A)", "Thrust-stand test with 18\\,in propellers and 340\\,KV motors.",
      "Current, temperature and freedom from desynchronisation confirmed before "
-     "@@ESCREST@@ bought.", "Phase 2", "Candidate"),
+     "@@ESCREST@@ bought.", "Phase 2", "Planned"),
     ("Base RTK antenna cable", "Obtain a quote from a local RF cable shop.",
      "3\\,m RG58, 50\\,$\\Omega$, TNC-male to SMA-male. The \\rs{600} in this BOM is an "
      "estimate until quoted.", "Before ordering", "Open"),
@@ -104,15 +101,14 @@ VERIFY = [
      "aircraft, and an omni on the second port.",
      "Confirm polarisation before installation. Measure the range on our own link, "
      "not the listing's analog-FPV figure. Set coax lengths from the station layout.",
-     "Ground-station build", "Open"),
+     "Ground-station build", "Planned"),
     ("Video radio power and cooling", "Bench-run the BL-M8812EU2 at the set TX power "
-     "on its 3\\,A regulator.",
-     "It draws about 2\\,A or more at high power and needs a heatsink with a fan. "
-     "The 3\\,A regulator must hold without sagging, or a larger one is fitted.",
-     "Before first flight", "Open"),
+     "on its 5\\,A regulator, with heatsink and fan.",
+     "Supply holds 5\\,V without sagging and the radio does not throttle over "
+     "a mission-length run.", "Before first flight", "Planned"),
     ("USB hub", "Check the supplied power adapter.",
      "@@HUBLOAD@@", "On receipt",
-     "Open"),
+     "Planned"),
     ("RTK rover (GenX F9P Air)", "Check the maker's specification.",
      "Dual-band: GPS L1/L2, Galileo E1/E5b, BDS B1/B2, GLONASS G1/G2; QMC5883 "
      "compass.", "Before ordering", "Verified"),
@@ -329,11 +325,12 @@ cost is weight: on the same motors, thrust-to-weight falls from 2.0 to about
 1.8--1.9 unless the thrust stand measures at least 3.55\,kgf per motor. That
 measurement is the first gate in Section~\ref{sec:verify}.
 
-\section{Verification before purchase and flight}\label{sec:verify}
+\section{Test plan}\label{sec:verify}
 
-The following are checked before the relevant purchase or before first flight.
-Each is either a measurement this programme exists to make, or a confirmation
-that a listing cannot give.
+The following are checked when the parts arrive or before first flight. Each
+is either a measurement this programme exists to make, or a confirmation that
+a listing cannot give. \emph{Planned} means the test is scheduled at the stage
+shown; \emph{Open} means an action is still needed before ordering.
 
 {\footnotesize
 \setlength{\tabcolsep}{3pt}

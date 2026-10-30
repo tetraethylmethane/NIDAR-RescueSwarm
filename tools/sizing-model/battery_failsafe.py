@@ -25,7 +25,8 @@ P_AVIO_W = 55.0
 SWEEP_S = 93.0
 MISSION_S = 462.0        # 7.7 min
 
-# What the firmware currently says (firmware/ardupilot-params/params.py).
+# What the firmware said for the 6S3P Li-ion pack this model describes. The
+# shipped values have since moved to the 16 Ah LiPo (params.py).
 CURRENT_LOW_V = 20.4     # 6 x 3.40, chosen as "~20 % SoC resting"
 CURRENT_CRT_V = 19.2     # 6 x 3.20, "~10 %"
 

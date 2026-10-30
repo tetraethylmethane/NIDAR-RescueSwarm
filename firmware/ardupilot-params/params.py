@@ -25,25 +25,23 @@ from __future__ import annotations
 
 import argparse
 
-# 6S 21700 Li-ion, 13.5 Ah. Voltage thresholds are per-cell x 6.
+# GenX 6S 16 Ah HV LiPo (sourced_bom.py), 365 Wh. Thresholds are per-cell x 6.
 #
-# STALE AGAINST THE BOM SINCE 2026-09-19, DELIBERATELY. The BOM now buys a 6S
-# LiPo whose capacity is not yet frozen. These values, the pack model in
-# tools/sizing-model/battery_pack.py and the tests that check both still
-# describe the 292 Wh Li-ion pack, because they were validated together and
-# must move together. Do NOT fly the LiPo on these: the Li-ion voltage floors
-# are wrong for a LiPo, and doubly so for the HV pack chosen (4.35 V/cell max).
+# PROVISIONAL UNTIL THE PACK IS MEASURED. Capacity is the nameplate, and the
+# capacity thresholds -- the primary failsafe -- follow from it directly. The
+# voltage floors are ArduPilot's standard LiPo values (3.6 / 3.5 V per cell,
+# resting-equivalent, since VOLTSRC=1 compensates sag): a backstop, not a
+# measured fit. Before first flight, run a loaded discharge on the real pack
+# and confirm the low floor still sits near 20 % state of charge under hover
+# load. tools/sizing-model/battery_pack.py is still the old Li-ion model and
+# does not describe this pack.
 #
-# The BOM now buys a GenX 6S 16 Ah HV pack (see sourced_bom.py for why 16 and
-# not 12 or 13). When it arrives: weigh it, run a loaded discharge to get its
-# sag curve, give battery_pack.py a LiPo model from that, then set PACK_MAH =
-# 16000 and the LiPo thresholds here, and update test_params' PACK_WH and
-# hover power for the heavier aircraft. At 6.8-7.1 kg the landing-queue check
-# needs 62-67 Wh of reserve; 20 % of 365 Wh is 73 Wh, so it should pass.
+# Until 2026-10-30 this read 13,500 mAh and 3.40 / 3.20 V for the in-house
+# 6S3P Li-ion pack. Those voltage floors are far too low for a LiPo.
 CELLS = 6
-PACK_MAH = 13500
-LOW_V_PER_CELL = 3.40          # ~20 % SoC resting for 21700 NMC
-CRT_V_PER_CELL = 3.20          # ~10 %; below this the cells are being damaged
+PACK_MAH = 16000
+LOW_V_PER_CELL = 3.60          # LiPo, ~20 % SoC resting; confirm on the measured pack
+CRT_V_PER_CELL = 3.50          # LiPo, ~10 %; land where it stands
 
 # THERE IS NO BATT_RESISTANCE PARAMETER IN ARDUPILOT.
 #
@@ -71,7 +69,7 @@ CRT_V_PER_CELL = 3.20          # ~10 %; below this the cells are being damaged
 # Base parameters, identical on every aircraft.
 BASE: dict[str, float] = {
     # --- battery failsafe (SYS-11) -------------------------------------
-    # Capacity-based is primary: a Li-ion discharge curve is flat, so voltage
+    # Capacity-based is primary: a lithium discharge curve is flat, so voltage
     # alone is a poor state-of-charge estimate under varying load. Voltage is
     # kept as the backstop.
     "BATT_MONITOR": 4,                       # voltage and current

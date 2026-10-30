@@ -113,8 +113,10 @@ RATIONALE = {
    "Powers the computer. Deliberately oversized: losing it in flight is the "
    "failure this line exists to prevent.",
  "BEC, video radio":
-   "A separate supply for the video radio, which draws nearly two amps and "
-   "would otherwise load the computer's supply.",
+   "A separate supply for the video radio, which draws two amps or more at "
+   "full power. Rated 5 A so it has margin rather than running at its limit.",
+ "Video radio cooling":
+   "The video radio overheats without a heatsink and fan at full power.",
  "BEC, secondary":
    "A separate supply for the servos, so a jammed servo cannot disturb the "
    "autopilot.",
@@ -164,7 +166,9 @@ RATIONALE = {
    "The main power cable, sized for the highest current the motors ever draw "
    "rather than the average.",
  "Power connectors":
-   "Anti-spark, so connecting a battery this size does not burn the contacts.",
+   "Anti-spark, so connecting a battery this size does not burn the contacts. "
+   "AS150 to match the battery's own plug, and rated 150 A against a peak "
+   "near 136 A.",
  "Signal connectors":
    "Keyed, so the wiring can only go back together one way after a repair.",
  "Antenna feeders":

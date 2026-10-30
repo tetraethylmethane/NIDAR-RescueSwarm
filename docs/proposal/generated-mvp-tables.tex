@@ -25,7 +25,7 @@ Throttle source & Servo tester / ESC consistency tester, PPM & 111 & A motor on 
 \end{longtable}
 \endgroup
 
-\subsubsection*{Per aircraft, avionics and sensing --- phases 3--6 \quad \rs{66{,}502} of parts}
+\subsubsection*{Per aircraft, avionics and sensing --- phases 3--6 \quad \rs{67{,}214} of parts}
 
 \begingroup\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
@@ -48,13 +48,14 @@ GNSS RTK rover & GenX F9P Air: ZED-F9P L1/L2 + helix + QMC5883 compass, ~20 g & 
 Camera + lens & Arducam 12.3 MP 1/2.3 in HQ module, 6 mm CS lens & 6{,}799 & The search sensor, chosen so a person in water is large enough in the picture to be found. \textit{Robu} \\
 Command receiver & ExpressLRS RX24T, 2.4 GHz & 1{,}439 & Carries the safety pilot's control and the aircraft's reporting on a single link, which saves a second radio. \textit{Robu} \\
 BEC, primary & 8 A UBEC, 5/6 V out, 2-6S in & 3{,}939 & Powers the computer. Deliberately oversized: losing it in flight is the failure this line exists to prevent. \textit{Amazon India} \\
-BEC, video radio & Hobbywing 3 A UBEC, 5/6 V, 5 A peak, 2-6S & 369 & A separate supply for the video radio, which draws nearly two amps and would otherwise load the computer's supply. \textit{KitsGuru} \\
+BEC, video radio & 2-6S 5 V 5 A switching BEC & 959 & A separate supply for the video radio, which draws two amps or more at full power. Rated 5 A so it has margin rather than running at its limit. \textit{Robu} \\
+Video radio cooling & Aluminium heatsink 50 x 25 x 10 mm + 3010 5 V fan & 122 & The video radio overheats without a heatsink and fan at full power. \textit{Robu} \\
 BEC, secondary & ReadytoSky 2-6S 5V/3A + 12V/3A switchable UBEC & 279 & A separate supply for the servos, so a jammed servo cannot disturb the autopilot. \textit{Robu} \\
 \bottomrule
 \end{longtable}
 \endgroup
 
-\subsubsection*{Per aircraft, airframe and drive --- phases 7--10 \quad \rs{69{,}572} of parts}
+\subsubsection*{Per aircraft, airframe and drive --- phases 7--10 \quad \rs{70{,}986} of parts}
 
 \begingroup\small
 \begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.4cm}r>{\raggedright\arraybackslash}p{7.4cm}@{}}
@@ -81,7 +82,7 @@ Battery pack & GenX 22.8V 6S 16000mAh 25C/40C HV LiPo, AS150 & 12{,}197 & About 
 Pack fusing & ANL fuse holder + 150 A ANL fuses & 3{,}000 & Protects against a short circuit without cutting power at full throttle. \textit{Njour} \\
 Pack retention & 300 mm LiPo strap, reusable, 2 off & 124 & Holds the battery down. It is a fifth of the aircraft's weight, so a strap that lets go is not a small problem. \textit{Robu} \\
 Main leads & 10 AWG ultra-flexible silicone wire & 149 & The main power cable, sized for the highest current the motors ever draw rather than the average. \textit{Robu} \\
-Power connectors & Amass XT90S anti-spark, M/F pair, 4 off & 720 & Anti-spark, so connecting a battery this size does not burn the contacts. \textit{Robokits} \\
+Power connectors & Amass AS150 anti-spark, gold-plated, M/F pair, 4 off & 2{,}133 & Anti-spark, so connecting a battery this size does not burn the contacts. AS150 to match the battery's own plug, and rated 150 A against a peak near 136 A. \textit{zBotic} \\
 Signal connectors & JST ZH 6-pin, 200 mm leads & 23 & Keyed, so the wiring can only go back together one way after a repair. \textit{Robu} \\
 Antenna feeders & SMA M-F bulkhead RG316, 150 mm + adapters & 1{,}139 & Let the antennas mount on the airframe instead of hanging off the radios. \textit{Desertcart} \\
 Insulation & PVC heat-shrink sleeve, 150 mm & 47 & Sleeving over the battery joints --- the one place on the aircraft where a rubbed wire is an immediate fire. \textit{Robu} \\

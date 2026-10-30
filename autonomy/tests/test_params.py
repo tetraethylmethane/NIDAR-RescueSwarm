@@ -87,13 +87,14 @@ def test_the_loiter_stagger_is_affordable_from_the_reserve():
     raising LAND_SPEED to shorten the descent, not shortening the queue -- see
     the note in params.for_drone.
 
-    IT CURRENTLY PASSES BY 1.08 Wh OF 58.40, which is 1.9 %. That is not a
-    comfortable margin and it is not meant to read as one: the queue is very
-    nearly as long as the reserve can pay for, and a stagger of 61 s would fail
-    this. If you are here because this test just went red, the answer is almost
-    certainly LAND_SPEED (HANDOFF.md section 4.8), not a larger threshold.
+    On the 16 Ah LiPo it passes by about 5.4 Wh of 73.0 (7 %), at the hover
+    power of the HEAVIEST expected aircraft: 913 W at 6.36 kg scaled by
+    mass^1.5 to 7.1 kg. On the old 292 Wh Li-ion pack it passed by 1.08 Wh.
+    Still not a comfortable margin. If you are here because this test just
+    went red, the answer is almost certainly LAND_SPEED (HANDOFF.md section
+    4.8), not a larger threshold.
     """
-    HOVER_W, PACK_WH = 913.0, 292.0
+    HOVER_W, PACK_WH = 913.0 * (7.1 / 6.36) ** 1.5, 365.0
     worst_wait_s = max(for_drone(i)["RTL_LOIT_TIME"] for i in (1, 2, 3)) / 1000.0
     spent_wh = HOVER_W * worst_wait_s / 3600.0
     descent_wh = HOVER_W * WORST_MEASURED_DESCENT_S / 3600.0
@@ -118,9 +119,9 @@ def test_rtl_alt_is_centimetres_and_the_validator_knows():
 
 def test_battery_thresholds_match_the_pack():
     p = for_drone(1)
-    assert p["BATT_CAPACITY"] == PACK_MAH == 13500
-    assert p["BATT_LOW_MAH"] == pytest.approx(2700)    # land with 20 %
-    assert p["BATT_LOW_VOLT"] == pytest.approx(20.4)   # 6S x 3.40 V
+    assert p["BATT_CAPACITY"] == PACK_MAH == 16000
+    assert p["BATT_LOW_MAH"] == pytest.approx(3200)    # land with 20 %
+    assert p["BATT_LOW_VOLT"] == pytest.approx(21.6)   # 6S x 3.60 V, LiPo
     assert p["BATT_CRT_VOLT"] < p["BATT_LOW_VOLT"]
     assert p["BATT_FS_LOW_ACT"] == 2                   # RTL
     assert p["BATT_FS_CRT_ACT"] == 1                   # Land

@@ -103,8 +103,8 @@ def test_validator_catches_a_weakened_capacity_backstop():
 @pytest.mark.parametrize("key,expected", [
     ("BATT_LOW_TIMER", 10),
     ("BATT_FS_VOLTSRC", 1),
-    ("BATT_LOW_VOLT", 20.4),      # correct: VOLTSRC=1 compensates sag itself
-    ("BATT_CRT_VOLT", 19.2),
+    ("BATT_LOW_VOLT", 21.6),      # LiPo 3.60 V/cell; VOLTSRC=1 compensates sag itself
+    ("BATT_CRT_VOLT", 21.0),
 ])
 def test_option_a_is_what_shipped(key, expected):
     assert P.BASE[key] == pytest.approx(expected)
