@@ -12,8 +12,13 @@ The hand-written parts are decisions and checks, not numbers: the system
 configuration, the battery-selection table (model results) and the
 verification plan.
 
+With --single it emits the one-aircraft variant that accompanies
+mentor-brief-single: the same lines at the quantities build_single_brief.py
+derives, asserted against that brief's phase schedule instead.
+
 Emits: hardware/bom/rescueswarm-bom.tex (and .pdf, if pdflatex is on PATH)
-Run:   python hardware/bom/build_bom_pdf.py
+       hardware/bom/rescueswarm-bom-single.tex (and .pdf) with --single
+Run:   python hardware/bom/build_bom_pdf.py [--single]
 """
 from __future__ import annotations
 
@@ -31,7 +36,8 @@ import sourced_bom as S                                    # noqa: E402
 from build_brief_tables import money, supplier_of          # noqa: E402
 import build_approval_letters as L                         # noqa: E402
 
-OUT = os.path.join(HERE, "rescueswarm-bom.tex")
+OUT_FULL = os.path.join(HERE, "rescueswarm-bom.tex")
+OUT_SINGLE = os.path.join(HERE, "rescueswarm-bom-single.tex")
 DATE = "21 September 2026"
 
 GROUP_TITLE = {
@@ -90,7 +96,7 @@ VERIFY = [
      "\\textbf{No flight before this is complete.}", "Before first flight", "Open"),
     ("Speed controller (65\\,A)", "Thrust-stand test with 18\\,in propellers and 340\\,KV motors.",
      "Current, temperature and freedom from desynchronisation confirmed before "
-     "the remaining two are bought.", "Phase 2", "Candidate"),
+     "@@ESCREST@@ bought.", "Phase 2", "Candidate"),
     ("Base RTK antenna cable", "Obtain a quote from a local RF cable shop.",
      "3\\,m RG58, 50\\,$\\Omega$, TNC-male to SMA-male. The \\rs{600} in this BOM is an "
      "estimate until quoted.", "Before ordering", "Open"),
@@ -105,7 +111,7 @@ VERIFY = [
      "The 3\\,A regulator must hold without sagging, or a larger one is fitted.",
      "Before first flight", "Open"),
     ("USB hub", "Check the supplied power adapter.",
-     "Rated for three receivers (up to 1.8\\,A each when transmitting).", "On receipt",
+     "@@HUBLOAD@@", "On receipt",
      "Open"),
     ("RTK rover (GenX F9P Air)", "Check the maker's specification.",
      "Dual-band: GPS L1/L2, Galileo E1/E5b, BDS B1/B2, GLONASS G1/G2; QMC5883 "
@@ -128,15 +134,16 @@ def rs(v: float) -> str:
     return money(v)
 
 
-def bom_rows():
+def bom_rows(items):
     out, n = [], 0
     for key, title in GROUP_TITLE.items():
-        out.append(rf"\grouphead{{{title}}}{{{rs(S.group_total(key))}}}")
-        for r in S.BOM:
+        gt = sum(r[3] * q for r, q in items if r[0] == key)
+        out.append(rf"\grouphead{{{title}}}{{{rs(gt)}}}")
+        for r, qty in items:
             if r[0] != key:
                 continue
             n += 1
-            _, item, model, unit, qty, ac, link = r
+            _, item, model, unit, _qty, ac, link = r
             if link:
                 sup = supplier_of(link)
                 src = rf"\href{{{url(link)}}}{{{sup}}}"
@@ -192,9 +199,9 @@ TEMPLATE = r"""%================================================================
 
 \begin{center}
 {\LARGE\bfseries Bill of Materials}\\[2mm]
-{\large RescueSwarm: An Autonomous Multi-UAV System for\\
+{\large RescueSwarm: @@TITLE@@ for\\
 Post-Disaster Search, Localisation and Payload Delivery}\\[3mm]
-{\normalsize Three-aircraft programme \quad$\cdot$\quad @@DATE@@}
+{\normalsize @@SCOPE@@ \quad$\cdot$\quad @@DATE@@}
 \end{center}
 
 \vspace{1mm}\hrule\vspace{4mm}
@@ -203,17 +210,17 @@ Post-Disaster Search, Localisation and Payload Delivery}\\[3mm]
 \begin{tabularx}{\textwidth}{@{}L{3.2cm}X@{}}
 \textbf{Submitted to} & @@MENTORS@@, Faculty Mentors \\
 \textbf{Submitted by} & @@SUBMITTER@@, on behalf of the RescueSwarm team \\
-\textbf{Accompanies} & The programme brief and its phase-wise approval letters \\
+\textbf{Accompanies} & @@BRIEFNAME@@ and its phase-wise approval letters \\
 \end{tabularx}
 
 \section{Purpose}
 
-This document lists every component needed to build, test and operate the
-three RescueSwarm aircraft and their ground station, with quantities, unit
+This document lists every component needed to build, test and operate
+@@WHAT@@ and @@GSPOSS@@ ground station, with quantities, unit
 prices and the supplier each price was taken from. Every price is from a dated
 Indian listing, and each supplier name in Section~\ref{sec:bom} links to it. Two
 lines have no listing and are marked as estimates. The totals are the same as
-those in the programme brief and the approval letters, because all three are
+those in @@BRIEFREF@@ and the approval letters, because all three are
 generated from one parts list.
 
 \section{Cost summary}
@@ -224,7 +231,7 @@ generated from one parts list.
 Parts at retail, GST already included (@@NINCL@@ lines) & @@INCL@@ \\
 Parts quoted before GST, and estimates (@@NEX@@ lines) & @@EX@@ \\
 \midrule
-\textbf{Parts total, three aircraft (@@LINES@@ lines)} & \textbf{@@TOTAL@@} \\
+\textbf{Parts total, @@SCOPESHORT@@ (@@LINES@@ lines)} & \textbf{@@TOTAL@@} \\
 GST at 18\,\% on the pre-GST lines only & @@GST@@ \\
 Contingency, 15\,\% & @@CONT@@ \\
 \midrule
@@ -233,20 +240,20 @@ Contingency, 15\,\% & @@CONT@@ \\
 \end{tabular}
 \end{center}
 
-The components fitted to one aircraft cost \rs{@@PERAC@@}. The request is
-released in 29 phases, each only after the previous one has produced its
+@@PERACTEXT@@ The request is
+released in @@NPHASES@@ phases, each only after the previous one has produced its
 result. The first release is \rs{@@PH1@@}, and nothing above \rs{26{,}000} is
-spent until a motor has been measured on the thrust stand.
+spent until a motor has been measured on the thrust stand.@@NEXTSTEP@@
 
 \begin{center}
 \small
-\begin{tabular}{@{}lrrr@{}}
+\begin{tabular}{@{}l@@GROUPCOLS@@@{}}
 \toprule
-\textbf{Group} & \textbf{Lines} & \textbf{Per aircraft} & \textbf{All three} \\
+@@GROUPHEAD@@
 \midrule
 @@GROUPS@@
 \midrule
-\textbf{Total} & \textbf{@@LINES@@} & \textbf{@@PERAC@@} & \textbf{@@TOTAL@@} \\
+@@GROUPTOTAL@@
 \bottomrule
 \end{tabular}
 \end{center}
@@ -263,8 +270,8 @@ spent until a motor has been measured on the thrust stand.
 \section{Bill of materials}\label{sec:bom}
 
 All prices are in INR. \emph{Per AC} is the number fitted to one aircraft; a
-dash means the item is bought once for the whole programme. \emph{Qty} is the
-programme quantity, including spares.
+dash means the item is bought once for the whole @@ONCEFOR@@. \emph{Qty} is
+@@QTYNOTE@@
 
 {\footnotesize
 \setlength{\tabcolsep}{3pt}
@@ -283,7 +290,7 @@ programme quantity, including spares.
 \endlastfoot
 @@ROWS@@
 \midrule
-\multicolumn{6}{@{}l}{\textbf{Parts total, three aircraft}} & \multicolumn{2}{r@{}}{\textbf{@@TOTAL@@}} \\
+\multicolumn{6}{@{}l}{\textbf{Parts total, @@SCOPESHORT@@}} & \multicolumn{2}{r@{}}{\textbf{@@TOTAL@@}} \\
 \multicolumn{8}{@{}p{16.35cm}@{}}{\rule{0pt}{11pt}$^\dagger$\,No listing. The base antenna cable is to be made up by
 a local RF cable shop, and consumables are a round allowance. Both are carried as
 pre-GST and have GST and contingency applied.} \\
@@ -383,25 +390,96 @@ that a listing cannot give.
 """
 
 
+def variant(single: bool):
+    """Quantities, schedule and wording for the document being built.
+
+    The single variant reads its quantities and phase schedule from
+    build_single_brief, so this BOM and mentor-brief-single cannot disagree.
+    """
+    per_ac = sum(r[3] * r[5] for r in S.BOM)
+    if not single:
+        rel = S.phase_released()
+        return dict(
+            out=OUT_FULL, items=[(r, r[4]) for r in S.BOM],
+            released=sum(rel.values()), ph1=rel[1], words={
+                "TITLE": "An Autonomous Multi-UAV System",
+                "SCOPE": "Three-aircraft programme",
+                "SCOPESHORT": "three aircraft",
+                "BRIEFNAME": "The programme brief",
+                "BRIEFREF": "the programme brief",
+                "WHAT": "the\nthree RescueSwarm aircraft", "GSPOSS": "their",
+                "PERACTEXT": rf"The components fitted to one aircraft cost \rs{{{rs(per_ac)}}}.",
+                "NPHASES": str(len(rel)), "NEXTSTEP": "",
+                "ONCEFOR": "programme",
+                "QTYNOTE": "the\nprogramme quantity, including spares.",
+                "ESCREST": "the remaining two are",
+                "HUBLOAD": r"Rated for three receivers (up to 1.8\,A each when transmitting).",
+            })
+    import build_single_brief as B
+    released = sum(amt for *_, amt in B.ROWS)
+    rest = B._full_released() - released
+    return dict(
+        out=OUT_SINGLE, items=B.SINGLE, released=released, ph1=B.ROWS[0][3], words={
+            "TITLE": "An Autonomous UAV",
+            "SCOPE": "First aircraft",
+            "SCOPESHORT": "first aircraft",
+            "BRIEFNAME": "The first-aircraft brief",
+            "BRIEFREF": "the first-aircraft brief",
+            "WHAT": "the\nfirst RescueSwarm aircraft", "GSPOSS": "its",
+            "PERACTEXT": rf"Of the parts, \rs{{{rs(per_ac)}}} is fitted to the aircraft "
+                         "itself; the rest is test instruments, the RTK base station, "
+                         "flight-test support and the ground station.",
+            "NPHASES": str(B.N),
+            "NEXTSTEP": rf" If this aircraft meets its gates, two more like it would come "
+                        rf"to about \rs{{{rs(rest)}}}; that would be a separate request.",
+            "ONCEFOR": "build",
+            "QTYNOTE": "the\nquantity bought for this aircraft, including spares.",
+            "ESCREST": "more are",
+            "HUBLOAD": r"Powers the receiver (up to 1.8\,A when transmitting), more "
+                       r"than a laptop port supplies.",
+        })
+
+
 def main():
-    total = S.total()
-    ex = sum(S.line_total(r) for r in S.BOM if S.is_ex_gst(r[6]))
+    single = "--single" in sys.argv[1:]
+    V = variant(single)
+    OUT, items = V["out"], V["items"]
+    total = sum(r[3] * q for r, q in items)
+    ex = sum(r[3] * q for r, q in items if S.is_ex_gst(r[6]))
     incl = total - ex
     gst = ex * S.GST
     cont = (total + gst) * S.CONTINGENCY
     req = total + gst + cont
-    released = sum(S.phase_released().values())
+    released = V["released"]
     assert abs(req - released) < 1.0, f"breakdown {req:.2f} != phase schedule {released:.2f}"
-    assert abs(sum(S.group_total(k) for k in GROUP_TITLE) - total) < 0.01
     per_ac = sum(r[3] * r[5] for r in S.BOM)
-    ph1 = S.phase_released()[1]
+    ph1 = V["ph1"]
 
-    rows, n = bom_rows()
-    assert n == len(S.BOM)
-    groups = "\n".join(
-        rf"{GROUP_TITLE[k]} & {sum(1 for r in S.BOM if r[0] == k)} & "
-        rf"{rs(S.per_aircraft(k)) if S.per_aircraft(k) else '--'} & "
-        rf"{rs(S.group_total(k))} \\" for k in GROUP_TITLE)
+    rows, n = bom_rows(items)
+    assert n == len(items)
+
+    def gtot(k):
+        return sum(r[3] * q for r, q in items if r[0] == k)
+
+    def nlines(k):
+        return sum(1 for r, _ in items if r[0] == k)
+
+    if single:
+        groups = "\n".join(rf"{GROUP_TITLE[k]} & {nlines(k)} & {rs(gtot(k))} \\"
+                           for k in GROUP_TITLE)
+        gcols = "rr"
+        ghead = r"\textbf{Group} & \textbf{Lines} & \textbf{Amount} \\"
+        gtotal = rf"\textbf{{Total}} & \textbf{{{n}}} & \textbf{{{rs(total)}}} \\"
+    else:
+        groups = "\n".join(
+            rf"{GROUP_TITLE[k]} & {nlines(k)} & "
+            rf"{rs(S.per_aircraft(k)) if S.per_aircraft(k) else '--'} & "
+            rf"{rs(gtot(k))} \\" for k in GROUP_TITLE)
+        gcols = "rrr"
+        ghead = (r"\textbf{Group} & \textbf{Lines} & \textbf{Per aircraft} & "
+                 r"\textbf{All three} \\")
+        gtotal = (rf"\textbf{{Total}} & \textbf{{{n}}} & \textbf{{{rs(per_ac)}}} & "
+                  rf"\textbf{{{rs(total)}}} \\")
     config = "\n".join(rf"\textbf{{{a}}} & {b} \\" for a, b in CONFIG)
     batt = "\n".join(" & ".join(r) + r" \\" for r in BATTERY_TABLE)
     verify = "\n".join(
@@ -413,23 +491,27 @@ def main():
 
     doc = TEMPLATE
     for k, v in {
+        "GROUPCOLS": gcols, "GROUPHEAD": ghead, "GROUPTOTAL": gtotal,
         "DATE": DATE,
         "MENTORS": " and ".join(L.MENTORS),
         "MENTORA": L.MENTORS[0], "MENTORB": L.MENTORS[1],
         "SUBMITTER": sub_name, "SUBNAME": sub_name,
-        "NINCL": str(sum(1 for r in S.BOM if not S.is_ex_gst(r[6]))),
-        "NEX": str(sum(1 for r in S.BOM if S.is_ex_gst(r[6]))),
+        "NINCL": str(sum(1 for r, _ in items if not S.is_ex_gst(r[6]))),
+        "NEX": str(sum(1 for r, _ in items if S.is_ex_gst(r[6]))),
         "INCL": rs(incl), "EX": rs(ex), "TOTAL": rs(total), "GST": rs(gst),
-        "CONT": rs(cont), "REQ": rs(req), "PERAC": rs(per_ac), "PH1": rs(ph1),
-        "LINES": str(len(S.BOM)), "GROUPS": groups, "CONFIG": config,
+        "CONT": rs(cont), "REQ": rs(req), "PH1": rs(ph1),
+        "LINES": str(len(items)), "GROUPS": groups, "CONFIG": config,
         "ROWS": rows, "BATT": batt, "VERIFY": verify, "TEAM": team,
     }.items():
+        doc = doc.replace(f"@@{k}@@", v)
+    # After the tables: the verification rows carry wording keys of their own.
+    for k, v in V["words"].items():
         doc = doc.replace(f"@@{k}@@", v)
     assert "@@" not in doc, "unreplaced template key"
     assert not any(ord(c) < 32 and c != "\n" for c in doc), "control char in document"
 
     io.open(OUT, "w", encoding="utf-8", newline="\n").write(doc)
-    print(f"  wrote {os.path.relpath(OUT, ROOT)}  ({len(S.BOM)} lines, parts {total:,.0f}, "
+    print(f"  wrote {os.path.relpath(OUT, ROOT)}  ({len(items)} lines, parts {total:,.0f}, "
           f"requested {req:,.0f})")
 
     if shutil.which("pdflatex"):
