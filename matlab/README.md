@@ -64,23 +64,22 @@ driven by the real mission profile.
 ## The result that matters
 
 ```
-minimum pack voltage   17.05 V at t = 432 s
-failsafe floor         18.00 V
-margin                 -0.95 V
-SOC at that moment     64 %
-sag at the gust        5.82 V   (static model assumes 4.60)
+pack                    6S 16 Ah LiHV at 7.12 kg (heavy end of its bracket)
+peak current            144 A
+minimum raw voltage     20.37 V at t = 432 s (sag 3.51 V)
+minimum compensated     22.97 V  (low 21.6 V, critical 21.0 V)
+longest dip below low   0.0 s  (timer 10 s)
+SOC at landing          66.5 %  (capacity failsafe at 20 %)
 ```
 
-The aircraft crosses its own low-voltage floor during a legitimate gust
-recovery, at two-thirds charge, long before the 80 % DoD limit the reserve
-policy is built around. Dynamic sag exceeds the static figure by 1.2 V because
-the diffusion terms add to the instantaneous ohmic drop.
+Raw pack volts dip below BATT_LOW_VOLT during each two-second gust recovery,
+but the failsafe compares sag-compensated volts (BATT_FS_VOLTSRC = 1) and waits
+BATT_LOW_TIMER = 10 s, so it does not fire. The 144 A peak sits close to the
+150 A fuse and AS150 rating, which is now the tightest electrical margin.
 
-A failsafe set on instantaneous pack volts would command return-to-land
-mid-search on a healthy pack.
+Until 2026-10-30 this simulated the 6S3P Li-ion pack, which crossed its 18.0 V
+floor at 17.05 V mid-mission. That pack is no longer in the design.
 
-**Caveat.** R0 is calibrated so the static sag matches the 4.6 V the proposal
-assumes; R1/C1/R2/C2 are typical high-drain 21700 values, not P45B-specific. So
-the shape is trustworthy and the magnitude inherits that assumption. P2 replaces
-R0 with a measured DC-IR, and that is when this becomes evidence rather than
-analysis.
+**Caveat:** R0/R1/C1/R2/C2 are typical values for a 16 Ah 25 C LiHV pack with
+leads, not measured, and the compensation uses R0 alone (conservative).
+**P2 replaces them with a loaded discharge test on the real pack.**

@@ -263,10 +263,7 @@ TEX = r"""%=====================================================================
 \label{sec:sizing}
 
 This section shows how we arrived at the design point, not just the result.
-Every figure is regenerated from
-% \path (url package) rather than \texttt: the path is one unbreakable token
-% and overflows an IEEE column by 27 pt in \texttt. \path breaks at the slashes.
-\path{tools/sizing-model/rescueswarm_sizing_model.py}, and the section itself is
+Every figure is computed by our sizing model, and the section itself is
 generated from it, so any change to a constant in the model appears here too.
 
 \subsection{Constants and where they come from}

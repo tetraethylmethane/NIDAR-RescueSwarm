@@ -398,17 +398,16 @@ in P2 measures current as well as thrust to check it.}
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{fig-sag.pdf}
-\caption{Pack voltage over the mission, simulated with a second-order Thevenin
-cell model using the flight's own current trace plus two gust recoveries at full
-thrust. The pack drops to 17.05\,V, below its 18.0\,V failsafe threshold, while
-still two-thirds full and long before the 80\,\% discharge limit the reserve is
-based on. The dynamic sag is 1.2\,V more than the static estimate because the
-slower diffusion effects add to the instantaneous resistive drop. A failsafe
-that looked only at instantaneous voltage would therefore send a healthy aircraft
-home in the middle of a search. The internal resistance here is assumed, not
-measured, and P2 replaces it with a measured value. This simulation was done for
-the earlier 6S3P Li-ion pack; we will repeat it for the LiPo using its measured
-sag before flight.}
+\caption{Voltage of the 6S 16\,Ah LiPo over the mission, simulated with a
+second-order Thevenin cell model. The load is the flight's own power profile at
+the heaviest likely take-off mass of 7.1\,kg, plus two two-second gust recoveries
+at full thrust. Current peaks at 144\,A and the terminal voltage dips to
+20.37\,V, briefly below the 21.6\,V low-battery threshold. The failsafe does not
+act on that dip. It compares a sag-compensated voltage, which never falls below
+22.97\,V here, and it waits 10\,s before acting, so a gust cannot send a healthy
+aircraft home. The aircraft lands with 66\,\% charge, well above the 20\,\%
+capacity failsafe. The cell resistances are typical values for a pack of this
+size, not measurements, and P2 replaces them with a loaded discharge test.}
 \label{fig:sag}
 \end{figure*}
 
@@ -461,10 +460,12 @@ reserve, and about 14\,Ah is the smallest that passes. The 16\,Ah pack is the
 smallest suitable size on sale in India. The price of the extra mass is
 thrust-to-weight. The motors were sized for 2.0 at 6.36\,kg, so at 6.8--7.1\,kg
 they give only 1.8--1.9, unless the P2 thrust stand shows at least 3.55\,kgf per
-motor. We will weigh the pack when it arrives and measure its voltage sag under
-load. Until then, Fig.~\ref{fig:sag} still describes the Li-ion pack. The
-battery failsafe has been set for the LiPo using standard values, and we will
-check it against the measured sag before any flight.
+motor. Full thrust at that mass also raises the peak current to about
+144\,A (Fig.~\ref{fig:sag}), close to the 150\,A rating of the pack fuse and
+connectors, which makes the fuse the tightest electrical margin. We will weigh
+the pack when it arrives and measure its voltage sag under load. The battery
+failsafe uses standard LiPo values for now, and we will check them against the
+measured sag before any flight.
 
 The reserve also has to be checked at the mass the aircraft actually flies. In
 the model the Li-ion pack is rounded up to a buildable 18 cells, which puts the

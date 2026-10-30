@@ -32,6 +32,8 @@ with contextlib.redirect_stdout(io.StringIO()):
     import rescueswarm_sizing_model as M
     import camera_optics as CO
     import radio_links
+sys.path.insert(0, os.path.join(ROOT, "firmware", "ardupilot-params"))
+import params as FC
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "model.json")
 
@@ -94,6 +96,23 @@ def main() -> None:
             "swath_w_m": a40["swath_w"], "swath_h_m": a40["swath_h"],
             "looks_at_2Hz": CO.looks_per_target(CO.SPECIFIED, 40.0, 2.0)["frames"],
             "rate_for_12_looks_Hz": CO.rate_for_fusion(CO.SPECIFIED, 40.0),
+        },
+
+        # ---- the flight pack actually bought ---------------------------------
+        # The sizing model above still describes the 6S3P Li-ion pack it was
+        # sized with. The aircraft flies a GenX 6S 16 Ah HV LiPo (sourced_bom.py)
+        # and the failsafe thresholds are params.py's, read here rather than
+        # retyped. The maker publishes no mass, so the heavy end of the bracket
+        # (165 Wh/kg, the model's LiPo figure) is the worst case for current.
+        "flight_pack": {
+            "cells": FC.CELLS, "capacity_Ah": FC.PACK_MAH / 1000,
+            "V_nom_cell": 3.80, "V_max_cell": 4.35,
+            "low_volt_V": FC.BASE["BATT_LOW_VOLT"],
+            "crt_volt_V": FC.BASE["BATT_CRT_VOLT"],
+            "low_mah": FC.BASE["BATT_LOW_MAH"],
+            "low_timer_s": FC.BASE["BATT_LOW_TIMER"],
+            "mass_worst_kg": M.MTOW - M.m_pack
+                             + FC.CELLS * 3.80 * FC.PACK_MAH / 1000 / M.e_lipo,
         },
 
         # ---- mass statement, which must sum to MTOW ------------------------

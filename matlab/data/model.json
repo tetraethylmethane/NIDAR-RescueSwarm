@@ -76,6 +76,17 @@
   "looks_at_2Hz": 7.8533333333333335,
   "rate_for_12_looks_Hz": 3.0560271646859083
  },
+ "flight_pack": {
+  "cells": 6,
+  "capacity_Ah": 16.0,
+  "V_nom_cell": 3.8,
+  "V_max_cell": 4.35,
+  "low_volt_V": 21.6,
+  "crt_volt_V": 21.0,
+  "low_mah": 3200.0,
+  "low_timer_s": 10,
+  "mass_worst_kg": 7.122208965749374
+ },
  "mass_g": {
   "motors": 639.7254847959227,
   "esc": 223.90391967857292,

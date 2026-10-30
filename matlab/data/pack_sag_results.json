@@ -1,9 +1,16 @@
 {
-  "v_min_V": 17.047314615026554,
+  "pack": "6S 16 Ah LiHV",
+  "mass_kg": 7.1222089657493743,
+  "peak_current_A": 144.22457160127277,
+  "v_min_V": 20.374737019452859,
   "t_at_min_s": 431.90000000000003,
-  "soc_end_pct": 63.9139118236595,
-  "floor_V": 18,
-  "margin_V": -0.95268538497344579,
-  "sag_at_first_gust_V": 5.8152540368348538,
-  "assumed_static_sag_V": 4.6
+  "v_comp_min_V": 22.97077930827577,
+  "low_volt_V": 21.6,
+  "crt_volt_V": 21,
+  "time_below_low_s": 0,
+  "low_timer_s": 10,
+  "failsafe_trips": false,
+  "soc_end_pct": 66.536104757311932,
+  "soc_reserve_pct": 20,
+  "sag_at_peak_V": 3.505450429919911
 }
