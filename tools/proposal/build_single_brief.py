@@ -90,7 +90,9 @@ GROUND_ROW = (GROUND_PHASE, "Ground station: video feed, data link, base mount",
 
 def schedule_rows():
     rel = S.phase_released()
-    rows = [(ph, obj, gate, rel[ph]) for ph, obj, gate in SCHEDULE if ph in KEPT]
+    # "Aircraft 1 --- " is dropped: with one aircraft there is nothing to number.
+    rows = [(ph, obj.replace("Aircraft 1 --- ", ""), gate, rel[ph])
+            for ph, obj, gate in SCHEDULE if ph in KEPT]
     assert len(rows) == len(KEPT), "lost a phase between SCHEDULE and KEPT"
 
     # The ground phase is priced here rather than read from phase_released(),

@@ -353,11 +353,11 @@ def variant(single: bool):
     return dict(
         out=OUT_SINGLE, items=B.SINGLE, released=released, ph1=B.ROWS[0][3], words={
             "TITLE": "An Autonomous UAV",
-            "SCOPE": "First aircraft",
-            "SCOPESHORT": "first aircraft",
-            "BRIEFNAME": "The first-aircraft brief",
-            "BRIEFREF": "the first-aircraft brief",
-            "WHAT": "the\nfirst RescueSwarm aircraft", "GSPOSS": "its",
+            "SCOPE": "Single-aircraft build",
+            "SCOPESHORT": "one aircraft",
+            "BRIEFNAME": "The single-aircraft brief",
+            "BRIEFREF": "the single-aircraft brief",
+            "WHAT": "one\nRescueSwarm aircraft", "GSPOSS": "its",
             "PERACTEXT": rf"Of the parts, \rs{{{rs(per_ac)}}} is fitted to the aircraft "
                          "itself; the rest is test instruments, the RTK base station, "
                          "flight-test support and the ground station.",
