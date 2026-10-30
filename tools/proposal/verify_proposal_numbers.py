@@ -172,7 +172,7 @@ check("IV-E", "sensor pitch stated in text", 1.55, CO.SPECIFIED["pitch_um"],
 # says which one the design is sized on.
 GEN = io.open(os.path.join(ROOT, "docs", "proposal", "generated-sizing.tex"),
               encoding="utf-8").read()
-results.append(("The second is the design target" in GEN, "V",
+results.append(("We design for the person in water" in GEN, "V",
                 "generated section names WHICH target it is sized on",
                 1, 1, 0.0, "", "supine adult vs person in water"))
 results.append(("165" in GEN and "39" in GEN, "V",

@@ -262,12 +262,12 @@ TEX = r"""%=====================================================================
 \section{Sizing and Analysis}
 \label{sec:sizing}
 
-This section gives the derivations behind the design point rather than only its
-result. Every figure regenerates from
+This section shows how we arrived at the design point, not just the result.
+Every figure is regenerated from
 % \path (url package) rather than \texttt: the path is one unbreakable token
 % and overflows an IEEE column by 27 pt in \texttt. \path breaks at the slashes.
-\path{tools/sizing-model/rescueswarm_sizing_model.py}; the section itself is
-generated, so a constant cannot change in the model without changing here.
+\path{tools/sizing-model/rescueswarm_sizing_model.py}, and the section itself is
+generated from it, so any change to a constant in the model appears here too.
 
 \subsection{Constants and where they come from}
 
@@ -287,10 +287,11 @@ $T/W$ & @@TW@@ & Static thrust-to-weight, a reserve policy \\
 \end{tabular}
 \end{center}
 
-Two of these are deliberately unflattering. Air density is taken at a hot-day
-altitude rather than sea level, which \emph{increases} the power required; and
-the figure of merit is mid-band rather than optimistic. Sizing errors that
-favour the design are the ones that are discovered on the flight line.
+We chose two of these values cautiously. Air density is taken for a hot day at
+altitude rather than at sea level, which increases the power required, and the
+figure of merit is taken from the middle of the published range rather than the
+top. We would rather find out now that the design is tight than discover it on
+the flying field.
 
 \subsection{Hover power, from momentum theory}
 
@@ -302,11 +303,10 @@ A &= N\pi\left(\frac{D}{2}\right)^{2} = @@A@@~\text{m}^2,\\
 \text{disk loading} &= \frac{m}{A} = @@DL@@~\text{kg/m}^2 .
 \end{aligned}
 \]
-Momentum theory gives the induced power required to generate thrust $T$ across
-that disk~\cite{leishman2006helicopter}. Dividing by the figure of merit
-$\mathrm{FM}$ --- the ratio of ideal induced power to actual shaft power, which
-absorbs profile drag and non-uniform inflow --- converts the ideal figure to
-shaft power:
+Momentum theory gives the induced power needed to produce thrust $T$ over that
+disk area~\cite{leishman2006helicopter}. Dividing by the figure of merit
+$\mathrm{FM}$, the ratio of ideal induced power to actual shaft power, accounts
+for blade drag and uneven inflow and gives the shaft power:
 \[
 P_{\text{shaft}} = \frac{T^{3/2}}{\mathrm{FM}\sqrt{2\rho A}}
 = \frac{(@@That@@)^{3/2}}{@@FM@@\sqrt{2(@@rho@@)(@@A@@)}}
@@ -332,16 +332,16 @@ P_{\text{peak}} = \frac{(@@TW@@\,T)^{3/2}}{\mathrm{FM}\sqrt{2\rho A}\,\eta}
 \;\Longrightarrow\;
 I_{\text{peak}} = @@Ipk@@~\text{A}.
 \]
-That current, not the energy, is what disqualifies most candidate
-packs. It is a continuous requirement rather than a burst rating: the aircraft
-must be able to hold @@TW@@ $\times$ weight, not pulse it. The adopted pack
-supplies @@Ipack@@\,A, a margin of @@Imargin@@\,\%, and the per-motor share sets
-the controller rating at @@esc@@\,A peak.
+It is this current, more than the energy, that rules out most candidate packs.
+It has to be supplied continuously rather than in short bursts, because the
+aircraft must be able to hold @@TW@@ times its weight, not just reach it
+briefly. The modelled pack supplies @@Ipack@@\,A, a margin of @@Imargin@@\,\%,
+and each motor's share sets the speed controller rating at @@esc@@\,A peak.
 
-This is also where a smaller pack fails. At @@Ah@@\,Ah the peak is
-@@Crate@@\,C and hover is @@Chov@@\,C; a pack half the size would need twice the
-C-rate to deliver the same amperes. Capacity is how the design buys down
-discharge rate.
+This is also why a smaller pack does not work. At @@Ah@@\,Ah the peak is
+@@Crate@@\,C and hover is @@Chov@@\,C; a pack of half the capacity would need
+twice the C-rate to deliver the same current. A larger capacity keeps the
+discharge rate down.
 
 \subsection{Propulsion}
 
@@ -351,44 +351,43 @@ T_{\text{total}} &= (T/W)\,mg = @@Ttot@@~\text{N} = @@Tkgf@@~\text{kgf},\\
 T_{\text{motor}} &= @@Tper@@~\text{kgf}.
 \end{aligned}
 \]
-Hover demands @@Thovper@@\,kgf per motor, which is \textbf{@@hovfrac@@\,\% of
-maximum} --- inside the 45--55\,\% band where propeller efficiency and thermal
-margin are both reasonable. Sitting far below that band means an oversized and
-heavy propulsion system; far above it means no authority left for attitude
-control in gusts.
+Hover needs @@Thovper@@\,kgf per motor, which is @@hovfrac@@\,\% of maximum
+thrust. This is inside the 45--55\,\% range where both propeller efficiency and
+thermal margin are reasonable. Well below that range, the propulsion system
+would be larger and heavier than necessary; well above it, there would be too
+little thrust left to hold attitude in gusts.
 
-\textbf{Against the selected motor, hover is comfortable and the peak is not.}
-The Tarot TL96020 publishes a maximum continuous current of @@dscont@@\,A. The
-hover draw of @@Ihovm@@\,A per motor is @@hovpct@@\,\% of that, with wide
-margin. The peak at the design thrust-to-weight is @@Ipkm@@\,A, or
-\textbf{@@pkpct@@\,\%} --- above continuous rating. That is acceptable only
-because $T/W = @@TW@@$ is a transient authority reserve rather than a flight
-condition: the aircraft hovers at half throttle and reaches this current only
-in a gust recovery or an aggressive manoeuvre, for seconds. It is recorded here
-because it is the tightest margin in the propulsion chain, and because the P2
-thrust stand measures current alongside thrust and will settle whether the
-motor reaches @@Tper@@\,kgf before that rating rather than after it. The
-datasheet also gives a motor mass of @@dsmass@@\,g against the @@modmass@@\,g
-the sizing loop assumes, a difference of @@dmass@@\,g per aircraft that the P5
-weigh-in resolves.
+With the motor we have chosen, hover is comfortable but peak thrust is not. The
+Tarot TL96020 is rated for @@dscont@@\,A continuous. In hover each motor draws
+@@Ihovm@@\,A, which is @@hovpct@@\,\% of that rating. At the design
+thrust-to-weight it draws @@Ipkm@@\,A, or @@pkpct@@\,\%, which is above the
+continuous rating. We accept this only because full thrust is a short-term
+reserve, not a flight condition: the aircraft hovers at about half throttle and
+reaches this current for a few seconds at most, when recovering from a gust or
+manoeuvring hard. It is still the tightest margin in the propulsion system, so
+the P2 thrust stand measures current as well as thrust to show whether the motor
+reaches @@Tper@@\,kgf within its rating. The datasheet also gives a motor mass
+of @@dsmass@@\,g, compared with the @@modmass@@\,g the sizing model assumes, a
+difference of @@dmass@@\,g per aircraft that we will confirm when we weigh the
+parts in P5.
 
 \subsection{The coupled mass and energy solve}
 
-Pack mass, take-off mass and mission energy are mutually dependent: a heavier
-pack raises hover power, which raises the energy required, which raises pack
-mass. The model iterates to a fixed point rather than assuming one.
+Pack mass, take-off mass and mission energy all depend on one another: a heavier
+pack raises hover power, which raises the energy needed, which raises the pack
+mass again. The model repeats the calculation until the values settle.
 
-The reserve policy is what closes it. The pack must carry the nominal mission,
-one complete re-sweep of the search area, and four minutes of loiter, inside the
-usable window:
+The reserve is what fixes the result. The pack must provide enough usable energy
+for the mission, one complete second sweep of the search area, and four minutes
+of hovering:
 \[
 \underbrace{@@Enom@@}_{\text{nominal}} + \underbrace{@@Ersw@@}_{\text{re-sweep}}
 + \underbrace{@@Elo@@}_{\text{loiter}} = @@Eneed@@~\text{Wh usable},
 \]
-against @@Eusable@@\,Wh available at @@DOD@@ depth of discharge --- a margin of
-\textbf{@@margin@@\,\%}. Expressed independently of chemistry, any candidate
-pack must therefore provide \textbf{@@Ereq@@\,Wh} nameplate at \textbf{@@S@@S}
-and \textbf{@@Ipk@@\,A continuous}.
+against @@Eusable@@\,Wh available at @@DOD@@ depth of discharge, a margin of
+@@margin@@\,\%. Whatever its chemistry, a candidate pack must therefore be rated
+for at least \textbf{@@Ereq@@\,Wh} at \textbf{@@S@@S} and supply
+\textbf{@@Ipk@@\,A continuously}.
 
 The model was sized with @@ncell@@ cells in @@S@@S@@P@@P:
 @@Epack@@\,Wh, @@Ah@@\,Ah, @@mpack@@\,g, @@Vnom@@\,V nominal
@@ -397,20 +396,20 @@ The model was sized with @@ncell@@ cells in @@S@@S@@P@@P:
 is a bought 6S 16\,Ah LiPo (Section~\ref{sec:energy}); these figures are
 re-run on its measured mass before first flight.
 
-At @@MTOW@@\,kg per aircraft the fleet is \textbf{@@fleet@@\,kg} against the
-@@cap@@\,kg regulatory cap, leaving @@fmargin@@\,\% margin.
+At @@MTOW@@\,kg per aircraft the fleet weighs @@fleet@@\,kg, against the
+@@cap@@\,kg regulatory limit, a margin of @@fmargin@@\,\%.
 
 \subsection{Camera and optics}
 
-Everything optical follows from three numbers: pixel count, pixel pitch and
-focal length. Active area is count times pitch,
+All of the optics follow from three numbers: pixel count, pixel size and focal
+length. The active sensor area is the pixel count times the pixel size,
 \[
 \begin{aligned}
 w &= @@pxw@@ \times @@pitch@@\,\text{\textmu m} = @@sw@@~\text{mm},\\
 h &= @@sh@@~\text{mm}, \qquad d = @@sd@@~\text{mm},
 \end{aligned}
 \]
-and the fields of view are exact arctangents, with no small-angle
+and the fields of view are calculated exactly, without the small-angle
 approximation:
 \[
 \begin{aligned}
@@ -421,8 +420,8 @@ approximation:
 \text{DFOV}=@@dfov@@^\circ .
 \end{aligned}
 \]
-Sensor and ground are similar triangles about the lens, so ground sample
-distance at altitude $H$ is
+By similar triangles through the lens, the ground sample distance at altitude
+$H$ is
 \[
 \text{GSD} = \frac{p\,H}{f}
 = \frac{@@pitch@@\,\text{\textmu m}\times 40\,\text{m}}{@@f@@\,\text{mm}}
@@ -431,64 +430,62 @@ distance at altitude $H$ is
 giving a @@sww@@\,$\times$\,@@swh@@\,m footprint. One pixel subtends
 @@ifov@@\,mdeg.
 
-Two target sizes follow, and the design is sized on the smaller.
-A 1.7\,m supine adult --- a survivor on a rooftop or dry ground --- subtends
-@@ppl40@@\,px, or @@ppl40a@@\,px$^2$. A person \emph{in water} presents head
-and shoulders only, about @@waterm@@\,m across, and subtends
-\textbf{@@wat40@@\,px}, or @@wat40a@@\,px$^2$ --- roughly a quarter of the
-apparent area. \textbf{The second is the design target}, because this is a
-flood system and immersion is the expected posture; the first is the
-optimistic case and is quoted here only so the two are not confused.
-Section~\ref{sec:perception} argues the tiling decision on the water figure.
+We consider two target sizes and design for the smaller one. An adult 1.7\,m
+tall lying on a rooftop or dry ground covers @@ppl40@@\,px, or
+@@ppl40a@@\,px$^2$. A person in water shows only head and shoulders, about
+@@waterm@@\,m across, and covers @@wat40@@\,px, or @@wat40a@@\,px$^2$, roughly a
+quarter of the area. We design for the person in water, because this is a flood
+system and that is the posture we expect. The larger figure is the easy case and
+is given only for comparison. Section~\ref{sec:perception} bases the tiling
+decision on the water figure.
 
-\textbf{Focus.} This is not a design problem, and the arithmetic says so. The
-hyperfocal distance,
+\textit{Focus} is not a problem. The hyperfocal distance,
 \[
 H_{\text{hyp}} = \frac{f^{2}}{Nc} + f = @@hyp@@~\text{m},
 \]
-taking the circle of confusion as two pixels rather than a film-era constant,
-puts everything from @@hyphalf@@\,m to infinity in acceptable focus. The
-aircraft never operates below 30\,m. A fixed lens set once is correct at every
-altitude flown, and a focus mechanism would add a moving part, a power draw and
-a failure mode that cannot be detected from the air.
+taking the circle of confusion as two pixels, puts everything from
+@@hyphalf@@\,m to infinity in acceptable focus. The aircraft never flies below
+30\,m, so a fixed lens set once is in focus at every altitude we use. A focusing
+mechanism would only add a moving part, extra power draw and a failure we could
+not detect in flight.
 
-\textbf{Motion blur.} This does not bind either. Holding smear under one pixel
+\textit{Motion blur} is not a limit either. Keeping blur under one pixel
 requires $t_{\text{exp}} \le \text{GSD}/v$, which at @@vg@@\,m/s is
-@@blur@@\,ms --- a shutter of $1/@@blurinv@@$\,s. The requirement already
-mandates $1/1000$\,s or faster.
+@@blur@@\,ms, a shutter speed of $1/@@blurinv@@$\,s. We already require
+$1/1000$\,s or faster.
 
-\textbf{Rolling shutter.} Small but not zero. Reading the frame out over
-@@rsms@@\,ms while the aircraft moves gives @@rsm@@\,m of top-to-bottom skew,
-about @@rspx@@\,px. Negligible for detection; \emph{not} negligible for
-geolocation, where a detection's row position carries an along-track bias unless
-the pipeline corrects for readout row.
+\textit{Rolling shutter} has a small effect. Reading out the frame takes
+@@rsms@@\,ms, during which the aircraft moves, giving @@rsm@@\,m of skew from top
+to bottom, about @@rspx@@\,px. This does not matter for detection, but it does
+matter for geolocation: unless the software corrects for the row in which a
+detection appears, its position will be biased along the direction of flight.
 
-\textbf{Temporal sampling.} This is where the budget does not close. A target is in
-frame for the along-track footprint divided by ground speed, so at 40\,m and
-2\,Hz it receives \textbf{@@looks@@ looks} against the @@fusion@@ that
-multi-frame fusion requires. Meeting that count needs
+\textit{Number of views} is where the budget falls short. A target stays in the
+frame for the footprint length divided by ground speed, so at 40\,m and 2\,Hz it
+is seen @@looks@@ times, against the @@fusion@@ views we want for combining
+frames. Getting that many needs
 \[
 r \ge \frac{n\,v}{D} = @@needhz@@~\text{Hz},
 \]
-Of the available levers --- higher capture rate, lower ground speed, higher
-altitude, or a relaxed look count --- raising the capture rate is the cheapest,
-because lowering altitude shrinks the along-track footprint faster than it
-shortens the pass and therefore \emph{raises} the required rate, while raising
-altitude coarsens ground sampling and reducing ground speed lengthens every
-transect.
+The options are a faster capture rate, a lower ground speed, a higher altitude,
+or accepting fewer views. Raising the capture rate is the cheapest. Flying lower
+shrinks the footprint faster than it shortens the pass, so it actually increases
+the rate needed; flying higher makes the ground resolution coarser; and flying
+slower makes every pass longer.
 
-The cost of that lever is throughput, not energy. At @@ntile@@ tiles per frame
-the required rate is @@infreq@@ inferences per second, against the
-130--160\,FPS measured for the accelerator: at or beyond the limit. This is
-what a two-stage gate would buy back. A gate answering only whether a tile is
-homogeneous open water is a texture discrimination rather than a person
-detection, so it survives the downsampling that Section~\ref{sec:perception}
-shows would destroy a person; at @@gatepx@@ input it costs roughly
-@@gateratio@@ times fewer pixels than a detector pass, and discarding the open
-water would leave of order @@gateequiv@@ full-inference equivalents. On that
-argument the gate belongs on the accelerator already carried, not on an
-additional processor: the saving is in inferences, not in watts, and the
-aircraft's compute power is under one per cent of its hover power.
+The cost of a faster capture rate is processing, not energy. At @@ntile@@ tiles
+per frame it needs @@infreq@@ detector runs per second, against the
+130--160 per second measured for the accelerator, which is at or beyond its
+limit. A two-stage approach could recover this. A first stage that only asks
+whether a tile is plain open water is judging texture, not looking for a person,
+so it still works on a shrunken image even though, as
+Section~\ref{sec:perception} shows, a person would be lost at that size. At
+@@gatepx@@ input it handles about @@gateratio@@ times fewer pixels than the
+detector, and discarding the open-water tiles would leave the equivalent of
+about @@gateequiv@@ full detector runs. This first stage would run on the
+accelerator we already carry rather than on an extra processor, because the
+saving is in detector runs, not power: computing uses less than one per cent of
+the aircraft's hover power.
 
 \subsection{Payload release ballistics}
 
@@ -502,11 +499,11 @@ Integrating the fall with quadratic drag from a 6\,m release gives
 @@t6@@\,s to impact at @@vi6@@\,m/s, with a crosswind drift of @@d63@@\,m at
 3\,m/s and @@d66@@\,m at 6\,m/s.
 
-The governing sensitivity is release velocity, not release height. A
-residual ground speed of 0.5\,m/s displaces the impact point by about 0.53\,m,
-whereas a full metre of altitude error contributes under 4\,cm. This is the
-whole argument for hover-and-drop: a multirotor can null its ground speed before
-release and a fixed-wing cannot.
+The speed of the aircraft at release matters far more than the height. A
+remaining ground speed of 0.5\,m/s moves the impact point by about 0.53\,m,
+while a whole metre of height error moves it by less than 4\,cm. This is why we
+hover before dropping: a multirotor can stop before release, and a fixed-wing
+aircraft cannot.
 
 \subsection{Structure, geometry and control authority}
 
@@ -519,31 +516,30 @@ thrust-to-weight the root bending moment is
 For a @@OD@@\,$\times$\,@@ID@@\,mm carbon tube,
 $I = \pi(D_o^4 - D_i^4)/64 = @@Itube@@$\,mm$^4$, so the bending stress is
 $\sigma = \mathcal{M}c/I = @@sigma@@$\,MPa against roughly 600\,MPa for
-unidirectional carbon --- a safety factor of about \textbf{@@SF@@}.
+unidirectional carbon, a safety factor of about @@SF@@.
 
-\textbf{Bending is therefore not the structural driver, and the design should
-not be optimised as though it were.} Joint and clamp design, and vibration
-fatigue at the arm root, are what actually govern; a tube chosen to satisfy the
-bending case by a factor of @@SF@@ is being chosen for stiffness and handling,
-not strength.
+Bending is therefore not what limits the structure, and we should not design as
+if it were. The joints and clamps, and vibration fatigue where the arm meets the
+frame, matter much more. A tube that passes the bending case by a factor of
+@@SF@@ is being chosen for stiffness and ease of handling, not strength.
 
-Releasing one kit from a magazine offset from the centreline shifts the centre
-of gravity by under 2\,mm, requiring a few tens of grams of differential thrust
-to trim --- trivial in magnitude, but a \emph{step} change that excites the
-attitude loop. The mitigation is to mount the magazine on the centre-of-gravity
-axis and hold position briefly after release rather than to trim harder.
+Dropping one kit from a magazine that sits off the centreline moves the centre
+of gravity by less than 2\,mm, which takes only a few tens of grams of extra
+thrust to correct. The amount is tiny, but it happens suddenly and disturbs the
+attitude control. We avoid this by mounting the magazine on the centre of
+gravity and holding position briefly after each release.
 
 \subsection{Radio links}
 \label{sec:links}
 
-Three things have to cross the air gap, and they have almost nothing in common:
-video, which is high-rate and may be lost; command and abort, which are
-low-rate and may not; and mission data and swarm coordination, which are
-low-rate and must survive whatever the other two do not. An earlier revision of
-this design carried all three on one 5.8\,GHz 802.11 mesh. The link budget is
-what withdrew it.
+Three kinds of traffic have to be carried, and they have very different needs.
+Video needs a high data rate but can be lost occasionally. Command and abort need
+little data but must not be lost. Mission data and coordination also need little
+data and must keep working even when the other two fail. We first planned to
+carry all three on one 5.8\,GHz 802.11 mesh network, but dropped the idea after
+working out its link budget.
 
-\subsubsection{Margin, not path loss}
+\subsubsection{Link margin}
 
 Free-space path loss at the @@R@@\,m design slant range follows Friis,
 \begin{equation}
@@ -551,18 +547,17 @@ Free-space path loss at the @@R@@\,m design slant range follows Friis,
               + 20\log_{10}\!\left(\frac{f}{1\,\text{MHz}}\right) + 32.44 ,
 \label{eq:fspl}
 \end{equation}
-but path loss on its own decides nothing --- it is larger at 5.8\,GHz than at
-865\,MHz for every link ever built, and says only that higher frequencies
-spread more. What decides whether a link closes is the \emph{margin} left after
-it,
+but path loss alone does not tell us much, since it is always higher at
+5.8\,GHz than at 865\,MHz. What decides whether a link works is the margin left
+over,
 \begin{equation}
 M = P_{\mathrm{tx}} + G_{\mathrm{tx}} + G_{\mathrm{rx}}
     - \mathrm{FSPL}(f,d) - S_{\mathrm{rx}} ,
 \label{eq:margin}
 \end{equation}
-where $S_{\mathrm{rx}}$ is the sensitivity for the modulation actually used, not
-the best figure on the datasheet. Table~\ref{tab:links} evaluates
-(\ref{eq:margin}) at the geofence for the three adopted links.
+where $S_{\mathrm{rx}}$ is the receiver sensitivity for the modulation we
+actually use, not the best figure on the datasheet. Table~\ref{tab:links} gives
+(\ref{eq:margin}) at the geofence for our three links.
 
 \begin{table}[t]
 \caption{Adopted radio links, evaluated at the @@R@@\,m geofence}
@@ -580,86 +575,81 @@ the best figure on the datasheet. Table~\ref{tab:links} evaluates
 \end{tabular}
 \end{table}
 
-\subsubsection{Why the single mesh was withdrawn}
+\subsubsection{Why we dropped the single mesh}
 
-Run (\ref{eq:margin}) on the 802.11 configuration it replaced --- 20\,dBm into
-5\,dBi at each end, MCS0 sensitivity $-82$\,dBm --- and the same @@fwifi@@\,dB
-of path loss leaves \textbf{@@mwifi@@\,dB}. That is the thinnest path in the
-system and simultaneously the one carrying the most data, which is the worst
-possible pairing: the link most likely to break is the one whose loss costs
-most. The three-radio split leaves every remaining path above @@mvid@@\,dB, an
-improvement of @@mgap@@\,dB on the video path alone (Fig.~\ref{fig:links}a).
+Applying (\ref{eq:margin}) to the 802.11 setup we had planned, with 20\,dBm into
+5\,dBi antennas at each end and an MCS0 sensitivity of $-82$\,dBm, the same
+@@fwifi@@\,dB of path loss leaves only @@mwifi@@\,dB of margin. That would have
+been the weakest link in the system and also the one carrying the most data, so
+the link most likely to fail would also be the one whose failure costs most.
+With three separate radios, every link has more than @@mvid@@\,dB, an
+improvement of @@mgap@@\,dB on the video link alone (Fig.~\ref{fig:links}a).
 
-Meshing does not repair this, and the reason is worth stating because it is the
-argument that was originally made for the mesh. A relay hop through a second
-aircraft replaces one 600\,m link with two shorter ones, which buys back path
-loss --- but each hop is the same radio, the same antennas and the same
-sensitivity, so the relay is only as reliable as the aircraft carrying it, and
-the failure that takes out the direct path (a banked airframe, a body between
-the antennas, rain) is largely common to both. A mesh raises average throughput
-and does not raise the floor; here it is the floor that was the problem.
+A mesh does not solve this, even though that was the original reason for
+choosing one. Relaying through a second aircraft replaces one 600\,m link with
+two shorter ones and reduces path loss. But each hop uses the same radio,
+antennas and sensitivity, so the relay is only as reliable as the aircraft
+carrying it, and the things that break the direct link, such as a banked
+airframe, a person between the antennas or rain, tend to affect both hops. A
+mesh improves average throughput but not the worst case, and the worst case was
+our problem.
 
-The withdrawn link is not useless --- it reaches its sensitivity floor at
-@@dwifi@@\,km, and would work perfectly on a calm day
-(Fig.~\ref{fig:links}b). Margin is not headroom, though. Rain, body blocking, a
-banked airframe and antenna misalignment all draw on it, none of them is in
-(\ref{eq:margin}), and @@mwifi@@\,dB does not cover them. The adopted video link
-carries @@mvid@@\,dB to the same geofence and reaches zero only at
-@@dvid@@\,km.
+The 802.11 link would not be useless. It only reaches its sensitivity limit at
+@@dwifi@@\,km and would work well in good conditions (Fig.~\ref{fig:links}b).
+But rain, people in the way, a banked airframe and misaligned antennas all eat
+into the margin, none of them is included in (\ref{eq:margin}), and
+@@mwifi@@\,dB is not enough to cover them. Our video link has @@mvid@@\,dB at
+the same distance and only runs out at @@dvid@@\,km.
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{fig-links.pdf}
 \caption{(a) Link margin at the @@R@@\,m geofence, from (\ref{eq:margin}). The
-withdrawn 802.11 mesh is retained in the figure because the withdrawal is an
-argument and the margin column is that argument. (b) Margin against slant
-range. Every adopted link is flown at a small fraction of the range at which it
-runs out; the withdrawn one is not.}
+802.11 mesh we dropped is included for comparison. (b) Margin against distance.
+Each of our links is used at a small fraction of its maximum range; the dropped
+mesh would not have been.}
 \label{fig:links}
 \end{figure*}
 
 \subsubsection{Sizing the coordination channel}
 
-The split has a consequence the margin table does not show. The mesh offered
-roughly @@meshload@@\,kbps per aircraft of non-video traffic; LoRa at SF7 over a
-125\,kHz channel carries @@lorarate@@\,bps for the \emph{entire fleet}, a factor
-of @@loragap@@ less. The two architectures had never been costed against the
-same traffic, so this had gone unnoticed.
+Splitting the links has a consequence that the margin table does not show. The
+mesh would have offered about @@meshload@@\,kbps of non-video capacity per
+aircraft, whereas LoRa at SF7 on a 125\,kHz channel carries @@lorarate@@\,bps
+for the whole fleet, @@loragap@@ times less. We had not compared the two designs
+against the same traffic, so at first we missed this.
 
-Airtime, not bit rate, is the currency. For the short packets this mission
-sends, LoRa's preamble and coded header dominate: the number of symbols in a
-packet of $\mathit{PL}$ bytes is
+What matters is time on air, not bit rate. For the short packets this mission
+sends, LoRa's preamble and header take up most of the time. The number of
+symbols in a packet of $\mathit{PL}$ bytes is
 \begin{equation}
 n_{\mathrm{sym}} = n_{\mathrm{pre}} + 4.25 + 8 +
 \left\lceil \frac{8\mathit{PL} - 4\mathrm{SF} + 44}{4\,\mathrm{SF}} \right\rceil
 (\mathrm{CR}+4),
 \label{eq:airtime}
 \end{equation}
-each of duration $2^{\mathrm{SF}}/\mathrm{BW}$. A @@frameb@@-byte frame
-therefore costs @@lora36@@\,ms on air, against the @@lorabare@@\,ms its payload
-alone would imply --- the overhead is not a correction here, it is a third of
-the cost.
+each lasting $2^{\mathrm{SF}}/\mathrm{BW}$. A @@frameb@@-byte message therefore
+takes @@lora36@@\,ms on air, compared with the @@lorabare@@\,ms its data alone
+would suggest, so the overhead is about a third of the total.
 
-The first allocation --- aircraft state, task consensus and detection reports as
-three separate messages at their natural rates --- paid three preambles and
-three coded headers per aircraft per second and consumed
-@@occnaive@@\,\% of the channel, over the @@ceiling@@\,\% ceiling adopted for a
-slotted channel with retries and a fourth node to accommodate. Consolidating
-them into one @@frameb@@\,byte frame per aircraft per second, with a detection
-appended when there is one, brings it to @@occlora@@\,\% --- which still leaves
-essentially no headroom, at @@maxlora@@\,Hz maximum frame rate against the
-@@framehz@@\,Hz needed.
+Our first plan sent aircraft state, task coordination and detection reports as
+three separate messages, each at its own rate. That meant three preambles and
+three headers per aircraft per second, and it used @@occnaive@@\,\% of the
+channel, more than the @@ceiling@@\,\% limit we set to leave room for retries and
+a fourth node. Combining them into one @@frameb@@-byte message per aircraft per
+second, with a detection added when there is one, brings this down to
+@@occlora@@\,\%. That still leaves almost no spare capacity: the maximum message
+rate is @@maxlora@@\,Hz against the @@framehz@@\,Hz we need.
 
-What resolves it is already in Table~\ref{tab:links}. The 865\,MHz link closes
-the geofence with @@mlora@@\,dB, and nothing in this mission needs anything like
-that much --- the spreading factor that buys it is being spent on range the
-geofence does not use. The SX1262 supports GFSK on the same silicon, the same
-antennas and the same @@txlora@@\,dBm; at 50\,kbps its sensitivity is
-@@gfsksens@@\,dBm rather than $-123$\,dBm, which trades @@sfgap@@\,dB of that
-surplus for a @@ratemul@@$\times$ rate increase. The frame falls to
-@@gfskframe@@\,ms, occupancy to @@occgfsk@@\,\%, and the margin is still
-@@gfskmargin@@\,dB --- more than the video link has, on a tenth of the
-channel.
+The answer is already in Table~\ref{tab:links}. The 865\,MHz link has @@mlora@@\,dB
+of margin at the geofence, far more than this mission needs; the spreading
+factor is buying range we do not use. The SX1262 can also run GFSK with the same
+chip, antennas and @@txlora@@\,dBm output. At 50\,kbps its sensitivity is
+@@gfsksens@@\,dBm instead of $-123$\,dBm, which gives up @@sfgap@@\,dB of the
+spare margin for a @@ratemul@@ times higher data rate. Each message then takes
+@@gfskframe@@\,ms, channel use drops to @@occgfsk@@\,\%, and the margin is still
+@@gfskmargin@@\,dB, more than the video link has, while using only a tenth of
+the channel.
 
 \begin{table}[t]
 \caption{Coordination channel, three aircraft, one @@frameb@@\,B frame each at @@framehz@@\,Hz}
@@ -676,37 +666,39 @@ LoRa SF7, 125\,kHz & @@lorakbps@@\,kbps & @@loraframe@@\,ms & @@occlora@@\,\% & 
 \end{tabular}
 \end{table}
 
-So GFSK is the operating mode and LoRa SF7 is the fallback, selected on the same
-radio without a hardware change. The fallback is genuinely degraded and the
-model says so: at @@occlora@@\,\% it sustains @@maxlora@@\,Hz, so entering it
-sheds the frame rate rather than pretending the channel is unchanged.
+We therefore use GFSK normally and LoRa SF7 as a fallback, switching on the same
+radio without any hardware change. The fallback is genuinely slower: at
+@@occlora@@\,\% channel use it supports only @@maxlora@@\,Hz, so when we switch
+to it we lower the message rate.
 
-\subsubsection{What degrades first, by construction}
+\subsubsection{Order of degradation}
 
-The ordering is deliberate and follows the margins. Video is the path permitted
-to fail: it is digital, so it holds a clean picture until its margin is spent
-and then drops frames, and losing it costs the operator a view, not the
-aircraft a decision. Coordination degrades next, from GFSK to LoRa SF7 to
-a shed frame rate. Command and abort are last, on ExpressLRS at @@mcmd@@\,dB,
-and are never traded --- if that link is lost the aircraft executes its failsafe
-rather than waiting for it to return. Every band is licence-exempt in India: the
-865--867\,MHz SRD band for coordination, and the 2.4 and 5.8\,GHz ISM bands for
-command and video, each flown well inside its permitted power.
+We have arranged the links so that they fail in a sensible order, following
+their margins. Video is allowed to fail first. Because it is digital, the picture
+stays clean until the margin runs out and then frames start to drop, and losing
+it costs the operator a view but does not affect the aircraft's decisions.
+Coordination degrades next, from GFSK to LoRa SF7 and then to a lower message
+rate. Command and abort come last, on ExpressLRS with @@mcmd@@\,dB of margin,
+and are never traded away: if that link is lost, the aircraft carries out its
+failsafe rather than waiting for the link to return. All the bands are
+licence-free in India: the 865--867\,MHz short-range device band for
+coordination, and the 2.4 and 5.8\,GHz ISM bands for command and video, each
+used well within its power limit.
 
-Two limits on all of this. Every margin here is free-space, so it is an upper
-bound: multipath over water, Fresnel-zone intrusion from a low ground antenna
-and airframe blocking during a bank are real and none is modelled.
-And the GFSK sensitivity is a datasheet figure, not a measurement --- P5
-measures packet error rate against range on the built aircraft, which is when
-Table~\ref{tab:coord} becomes evidence rather than arithmetic.
+There are two limitations. All these margins assume free space, so they are best
+cases: reflections off water, a low ground antenna clipping the Fresnel zone,
+and the airframe blocking the signal in a turn all happen in practice and none
+is modelled. And the GFSK sensitivity comes from the datasheet, not a
+measurement. In P5 we will measure packet loss against distance on the built
+aircraft, and only then will Table~\ref{tab:coord} be backed by evidence.
 
-\subsection{What this section does not establish}
+\subsection{Limits of this section}
 
-Every figure above is \emph{modelled}. The thrust figures assume a motor that
-publishes no thrust curve, and the detection figures assume a recall that has
-not been measured. The sizing is internally consistent and its arithmetic is
-checkable; that is a different claim from saying the aircraft has been shown to
-do these things, and this document does not make the second claim anywhere.
+Every figure in this section is modelled. The thrust figures rely on a motor
+with no published thrust curve, and the detection figures assume a recall that
+has not been measured. The sizing is consistent and its arithmetic can be
+checked, but that does not show that the aircraft can actually do these things,
+and we do not claim that it can.
 """
 
 for k, v in V.items():
