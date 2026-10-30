@@ -8,9 +8,8 @@ letter generator, so this document cannot disagree with either. The cost
 breakdown is recomputed from its parts and asserted against the phase
 schedule's total before anything is written.
 
-The hand-written parts are decisions and checks, not numbers: the system
-configuration, the battery-selection table (model results) and the
-verification plan.
+The hand-written parts are decisions, not numbers: the system configuration
+and the battery-selection table (model results).
 
 With --single it emits the one-aircraft variant that accompanies
 mentor-brief-single: the same lines at the quantities build_single_brief.py
@@ -75,45 +74,6 @@ BATTERY_TABLE = [
     ("\\textbf{LiPo 16\\,Ah LiHV (selected)}", "\\textbf{1.88--2.21}", "\\textbf{365}",
      "\\textbf{6.8--7.1}", "\\textbf{1.8--1.9}", "\\textbf{2.1--2.3}", "\\textbf{+5 to +9}"),
 ]
-
-# (item, check, acceptance, stage, status)
-VERIFY = [
-    ("Battery mass", "Weigh each pack on receipt.",
-     "Expected 1.88--2.21\\,kg. The measured mass replaces the estimate in the "
-     "take-off mass.", "On receipt", "Planned"),
-    ("Motor thrust", "Thrust-stand test of one motor, propeller and speed controller.",
-     "$\\geq$\\,3.55\\,kgf per motor, which keeps thrust-to-weight at 2.0 at the "
-     "heaviest expected mass.", "Phase 2", "Planned"),
-    ("Pack fuse", "Log peak current on the stand and in the first flights.",
-     "The 150\\,A fuse must hold against a $\\sim$136\\,A peak. This is the "
-     "tightest electrical margin.", "Phase 2", "Planned"),
-    ("Battery failsafe", "Loaded discharge of the received pack at hover current.",
-     "Failsafe parameters are set for the 16\\,Ah LiPo (land with 20\\,\\% "
-     "left). The discharge confirms the voltage backstop fires near 20\\,\\%. "
-     "\\textbf{No flight before this is done.}", "Before first flight", "Planned"),
-    ("Speed controller (65\\,A)", "Thrust-stand test with 18\\,in propellers and 340\\,KV motors.",
-     "Current, temperature and freedom from desynchronisation confirmed before "
-     "@@ESCREST@@ bought.", "Phase 2", "Planned"),
-    ("Base RTK antenna cable", "Check both pieces on receipt.",
-     "Standard SMA and TNC, not reverse-polarity, and both RG58. The antenna "
-     "reports a fix through the full 3\\,m run.", "On receipt", "Planned"),
-    ("Ground video antennas", "Install one 14\\,dBi panel per receiver, aimed at its "
-     "aircraft, and an omni on the second port.",
-     "Confirm polarisation before installation. Measure the range on our own link, "
-     "not the listing's analog-FPV figure. Set coax lengths from the station layout.",
-     "Ground-station build", "Planned"),
-    ("Video radio power and cooling", "Bench-run the BL-M8812EU2 at the set TX power "
-     "on its 5\\,A regulator, with heatsink and fan.",
-     "Supply holds 5\\,V without sagging and the radio does not throttle over "
-     "a mission-length run.", "Before first flight", "Planned"),
-    ("USB hub", "Check the supplied power adapter.",
-     "@@HUBLOAD@@", "On receipt",
-     "Planned"),
-    ("RTK rover (GenX F9P Air)", "Check the maker's specification.",
-     "Dual-band: GPS L1/L2, Galileo E1/E5b, BDS B1/B2, GLONASS G1/G2; QMC5883 "
-     "compass.", "Before ordering", "Verified"),
-]
-
 
 def tex(s: str) -> str:
     for a, b in (("\\", r"\textbackslash{}"), ("&", r"\&"), ("%", r"\%"),
@@ -322,29 +282,7 @@ The 12 and 13\,Ah packs fail both requirements, and about 14\,Ah is the smallest
 that passes. The 16\,Ah pack is the smallest suitable size on sale in India. Its
 cost is weight: on the same motors, thrust-to-weight falls from 2.0 to about
 1.8--1.9 unless the thrust stand measures at least 3.55\,kgf per motor. That
-measurement is the first gate in Section~\ref{sec:verify}.
-
-\section{Test plan}\label{sec:verify}
-
-The following are checked when the parts arrive or before first flight. Each
-is either a measurement this programme exists to make, or a confirmation that
-a listing cannot give. \emph{Planned} means the test is scheduled at the stage
-shown.
-
-{\footnotesize
-\setlength{\tabcolsep}{3pt}
-\begin{longtable}{@{}R{0.4cm}L{2.6cm}L{4.1cm}L{5.4cm}L{2.0cm}L{1.4cm}@{}}
-\toprule
-\textbf{\#} & \textbf{Item} & \textbf{Check} & \textbf{Acceptance} & \textbf{When} & \textbf{Status} \\
-\midrule
-\endfirsthead
-\toprule
-\textbf{\#} & \textbf{Item} & \textbf{Check} & \textbf{Acceptance} & \textbf{When} & \textbf{Status} \\
-\midrule
-\endhead
-@@VERIFY@@
-\bottomrule
-\end{longtable}}
+measurement is the first funded step.
 
 \section{Basis of prices}
 
@@ -408,8 +346,6 @@ def variant(single: bool):
                 "NPHASES": str(len(rel)), "NEXTSTEP": "",
                 "ONCEFOR": "programme",
                 "QTYNOTE": "the\nprogramme quantity, including spares.",
-                "ESCREST": "the remaining two are",
-                "HUBLOAD": r"Rated for three receivers (up to 1.8\,A each when transmitting).",
             })
     import build_single_brief as B
     released = sum(amt for *_, amt in B.ROWS)
@@ -430,9 +366,6 @@ def variant(single: bool):
                         rf"to about \rs{{{rs(rest)}}}; that would be a separate request.",
             "ONCEFOR": "build",
             "QTYNOTE": "the\nquantity bought for this aircraft, including spares.",
-            "ESCREST": "more are",
-            "HUBLOAD": r"Powers the receiver (up to 1.8\,A when transmitting), more "
-                       r"than a laptop port supplies.",
         })
 
 
@@ -478,10 +411,6 @@ def main():
                   rf"\textbf{{{rs(total)}}} \\")
     config = "\n".join(rf"\textbf{{{a}}} & {b} \\" for a, b in CONFIG)
     batt = "\n".join(" & ".join(r) + r" \\" for r in BATTERY_TABLE)
-    verify = "\n".join(
-        rf"{i} & {it} & {chk} & {acc} & {when} & "
-        + (rf"\textbf{{{st}}}" if st == "Open" else st) + r" \\"
-        for i, (it, chk, acc, when, st) in enumerate(VERIFY, 1))
     team = "\n".join(rf"{nm} & {dept} & {L.BATCH} & {roll} \\" for nm, dept, roll in L.TEAM)
     sub_name, _sub_dept, _sub_roll = L.SUBMITTER
 
@@ -497,10 +426,9 @@ def main():
         "INCL": rs(incl), "EX": rs(ex), "TOTAL": rs(total), "GST": rs(gst),
         "CONT": rs(cont), "REQ": rs(req), "PH1": rs(ph1),
         "LINES": str(len(items)), "GROUPS": groups, "CONFIG": config,
-        "ROWS": rows, "BATT": batt, "VERIFY": verify, "TEAM": team,
+        "ROWS": rows, "BATT": batt, "TEAM": team,
     }.items():
         doc = doc.replace(f"@@{k}@@", v)
-    # After the tables: the verification rows carry wording keys of their own.
     for k, v in V["words"].items():
         doc = doc.replace(f"@@{k}@@", v)
     assert "@@" not in doc, "unreplaced template key"
