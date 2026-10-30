@@ -390,10 +390,12 @@ against @@Eusable@@\,Wh available at @@DOD@@ depth of discharge --- a margin of
 pack must therefore provide \textbf{@@Ereq@@\,Wh} nameplate at \textbf{@@S@@S}
 and \textbf{@@Ipk@@\,A continuous}.
 
-The adopted implementation is @@ncell@@ cells in @@S@@S@@P@@P:
+The model was sized with @@ncell@@ cells in @@S@@S@@P@@P:
 @@Epack@@\,Wh, @@Ah@@\,Ah, @@mpack@@\,g, @@Vnom@@\,V nominal
 (@@Vmin@@--@@Vmax@@\,V). Hover endurance is @@thov@@\,min against a
-@@Tmis@@\,min design mission consuming @@Emis@@\,Wh.
+@@Tmis@@\,min design mission consuming @@Emis@@\,Wh. The pack now specified
+is a bought 6S 16\,Ah LiPo (Section~\ref{sec:energy}); these figures are
+re-run on its measured mass before first flight.
 
 At @@MTOW@@\,kg per aircraft the fleet is \textbf{@@fleet@@\,kg} against the
 @@cap@@\,kg regulatory cap, leaving @@fmargin@@\,\% margin.
