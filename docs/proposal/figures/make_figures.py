@@ -347,25 +347,60 @@ def _min_sep(d, t, airborne_only=True):
     return best
 
 
+CURRENT = "mission-telemetry-speedup1.json"   # SIM_SPEEDUP 1, current config
+
+
+def _min_sep_series(d):
+    """Closest airborne pair at every sample, pairing aircraft BY INDEX.
+
+    The current recording's clock steps backwards 17 times, so matching samples
+    by timestamp pairs different parts of the flight. Index k is the same poll
+    for all three aircraft; the separation tool makes the same choice.
+    """
+    ids = sorted(d["tracks"])
+    n = min(len(d["tracks"][k]) for k in ids)
+    out = []
+    for i in range(n):
+        row = [d["tracks"][k][i] for k in ids]
+        best = None
+        for a in range(len(row)):
+            for b in range(a + 1, len(row)):
+                p1, p2 = row[a], row[b]
+                if p1["alt"] < 1.0 or p2["alt"] < 1.0:
+                    continue
+                sep = math.dist((p1["x"], p1["y"], p1["alt"]),
+                                (p2["x"], p2["y"], p2["alt"]))
+                best = sep if best is None else min(best, sep)
+        if best is not None:
+            out.append((i, row[0]["t"], best))
+    return out
+
+
+def _launch_end(d):
+    """Index by which every aircraft has reached the search deck."""
+    first = {}
+    for k, tr in d["tracks"].items():
+        first[k] = next(i for i, q in enumerate(tr)
+                        if q["alt"] >= d["search_alt"] * 0.95)
+    return max(first.values())
+
+
 def fig_launch():
     before = _load("mission-telemetry-before-fixes.json")
-    after = _load("mission-telemetry.json")
+    after = _load(CURRENT)
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(FULL, 2.45))
 
-    # -- (a) closest airborne pair, both runs ------------------------------
-    grid = [i * 0.25 for i in range(0, 241)]          # first 60 s
+    # -- (a) closest airborne pair during launch, both runs -----------------
     for d, col, lab in ((before, RED, "simultaneous launch"),
                         (after, GREEN, "staggered launch")):
-        xs, ys = [], []
-        for t in grid:
-            v = _min_sep(d, t)
-            if v is not None:
-                xs.append(t); ys.append(v)
+        end = _launch_end(d)
+        ser = [(t, v) for i, t, v in _min_sep_series(d) if i <= end]
+        xs = [t for t, _ in ser]; ys = [v for _, v in ser]
         ax1.plot(xs, ys, color=col, lw=1.5, label=lab)
         lo = min(range(len(ys)), key=lambda i: ys[i])
         ax1.plot(xs[lo], ys[lo], "o", color=col, ms=5)
         ax1.annotate(f"{ys[lo]:.2f} m", xy=(xs[lo], ys[lo]),
-                     xytext=(10, 14 if col == GREEN else 10),
+                     xytext=(8, -12 if col == GREEN else 10),
                      textcoords="offset points", fontsize=7.5,
                      color=col, weight="bold")
     ax1.axhline(AIRFRAME, color=GREY, ls="--", lw=1)
@@ -376,18 +411,16 @@ def fig_launch():
     ax1.set_ylabel("Closest pair, 3-D (m)")
     ax1.set_title("(a) Separation during launch")
     ax1.legend(frameon=False, loc="upper center", ncol=1)
-    ax1.set_xlim(0, 60)
+    ax1.set_xlim(0, 75)
     ax1.set_ylim(0.45, 900)
 
-    # -- (b) the mechanism: altitude stagger -------------------------------
-    # OBSERVED lift-off, not commanded. The mission file sets NAV_DELAY to
-    # 0/15/30 s; the telemetry shows the aircraft leaving the pad at
-    # 0.00/3.50/10.01 s. Plotting the commanded values would assert something
-    # this recording does not support -- see docs/proposal/README.md.
+    # -- (b) the mechanism: staggered lift-off ------------------------------
+    # OBSERVED lift-off, read from the telemetry, against the 0/15/30 s the
+    # mission file commands.
     for i, k in enumerate(sorted(after["tracks"])):
         tr = after["tracks"][k]
-        t = [q["t"] for q in tr if q["t"] <= 60]
-        a = [q["alt"] for q in tr if q["t"] <= 60]
+        t = [q["t"] for q in tr if q["t"] <= 75]
+        a = [q["alt"] for q in tr if q["t"] <= 75]
         col = [BLUE, ORANGE, PURPLE][i]
         ax2.plot(t, a, color=col, lw=1.3, label=f"aircraft {k}")
         lift = next((q["t"] for q in tr if q["alt"] > 2.0), None)
@@ -400,7 +433,7 @@ def fig_launch():
     ax2.set_ylabel("Altitude AGL (m)")
     ax2.set_title("(b) Observed lift-off, staggered by mission file")
     ax2.legend(frameon=False, loc="lower right")
-    ax2.set_xlim(0, 60)
+    ax2.set_xlim(0, 75)
     ax2.set_ylim(0, 50)
 
     fig.tight_layout()
@@ -409,7 +442,7 @@ def fig_launch():
 
 def fig_pad():
     before = _load("mission-telemetry-before-fixes.json")
-    after = _load("mission-telemetry.json")
+    after = _load(CURRENT)
     fig, ax = plt.subplots(figsize=(COL, 3.60))
     fig.subplots_adjust(left=0.175, right=0.985, top=0.925, bottom=0.20)
 
@@ -482,10 +515,10 @@ def fig_pad():
 
 # ===========================================================================
 # 9. Coverage decomposition and return geometry.
-#    Source: simulations/recordings/mission-telemetry.json
+#    Source: simulations/recordings/mission-telemetry-speedup1.json
 # ===========================================================================
 def fig_sweep():
-    d = _load("mission-telemetry.json")
+    d = _load(CURRENT)
     fig, ax = plt.subplots(figsize=(COL, 5.05))
     fig.subplots_adjust(left=0.20, right=0.98, top=0.945, bottom=0.135)
 

@@ -88,7 +88,7 @@ Three defects, none visible in review, all found by running the real artifact:
 
 | Separation, three aircraft | Before | After |
 |:--|--:|--:|
-| Launch, closest pair | 1.31 m | **64.80 m** |
+| Launch, closest pair | 1.31 m | **26.96 m** |
 | Whole flight, both airborne | 3.99 m | **5.51 m** |
 | Closest horizontal, any time | 0.83 m — *overlap* | **1.89 m** |
 | Recovery run, closest at any time | 0.83 m — *overlap* | **2.27 m** |

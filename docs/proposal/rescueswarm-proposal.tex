@@ -1107,7 +1107,7 @@ Fig.~\ref{fig:flow} shows the autonomous mission sequence. Three features are
 worth pointing out. First, the take-off delays are written into the mission file
 as a pause before each take-off command, rather than relying on the operator's
 timing. This is what increases the closest approach at launch from 1.31\,m to
-64.80\,m (Fig.~\ref{fig:launch}). Second, every abnormal condition ends in the
+26.96\,m (Fig.~\ref{fig:launch}). Second, every abnormal condition ends in the
 same way: link loss, low battery and operator abort all lead to return-to-launch.
 Third, the battery response has two stages. At the reserve threshold the aircraft
 returns to launch, and at a second, lower threshold it lands immediately where
@@ -1268,10 +1268,10 @@ kind of evidence supports each result, so that readers can check it.
   \item \textit{Separation at launch.} Putting take-off delays in the mission
         file, instead of relying on the operator's timing, increased the closest
         approach between airborne aircraft during launch from 1.31\,m to
-        64.80\,m (Fig.~\ref{fig:launch}). Both figures are recalculated directly
+        26.96\,m (Fig.~\ref{fig:launch}). Both figures are recalculated directly
         from the recorded telemetry.
   \item \textit{Separation during the sweep.} Away from the pad the aircraft
-        never came closer than 29.19\,m. Different transit altitudes of 20, 25
+        never came closer than 35.16\,m. Different transit altitudes of 20, 25
         and 30\,m keep them apart vertically regardless of the horizontal plan.
   \item \textit{Separation at recovery.} Placing the landing slots at the
         corners of the pad instead of in a row increased slot spacing from
@@ -1311,10 +1311,10 @@ looks safe in the figure but is only safe on average.
 ArduCopter software-in-the-loop autopilots. (a) Distance between the closest
 pair of airborne aircraft in three dimensions, on a logarithmic scale. Launching
 all three at once brings two aircraft within 1.31\,m, less than one airframe
-width (marked), while staggered take-off keeps the closest pair 64.80\,m apart.
+width (marked), while staggered take-off keeps the closest pair 26.96\,m apart.
 (b) Lift-off times observed in the same recording. The mission file commands
-delays of 0, 15 and 30\,s; in this recording the aircraft left the pad at 0.0,
-3.5 and 10.0\,s, and the figure shows the observed times.}
+delays of 0, 15 and 30\,s, and the aircraft left the pad at 0.0, 15.5 and
+31.7\,s.}
 \label{fig:launch}
 \end{figure*}
 
