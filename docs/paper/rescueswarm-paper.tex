@@ -11,7 +11,7 @@
 \usetikzlibrary{shapes.geometric,arrows.meta,positioning,fit,calc,backgrounds}
 \usepackage[hidelinks]{hyperref}
 
-\graphicspath{{../proposal/figures/}{../../ground-station/}}
+\graphicspath{{figures/}{../proposal/figures/}}
 
 \tikzset{
   blk/.style   ={draw, rounded corners=2pt, align=center, font=\scriptsize,
@@ -746,9 +746,11 @@ displayed all three aircraft at once from offline map tiles
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.94\textwidth]{gcs-dark.png}
-\caption{Ground station during a simulated mission, unedited. The telemetry
-comes from a test driver, not from aircraft. Six survivors have been found and
+\includegraphics[width=0.94\textwidth]{gcs-light.png}
+\caption{Ground station during a simulated mission. The interface runs with a
+dark theme; for print, the panel colours have been inverted to a light scheme
+with their hues kept, and the map is shown as captured. Nothing else has been
+changed. The telemetry comes from a test driver, not from aircraft. Six survivors have been found and
 six kits dropped. Five survivors are tagged \textsc{rtk fixed} and the sixth
 \textsc{3d only}; the display shows the difference because a crew sent to the
 sixth must search a wider area. The safety panel states that abort and recall
