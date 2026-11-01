@@ -80,16 +80,36 @@ def fet_loss(i_ph):
 
 
 def spreading_resistance():
-    """Radial spreading in a thin plate, pad outward to its share of board.
+    """Radial spreading, with the thermal vias in series where they belong.
 
-    R = ln(r_o/r_s) / (2.pi.k.t), with the copper treated as all six layers in
-    parallel because the drain pad is stitched into them by the via array.
+    CORRECTED. The first version treated all six layers as one 280 um plate,
+    which silently assumed the drain pad is perfectly coupled to the inner
+    layers. It is not: heat reaches them only through the thermal via field,
+    and those vias are in SERIES with the inner-layer spreading.
+
+    The real network is:
+
+        B.Cu spreading            (2 oz, direct from the pad)
+              in parallel with
+        via field  +  inner-layer spreading   (series)
+
+    That gives 4.23 K/W against the 1.82 K/W the ideal-plate model reported --
+    2.4 K/W of optimism, computed in tools/via_copper.py section 5.
     """
-    a_pad = PAD_W * PAD_H
-    r_s = math.sqrt(a_pad / math.pi)
-    a_share = AREA_BOTH_SIDES / N_FET
-    r_o = math.sqrt(a_share / math.pi)
-    return math.log(r_o / r_s) / (2 * math.pi * K_CU * T_CU_EFF), r_s, r_o
+    r_s = math.sqrt(PAD_W * PAD_H / math.pi)
+    r_o = math.sqrt((AREA_BOTH_SIDES / N_FET) / math.pi)
+    ln = math.log(r_o / r_s)
+
+    r_outer = ln / (2 * math.pi * K_CU * T_OUTER)          # B.Cu alone
+    r_inner = ln / (2 * math.pi * K_CU * 4 * T_INNER)      # inner layers alone
+
+    # 25 x 0.30 mm thermal vias, 25 um plating, through 1.6 mm
+    n_via, hole, plating = 25, 0.30e-3, 25e-6
+    a_via = math.pi * (hole + plating) * plating
+    r_via = (1.6e-3 / (K_CU * a_via)) / n_via
+
+    r_total = 1.0 / (1.0 / r_outer + 1.0 / (r_via + r_inner))
+    return r_total, r_s, r_o
 
 
 def main():
@@ -157,14 +177,15 @@ def main():
     print("  aircraft's fully developed slipstream is 12.46 m/s (h = 60) and at")
     print("  the disc it is 6.23 m/s (h = 42). Against its own airflow:")
     print()
-    print("    hover, slipstream   Tj 103 C   -> meets the 125 C target")
-    print("    hover, at the disc  Tj 129 C   -> MISSES the 125 C target")
-    print("    peak,  slipstream   Tj 134 C   -> MISSES the 125 C target")
-    print("    peak,  at the disc  Tj 171 C   -> 3.6 C from the 175 C LIMIT")
+    print("    hover, slipstream   Tj 106 C   -> meets the 125 C target")
+    print("    hover, at the disc  Tj 132 C   -> MISSES the 125 C target")
+    print("    peak,  slipstream   Tj 139 C   -> MISSES the 125 C target")
+    print("    peak,  at the disc  Tj 177 C   -> EXCEEDS the 175 C ABSOLUTE MAX")
     print()
-    print("  Nothing here exceeds the 175 C absolute maximum, so the design is")
-    print("  not disqualified -- but it does NOT meet the conservative 125 C")
-    print("  target at peak under any airflow this aircraft actually produces.")
+    print("  CHANGED. With the via thermal resistance included, sustained peak")
+    print("  at the disc no longer sits 3.6 C below the absolute maximum -- it")
+    print("  sits ABOVE it. Only one case still meets the 125 C target: hover")
+    print("  in developed slipstream.")
     print("  Mounting position relative to the disc is now a thermal design")
     print("  parameter, not a mechanical convenience.")
     print()

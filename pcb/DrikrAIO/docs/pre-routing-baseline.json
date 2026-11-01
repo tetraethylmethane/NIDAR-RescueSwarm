@@ -1,6 +1,6 @@
 {
   "schema": "drikraio.pre-routing-baseline/1",
-  "revision": 5,
+  "revision": 6,
   "date": "2026-09-05",
   "status": "NO-GO",
   "routing_allowed": false,
@@ -92,7 +92,7 @@
   "thermal": {
     "model": "Rth(j-a) = Rth(j-c) + R_spread + R_conv",
     "linear_area_scaling": "WITHDRAWN - do not use",
-    "r_spread_kw": 1.81,
+    "r_spread_kw": 4.22,
     "rth_jc_max_kw": 0.8,
     "required_rth_ja_kw": {
       "hover_tj125": 66.2,
@@ -112,20 +112,13 @@
       "h_previously_assumed_status": "WITHDRAWN - requires 22.4 m/s, above this aircraft's slipstream"
     },
     "junction_temperature_c": {
-      "hover_h42": 128.9,
-      "hover_h60": 103.2,
-      "peak_sustained_h42": 169.9,
-      "peak_sustained_h60": 132.7,
-      "peak_still_air": 393.0
+      "hover_h42": 132.0,
+      "hover_h60": 106.3,
+      "peak_sustained_h42": 176.8,
+      "peak_sustained_h60": 139.1,
+      "note": "revision 6: recomputed with the corrected R_spread"
     },
-    "verdict": {
-      "tj_target_c": 125,
-      "tj_absolute_max_c": 175,
-      "still_air": "FAIL at hover and peak - not acceptable at any sustained power",
-      "propwash_hover": "PASS in slipstream (103.2 C); FAILS at the disc (128.9 C)",
-      "propwash_peak": "FAILS the 125 C target at both airflows: 132.7 C slipstream, 169.9 C at the disc",
-      "summary": "MARGINAL. Sustained peak is not acceptable at either airflow. Acceptability depends entirely on peak duration and duty cycle, which are OPEN. At h=60 duty cycles up to 0.5 remain under the 125 C target."
-    },
+    "verdict": "MARGINAL. Only hover in developed slipstream meets the 125 C target. Sustained peak at the disc now EXCEEDS the 175 C absolute maximum by 1.8 K; at revision 5 it sat 3.6 K below it. Board-to-air still dominates, so more copper does not fix it.",
     "requires_measurement": "Rth(j-a) on the first board",
     "status": "MARGINAL - NOT PASS",
     "h_cases_live": {
@@ -154,7 +147,19 @@
       "first": "airflow exposure / placement relative to the rotor disc",
       "second": "peak duty cycle",
       "not_primary": "copper area, thermal via count and Rds(on) -- Rth(j-c) plus spreading account for only 5.7 K of the rise, so these cannot fix the sustained peak case"
-    }
+    },
+    "r_spread_kw_previous": 1.81,
+    "r_spread_previous_status": "WITHDRAWN - treated all six layers as one 280 um plate. Heat reaches the inner layers only through the thermal via field, which is in SERIES with them. Corrected in tools/via_copper.py section 5.",
+    "r_spread_network": {
+      "b_cu_alone_kw": 7.27,
+      "inner_layers_alone_kw": 3.63,
+      "through_25_thermal_vias_kw": 6.51,
+      "via_path_series_kw": 10.15,
+      "parallel_total_kw": 4.23,
+      "assumes": "25 x 0.30 mm filled-and-capped vias conducting at 25 um plating"
+    },
+    "peak_at_disc_exceeds_absolute_maximum": true,
+    "peak_at_disc_margin_to_175c_k": -1.8
   },
   "footprint": {
     "canonical": "lib.pretty/BSC014N06NS_PG-TDSON-8.kicad_mod",
@@ -293,7 +298,15 @@
       "blocks": [
         "manufacturing release"
       ]
-    }
+    },
+    "Via plating thickness at the chosen aspect ratio (fab)",
+    "Via-in-pad fill and cap capability (fab) - assumed for FET thermal vias",
+    "Minimum trace/space at 2 oz copper (fab)",
+    "Annular ring at 0.30/0.60 (fab)",
+    "Solder-mask slivers on 0.4 mm pitch at 2 oz (fab)",
+    "0201 assembly at 2 oz (fab)",
+    "Thermal relief vs solid connection on power pads (assembly)",
+    "Peak at the disc exceeds 175 C with the corrected R_spread"
   ],
   "prohibited_actions": [
     "routing any net",
@@ -447,6 +460,69 @@
       "vbat_transition": 39,
       "phase_transition": 16,
       "fet_thermal_pad": 9
+    }
+  },
+  "via_copper": {
+    "report": "docs/via-copper-design.md",
+    "tool": "hardware/tools/via_copper.py",
+    "routed": false,
+    "vbat_bus": {
+      "layers": [
+        "L1",
+        "L3",
+        "L4",
+        "L6"
+      ],
+      "area_mm2": 3.9,
+      "r_uohm": 110.32,
+      "sharing_pct": [
+        32.1,
+        17.9,
+        17.9,
+        32.1
+      ],
+      "peak_115a": {
+        "drop_mv": 12.69,
+        "loss_w": 1.46,
+        "adiabatic_c_per_s": 4.34,
+        "seconds_for_20c": 4.6
+      },
+      "single_outer_layer_width_needed_mm": {
+        "42a": 17.2,
+        "115a": 69.0
+      }
+    },
+    "phase_copper": {
+      "netclass_width_mm": 6.6,
+      "width_needed_hover_21a_mm": 6.6,
+      "width_needed_peak_28_75a_mm": 10.2,
+      "finding": "6.6 mm covers hover but NOT peak on one outer layer; phases run L6+L4 in parallel"
+    },
+    "via_geometry": {
+      "recommended_hole_mm": 0.3,
+      "recommended_pad_mm": 0.6,
+      "aspect_ratio": 5.3,
+      "cu_per_mm2_board": 0.0399,
+      "current_frozen_rule": "0.4 mm hole / 0.8 mm pad",
+      "current_rule_cu_per_mm2_board": 0.0334,
+      "finding": "the frozen 0.4/0.8 rule is the WORST of four geometries evaluated for copper per board area",
+      "adopting_0_30_would_change_a_frozen_rule": true
+    },
+    "via_arrays": {
+      "main_bus_by_area_matching": 153,
+      "main_bus_by_1_5a_rule": 77,
+      "used": 153,
+      "finding": "the 1.5 A/via rule under-specifies the main bus by 2x relative to the plane copper either side"
+    },
+    "bottleneck": {
+      "largest_loss_w": 3.72,
+      "largest_loss_element": "MOSFET Rds(on), two in series per phase",
+      "second_w": 1.46,
+      "second_element": "VBAT bus copper",
+      "third_w": 1.32,
+      "third_element": "0.1 mOhm shunt",
+      "copper_is_limiting": false,
+      "j1_excluded": true
     }
   }
 }
